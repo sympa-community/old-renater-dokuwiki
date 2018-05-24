@@ -1,0 +1,13 @@
+====== How to use urlize subscription option to prevent huge storage on your imap server ======
+
+Imagine your are using Sympa for a mailing list of all students of your university. Sending a message with a big attachment, may result in a very important disk usage on your mailboxe server if this server do not include duplication prevention feature.
+
+The urlize reception option is made for that. If a subscriber uses this subscription option, it will receive the message without the attachement file but with a link to this file which is stored by Sympa server. You can tune some list in order to have most or all subscribers using this subscription option so the attachement file is stored only ones and only subscribers of this list can access it.
+
+    * select available_user_options parameter and make sure urlize option is open to subscribers. See [[http://www.sympa.org/manual/parameters-sending#available_user_options|available_user_options]]
+    * set the default subscription option to "urlize", so most subscribers that never change there subscription option will use it (it will be applied to each new subscriber, including subscribers added by external data source. see [[http://www.sympa.org/manual/parameters-sending#default_user_options|default_user_options]]
+
+That's it !
+
+If you want this method to be applied only to big attachment, you can set the minimum size that will enable this mechanism. See [[http://www.sympa.org/manual/conf-parameters/part2#urlize_min_size|urlize_min_size]]
+

@@ -1,0 +1,86 @@
+Since 2000, the CRU has proposed many developments training periods on the Sympa project. We'd like to thank these developers who help pushing Sympa sofware ahead.
+
+===== Virginie Paitrault - décember 2006 =====
+
+
+Virginie was employed by CRU in order to improve end user documentation. She produced the user documentation included in Sympa web interface as a contextual help. She also made a lot of fixes in our English in all Sympa resources. If some pages seem to be written in good English, you are probably reading some product from Virginie ;-)
+
+===== David Pépin, Supelec - june 2006 =====
+
+
+Authentication module for dokuwiki(more)
+David has written an authentication and authorization plugin for dokuwiki. It is then possible to restrict access to a dokuwiki hierarchy only to list members.
+
+Sympa and mod-perl
+WWSympa, the sympa web interface, can now run with mod-perl (instead of fastcgi).
+
+===== Adrien Brard, IUT Vannes - april 2006 =====
+
+Rogue's gallery
+Adrien has added members pictures to the list members page. List members can upload their picture if they wish.
+
+DB logs
+Major actions are now logged in a structured way in Sympa's DB. List owners can view events about their mailing list.
+
+User accessibility
+Adrien has extended Sympa's CSS and web templates to make Sympa GUI accessible to disabled people.
+
+===== Floriane Fiquet, Supelec - june 2005 =====
+
+
+Traceability of subscriptions
+Floriane has extended sympa features to provide members with information regarding their subscription event. It is important for a miling list service to prove that a mailing list uses opt-in.
+
+===== Gwénaëlle Bouteille, IFSIC Rennes - march 200 =====
+
+
+Gwénaëlle has started a training period introducing the moderation feature for the web document repository. After this period, she joined the CRU's technical team as software engineer to continue Sympa development. She is the main author of the release 5 and develops under her responsability Sympa's families, RSS chanel, reorganize all mail.pm module or produce internal documentation for it and many other. She did also produce the code for a new important feature : 'topic subscription option' (this feature will be released with Sympa 5.2).
+
+===== Benoit Ortner, IUT Lannion - june 2003 =====
+
+
+Automatic bounces management
+Benoit has been working on many aspects of Sympa including web archives retreaval, SOAP server integration but he has mainly introduced the long awaited feature : automatic bounces management. This feature should prevent manual bounces management for owners ; bouncing subscribers are now warned and automatically removed from ML, based on some customizeable parameters.
+
+===== Mathieu Jan, INSA Rennes - august 2002 =====
+
+
+SOAP server
+There was a need to provide Sympa ML services to external applications, typically getting the list memberships of a specified user, getting a list of subscribers. Mathieu has developped a Sympa SOAP server that implements basic functions. The first candidate client application was mod_survey.
+This feature in now part of Sympa package ; it has been tested with Uportal chanels.
+
+===== Florent Guilleux, Supelec Rennes - june 2001 =====
+
+Task manager
+Various task automatic processing. Listmaster may use predefined task models to automate recurrent processings such as regurlaly reminding subscribers their belonging to a list or updating certificate revocation lists. It is also possible to write one's own task models to meet particular needs. Unique actions may also be scheduled by this way.
+
+===== Lynda Hamadouche, INSA Rouen - june 2001 =====
+
+LDAP-based authentication
+Sympa stores the data relative to the subscribers in a DataBase. Among these data: password, email exploited during the Web authentication . The module of LDAP authentication allows to use Sympa in intranet without duplicating the user's passwords.
+
+Then, users can indiferently authenticate with their ldap_uid, their alternate_email or their canonic email stored in theldap directory (the most explicit user's email).
+
+named LDAP filters
+At the moment Named Filters are only used in scenarii. They enable to select a category of people who will be authorized or not to realise some actions.
+
+As a consequence, you can grant privileges in a list to people belonging to an LDAP directory thanks to a scenario.
+=====  Nadia Euzen, IFSIC Rennes - may 2001 =====
+
+
+Antivirus scanner plugin
+Antivirus scanner, curently working with McAfee Uvscan, FSecure FSAV and TrendMicro scanner.
+
+New subscriber options
+These new options are :
+
+    * not_me
+    * html / txt
+    * urlize 
+
+===== Sophie Lefloch, INSA Rennes - june 2000 =====
+
+Web document repository
+Shared documents are documents that different users can manipulate on-line via the web interface of Sympa, provided that the are authorized to do so. A shared space is associated with a list, and users of the list can upload, download, delete, etc, documents in the shared space.
+
+WWSympa shared web features are fairly rudimentary. It is not our aim to provide a sophisticated tool for web publishing, such as are provided by products like Rearsite. It is nevertheless very useful to be able to define privilege on web documents in relation to list attributes such as subscribers, list owners, or list editors. 
