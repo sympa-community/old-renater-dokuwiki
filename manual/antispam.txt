@@ -1,0 +1,83 @@
+====== How does Sympa deal with spams ? ======
+<note warning>
+This page is a work in progress.
+</note>
+
+===== What antispam_feature does, and what it does not do =====
+
+spam_status/antispam_feature just tells sympa how to determine **whether a message is believed to be spam or not.**  
+
+It does not tell sympa **what to do** with spam messages.
+
+If the send scenario for a list would let the message through to the list, the fact that it is believed to be spam does not change that. 
+
+IF a message is moderated for some other reason, sympa treats it specially if it is tagged as spam by the spam_status/antispam_feature.  
+
+So, to have all spam messages moderated, your send scenario needs to set up to do this.
+
+===== Background =====
+
+Spams is a real and complex problem for mailing list services. Of course the configuration must prevent your list server from distributing spam messages to list members. This is quite easy to ensure for most mailing lists. Private lists ((those where only list members can submit messages)) and moderated lists ((those where messages are subject to moderator approval)). Sympa provides a more sophisticated moderation process where only messages that verify a defined set of conditions are submitted to the moderator. These conditions, described in [[:manual:authorization-scenarios|scenario]], are the common way to block spams.
+
+This approach has been sufficient for a long time but now we felt that a more sophisticated mechanism was required to achieve the following goals :
+  * how to limit spams forwarded to moderators ?
+  * how to be sure that a moderator will not accept a spam by mistake ?
+  * how to deal with public mailing lists ((those where anyone can post a message. Public mailing lists are very useful in various cases. Example : sympa-authors@renater.fr)) 
+  * how to prevent my list server to be added in blacklists ?
+  * how to limit the mailing list server to be a new source of unwanted emails sending automatic responses to message with a spoofed sender email address ?
+
+ 
+
+===== An external spam filter is needed  =====
+
+You should configure a spam filter in your upstream MTA (probably on the MX server) ; it will block most spam messages in front of the Sympa server. Spam filters, such as spamassassin, j-chkmail, spamd, MIMEDefang eliminate most spams. But in many cases they are configured to accept messages (including spam messages) and let the recipient decide what to do with it. In this case the spam filter tags the messages with a specific SMTP header field,  so that the user agent can sort ham and spam.
+
+In Sympa, the send authorization scenario parameter defined for each mailing list, allows to test such SMTP headers fields. There are various scenario conditions that can be used to manage spams. The following rule is an example of a partial solution :
+
+  match([msg_header->X-Spam-Status], /^Yes$/)          smtp,smime -> reject,quiet
+
+This rule, that silently rejects spam messages, could be a nice solution if the spam filter was perfect (ie never tag ham as spam). Unfortunately the spam filter on the front end is not perfect (that's why it does not take the responsibility of removing suspected messages itself). An alternate solution would be to forward spam messages to list moderators, even for public or private mailing lists.
+
+In version 5.5 and later, Sympa shows message tagged as spam in the web message moderation panel. In the following picture, the list moderator in the process of rejecting a spam message ; the author of the message will receive a rejection notification :
+
+{{authors:sympaspam.jpg|}}
+
+
+In version 6.1 a //spam_status// scenario is introduce not toe define what to do with a spam message but to qualify message as spam, ham or unsure. This scenario is selected by the sympa.conf (or robot.conf) parameter spam_status. This scenario can be used to test multiple message headers with regexp etc. It return 'ham', 'spam', 'unsure' or 'undefine'. Then this is the status of the message while processing it. In scenario this property can tested  as [msg->spam_status] variable. Testing this variable in usefull mainly in send scenario.
+
+Sympa do not forward messages sent to [listname]-request, [listname]-editor or listmaster if [msg->spam_status] is 'spam'. In that case messages are dropped without any notification. In a near futur this will be controled by a specific scenario.
+
+
+<del>
+Of course this spam tagging feature in Sympa requires that Sympa knows how the spam filter tags message as spam or ham. This is the purpose of the following parameters : 
+  *[[.conf-parameters/part2#antispam_feature|antispam_feature]]
+  *[[.conf-parameters/part2#antispam_tag_header_name|antispam_tag_header_name]]
+  *[[.conf-parameters/part2#antispam_tag_header_spam_regexp|antispam_tag_header_spam_regexp]]
+  *[[.conf-parameters/part2#antispam_tag_header_ham_regexp|antispam_tag_header_ham_regexp]]
+
+By default the spam detection feature is disabled. If the feature is enabled, Sympa acts as described below:
+</del>
+
+  - messages recognized as spam received by the Sympa main email address are ignored, no notification is sent. This is applied also for messages sent to [list]-subscribe and [list]-unsubscribe
+  - in the moderation process, messages suspected to be spams are tagged on the web interface (as shown in the picture above). A notification is sent to the list editors but the message itself is not attached the usual way to the moderation notification message that is sent to moderators. This prevents the notification message from being tagged as spam because it may include spam ; it also prevents your mailing server from being classified as a source of spam. So list moderator can only do their moderation job through the web interface.
+  - no notification is sent to the author of a message considered as spam, even if the authorization scenario tells to do so.
+
+<note warning>
+not yet developed :
+  * If a message is received for any service that scenario output is "request_auth", sympa should ignore it and drop quietly the message.
+</note>
+
+==== Reporting undetected spams====
+
+List editor may want to signal undetected spams. In thise case the message they have received as an message/rfc822 attachement should be transmitted preserving headers. Unfortunately, many MUA do not forward properly messages. The best solution is to use the message stored in Sympa moderation spool. This can be done from list moderator interface while rejecting a message, an option allows to process each dedicated message by an external script. A robot parameter is used to specify the script path Sympa will lunch and dump the message in script STDIN : 
+
+  *[[.conf-parameters/part2#reporting_spam_script_path|reporting_spam_script_path]]
+
+[[http://www.sympa.org/contribs/index|Sympa contribs repository]] propose at least two example of that sort of script, one forwarding the message in an ARF format, the second one moving the message to a dedicated folder of an imap server.
+
+
+===== nrcpt_by_domain.conf  =====
+
+If you manage a list with many list members belonging to the same ISP, this ISP may consider your MTA as a source of spam, because Sympa uses a bulk emailer to submit a message to a couple recipients in a single SMTP session. This can ne controlled by the [[.conf-parameters:part2#nrcpt|nrcpt parameter]] and [[organization#nrcpt_by_domain.conf|nrcpt_by_domain.conf]]]
+
+

@@ -1,0 +1,78 @@
+====== Message workflow ======
+
+====== Does Sympa alter messages? ======
+
+Sympa receives incoming messages in its ''msg'' spool. An image of the message is then created (a MIME::Entity, using MIME-Tools CPAN library) for later processing. At the end, the MIME::Entity object is dumped to the mail tranfer agent (sendmail, postfix,...). Note that the message might be altered by this intermediate MIME::Entity object (row size for Base64 encoded MIME parts for example). The use of the MIME::Entity intermediate object is skipped is a message is S/MIME signed because any changes in any part of the message body would break the S/MIME signature. 
+
+Note also that Sympa might perform the following changes to the distributed messages; however some of this alterations of the messages can be configured.
+  * SMTP header fields are added/removed for loop prevention (see [[customizing#loop_detection]]), for RFC 2369 compliance (see [[conf-parameters/part2#rfc2369_header_fields]]) or through customizations (see [[conf-parameters/part2#remove_headers]]).
+  * The subject of the message might be changed to add a custom subject (see [[parameters-sending#custom_subject]]).
+  * Headers and footers may be added. They are either added as separate MIME parts or within the message body, if it is of text type (see [[list-definition#message_header_and_footer]])
+  * Message content-type may be changed from multipart/alternative to text/plain or text/html if the user has selected the corresponding reception mode (see [[reception-mode#multipartalternative]]).
+
+====== Attachments ======
+
+Sympa distribution process copes well with MIME messages, including those including attachments. However there are situations special processing for messages with attachments:
+  * [[/manual/parameters-others#max_size|max_size]] : this parameter controls the maximum allowed size for a distributed message,
+  * urlize : list members can select this reception mode to have attachments removed from the message and stored on the list server. Urlizization depends on the message size and the [[/manual/conf-parameters/part2#urlize_min_size|urlize_min_size]] parameter.
+
+====== Loop prevention ======
+
+====== Customizing messages ======
+
+Sympa allows to send customized messages to mailing lists ; each subscriber will receive a customized version of the initial message. The initial message is processed as a template with embedded variables and is parsed, for each subscriber, with the attributes Sympa has associated to her. Note that you can freely create any subscriber attribute, see the [[:manual:customizing#custom_user_attributes|custom attributes]] feature. \\
+
+The personalization of a message consists to replace variables by the attributes of the user. It uses the [[http://template-toolkit.org/|TT2]] tags in order to distinguish them from text: [% %].\\
+The personalization process occurs as follows:
+
+  - Sympa get the message containing the TT2 variables,
+  - it retrieves the user data in the database,
+  - it replaces the variables by the found data.
+
+Here is the syntax for writing a variable: [% user.custom_attribute.**ID**.value %]\\
+**ID** is the [[:manual:parameters-others#custom_attribute|custom attribute id sub-parameter]]\\
+
+Here are the steps to send a customized message to a list :
+
+  - this feature is enabled / disabled using a list parameter: ''[[:manual:parameters-others#merge_feature|merge_feature]]''. If set to ''on'', messages will be merged.\\ {{ :manual:screenshot1.2.png |}}
+  - if you choose defined custom users attributes, they can be used to personalize messages.
+  - users fill their personal user attributes for the list themselves. (name, surname, civility, ...)\\ {{ :manual:screenshot3.2.png |}}
+  - the message can be composed either from Sympa web interface or using your favourite mail client. Simply insert the variables in this message in the form of a TT2 tags. (ex: [% user.custom_attribute.civility.value %] to refer to the subscriber's civility).
+  - Here is a diagram to better understand the process of customization\\ {{ :manual:screenshot6.2.jpg |}}
+
+Note :\\
+This feature is likely to have an influence on the message dissemination performances. Indeed, to send personalized messages to each user, Sympa opens an SMTP session for each recipient. Previously, it tried to open a session for several recipients if they belonged to the same domain.
+
+Below are some examples of TT2 parameters usable in messages.
+
+    * **[% listname %]**: the listname; always available.
+    * **[% robot %]**: the name of the host the list is intalled on; always available.
+    * **[% user.email %]**: the user email; always available.
+    * **[% user.gecos %]**: the user name associated to her email; always available.
+    * **[% user.friendly_date %]**: the - human readable - user's subscription date; always available.
+    * **[% user.custom_attribute.title.value %]**: can be anything you like; available if you defined a user custom attribute named "title" (see the list configuration, section "Miscellaneous").
+    * **[% user.custom_attribute.name.value %]**: can be anything you like; available if you defined a user custom attribute named "name".
+    * **[% user.custom_attribute.organization.value %]**: can be anything you like; available if you defined a user custom attribute named "organization".
+
+===== Unsubscription URL =====
+
+Based on the merge message, a special feature allows to add unsubscription URLs to list messages.
+
+To do so, you must:
+
+  - set the ''[[:manual:parameters-others#merge_feature|merge_feature]]'' parameter to ''on''.
+  - edit your [[:manual:list-definition#message_header_and_footer|message footer]]. You can do it through the web interface by clicking, in the list menu, on ''Admin -> Cutomizing -> Message footer'', as on the snapshot below.\\ {{ :manual:footer-edition.png |}}
+  - in this file, write this line:
+
+<code>To unsubscribe from this list, clink here: [% 'auto_signoff' | url_abs([listname],{email=>user.email}) %]</code>
+
+  - Save. Done.
+
+<note>
+The line above is an example for Sympa 6.2 later than Aug 2016. With earlier versions it shouold be:
+<code>To unsubscribe from this list, clink here: [% wwsympa_url %]/auto_signoff/[% listname %]/[% user.escaped_email %]</code>
+</note>
+
+When a user receive a list message after this operation, it will contain an URL at the bottom. Clicking this URL will redirect her to the Sympa web interface where she will be warned that a message was sent to her. In this second message, she will have an authenticating URL which will trigger her unsubscription when clicked.
+
+Note: It is essential that the list messages don't contain a link that actually unsubscribe users, because list messages are forwarded, replied to, and therefore the unsubscription URL would be forwarded to potentially a lot of people. Consequently, we put only an URL which will trigger an unsubscription confirmation. This way, if somebody else clicks on this URL with your mail address in it, you will just receive a message (containing this person's email IP) requesting confirmation. This usage is probably better for news letters.

@@ -1,0 +1,3095 @@
+~~NOTOC~~
+====== Interaction between Sympa and other applications ======
+
+======  Soap ======
+
+See [[soap|Sympa SOAP server]].
+
+======  RSS channel ======
+
+See [[rss|Sympa's RSS channel]].
+
+====== Sharing WWSympa's authentication with other applications ======
+
+See [[authentication#sharing_wwsympa_s_authentication_with_other_applications|Sharing WWSympa's authentication with other applications]].
+
+======  Sharing data with other applications ======
+
+You may extract subscribers, owners and editors for a list from any of:
+
+  * a text file;
+  * a relational database;
+  * a LDAP directory.
+
+See the [[parameters-data-sources#user_data_source|user_data_source]] list parameter.
+
+The three tables can have more fields than the one used by Sympa, by defining these additional fields, they will be available from within Sympa's authorization scenarios and templates (see [[conf-parameters#db_additional_subscriber_fields|db_additional_subscriber_fields]] and [[conf-parameters:part3#db_additional_user_fields|db_additional_user_fields]]).
+
+See [[list-definition#data_inclusion_file|Data inclusion file]].
+
+====== Subscriber count ======
+
+The number of subscribers of a list can be obtained from an external application by requesting function ''subscriber_count'' on the Web interface.
+
+Example: <code>http://my.server/wws/subscriber_count/mylist</code>
+====== Customizing Sympa/WWSympa ======
+
+
+
+====== Template file format ======
+
+Template files within Sympa used to be in a proprietary format that has been replaced with the [[http://www.tt2.org|TT2]] template format.
+
+You will find detailed documentation about the TT2 syntax on the web site: **http://www.tt2.org**
+
+If you are an emacs user, you can use the [[http://dave.org.uk/emacs/|TT2 highlighting mode]] by Dave Cross.
+
+Here are some aspects regarding templates that are specific to Sympa:
+
+{{page>customizingbisbis}}
+
+====== Mail template files ======
+
+These files are used by Sympa as service messages for several commands. These files are interpreted (parsed) by Sympa and respect the TT2 template format; every file has a **.tt2** extension. See [[customizing#template_file_format|Template file format]].
+
+Sympa looks for these files in the following order (where ''<list>'' is the listname if defined, ''<action>'' is the name of the command, and ''<lang>'' is the preferred language of the user):
+
+  - ''/home/sympa/expl/<list>/mail_tt2/<lang>/<action>.tt2''.
+  - ''/home/sympa/expl/<list>/mail_tt2/<action>.tt2''.
+  - ''/home/sympa/etc/my.domain.org/mail_tt2/<lang>/<action>.tt2''.
+  - ''/home/sympa/etc/my.domain.org/mail_tt2/<action>.tt2''.
+  - ''/home/sympa/etc/mail_tt2/<lang>/<action>.tt2''.
+  - ''/home/sympa/etc/mail_tt2/<action>.tt2''.
+  - ''/home/sympa/bin/etc/mail_tt2/<lang>/<action>.tt2''.
+  - ''/home/sympa/bin/etc/mail_tt2/<action>.tt2''.
+
+If the file starts with a From: line, it is considered as a full message and will be sent (after parsing) without adding SMTP headers. Otherwise, the file is treated as a text/plain message body.
+
+The following variables may be used in these template files:
+
+  * [% sender %]: e-mail address of the sender;
+  * [% return_path %]: Return-Path SMTP header of the message;
+  * [% fromlist %]: From SMTP header of the message;
+  * [% replyto %]: Reply-To SMTP header of the message ;
+  * [% boundary %]: MIME parts separator calculated for service messages;
+  * [% robot_domain %]: domain of a virtual host as defined in the ''host'' parameter;
+  * [% list.lang %]: default language of the list;
+  * [% list.name %]: the list name;
+  * [% list.domain %]: the domain the list is hosted by;
+  * [% list.host %]: the domain the list is hosted by;
+  * [% list.subject %]: the subject of the list;
+  * [% list.owner %]: an array containing the list owners address;
+  * [% list.dir %]: The absolute path to the list's configuration directory;
+  * [% conf.email %]: sympa email address local part;
+  * [% conf.host %]: sympa default host domain name;
+  * [% conf.sympa %]: sympa's complete email address;
+  * [% conf.request %]: return address for bounces (sympa-request);
+  * [% conf.listmaster %]: listmaster's email addresses;
+  * [% conf.wwsympa_url %]: //WWSympa//'s root URL;
+  * [% conf.title %]: Host web page title;
+  * [% conf.listmaster_email %]: listmaster'e-mail address local part;
+  * [% conf.version %]: //for global messages only!// Sympa version number;
+  * [% user.email %]: user email address;
+  * [% user.lang %]: user language;
+  * [% user.gecos %]: user gecos field (usually his/her name);
+  * [% user.password %]: user password;
+  * [% subscriber.date %]: date when the user subscribed to this list;
+  * [% subscriber.update_date %]: date when the user last updated her/his profile;
+  * [% subscriber.bounce %]: subscriber's bounce rate;
+  * [% subscriber.first_bounce %]: date when this subscriber had her/his first bounce.
+
+=====  helpfile.tt2 =====
+
+This file is sent in response to a ''HELP'' command. You may use additional variables:
+
+  * [% is_owner %]: ''TRUE'' if the user is list owner;
+
+  * [% is_editor %]: ''TRUE'' if the user is list editor.
+
+
+=====  lists.tt2 =====
+
+File returned by the ''LISTS'' command. An additional variable is available:
+
+  * [% lists %]: this is a hash table indexed by list names and containing lists' subjects. Only lists visible to the user (according to the ''visibility'' list parameter) are listed.
+
+Example:
+<code>
+  These are the public lists for [conf->email]@[conf->domain]
+
+  [% FOREACH l = lists %]
+  [% l.key %]@[% l.value.host %] : [% l.value.subject %] ([% l.value.topics.0 %])
+
+  [% END %]
+</code>
+
+=====  global_remind.tt2 =====
+
+This file is sent in response to a ''REMIND *'' command. (see [[sympa-commands#owner_commands|Owner commands]]) You may use additional variables:
+
+-[% lists %]: this is an array containing the names of the lists the user is subscribed to.
+
+Example:
+<code>
+  This is a subscription reminder.
+
+  You are subscribed to the following lists:
+  [% FOREACH l = lists %]
+
+   [% l %]: [% conf.wwsympa\_url \%]/info/[% l %]
+
+  [% END %]
+
+  Your subscriber e-mail: [% user.email %]
+  Your password: [% user.password %]
+</code>
+
+=====  your_infected_msg.tt2 =====
+
+This message is sent to warn the sender of a virus infected mail, indicating the name of the virus found (see [[antivirus#antivirus|Antivirus]]).
+
+
+====== Web template files ======
+
+You may define your own web template files, different from the standard ones. //WWSympa// first looks for list specific web templates, then for site web templates, before falling back on its defaults.
+
+Your list web template files should be placed in the ''/home/sympa/expl/mylist/web_tt2'' directory, and your site web templates in the ''~/home/sympa/etc/web_tt2'' directory.
+
+===== Sympa colors customization guide =====
+
+Sympa colors are managed using [[conf-parameters/part1#color_0_color_1_..._color_15|color_x parameters in Sympa.conf]].
+
+You will find below how these parameters are interpreted in the Sympa web interface. Note that if you activated the [[conf-parameters/part1#css_path|static CSS]], you will need to hit the "install static css" button once again to see the changes in your color definitions.
+**
+Install time:** web colors are defined in Sympa's main Makefile (see [[installing-sympa#compilation_and_installation|Compilation and installation]]).
+
+==== What are the colors used for? ====
+
+  * ''color_0'': background color of:
+    * one out of two lines in tables, alternated with ''color_5''. It is intended to be the darkest shade, as ''color_5'' has other uses.
+  * ''color_1'': background color of:
+    * main navigation tabs
+    * most of the buttons (those corresponding to the MainMenuLinks CSS class)
+  * ''color_2'': font and border color of:
+    * almost everything. Exceptions for borders are <TD/> borders; exceptions for fonts are links, buttons and some titles.
+  * ''color_3'': background color of:
+    * top box
+    * footer box
+  * ''color_4'': background color of:
+    * page
+    * table headers (at the very exception of the table displaying new lists)
+    * the rest of the buttons (which are in fact hyperlinks, corresponding to the actionMenuLinks CSS class)
+  * ''color_5'': background color of:
+    * all the main interface boxes
+    * the lightest color for the table lines, contrasting with color_0
+  * ''color_6'': background color of:
+    * active action (for example, the section of the admin options which is currently viewed, or the header corresponding to the data following which an array is currently sorted)
+    * hovered actions
+    * hovered buttons corresponding to the actionMenuLinks CSS class
+    * hovered navigation tabs
+  * ''color_7'': background color of:
+    * error messages
+    * just edited area in the administrative management section.
+  * ''color_8'': doted underscore color of:
+    * hyperlinks
+  * ''color_9'': 
+    * border color for active action (for example, the section of the admin options which is currently viewed, or the header corresponding to the data following which an array is currently sorted)
+    * border color for hovered hyperlinks corresponding to actions
+    * background color for clicked links (corresponding to the .active state in a CSS)
+  * ''color_10'': inactive buttons color. Rarely used. Don't bother.
+  * ''color_11'': font color for:
+    * active navigation tab
+    * H2 titles
+    * hovered links
+    * some hovered buttons action(which are in fact hyperlinks, corresponding to the actionMenuLinks CSS class)
+  * ''color_12'': Font color for the class smallblack. Not sure it is used.
+  * ''color_13'': Background color of:
+    * editable form areas (text areas, selection lists, ...)
+    * the rest of hovered buttons (those corresponding to the MainMenuLinks CSS class)
+  * ''color_14'': Unused
+  * ''color_15'': Unused
+
+
+
+
+==== What colors have the objects? ====
+
+Here are gathered informations about the color parameters used for specific parts of the web interface. Take care to have a look to the precedent section as changing a parameter for an object is likely to change it for a few similar objects.
+
+=== Main backgrounds ===
+
+There are for different backgrounds in the web interface:
+
+  * The page: ''color_4''; below all the rest. Just the base on which all the rest is stacked.
+  * The main boxes: ''color_5''; This is where most of the text, buttons and links are displayed.
+  * The top box and footer: ''color_3''; the top box is where your service name and main navigation tabs are displayed. The footer contains the version of Sympa.
+  * The editable forms areas: ''color_13''; This is the color in all the form widgets which can be edited by users (text areas, selection lists).
+
+=== Buttons ===
+
+The buttons color management can be confusing, so let's just stress it a little:
+
+^Color attribute ^ MainMenuLinks CSS class^actionMenuLinks CSS class^
+|Default background color|''color_1''|''color_4''|
+|Hovered background color|''color_13''|''color_6''|
+|Default font color|''color_2''|''color_2''|
+|Hovered font color|''color_1''|''color_11''|
+|Default border color|''color_2''|''color_2''|
+|Hovered border color|''color_2''|''color_2''|
+
+=== Links ===
+
+Hyperlinks have the same attributes as plain text, except:
+  - They are always underscored by a doted line of color ''color_8''
+  - When hovered, they take the color ''color_11''
+
+=== Menu links ===
+
+They have the following attributes:
+
+^State^Font^Background^Border^
+|Default|''color_2''|''None''|''None''|
+|Hovered|''color_11''|''color_6''|''color_9''|
+|Clicked|''color_2''|''color_9''|''color_6''|
+|Active|''color_2''|''color_6''|''color_9''|
+
+=== Miscellaneous ===
+
+Note these additional informations:
+  - navigation tabs have the same default parameters as the class MainMenuLinks but the same parameters as actionMenuLinks when hovered;
+  - except for the MainMenuLinks button, //anything// likely to do something if clicked takes the font color ''color_11'' when hovered;
+  - the menu links (Info, Admin, Edit list config...) are the only objects whose color actually changes on click.
+
+====== CSS files ======
+
+Sympa has four CSS stylesheets : ''style.css'', ''print.css'', ''print-preview.css'' and ''fullPage.css''.
+
+It will use a stylesheet or the other regarding the kind of request the user addressed.
+
+But, for each stylesheet, what is sent to users varies regarding the values of two parameters : ''css_path'' and ''css_url''.
+
+
+
+
+===== css_path and css_url parameters =====
+
+  * ''[[:manual:conf-parameters:part1#css_path|css_path]]'' defines the directory in which ''wwsympa'' can find static CSS files;
+  * ''[[:manual:conf-parameters:part1#css_url|css_url]]'' defines the URL used by web clients to request the web server for stylesheets.
+
+These parameters values are looked for in ''robot.conf'' first, then ''sympa.conf'', and then, if not found, set to hard-coded defaults.
+
+- If ''css_path'' isn't defined, its default is set to : ''${[[:manual:conf-parameters:part1#static_content_path|static_content_path]]}/css''.
+''static_content_path'' is the parameter defining the root path to all static content for Sympa. If  ''static_content_path''  is undefined in ''sympa.conf'' or ''robot.conf'', its value is set to : ''sympa_home_dir/static_content''.
+- If ''css_url'' isn't defined, its default is set to : ''${[[:manual:conf-parameters:part1#static_content_url|static_content_url]]}/css''.
+''static_content_url'' is the parameter defining the root url to all static content in Sympa. If ''static_content_url'' is undefined in ''sympa.conf'' or ''robot.conf'', its value is set to : ''/static-sympa''.
+
+This way :
+  * the default path to static stylesheet is : ''sympa_home_dir/static_content/css/style.css''
+
+  * the default URL to the static stylesheet is : ''http://host.name/static-sympa/css/style.css''
+
+The ''sympa_wizard.pl'' script, run at install, can set both ''static_content_path'' and ''static_content_url'' values.
+
+===== What stylesheet will be used ? =====
+
+  * Case 1 : if the directory defined by ''css_path'' exists, the value of ''css_url'' will be the one defined in Sympa config.
+
+  * Case 2 : if this directory doesn't exist, the value of ''css_url'' will be that of the ''css'' action (i.e. ''http://url.to.wwsympa/css/'').
+
+The content delivered varies greatly according to which case happens.
+
+----
+
+  * **Case 1**: the stylesheet received by the client is the **file** found in the directory that your Apache server configuration associates to this URL. It is up to you to decide whether this directory must correspond to the ''css_path'' value or not. If it corresponds to the ''css_path'' value, you must use the files generated by ''wwsympa''. If not, you will use whichever stylesheet you want to define. Whatever solution you choose, take note that ''wwsympa'' will not, opposite to case 2, be involved in the stylesheet delivery, as it won't be addressed the HTTP request. This way, your stylesheet is served directly by Apache and remains in cache, thus saving bandwidth.
+
+----
+
+  * **Case 2**: the stylesheet received by the client is the result of a **wwsympa action** called ''css''. ''wwsympa'' parses a file named ''css.tt2'' that it finds in the relevant ''web_tt2'' folder and generates on the fly a stylesheet that it returns to the client. In this case, the action is triggered any time a page is requested to ''wwsympa'' and the four stylesheets are sent along with the page. This is more bandwidth consuming than case 1, but any change in ''css.tt2'' will be applied at once, without static content generation. This is particularly usefull when experimenting a new stylesheet.
+
+===== Using wwsympa CSS generation process =====
+
+The CSS generation described in the case 2 of the previous section has two purposes :
+
+  - Serve CSS files generated on the fly for each request
+
+  - Generate static CSS files stored in the directory defined by the ''css_path'' parameter. This is done by hitting the "Install static CSS" button in the skins administration page of wwsympa. These files are subsequently used as static content.
+
+The following explanations apply whichever you use static (but sympa-generated) or dynamic CSS. Both operations use the same template file and data.
+
+  * **Colors** are defined in either ''sympa.conf'' or ''robot.conf''. The role of each color parameter is explained in the [[:manual:customizing#sympa_colors_customization_guide|color customization guide]].
+For the particular case of colors, though, note that the colors used are those from the ''robot.conf'' or ''sympa.conf'', whichever is relevant. ''wwsympa'' uses those loaded in memory at the time the CSS generation is requested, being to generate a static stylesheet or to deliver a dynamic one directly. That means that if you change colors in your configuration file, these changes must be taken into account by ''wwsympa'' prior to regenerating CSS.
+
+  * **Any other CSS information** is defined in ''css.tt2'' template. As any other template, take care not to modify the default file (in ''sympa_home/bin/etc/web_tt2'') but to copy it in ''sympa_home/etc/web_tt2'' or ''sympa_home/etc/robot_dir/web_tt2'' and modify the copies. In these copies, you can add/change/delete anything you like, it is not supposed to suffer from upgrades.
+
+===== Use custom stylesheets only =====
+
+Nothing prevents you from configuring your Apache server in order that requests to URL containing ''css_url'' be answered by serving the content of a directory different from the one corresponding to ''css_path''. This way, you can directly edit the ''style.css'' file, and this file won't be overwritten during the next update. The drawback is that you can't use the ''color_x'' parameters defined in your ''robot.conf''/''sympa.conf'' file. Indeed, they are used only when parsing ''css.tt2''.
+
+
+====== Internationalization ======
+
+Sympa was originally designed as a multilingual Mailing List Manager. Even in its earliest versions, Sympa separated messages from the code itself, messages being stored in NLS catalogues (according to the XPG4 standard). Later a ''lang'' list parameter was introduced. Nowadays, Sympa is able to keep track of individual users' language preferences.
+
+If you are willing to provide Sympa into your native language, please check the **translation howto**: [[http://www.sympa.org/howtotranslate.html]].
+
+=====  Sympa internationalization =====
+
+Every message sent by Sympa to users, owners and editors is outside the code, in a message catalog. These catalogs are located in the ''/home/sympa/locale'' directory.
+
+To tell Sympa to use a particular message catalog, you can should set the ''lang'' parameter in ''sympa.conf''.
+
+
+=====  List internationalization =====
+
+The ''lang'' list parameter defines the language for a list. It is currently used by //WWSympa// and to initialize users' language preferences at subscription time.
+
+In future versions, all messages returned by Sympa concerning a list should be in the list's language.
+
+
+
+=====  User internationalization =====
+
+The user language preference is currently used by //WWSympa// only. There is no email-based command for a user to set his/her language. The language preference is initialized when the user subscribes to his/her first list. //WWSympa// allows the user to change it.
+
+
+====== Topics ======
+
+//WWSympa//'s homepage shows a list of topics for classifying mailing lists. This is dynamically generated using the different lists' ''topics'' configuration parameters. A list may appear in multiple categories. \\
+This parameter is different from the ''msg_topic'' parameter used to tag list messages.
+
+The list of topics is defined in the ''topics.conf'' configuration file, located in the ''/home/sympa/etc'' directory. The format of this file is as follows:
+
+<code>
+  <topic1_name>
+  title	<topic1 title>
+  title.fr <topic french title>
+  visibility <topic1 visibility>
+  ....
+  <topicn_name/subtopic_name>
+  title	<topicn title>
+  title.de <topicn german title>
+</code>
+
+You will notice that subtopics can be used, the separator being <nowiki>/</nowiki>. The topic name is composed of alphanumerics (0-1a-zA-Z) or underscores (_). The order in which the topics are listed is respected in //WWSympa//'s homepage. The ''visibility'' line defines who can view the topic and subtopics. It refers to the associated ''topics_visibility'' authorization scenario. You will find a sample ''topics.conf'' in the ''sample'' directory; NONE is installed as the default.
+
+A default topic is hard-coded in Sympa: ''default''. This default topic contains all lists for which a topic has not been specified.
+
+
+
+======  Authorization scenarios ======
+
+See [[authorization-scenarios|Authorization scenarios]].
+
+
+
+
+======  Custom parameters ======
+
+You can create an unlimited number of custom parameters to be used with [[authorization-scenarios|authorization scenarios]], [[#web_template_files|web templates]] and [[#template_file_format|mail templates]].
+
+These parameters are defined in each list configuration through the web interface by using the form in //Admin -> Edit list config -> Miscellaneous// page. There, you add a parameter in the **custom parameters (custom_vars)** section.
+The **var name** field corresponds to your custom parameter name, the **var value** field corresponds to your custom parameter value.
+
+You can later access this parameter:
+
+  * in scenarios : with the syntax ''[custom_vars->your_custom_var_name]''
+  * in web or mail templates : with the syntax ''custom_vars.your_custom_var_name''
+
+
+
+==== Example ====
+
+You define a custom parameter with the following values:
+
+  * var name : ''sisterList''
+  * var value : ''math-teachers''
+
+You can use it as follows:
+
+  * in scenarios : with the syntax ''[custom_vars->sisterList]'', which will correspond to "math-teachers"
+  * in web or mail templates : with the syntax ''custom_vars.sisterList'', which will correspond to "math-teachers"
+
+====== Custom user attributes ======
+
+If the user description parameters available in Sympa don't suit your needs, you can define your own description attributes. These attributes can be used when moderating subscription or message moderation. They provide additional, useful informations, when making a decision.
+
+===== Custom attributes definition =====
+
+These attributes are defined in the list configuration by the [[:manual:parameters-others#custom_attribute|custom_attribute list parameter]].\\
+You can define as many attributes as you like.
+
+
+===== How are the custom attributes values obtained from users? =====
+
+Users can provide the information expected by your custom attributes on two occasions :
+
+  * when //subscribing// to the list through the web interface. After hitting the "subscribe" button, the user is presented a form, each field of which corresponds to a custom attribute.
+
+{{manual:sub_form.png|}}
+
+  * when //modifying their profile// through the web interface.
+
+{{manual:sub_options.png|}}
+
+===== How is it stored? =====
+
+The custom attributes are stored as XML fragments in the [[internals:index#subscriber_table|subscriber_table table]]. This fragment is located in the ''custom_attribute_subscriber'' field.
+
+Here is an example of such an XML fragment, which contains two custom attributes :
+
+  * the first one has the id "accr" and has the value "ultra-violet";
+  * the second one has thee id "pt" and has the value "0".
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8" ?>
+  <custom_attributes>
+    <custom_attribute id="accr">
+      <value> ultra-violet</value>
+    </custom_attribute>
+    <custom_attribute id="pt">
+      <value>0</value>
+    </custom_attribute>
+  </custom_attributes>
+</code>
+
+===== So, what can you do with that feature? =====
+
+For now, the custom attributes are displayed for each user in the subscribers review of the web interface.
+
+====== Loop detection ======
+
+Sympa uses multiple heuristics to avoid loops in Mailing lists.
+
+First, it rejects messages coming from a robot (as indicated by the ''From:'' and other header fields) and messages containing commands.
+
+Second, every message sent by Sympa includes an ''X-Loop'' header field set to the listname. If the message comes back, Sympa will detect that it has already been sent (unless ''X-Loop'' header fields have been erased).
+
+Third, Sympa keeps track of Message IDs and will refuse to send multiple messages with the same message ID to the same mailing list.
+
+Finally, Sympa detect loops arising from command reports (i.e. sympa-generated replies to commands). This sort of loop might occur as follows:
+
+  - X sends a command to Sympa
+  - Sympa sends a command report to X
+  - X has installed a home-made vacation program replying to messages
+  - Sympa processes the reply and sends a report
+  - Looping to step 3
+
+Sympa keeps track (via an internal counter) of reports sent to any particular address. The loop detection algorithm is:
+
+  * increment the counter
+  * If we are within the sampling period (as defined by the ''loop_command_sampling_delay'' parameter)
+    * If the counter exceeds the ''loop_command_max'' parameter, then do not send the report, and notify listmasters
+    * Else, start a new sampling period and reinitialize the counter, i.e. multiply it by the ''loop_command_decrease_factor'' parameter
+
+
+
+
+
+
+====== Tasks ======
+
+See [[manual:customizing:tasks|the dedicated chapter]].====== Mailing list definition ======
+
+This chapter describes what a mailing list is made of within a Sympa environment.
+
+====== Mail aliases ======
+
+See list aliases section, [[list-definition#mail_aliases|Mail aliases]].
+
+
+====== List configuration file ======
+
+The configuration file for the ''mylist'' list is named ''/home/sympa/expl/my.domain.org/mylist/config'' (or ''/home/sympa/expl/mylist/config'' if no virtual host is defined). Sympa reloads it into memory whenever this file has changed on disk. The file can either be edited via the web interface or directly via your favourite text editor.
+
+If you have set the ''cache_list_config'' ''sympa.conf'' parameter (see [[:manual:conf-parameters:part3#cache_list_config|cache_list_config]]), a binary version of the config (''/home/sympa/expl/my.domain.org/mylist/config.bin'' is maintained to allow a faster restart of daemons (this is especialy useful for sites managing lots of lists).
+
+Be careful to provide read access for Sympa user to this file!
+
+You will find a few configuration files in the ''sample'' directory.
+
+List configuration parameters are described in the list creation section, [[list-parameters|List configuration parameters]].
+
+======  Examples of configuration files ======
+
+This first example is for a list open to everyone:
+
+<code>
+  subject First example (an open list)
+
+  visibility noconceal
+
+  owner
+  email Pierre.David@prism.uvsq.fr
+
+  send public
+
+  review public
+</code>
+
+The second example is for a moderated list with authenticated subscription:
+
+<code>
+  subject Second example (a moderated list)
+
+  visibility noconceal
+
+  owner
+  email moi@ici.fr
+
+  editor
+  email big.prof@ailleurs.edu
+
+  send editor
+
+  subscribe auth
+
+  review owner
+
+  reply_to_header
+  value list
+
+  cookie 142cleliste
+</code>
+
+The third example is for a moderated list, with subscription controlled by the owner, and running in digest mode. Subscribers who are in digest mode receive messages on Mondays and Thursdays.
+
+<code>
+  owner
+  email moi@ici.fr
+
+  editor
+  email prof@ailleurs.edu
+
+  send editor
+
+  subscribe owner
+
+  review owner
+
+  reply_to_header
+  value list
+
+  digest 1,4 12:00
+</code>
+
+
+
+====== Subscribers file ======
+
+**Be careful**: since version 3.3.6 of Sympa, a RDBMS is required for internal data storage. Flat files should not be use anymore except for testing purpose. Sympa will not use these files if the list is configured with ''include'', ''database'' or ''user_data_source''.
+
+The ''/home/sympa/expl/mylist/subscribers'' file is automatically created and populated. It contains information about list subscribers. It is not advisable to edit this file. Main parameters are:
+
+  * ''email'' //address// \\ Email address of the subscriber.
+  * ''gecos'' //data// \\ Information about the subscriber (last name, first name, etc.) This parameter is optional at subscription time.
+  * ''reception | nomail | digest | summary | notice | txt | html | urlize | not_me'' \\ Special delivery modes which the subscriber may select. Special modes can be either ''nomail'', ''digest'', ''summary'', ''notice'', ''txt'', ''html'', ''urlize'' and ''not_me''. In normal delivery mode, the delivery attribute for a subscriber is not displayed. In this mode, subscription to message topics is available. See the [[sympa-commands#set_summary|SET LISTNAME SUMMARY]] command, the [[sympa-commands#user_commands|SET LISTNAME NOMAIL]] command and the [[parameters-sending#digest|digest]] parameter.
+  * ''visibility'' ''conceal'' \\ Special mode which allows the subscriber to remain invisible when a ''REVIEW'' command is issued for the list. If this parameter is not declared, the subscriber will be visible for ''REVIEW''. Note: this option does not affect the results of a ''REVIEW'' command issued by an owner. See the [[sympa-commands#user_commands|SET LISTNAME CONCEAL]] command for details.
+
+======  Info file ======
+
+''/home/sympa/expl/mylist/info'' should contain a detailed text description of the list, to be displayed by the ''INFO'' command. It can also be referenced from template files for service messages.
+
+======  Homepage file ======
+
+''/home/sympa/expl/mylist/homepage'' is the HTML text on the //WWSympa// info page for the list.
+
+
+
+
+
+
+====== Data inclusion file ======
+
+Every file has the .incl extension. Moreover, these files must be declared in paragraphs ''owner_include'' or ''editor_include'' in the list configuration file (without the .incl extension) (see [[list-parameters|List configuration parameters]]). This files can be template files.
+
+Sympa looks for them in the following order:
+
+  - ''/home/sympa/expl/mylist/data_sources/<file>.incl'';
+  - ''/home/sympa/etc/data_sources/<file>.incl'';
+  - ''/home/sympa/etc/my.domain.org/data_sources/<file>.incl''.
+
+These files are used by Sympa to load administrative data in a relational database: owners or editors are defined //intensively// (definition of criteria owners or editors must satisfy). Includes can be performed by extracting email addresses using an SQL or LDAP query, or by including other mailing lists.
+
+A data inclusion file is made of paragraphs separated by blank lines and introduced by a keyword. Valid paragraphs are ''include_file'', ''include_remote_file'', ''include_list'', ''include_remote_sympa_list'', ''include_sql_query'', ''include_ldap_2level_query'' and ''include_ldap_query''. They are described in the [[list-parameters|List configuration parameters]] chapter.
+
+When this file is a template, the variables used are array elements (''param'' array). This array is instantiated by values contained in the subparameter ''source_parameter'' of ''owner_include'' or ''editor_include''.
+
+Example:
+
+  * in the list configuration file ''/home/sympa/expl/mylist/config'' :
+<code>
+    	owner_include
+    	source myfile
+    	source_parameters mysql,rennes1,stduser,mysecret,studentbody,student
+</code>
+  * in ''/home/sympa/etc/data_sources/myfile.incl'':
+<code>
+    	include_sql_query
+    	db_type [% param.0 %]
+    	host sqlserv.admin.univ-[% param.1 %].fr
+    	user [% param.2 %]
+    	passwd [% param.3 %]
+            db_name [% param.4 %]
+    	sql_query SELECT DISTINCT email FROM [% param.5 %]
+</code>
+  * once it has been parsed with provided parameters, the inclusion directives would look like this:
+<code>
+    	include_sql_query
+    	db_type mysql
+    	host sqlserv.admin.univ-rennes1.fr
+            user stduser
+            passwd mysecret
+            db_name studentbody
+            sql_query SELECT DISTINCT email FROM student
+</code>
+
+
+
+====== List template files ======
+
+These files are used by Sympa as service messages for commands such as ''SUB'', ''ADD'', ''SIG'', ''DEL'', ''REJECT''. These files are interpreted (parsed) by Sympa and respect the template format; every file has the .tt2 extension. See [[customizing#template_file_format|Template file format]].
+
+Sympa looks for these files in the following order:
+
+  - ''/home/sympa/expl/mylist/mail_tt2/<file>.tt2'';
+  - ''/home/sympa/etc/mail_tt2/<file>.tt2'';
+  - ''/home/sympa/bin/etc/mail_tt2/<file>.tt2''.
+
+If the file starts with a ''From:'' line, it is considered to be a full message and will be sent (after parsing) without the addition of SMTP headers. Otherwise the file is treated as a text/plain message body.
+
+The following variables may be used in list template files:
+
+  * ''[% conf.email %]'': Sympa email address local part;
+
+  * ''[% conf.domain %]'': Sympa's robot domain name;
+
+  * ''[% conf.sympa %]'': Sympa's complete email address;
+
+  * ''[% conf.wwsympa_url %]'': //WWSympa//'s root URL;
+
+  * ''[% conf.listmaster %]'': listmasters' email addresses;
+
+  * ''[% list.name %]'': list name;
+
+  * ''[% list.host %]'': list hostname (default is Sympa robot domain name);
+
+  * ''[% list.lang %]'': list language;
+
+  * ''[% list.subject %]'': list subject;
+
+  * ''[% list.owner %]'': list owners table hash;
+
+  * ''[% user.email %]'': user email address;
+
+  * ''[% user.gecos %]'': user gecos field (usually his/her name);
+
+  * ''[% user.password %]'': user password;
+
+  * ''[% user.lang %]'': user language;
+
+  * ''[% execution_date %]'': the date when the scenario is executed.
+
+You may also dynamically include a file from a template using the ''[% INSERT %]'' directive.
+
+Example:
+
+<code>
+  Dear [% user.email %],
+
+  Welcome to list [% list.name %]@[% list.host %].
+
+  Presentation of the list:
+  [% INSERT 'info' %]
+
+  The owners of [% list.name %] are:
+  [% FOREACH ow = list.owner %]
+     [% ow.value.gecos %] <[% ow.value.email %]>
+  [% END %]
+</code>
+
+=====  welcome.tt2 =====
+
+Sympa will send a welcome message for every subscription. The welcome message can be customized for each list.
+
+=====  bye.tt2 =====
+
+Sympa will send a farewell message for each ''SIGNOFF'' mail command received.
+
+=====  removed.tt2 =====
+
+This message is sent to users who have been deleted (using the ''DELETE'' command) from the list by the list owners.
+
+=====  reject.tt2 =====
+
+Sympa will send a reject message to the senders of messages rejected by the list editors. If they prefixe their ''REJECT'' with the keyword ''QUIET'', the reject message will not be sent.
+
+=====  invite.tt2 =====
+
+This message is sent to users who have been invited (using the ''INVITE'' command) to subscribe to a list.
+
+You may use additional variables
+
+  * ''[% requested_by %]'': email of the person who sent the ''INVITE'' command;
+
+  * ''[% url %]'': the mailto: URL to subscribe to the list.
+
+=====  remind.tt2 =====
+
+This file contains a message sent to each subscriber when one of the list owners sends the [[sympa-commands#user_commands|REMIND command]].
+
+=====  summary.tt2 =====
+
+Template for summaries (reception mode close to digest), see the [[sympa-commands#user_commands|SET LISTNAME SUMMARY]] command.
+
+
+===== list_aliases.tt2 =====
+
+Template that defines list mail alises. It is used by the ''alias_manager'' script.
+
+**Note that this template is not a service messages, therefore it is not located in a mail_tt2/ subdirectory.**
+
+====== Stats file ======
+
+''/home/sympa/expl/mylist/stats'' is a text file containing statistics about the list. Data are numerics separated by white space within a single line:
+
+  * number of messages sent, used to generate X-sequence headers;
+  * number of messages X number of recipients;
+  * number of bytes X number of messages;
+  * number of bytes X number of messages X number of recipients;
+  * number of subscribers;
+  * last update date (epoch format) of the subscribers cache in DB, used by lists in **include2** mode only.
+
+====== List model files ======
+
+These files are used by Sympa to create task files. They are interpreted (parsed) by the task manager and respect the task format. See [[customizing#tasks|Tasks]].
+
+=====  remind.annual.task =====
+
+Every year Sympa will send a message (the template ''remind.tt2'') to all subscribers of the list to remind them of their subscription.
+
+=====  expire.annual.task =====
+
+Every month Sympa will delete subscribers older than one year who haven't answered two warning messages.
+
+====== Message header and footer ======
+
+You may create the ''/home/sympa/expl/mylist/message.header'' and ''/home/sympa/expl/mylist/message.footer'' files. Their content is added, respectively at the beginning and at the end of each message before the distribution process. You may also include the content-type of the appended part (when ''footer_type'' list parameter is set to ''mime'') by renaming the files to ''message.header.mime'' and ''message.footer.mime''.
+
+The ''footer_type'' list parameter defines whether to attach the header/footer content as a MIME part (except for multipart/alternative messages), or to append them to the message body (for text/plain messages).
+
+Under certain circumstances, Sympa will NOT add headers/footers, here is its algorythm:
+
+<code>
+  if message is not multipart/signed
+          if footer_type==append
+  	        if message is text/plain
+  		       append header/footer to it
+  		else if message is multipart AND first part is text/plain
+  		       append header/footer to first part
+
+          if footer_type==mime
+  	        if message is not multipart/alternative
+  		       add header/footer as a new MIME part
+</code>
+
+=====  Archive directory =====
+
+The ''/home/sympa/expl/mylist/archives/'' directory contains the messages archived for lists which are archived; see [[parameters-archives#archive|archive]]. The files are named in accordance with the archiving frequency defined by the ''archive'' parameter.
+====== List creation, editing and removal ======
+
+The list creation can be done in two ways, according to listmaster needs:
+
+  * family instanciation, to create and manage a large number of related lists. In this case, lists are linked to their family all along their life (moreover, you can let Sympa automatically create lists when needed. See [[list-families#automatic_list_creation|Automatic list creation]]).
+  * command line creation of individual list with ''sympa.pl'' or on the web interface according to privileges defined by listmasters. In this case, lists are free from their creation model.
+
+Management of mailing lists by list owners is usually done through the web interface: when a list is created, whatever its status (''pending'' or ''open''), the owners can use //WWSympa// administration features to modify list parameters, to edit the welcome message, and so on.
+
+//WWSympa// keeps logs of the creation and all modifications to a list as part of the list's ''config'' file (old configuration files are archived). A complete installation requires some careful planning, although default values should be acceptable for most sites.
+
+====== List creation ======
+
+Mailing lists can have many different uses. Sympa offers a wide choice of parameters to adapt a list behavior to different situations. Users might have difficulty selecting all the correct parameters to make the list configuration, so instead of selecting each parameters, list configuration is made with a list profile. This is an almost complete list configuration, but with a number of unspecified fields (such as owner email) to be replaced by Sympa at list creation time. It is easy to create new list templates by modifying existing ones. \\ //Please note that contributions to the distribution are welcome to complete the set of existing templates...// ;-)
+
+=====  Data for list creation =====
+
+To create a list, some data concerning list parameters are required:
+
+  * **listname **: name of the list;
+  * **subject**: subject of the list (a short description);
+  * **owner(s)**: by static definition and/or dynamic definition. In case of static definition, the parameter ''owner'' and its subparameter ''email'' are required. For dynamic definition, the parameter ''owner_include'' and its subparameter ''source'' are required, indicating source file of data inclusion;
+  * **list creation template**: the typical list profile.
+
+in addition to these required data, provided values are assigned to vars being in the list creation template. Then the result is the list configuration file:
+
+On the web interface, these data are given by the list creator in the web form. On command line, these data are given through an XML file.
+
+
+
+
+===== XML file format =====
+
+The XML file provides information on:
+
+  * the list name;
+  * values to assign vars in the list creation template;
+  * the list description in order to be written in the list file information;
+  * the name of the list creation template (only for list creation on command line with ''sympa.pl''; in a family context, the template is specified by the family name).
+
+ Here is an example of XML document that you can map with the following example of list creation template:
+  
+<code>
+  <?xml version="1.0" ?>
+  <list>
+  	<listname>example</listname>
+    	<type>my_profile</type>
+    	<subject>a list example</subject>
+    	<description/>
+    	<status>open</status>
+    	<shared_edit>editor</shared_edit>
+      	<shared_read>private</shared_read>
+  	<language>fr</language>
+  	<owner multiple="1">
+  	   <email>serge.aumont@renater.fr</email>
+  	   <gecos>C.R.U.</gecos>
+  	</owner>
+  	<owner multiple="1">
+  	   <email>olivier.salaun@renater.fr</email>
+  	</owner>
+  	<owner_include multiple="1">
+  	   <source>my_file</source>
+  	</owner_include>
+  	<moderator>
+           <email>user@domain.org</email>
+        </moderator>
+        <topic>Computing</topic>
+        <sql>
+  	   <type>Oracle</type>
+  	   <host>sqlserv.admin.univ-x.fr</host>
+  	   <port>1521</port>
+           <user>stdutilisateur</user>
+  	   <pwd>monsecret</pwd>
+  	   <name>les_etudiants</name>
+           <env>ORACLE_HOME=/[oracle_path]</env>
+  	   <query>SELECT DISTINCT email FROM etudiant</query>
+  	</sql>
+  </list>
+</code>
+Then edit List Creation Template - example: /[sympahome]/bin/etc/create_list_templates/discussion_list/config.tt2
+<code>
+  subject [% subject %]
+
+  status [% status %]
+
+  [% IF topic %]
+  topics [% topic %]
+
+  [% END %]
+  visibility noconceal
+
+  send privateoreditorkey
+
+  Web_archive
+    access public
+
+  subscribe open_notify
+
+  shared_doc
+    d_edit [% shared_edit %]
+    d_read [% shared_read %]
+
+  lang [% language %]
+
+  [% FOREACH o = owner %]
+  owner
+    email [% o.email %]
+    profile privileged
+    [% IF o.gecos %]
+    gecos [% o.gecos %]
+    [% END %]
+
+  [% END %]
+  [% IF moderator %]
+     [% FOREACH m = moderator %]
+  editor
+    email [% m.email %]
+
+     [% END %]
+  [% END %]
+
+  [% IF sql %]
+  include_sql_query
+    db_type [% sql.type %]
+    db_port [% sql.port %]
+    host [% sql.host %]
+    user [% sql.user %]
+    passwd [% sql.pwd %]
+    db_name [% sql.name %]
+    db_env [% sql.env %]
+    sql_query [% sql.query %]
+
+  [% END %]
+ 
+   default_user_options
+    reception urlize|mail|digest
+
+  ttl 360
+</code>
+
+The XML file format should comply with the following rules:
+
+  * The root element is ''<list>''.
+  * One XML element is mandatory: ''<listname>'' contains the name of the list. That does not exclude mandatory parameters for list creation ("listname, subject,owner.email and/or owner_include.source").
+  * ''<type>'': this element contains the name of template list creation, it is used for list creation on command line with ''sympa.pl''. In a family context, this element is no used.
+  * ''<description>'': the text contained in this element is written in list ''info'' file (it can be a CDATA section).
+  * For other elements, the name is the name of the var to assign in the list creation template.
+  * Each element concerning multiple parameters must have the ''multiple'' attribute set to ''1'', example: ''<nowiki><owner multiple="1"></nowiki>''
+  * For composed and multiple parameters, sub-elements are used. Example for the ''owner'' parameter: ''<email>'' and ''<gecos>'' elements are contained in the ''<owner>'' element. An element can only have homogeneous content.
+  * A list requires at least one owner, defined in the XML input file with one of the following elements:
+    * ''<nowiki><owner multiple="1"> <email> ... </email> </owner></nowiki>''
+    * ''<nowiki><owner_include multiple="1"> <source> ... </source> </owner_include></nowiki>''
+
+======  List families ======
+
+See chapter [[list-families|Lists families]].
+
+
+====== List creation on command line with sympa.pl ======
+
+This way to create lists is independent of family.
+
+Here is a sample command to create one list:.
+
+<code>sympa.pl --create_list --robot my.domain.org --input_file /path/to/my_file.xml</code>
+
+The list is created under the ''my_robot'' robot and the list is described in the file ''my_file.xml''. The XML file is described before, see [[list-creation#xml_file_format|XML file format]].
+
+By default, the status of the list created is ''open''.
+
+==== Typical list profile (list template creation) ====
+
+The list creator has to choose a profile for the list and put its name in the XML element ''<type>''.
+
+List profiles are stored in ''/home/sympa/etc/create_list_templates'' or in ''/home/sympa/bin/etc/create_list_templates'' (default of distrib).
+
+You might want to hide or modify profiles (not useful, or dangerous for your site). If a profile exists both in the local site directory ''/home/sympa/etc/create_list_templates'' and in the ''/home/sympa/bin/etc/create_list_templates'' directory, then the local profile will be used by //WWSympa//.
+
+====== Creating and editing mailing lists using the Web ======
+
+The management of mailing lists is based on a strict definition of privileges which pertain respectively to the listmaster, to the main list owner, and to basic list owners. The goal is to allow each listmaster to define who can create lists, and which parameters may be set by owners.
+
+=====  List creation on the web interface =====
+
+Listmasters are responsible for validating new mailing lists and, depending on the configuration chosen, might be the only ones who can fill out the create list form.The listmaster is defined in ''sympa.conf'' and others are defined at the virtual host level. By default, any authenticated user can request a list creation, but newly created lists are then validated by the listmaster.
+
+The list rejection message and list creation notification message are both templates you can customize (''list_rejected.tt2'' and ''list_created.tt2'').
+
+
+=====  Who can create lists on the web interface =====
+
+This is defined by the [[conf-parameters/part1#create_list|create_list]] ''sympa.conf'' parameter. This parameter refers to a ''create_list'' authorization scenario. It will determine whether the //create list// button is displayed and whether list creation requires a listmaster confirmation.
+
+The authorization scenario can accept any condition concerning the [sender] (i.e. //WWSympa// user), and it returns ''reject'', ''do_it'' or ''listmaster'' as an action.
+
+Only in cases where a user is authorized by the ''create_list'' authorization scenario will the ''create'' button be available in the main menu. If the scenario returns ''do_it'', the list will be created and installed. If the scenario returns ''listmaster'', the user is allowed to create a list, but the list is created with the ''pending'' status, which means that only the list owner may view or use it. The listmaster will need to open the list of pending lists using the ''pending list'' button in the ''server admin'' menu in order to install or refuse a pending list.
+
+
+=====  Typical list profile and web interface =====
+
+As on command line creation, the list creator has to choose a list profile and to fill in the owner's email and the list subject together with a short description. But in this case, you do not need any XML file. Concerning these typical list profiles, they are described before, see [[list-creation#typical_list_profile_list_template_creation|Typical list profile (list template creation)]]. You can check available profiles. On the web interface, another way to control publicly available profiles is to edit the ''create_list.conf'' file (the default for this file is in the ''/home/sympa/bin/etc'' directory, and you may create your own customized version in ''/home/sympa/etc''). This file controls which of the available list templates are to be displayed. Example:
+<code>
+  ## This sample hides the public_anonymous create_list template
+  public_anonymous hidden
+  defaults read
+</code>
+
+===== List editing =====
+
+For each parameter, you may specify (through the ''/home/sympa/etc/edit_list.conf'' configuration file) who has the right to edit the parameter concerned; the default ''/home/sympa/bin/etc/edit_list.conf'' is reasonably safe.
+
+Each line is a set of 3 field.
+
+<code>
+  <Parameter> <Population> <Privilege>
+  <Population>: <listmaster|privileged_owner|owner>
+  <Privilege>: <write|read|hidden>
+</code>
+
+**Parameter** can be any list config parameter or the name of a template (thus controlling the edition of the template through the //customize// web admin feature. You can refer to a subentry of a structured list parameter using the '.' as a separator (examples: **owner.email** or **web_archive.quota**). **default** is a reserved parameter name that means //any other parameter//.
+
+There is no hierarchical relationship between populations in this configuration file. You need to explicitely list populations.
+
+For example, ''listmaster'' will not match rules refering to ''owner'' or ''privileged_owner''.
+
+Examples:
+<code>
+  	# only listmaster can edit user_data_source, priority, ...
+  	user_data_source listmaster write
+
+  	priority 	owner,privileged_owner 		read
+  	priority 	listmaster 			write
+
+  	# only privileged owner can modify  editor parameter, send, ...
+  	editor privileged_owner write
+
+  	send 		owner 				read
+  	send 		privileged_owner,listmaster 	write
+
+  	# other parameters can be changed by simple owners
+  	default 	owner 				write
+</code>
+
+Privileged owners are defined in the list's ''config'' file as follows:
+<code>
+  	owner
+  	email owners.email@foo.bar
+  	profile privileged
+</code>
+
+The following rules are hard coded in //WWSympa//:
+
+  * Only the listmaster can edit the ''profile privileged'' owner attribute.
+  * Owners can edit their own attributes (except profile and email).
+  * The person creating a new list becomes its privileged owner.
+  * Privileged owners can edit any gecos/reception/info attribute of any owner.
+  * Privileged owners can edit owners' email addresses (but not privileged owners' email addresses).
+
+Sympa aims at defining two levels of trust for owners (some being entitled simply to edit secondary parameters such as ''custom_subject'', others having the right to manage more important parameters), while leaving control of crucial parameters (such as the list of privileged owners and ''user_data_sources'') in the hands of the listmaster. Consequently, privileged owners can change owners' emails, but they cannot grant the responsibility of list management to others without referring to the listmaster.
+
+Concerning list editing in a family context, see [[list-families#editing_list_parameters_in_a_family_context|editing list parameters in a family context]].
+
+
+
+====== Removing a list ======
+
+You can remove (close) a list either from the command line or by using the web interface.
+
+''sympa.pl'' provides an option to remove a mailing list, see the example below:
+
+<code>sympa.pl --close_list=mylist@mydomain</code>
+
+Privileged owners can remove a mailing list through the list administration part of the web interface. Removing the mailing list consists in removing its subscribers from the database and setting its status to //closed//. Once removed, the list can still be restored by the listmaster; list members are saved in a ''subscribers.closed.dump'' file.====== List families ======
+
+A list can have from three up to dozens of parameters. Some listmasters need to create a set of lists that have the same profile. In order to simplify the apprehension of these parameters, list families define a lists typology. Families provide a new level for defaults: in the past, defaults in Sympa were global and most sites using Sympa needed multiple defaults for different groups of lists. Moreover, families allow listmasters to delegate a part of configuration list to owners, in a controlled way according to family properties. Distribution will provide defaults families.
+
+====== Family concept ======
+
+A family provides a model for all of its lists. It is specified by the following characteristics:
+
+  * a list creation template providing a common profile for each list configuration file;
+  * a degree of independence between the lists and the family: list parameters editing rights and constraints on these parameters can be ''free'' (no constraint), ''controlled'' (a set of available values defined for these parameters) or ''fixed'' (the value for the parameter is imposed by the family). That prevents lists from diverging from the original and it allows list owner customizations in a controlled way;
+  * a filiation kept between lists and family all along the list life: family modifications are applied on lists while keeping listowners customizations.
+
+Here is a list of operations performed on a family:
+
+  * definition: definition of the list creation template, the degree of independence and family customizations;
+  * instantiation: list creation or modifications of existing lists while respecting family properties. The set of data defining the lists is an XML document;
+  * modification: modification of family properties. The modification is effective at the next instantiation time and has consequences on every list;
+  * closure: closure of each list;
+  * adding a list to a family;
+  * closing a family list;
+  * modifying a family list.
+
+====== Using family ======
+
+=====  Definition =====
+
+Families can be defined at the robot level, at the site level or on the distribution level (where default families are provided). So, you have to create a sub directory named after the family's name in a ''families'' directory:
+
+Examples:
+<code>
+  /home/sympa/etc/families/my_family
+  /home/sympa/etc/my_robot/families/my_family
+</code>
+
+In this directory, you must provide the following files:
+
+  * ''config.tt2'' (mandatory);
+  * ''param_constraint.conf'' (mandatory);
+  * ''edit_list.conf'';
+  * customizable files.
+
+==== config.tt2 ====
+
+This is a list creation template, this file is mandatory. It provides default values for parameters. This file is an almost complete list configuration, with a number of missing fields (such as owner email) to be replaced by data obtained at the time of family instantiation. It is easy to create new list templates by modifying existing ones. See [[list-definition#list_template_files|List template files]] and [[customizing#template_file_format|Template file format]].
+
+Example:
+<code>
+  subject [% subject %]
+
+  status [% status %]
+
+  [% IF topic %]
+  topics [% topic %]
+
+  [% END %]
+  visibility noconceal
+
+  send privateoreditorkey
+
+  web_archive
+    access public
+
+  subscribe open_notify
+
+  shared_doc
+    d_edit [% shared_edit %]
+    d_read [% shared_read %]
+
+  lang [% language %]
+
+  [% FOREACH o = owner %]
+  owner
+    email [% o.email %]
+    profile privileged
+    [% IF o.gecos %]
+    gecos [% o.gecos %]
+    [% END %]
+
+  [% END %]
+  [% IF moderator %]
+     [% FOREACH m = moderator %]
+  editor
+    email [% m.email %]
+
+     [% END %]
+  [% END %]
+
+  [% IF sql %]
+  include_sql_query
+    db_type [% sql.type %]
+    host [% sql.host %]
+    user [% sql.user %]
+    passwd [% sql.pwd %]
+    db_name [% sql.name %]
+    sql_query [% sql.query %]
+
+  [% END %]
+  ttl 360
+</code>
+
+==== param_constraint.conf ====
+
+This file is mandatory. It defines constraints on parameters. There are three kinds of constraints:
+
+  * ''free'' parameters: no constraint on these parameters, they are not written in the ''param_constraint.conf'' file.
+  * ''controlled'' parameters: these parameters must select their values in a set of available values indicated in the ''param_constraint.conf'' file.
+  * ''fixed'' parameters: these parameters must have the imposed value indicated in the ''param_constraint.conf'' file.
+
+The parameters constraints will be checked at every list loading.
+
+**WARNING**: Some parameters cannot be constrained, they are: ''msg_topic.keywords'' (see [[parameters-sending#msg_topic|msg-topic]]),''owner_include.source_parameter'' (see [[parameters-definition#owner_include|owner_include]]) and ''editor_include.source_parameter'' (see [[parameters-definition#editor_include|editor_include]]). About ''digest'' parameter (see [[parameters-sending#digest|digest]]), only days can be constrained.
+
+Example:
+<code>
+  lang                fr,us
+  archive.period      days,week,month
+  visibility          conceal,noconceal
+  shared_doc.d_read   public
+  shared_doc.d_edit   editor
+</code>
+
+====  edit_list.conf ====
+
+This is an optional file. It defines which parameters/files are editable by owners. See [[list-creation#list_editing|List editing]]. If the family does not have this file, Sympa will look for the one defined on robot level, server site level or distribution level (this file already exists without family context). \\ Note that by default, the ''family_name'' parameter is not writable, you should not change this editing right.
+
+====  customizable files ====
+
+Families provide a new level of customization for scenarios (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]), templates for service messages (see [[customizing#site_template_files|Site template files]]) and templates for web pages (see [[customizing#web_template_files|Web template files]]). Sympa looks for these files in the following level order: list, family, robot, server site or distribution.
+
+Example of custom hierarchy:
+<code>
+  /home/sympa/etc/families/myfamily/mail_tt2/
+  /home/sympa/etc/families/myfamily/mail_tt2/bye.tt2
+  /home/sympa/etc/families/myfamily/mail_tt2/welcome.tt2
+</code>
+
+
+===== Instantiation =====
+
+Instantiation allows to generate lists. You must provide an XML file made of list descriptions, the root element being ''family'' and which is only composed of ''list'' elements. List elements are described in section [[list-creation#xml_file_format|XML file format]]. Each list is described by the set of values for affectation list parameters.
+
+Here is a sample command to instantiate a family:
+
+<code>
+sympa.pl --instantiate_family my_family --robot samplerobot --input_file /path/to/my_file.xml
+</code>
+
+This means lists that belong to family ''my_family'' will be created under the robot ''my_robot'' and these lists are described in the file ''my_file.xml''. Sympa will split this file into several XML files describing lists. Each list XML file is put in each list directory.
+
+**--close_unknown** option can be added to automatically close undefined lists during a new instantation\\
+**--quiet** option can be added to skip the report printed to STDOUT
+
+Example:
+
+<code>
+  <?xml version="1.0" ?>
+  <family>
+    <list>
+      <listname>liste1</listname>
+      <subject>a list example</subject>
+      <description/>
+      <status>open</status>
+      <shared_edit>editor</shared_edit>
+      <shared_read>private</shared_read>
+      <language>fr</language>
+      <owner multiple="1">
+        <email>foo@renater.fr</email>
+        <gecos>C.R.U.</gecos>
+      </owner>
+      <owner multiple="1">
+        <email>foo@emnsp.fr</email>
+      </owner>
+      <owner_include multiple="1">
+        <source>my_file</source>
+      </owner_include>
+      <sql>
+        <type>oracle</type>
+        <host>sqlserv.admin.univ-x.fr</host>
+        <user>stdutilisateur</user>
+        <pwd>monsecret</pwd>
+        <name>les_etudiants</name>
+        <query>SELECT DISTINCT email FROM etudiant</query>
+      </sql>
+    </list>
+    <list>
+      <listname>liste2</listname>
+      <subject>a list example</subject>
+      <description/>
+      <status>open</status>
+      <shared_edit>editor</shared_edit>
+      <shared_read>private</shared_read>
+      <language>fr</language>
+      <owner multiple="1">
+        <email>foo@renater.fr</email>
+        <gecos>C.R.U.</gecos>
+      </owner>
+      <owner multiple="1">
+        <email>foo@enmsp.fr</email>
+      </owner>
+      <owner_include multiple="1">
+        <source>my_file</source>
+      </owner_include>
+      <sql>
+        <type>oracle</type>
+        <host>sqlserv.admin.univ-x.fr</host>
+        <user>stdutilisateur</user>
+        <pwd>monsecret</pwd>
+        <name>les_etudiants</name>
+        <query>SELECT DISTINCT email FROM etudiant</query>
+      </sql>
+    </list>
+     ...
+  </family>
+</code>
+
+Each instantiation describes lists. Compared with the previous instantiation, there are three cases:
+
+  * list creation: new lists described by the new instantiation;
+  * list modification: lists already existing but possibly changed because of changed parameters values in the XML file or because of changed family properties;
+  * list removal: lists no more described by the new instantiation. In this case, the listmaster must validate his choice on command line. If the list is removed, it is set in status ''family_closed'', or if the list is recovered, the list XML file from the previous instantiation is got back to go on as a list modification then.
+
+After list creation or modification, parameters constraints are checked:
+
+  * ''fixed'' parameter: the value must be the one imposed;
+  * ''controlled'' parameter: the value must be one of the set of available values;
+  * ''free'' parameter: there is no checking.
+
+diagram
+
+In case of modification (see diagram), allowed customizations can be preserved:
+
+  * (1): for all parameters modified  (through the web interface), indicated in the ''config_changes'' file, values can be collected in the old list configuration file, according to new family properties:
+    * ''fixed'' parameter: the value is not collected,
+    * ''controlled'' parameter: the value is collected only if constraints are respected,
+    * ''free'' parameter: the value is collected;
+  * (2): a new list configuration file is made with the new family properties;
+  * (3): collected values are set in the new list configuration file.
+
+Notes:
+
+  * For each list problem (as family file error, error parameter constraint, error instantiation, etc.), the list is set in status ''error_config'' and listmasters are notified. Then they will have to perform any necessary action in order to put the list in use.
+  * For each list closure in family context, the list is set in status ''family_closed'' and owners are notified.
+  * For each overwritten list customization, owners are notified.
+
+=====  Modification =====
+
+To modify a family, you have to edit family files manually. The modification will be effective while the next instanciation. \\ **WARNING**: The family modification must be done just before an instantiation. Otherwise, alive lists would not respect new family properties and they would be set in status ''error_config'' immediately.
+
+=====  Closure =====
+
+Closes every list (installed under the indicated robot) of this family: list status is set to ''family_closed'', aliases are removed and subscribers are removed from DB (a dump is created in the list directory to allow restoration of the list).
+
+Here is a sample command to close a family:
+<code>
+   sympa.pl --close_family my_family --robot \samplerobot
+</code>
+
+
+=====  Adding a list to a list family =====
+
+Adds a list to the family without instantiating the whole family. The list is created as if it was created during an instantiation, under the indicated robot. The XML file describes the list and the root element is ''<list>''. List elements are described in section [[list-creation#list_creation_on_command_line_with_sympa.pl|List creation on command line with sympa.pl]].
+
+Here is a sample command to add a list to a family:
+<code>
+   sympa.pl --add_list my_family --robot samplerobot  --input_file /path/to/my_file.xml
+</code>
+
+=====  Removing a list from a list family =====
+
+Closes the list installed under the indicated robot: the list status is set to ''family_closed'', aliases are removed and subscribers are removed from DB (a dump is created in the list directory to allow restoring the list).
+
+Here is a sample command to close a list family (same as an orphan list):
+<code>
+   sympa.pl --close_list my_list@\samplerobot
+</code>
+
+
+===== Modifying a family list =====
+
+Modifies a family list without instantiating the whole family. The list (installed under the indicated robot) is modified as if it was modified during an instantiation. The XML file describes the list and the root element is ''<list>''. List elements are described in section [[list-creation#list_creation_on_command_line_with_sympa.pl|List creation on command line with sympa.pl]].
+
+Here is a sample command to modify a list to a family:
+<code>
+   sympa.pl --modify_list my_family --robot samplerobot --input_file /path/to/my_file.xml
+</code>
+
+===== Editing list parameters in a family context =====
+
+According to file ''edit_list.conf'', editing rights are controlled. See [[list-creation#list_editing|List editing]]. But in a family context, constraints parameters are added to editing right as it is summarized in this array:
+
+array
+
+Note: in order to preserve list customization for instantiation, every parameter modified (through the web interface) is indicated in the ''config_changes'' file.
+
+====== Automatic list creation ======
+
+You can benefit from the family concept to let Sympa automatically create lists for you. Let us assume that you want to open a list according to specified criteria (age, geographical location, ...) within your organization. Maybe that would result in too many lists, and many of them would never be used.
+
+Automatic list creation allows you to define those potential lists through family parameters, but they will not be created yet. The mailing list creation is trigerred when Sympa receives a message addressed to this list.
+
+To enable automatic list creation, you will have to:
+
+  * configure your MTA to queue messages for these lists in an appropriate spool;
+  * define a family associated to such lists;
+  * configure Sympa to enable the feature.
+
+
+
+=====  Configuring your MTA =====
+
+==== The familyqueue solution (with postfix) ====
+
+
+To do so, you have to configure your MTA for it to add a custom header field to messages. The easiest way is to customize your aliases manager, so that mails for automatic lists are not delivered to the normal ''queue'' program, but to the ''familyqueue'' dedicated one. For example, you can decide that the name of those lists will start with the ''auto-'' pattern, so you can process them separately from other lists you are hosting.
+
+''familyqueue'' expects 2 arguments: the list name and family name (whereas the ''queue'' program only expects the list address).
+
+Now let's start with a use case: we need to communicate to groups of co-workers, depending on their age and their occupation. We decide that, for example, if we need to write to all CTOs who are fifty years old, we will use the ''auto-cto.50@lists.domain.com'' mailing list. The occupation and age informations are stored in our LDAP directory (but of course we could use any Sympa data source: SQL, files...). We will create the ''age-occupation'' family.
+
+First of all we configure our MTA to deliver mail to '''auto-*''' to ''familyqueue'' for the ''age-occupation'' family.
+
+<code>
+  /etc/postfix/main.cf
+      ...
+      transport_maps = regexp:/etc/postfix/transport_regexp
+
+  /etc/postfix/transport_regexp
+      /^.*+owner\@lists\.domain\.com$/      sympabounce:
+      /^auto-.*\@lists\.domain\.com$/       sympafamily:
+      /^.*\@lists\.domain\.com$/            sympa:
+
+  /etc/postfix/master.cf
+      sympa     unix  -       n       n       -       -       pipe
+        flags=R user=sympa argv=/home/sympa/bin/queue ${recipient}
+      sympabounce  unix  -       n       n       -       -       pipe
+        flags=R user=sympa argv=/home/sympa/bin/bouncequeue ${user}
+      sympafamily  unix  -       n       n       -       -       pipe
+        flags=R user=sympa argv=/home/sympa/bin/familyqueue ${user} age-occupation
+</code>
+
+A mail sent to ''auto-cto.50@lists.domain.com'' will be queued to the ''/home/sympa/spool/automatic'' spool, defined by the ''queueautomatic'' ''sympa.conf'' parameter (see [[conf-parameters/part2#queueautomatic|queueautomatic]]). The mail will first be processed by an instance of the ''sympa.pl'' process dedicated to automatic list creation, then the mail will be sent to the newly created mailing list.
+
+==== The sympa-milter solution (with sendmail) ====
+
+If you don't use postfix or don't want to dig in postfix alias management, you have an alternative solution for automatic listes management: sympa-milter.
+
+This program is a contribution by [[Jose-Marcio.Martins@ensmp.fr|Jose-Marcio Martins da Cruz]].
+
+What it does is checking all incoming mails and, if it recognizes a message to an automatic list, adds the relevant headers in it and places it in Sympa's automatic spool. It replaces familyqueue.
+
+For all the doc, we assume you're using sendmail.
+
+This is the procedure to make it work:
+
+=== Install sympa-milter ===
+
+You can download the latest version at the following address: [[http://j-chkmail.ensmp.fr/sympa-milter/]].
+
+Once you have the archive, decompress it: ''tar xzvf sympa-milter-0.6.tgz''.
+
+Then install the program:
+
+<code>
+# cd sympa-milter-0.6/
+# ./configure
+# make
+# make install
+</code>
+
+The default install directory is ''/usr/local/sympa-milter/'' (you can change this value with the ''--prefix'' configure option).
+
+The install process also adds a launcher into ''/etc/init.d/'', named ''sympa-milter''. You'll need to setup links to it under ''/etc/rc3.d''. If you're using Fedora like Linux distributions, you can use ''/sbin/chkconfig'' to setup these links.
+
+<code>
+/sbin/chkconfig sympa-milter on
+</code>
+
+You must then set up the configuration file, ''sympa-milter.conf''. You will find a sample configuration file inside ''/usr/local/sympa-milter/etc'' directory. This file contains two sections whose border are XML-like tags. Inside a section, a parameter is defined on a single line by the sequence:
+
+''parameters_name            parameter_value''
+
+  * the general section, between the ''<general>'' and ''</general>'' tags is used to define, well general parameters, related to the program execution. It contains the following items:
+
+    * log_level (positive integer value):	the amount of logs generated by sympa-milter;
+
+    * log_facility (string):			the syslog facility in which the program will log;
+
+    * log_severity (string: yes/no):		If you enable this, ''syslog'' will include a string like ''[ID 000000 local6.info]'' in each log line, allowing you to identify the log level and facility.
+
+    * socket (string):				the socket used by the application; must be the same as the one defined in your MTA;
+
+    * spool_dir (string): 			the absolute path to the''[[http://www.sympa.org/wiki/manual/organization#spools|automatic]]'' spool in which messages should be placed;
+
+    * pid_file (string):			the absolute path to the pid file (default = ''/usr/local/sympa-milter/var/sympa-milter.pid'');
+
+    * run_as_user (string)			the user the uid under which to execute sympa-milter (default = ''sympa'', but changeable by a ''configure'' script option); this must be the same as the one running sympa;
+
+    * run_as_group				the group the gid under which to execute sympa-milter (default = ''sympa'', but changeable by a ''configure'' script option); this must be the same as the one running sympa;
+
+  * the family definition section, between the ''<families>'' and ''</families>'' tags is used to define the regular expressions which will allow sympa-milter to catch list creation messages. This section can contain an unlimited number of identically built lines, following this syntax:
+
+<code>
+family		recipient_regular_expression
+</code>
+
+You should use "plussed aliases" (at least with sendmail) to identify user existence more easily.
+
+Here is an example of ''sympa-milter.conf'', filled-up with default values :
+
+<code>
+#
+# Section general
+#
+<general>
+log_level		10
+log_facility            local6
+log_severity            yes
+
+socket                  inet:2030@localhost
+
+spool_dir               /usr/local/sympa-milter/var
+
+pid_file                /usr/local/sympa-milter/var/sympa-milter.pid
+
+run_as_user             sympa
+run_as_group            sympa
+</general>
+#
+# Section families
+#
+<families>
+# Syntax :
+#     family		recipient regular expression
+#
+joe                  ^joe+.*@one.domain.com
+toto                 ^bob+toto@other.domain.com
+best                 ^best.*@another.domain.com
+</families>
+</code>
+
+<note>
+**Note:** It is probably better to make all your regular expression start with "^". This way, bouncing messages won't be caught by sympa-milter and normally processed.
+</note>
+
+You can use any regular expression to define the addresses used by your family.
+
+=== Set up your MTA ===
+
+What you must do to make all the thingy to work is:
+
+  * setting up your MTA to use sympa-milter:
+
+<code>O InputMailFilters=sympa-milter
+Xsympa-milter, S=inet:2030@localhost, T=C:2m;S:20s;R:20s;E:5m
+</code>
+
+  * defining aliases to prevent sendmail from howling that a user (corresponding to your automatic list) doesn't exist. If all your automatic lists start with "auto", for example you can write:
+
+<code>
+auto    : /dev/null
+</code>
+
+**or**
+
+<code>
+auto	: "some_file"
+</code>
+
+Reload your MTA config. All set!
+
+=====  Defining the list family =====
+
+We need to create the appropriate ''etc/families/age-occupation/config.tt2''. All the magic comes from the TT2 language capabilities. We define on-the-fly the LDAP source, thanks to TT2 macros.
+
+<code>
+  /home/sympa/etc/families/age-occupation/config.tt2
+      ...
+      user_data_source include2
+
+      [%
+      occupations = {
+          cto = { title=>"chief technical officer", abbr=>"CHIEF TECH OFF" },
+          coo = { title=>"chief operating officer", abbr=>"CHIEF OPER OFF" },
+          cio = { title=>"chief information officer", abbr=>"CHIEF INFO OFF" },
+      }
+      nemes = listname.split('-');
+      THROW autofamily "SYNTAX ERROR: listname must begin with 'auto-' " IF (nemes.size != 2 || nemes.0 != 'auto');
+      tokens = nemes.1.split('\.');
+      THROW autofamily "SYNTAX ERROR: wrong listname syntax" IF (tokens.size != 2 || ! occupations.${tokens.0} || tokens.1 < 20 || tokens.1 > 99 );
+      age = tokens.1 div 10;
+      %]
+
+      custom_subject [[% occupations.${tokens.0}.abbr %] OF [% tokens.1 %]]
+
+      subject Every [% tokens.1 %] years old [% occupations.${tokens.0}.title %]
+
+      include_ldap_query
+      attrs mail
+      filter (&(objectClass=inetOrgPerson)(employeeType=[% occupations.${tokens.0}.abbr %])(personAge=[% age %]*))
+      name ldap
+      port 389
+      host ldap.domain.com
+      passwd ldap_passwd
+      suffix dc=domain,dc=com
+      timeout 30
+      user cn=root,dc=domain,dc=com
+      scope sub
+      select all
+</code>
+
+The main variable you get is the name of the current mailing list via the ''listname'' variable as used in the example above.
+
+=====  Configuring Sympa =====
+
+Now we need to enable automatic list creation in Sympa. To do so, we have to:
+
+  * set the ''automatic_list_feature'' parameter to ''on'' and define who can create automatic lists via the ''automatic_list_creation'' (points to an automatic_list_creation scenario);
+  * set the ''queueautomatic'' ''sympa.conf'' parameter to the spool location where we want these messages to be stored (it has to be different from the ''/home/sympa/spool/msg'' spool).
+
+You can make Sympa delete automatic lists that were created with zero list members; to do so, you should set the ''automatic_list_removal'' parameter to ''if_empty''.
+
+<code>
+  /home/sympa/etc/sympa.conf
+      ...
+      automatic_list_feature  on
+      automatic_list_creation public
+      queueautomatic          /home/sympa/spool/automatic
+      automatic_list_removal    if_empty
+</code>
+
+While writing your own ''automatic_list_creation'' scenarios, be aware that:
+
+  * when the scenario is evaluated, the list is not yet created; therefore you can not use the list-related variables;
+  * you can only use the ''smtp'' and ''smime'' authentication methods in scenario rules (you cannot request the md5 challenge). Moreover, only the ''do_it'' and ''reject'' actions are available.
+
+Now you can send message to auto-cio.40 or auto-cto.50, and the lists will be created on the fly.
+
+You will receive an 'unknown list' error if either the syntax is incorrect or the number of subscriber is zero.
+
+======  List configuration parameters ======
+
+
+The configuration file is made of paragraphs separated by blank lines and introduced by a keyword.
+
+Even though there is a very large number of possible parameters, the minimal list definition is very short. The only parameters required are ''owner'' (or ''owner_include'') and ''subject''. All other parameters have a default value.
+
+<note warning>
+Configuration parameters must be separated by blank lines and BLANK LINES ONLY!
+</note>
+
+Using the web interface the following categories are used to organize the large number of parameters :
+
+    * [[parameters-definition|List definition]];
+    * [[parameters-sending|Sending/receiving setup]];
+    * [[parameters-privileges|Privileges]];
+    * [[parameters-archives|Archives]];
+    * [[parameters-bounces|Bounce management]];
+    * [[parameters-data-sources|Data sources setup]];
+    * [[parameters-others|Others]].======  List parameters: definition ======
+
+===== subject =====
+
+''subject'' //subject-of-the-list//
+
+This parameter indicates the subject of the list, which is sent in response to the ''LISTS'' mail command. The subject is a free form text limited to one line.
+
+===== visibility =====
+
+(Default value: ''conceal'')
+
+The ''visibility'' parameter is defined by an authorization scenario (see [[authorization-scenarios|Authorization scenarios]]).
+
+This parameter indicates whether the list should feature in the output generated in response to a ''LISTS'' command.
+
+  * ''visibility'' ''conceal'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/visibility.conceal|view]]) \\
+  * ''visibility'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/visibility.intranet|view]]) \\
+  * ''visibility'' ''noconceal'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/visibility.noconceal|view]]) \\
+  * ''visibility'' ''secret'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/visibility.secret|view]]) \\
+
+
+===== owner =====
+
+The ''config'' file contains one ''owner'' paragraph per owner. It concerns static owner definition. For dynamic definition, see [[parameters-definition#owner_include|owner_include]].
+
+Example:
+<code>
+  owner
+  email serge.aumont@renater.fr
+  gecos C.R.U.
+  info Tel: 02 99 76 45 34
+  reception nomail
+</code>
+
+The list owner is usually the person who has the authorization to send ''ADD'' and ''DELETE'' commands (see [[sympa-commands#owner_commands|Owner commands]]) on behalf of other users.
+
+When the [[parameters-privileges#subscribe|subscribe parameter]] specifies a restricted list, it is the owner who has the exclusive right to subscribe users, and it is therefore to the owner that ''SUBSCRIBE'' requests will be forwarded.
+
+There may be several owners of a single list; in this case, each owner is declared in a paragraph starting with the ''owner'' keyword.
+
+The ''owner'' directive is followed by one or several lines giving details regarding the owner's characteristics:
+
+  * ''email'' //address// \\  Owner's e-mail address;
+  * ''reception nomail'' \\ Optional attribute for an owner who does not wish to receive emails. Useful to define an owner with multiple email addresses: they are all recognized when Sympa receives mail, but thanks to ''reception nomail'', not all of these addresses need to receive administrative email from Sympa;
+  * ''visibility'' //conceal | noconceal// \\Define if the list owner should be listed on the list web page.
+  * ''gecos'' //data// \\ Public information about the owner;
+  * ''info'' //data// \\ Available since release 2.3. Private information about the owner;
+  * ''profile privileged | normal'' \\ Available since release 2.3.5. Profile of the owner. This is currently used to restrict access to some features of //WWSympa//, such as adding new owners to a list.
+
+
+===== owner_include =====
+
+The ''config'' file contains one ''owner_include'' paragraph per data inclusion file (see [[list-definition#data_inclusion_file|Data inclusion file]]. It concerns dynamic owner definition: inclusion of external data. For static owner definition and more information about owners see [[list-parameters#par-owner|par-owner]].
+
+Example:
+<code>
+  owner_include
+  source myfile
+  source_parameters a,b,c
+  reception nomail
+  profile normal
+</code>
+
+The ''owner_include'' directive is followed by one or several lines giving details regarding the owner(s) included characteristics:
+
+  * ''source myfile'' \\ This is an mandatory field: it indicates the data inclusion file ''myfile.incl''. This file can be a template. In this case, it will be interpreted with values given by subparameter ''source_parameter''. Note that the ''source'' parameter should NOT include the //.incl// file extension; the ''myfile.incl'' file should be located in the ''data_sources'' directory.
+  * ''source_parameters a,b,c'' \\ It contains an enumeration of the values that will be affected to the ''param'' array used in the template file (see [[list-definition#data_inclusion_file|Data inclusion file]]). This parameter is not mandatory.
+  * ''reception nomail'' \\ Optional attribute for owner(s) who does not wish to receive emails.
+  * ''visibility'' //conceal | noconceal// \\Define if the included owners should be listed on the list web page.
+  * ''profile privileged | normal'' \\ Profile of the owner(s).
+
+===== editor =====
+
+The ''config'' file contains one ''editor'' paragraph per moderator (or editor). It concerns static editor definition. For dynamic definition and more information about editors see [[parameters-definition#editor_include|editor_include]].
+
+Example:
+<code>
+  editor
+  email Pierre.Paul@myuniversity.edu
+  gecos Pierre paul (Computer center director)
+</code>
+
+Only the editor of a list is authorized to send messages to the list when the [[parameters-sending#send|send]] is set to either ''editor'', ''editorkey'', or ''editorkeyonly''. The ''editor'' parameter is also consulted in certain other cases (''privateoreditorkey'').
+
+The syntax of this directive is the same as that of the [[parameters-definition#owner|owner parameter]], even when several moderators are defined.
+
+===== editor_include =====
+
+The ''config'' file contains one ''editor_include'' paragraph per data inclusion file (see [[list-definition#data_inclusion_file|Data inclusion file]]). It concerns dynamic editor definition: inclusion of external data. For static editor definition and more information about moderation see [[parameters-definition#editor|editor]].
+
+Example:
+<code>
+  editor_include
+  reception mail
+  source myfile
+  source_parameters a,b,c
+</code>
+
+The syntax of this directive is the same as that of the [[parameters-definition#owner_include|owner_include'' parameter]], even when several moderators are defined.
+
+===== topics =====
+
+''topics'' computing/internet,education/university
+
+This parameter allows the classification of lists. You may define multiple topics as well as hierarchical ones. //WWSympa//'s list of public lists uses this parameter. This parameter is different from the ''msg_topic'' parameter used to tag emails.
+
+===== host =====
+
+(Default value: ''domain robot parameter'')
+
+''host'' //fully-qualified-domain-name//
+
+Domain name of the list, default is the robot domain name set in the related ''robot.conf'' file or in file ''/etc/sympa.conf''.
+
+===== lang =====
+
+(Default value: ''lang robot parameter'')
+
+Example:
+
+<code>lang en_US</code>
+
+This parameter defines the language used for the list. It is used to initialize a user's language preference; Sympa command reports are extracted from the associated message catalog.
+
+See [[customizing#internationalization|Internationalization]] for available languages.
+
+===== family_name =====
+
+This parameter indicates the name of the family that the list belongs to.
+
+Example:
+
+<code>family_name my_family</code>
+
+===== latest_instantiation =====
+
+This parameter indicates the date of the latest instantiation.
+
+Example:
+<code>
+  latest_instantiation
+  email joe.bar@renater.fr
+  date 27 jui 2004 at 09:04:38
+  date_epoch 1090911878
+</code>
+===== send =====
+
+(Default value: ''private'')
+
+The ''send'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can send messages to the list. Valid values for this parameter are pointers to //scenarios//.
+
+  * ''send'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.closed|view]]) \\
+  * ''send'' ''editorkey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.editorkey|view]]) \\
+  * ''send'' ''editorkeyonly'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.editorkeyonly|view]]) \\
+  * ''send'' ''editorkeyonlyauth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.editorkeyonlyauth|view]]) \\
+  * ''send'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.intranet|view]]) \\
+  * ''send'' ''intranetorprivate'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.intranetorprivate|view]]) \\
+  * ''send'' ''newsletter'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.newsletter|view]]) \\
+  * ''send'' ''newsletterkeyonly'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.newsletterkeyonly|view]]) \\
+  * ''send'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.private|view]]) \\
+  * ''send'' ''private_smime'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.private_smime|view]]) \\
+  * ''send'' ''privateandeditorkey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privateandeditorkey|view]]) \\
+  * ''send'' ''privateandnomultipartoreditorkey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privateandnomultipartoreditorkey|view]]) \\
+  * ''send'' ''privatekey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privatekey|view]]) \\
+  * ''send'' ''privatekeyandeditorkeyonly'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privatekeyandeditorkeyonly|view]]) \\
+  * ''send'' ''privateoreditorkey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privateoreditorkey|view]]) \\
+  * ''send'' ''privateorpublickey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privateorpublickey|view]]) \\
+  * ''send'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.public|view]]) \\
+  * ''send'' ''public_nobcc'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.public_nobcc|view]]) \\
+  * ''send'' ''publickey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.publickey|view]]) \\
+  * ''send'' ''publicnoattachment'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.publicnoattachment|view]]) \\
+  * ''send'' ''publicnomultipart'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.publicnomultipart|view]]) \\
+
+===== digest =====
+
+''digest'' //daylist// //hour//://minutes//
+
+Definition of ''digest'' mode. If this parameter is present, subscribers can select the option of receiving messages in multipart/digest MIME format. Messages are then grouped together, and compilations of messages are sent to subscribers in accordance with the rythm selected with this parameter.
+
+''Daylist'' designates a list of days in the week in numeric format (from 0 for Sunday to 6 for Saturday), separated by commas.
+
+Example: <code>digest 1,2,3,4,5 15:30</code>
+
+In this example, Sympa sends digests at 3:30 PM from Monday to Friday.
+
+**WARNING**: if the sending time is too late (i.e. around midnight), Sympa may not be able to process it in time. Therefore do not set a digest time later than 23:00.
+
+N.B.: In family context, ''digest'' can be constrained only on days.
+
+===== digest_max_size =====
+
+(Default value: ''25'')
+
+Maximum number of messages in a digest. If the number of messages exceeds this limit, then multiple digest messages are sent to each recipient.
+
+===== available_user_options =====
+
+The ''available_user_options'' parameter starts a paragraph to define available options for the subscribers of the list.
+
+  * ''reception'' //modelist//
+(Default value: ''reception mail,notice,digest,summary,nomail,txt,html,urlize,not_me'')
+//modelist// is a list of modes (''mail'', ''notice'', ''digest'', ''summary'', ''nomail'', ''txt'',''html'', ''urlize'', ''not_me'', ''topics''), separated by commas. Only these modes will be allowed for the subscribers of the list. If a subscriber has a delivery mode other than those specified in that list, Sympa uses the mode specified in the ''default_user_options'' paragraph.
+
+Example:
+<code>
+  ## Nomail reception mode is not available
+  available_user_options
+  reception  	digest,mail
+</code>
+
+
+===== default_user_options =====
+
+The ''default_user_options'' parameter starts a paragraph to define a default profile for the subscribers of the list. 
+
+<note>This profile only applies for newly subscribed/included list members. It means that if you change the value of ''default_user_options'' in a list, if will not apply to the existing list members.</note>
+
+  * ''reception notice | digest | summary | nomail | mail'' \\ Mail reception mode.
+  * ''visibility conceal | noconceal'' \\ Visibility of the subscriber with the ''REVIEW'' command.
+
+Example:
+<code>
+  default_user_options
+  reception  	digest
+  visibility	noconceal
+</code>
+
+===== msg_topic =====
+
+The ''msg_topic'' parameter starts a paragraph to define a message topic used to tag a message. For each message topic, you have to define a new paragraph (see [[reception-mode#message_topics|Message topics]]).
+
+Example:
+<code>
+  msg_topic
+  name os
+  keywords linux,mac-os,nt,xp
+  title Operating System
+</code>
+
+Parameters ''msg_topic.name'' and ''msg_topic.title'' are mandatory. ''msg_topic.title'' is used on the web interface (''other'' is not allowed for the ''msg_topic.name'' parameter). The ''msg_topic.keywords'' parameter allows to select automatically message topic by searching keywords in the message.
+
+N.B.: in a family context, ''msg_topic.keywords'' parameter is not mandatory.
+
+===== msg_topic_keywords_apply_on =====
+
+The ''msg_topic_keywords_apply_on'' parameter defines which part of the message is used to perform automatic tagging (see [[reception-mode#message_topics|Message topics]]).
+
+Example:
+
+<code>msg_topic_key_apply_on subject</code>
+
+Its values can be: ''subject'', ''body'' and ''subject_and_body''.
+
+===== msg_topic_tagging =====
+
+The ''msg_topic_tagging'' parameter indicates if tagging is optional or required for a list. (See [[reception-mode#message_topics|Message topics]])
+
+Example:
+
+<code>msg_topic_tagging optional</code>
+
+Its values can be "optional", "required_moderator" or "required_sender". When topic is required, a tagging request is sent to the list moderator or to the message sender depending of this parameter value.
+
+===== reply_to_header =====
+
+The ''reply_to_header'' parameter starts a paragraph defining what Sympa will place in the ''Reply-To:'' SMTP header field of the messages it distributes.
+
+  * ''value sender | list | all | other_email'' (Default value: ''sender'')
+
+This parameter indicates whether the ''Reply-To:'' field should indicate the sender of the message (''sender''), the list itself (''list''), both list and sender (''all'') or an arbitrary email address (defined by the ''other_email'' parameter).
+
+Note: it is inadvisable to change this parameter, and particularly inadvisable to set it to ''list''. Experience has shown it to be almost inevitable that users, mistakenly believing that they are replying only to the sender, will send private messages to a list. This can lead, at the very least, to embarrassment, and sometimes to more serious consequences.
+
+  * ''other_email'' //an_email_address// \\ If ''value'' was set to ''other_email'', this parameter indicates the email address to be used.
+  * ''apply respect | forced'' (Default value: ''respect''). \\ The default is to respect (preserve) the existing ''Reply-To:'' SMTP header field in incoming messages. If set to ''forced'', the ''Reply-To:'' SMTP header field will be overwritten.
+
+Example:
+<code>
+  reply_to_header
+  value other_email
+  other_email listowner@my.domain
+  apply forced
+</code>
+
+===== anonymous_sender =====
+
+''anonymous_sender'' //value//
+
+If this parameter is set for a list, all messages distributed through the list are made anonymous. SMTP ''From:'' headers in distributed messages are altered to contain the value of the ''anonymous_sender'' parameter. Various other fields are removed (''Received:'', ''Reply-To:'', ''Sender:'', ''X-Sender:'', ''Message-id:'', ''Resent-From:''.
+
+===== custom_header =====
+
+''custom_header'' //header-field//'':'' //value//
+
+This parameter is optional. The headers specified will be added to the headers of messages distributed via the list. As of release 1.2.2 of Sympa, it is possible to put several custom header lines in the configuration file at the same time.
+
+Example:
+<code>custom_header X-url: http://www.renater.fr/listes/apropos/sedesabonner.faq.html</code>
+
+
+===== rfc2369_header_fields =====
+
+''rfc2369_header_fields'' //help,archive// (Default value: ''rfc2369_header_fields'' ''sympa.conf'' parameter)
+
+RFC2369 compliant header fields (List-xxx) to be added to distributed messages. These header-fields should be implemented by MUA's, adding menus.
+
+
+===== remove_headers =====
+
+(Default value: ''remove_headers'' ''sympa.conf'' parameter)
+
+You can define the list of SMTP header fields that should be removed from incoming messages. Check the [[manual:conf-parameters:part2|equivalent sympa.conf parameter documentation]] for further details.
+
+===== remove_outgoing_headers =====
+
+(Default value: ''remove_outgoing_headers'' ''sympa.conf'' parameter)
+
+You can define the list of SMTP header fields that should be removed before Sympa distributes a message to list members. Check the [[manual:conf-parameters:part2|equivalent sympa.conf parameter documentation]] for further details.
+
+===== custom_subject =====
+
+''custom_subject'' //value//
+
+This parameter is optional. It specifies a string which is added to the subject of distributed messages (intended to help users who do not use automatic tools to sort incoming messages). This string will be surrounded by '[]' characters.
+
+The custom subject can also refer to list variables (<nowiki>[%list.sequence%]</nowiki> in the example below).
+
+Example: <code>custom_subject sympa-users</code>
+
+Other example: <code>custom_subject newsletter num [%list.sequence%]</code>
+
+===== footer_type =====
+
+''footer_type mime | append'' (Default value: ''mime'')
+
+This parameter is optional. List owners may decide to add message headers or footers to messages sent through the list. This parameter defines the way a footer/header is added to a message.
+
+  * ''footer_type'' ''mime'' \\ The default value. Sympa will add the footer/header as a new MIME part. If the message is in multipart/alternative format, no action is taken (since this would require another level of MIME encapsulation).
+  * ''footer_type'' ''append'' \\ Sympa will not create new MIME parts, but will try to append the header/footer to the body of the message. ''/home/sympa/expl/mylist/message.footer.mime'' will be ignored. Headers/footers may be appended to text/plain messages only.===== info =====
+
+The scenario definition of who can view the info page of a list.
+
+===== subscribe =====
+
+(Default value: ''open'')
+
+The ''subscribe'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+The ''subscribe'' parameter defines the rules for subscribing to the list. Predefined authorization scenarios are:
+
+  * ''subscribe'' ''auth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.auth|view]]);
+  * ''subscribe'' ''auth_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.auth_notify|view]]);
+  * ''subscribe'' ''auth_owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.auth_owner|view]]);
+  * ''subscribe'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.closed|view]]);
+  * ''subscribe'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.intranet|view]]);
+  * ''subscribe'' ''intranetorowner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.intranetorowner|view]]);
+  * ''subscribe'' ''open'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.open|view]]);
+  * ''subscribe'' ''open_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.open_notify|view]]);
+  * ''subscribe'' ''open_quiet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.open_quiet|view]]);
+  * ''subscribe'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.owner|view]]);
+  * ''subscribe'' ''smime'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.smime|view]]);
+  * ''subscribe'' ''smimeorowner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.smimeorowner|view]]).
+
+===== unsubscribe =====
+
+(Default value: ''open'')
+
+The ''unsubscribe'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies the unsubscription method for the list. Use ''open_notify'' or ''auth_notify'' to allow owner notification of each unsubscribe command. Predefined authorization scenarios are:
+
+  * ''unsubscribe'' ''auth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.auth|view]]);
+  * ''unsubscribe'' ''auth_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.auth_notify|view]]);
+  * ''unsubscribe'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.closed|view]]);
+  * ''unsubscribe'' ''open'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.open|view]]);
+  * ''unsubscribe'' ''open_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.open_notify|view]]);
+  * ''unsubscribe'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.owner|view]]).
+
+===== add =====
+
+(Default value: ''owner'')
+
+''add'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who is authorized to use the ''ADD'' command. Predefined authorization scenarios are:
+
+  * ''add'' ''auth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/add.auth|view]]);
+  * ''add'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/add.closed|view]]);
+  * ''add'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/add.owner|view]]);
+  * ''add'' ''owner_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/add.owner_notify|view]]).
+
+===== del =====
+
+(Default value: ''owner'')
+
+The ''del'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who is authorized to use the ''DEL'' command. Predefined authorization scenarios are:
+
+  * ''del'' ''auth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/del.auth|view]]);
+  * ''del'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/del.closed|view]]);
+  * ''del'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/del.owner|view]]);
+  * ''del'' ''owner_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/del.owner_notify|view]]).
+
+===== invite =====
+
+(Default value: ''owner'')
+
+The invite command is used to invite someone to subscribe. It should be prefered to the ''add'' command in most cases. This parameter define who can use it. The privilege uses scenario specification.
+
+===== review =====
+
+(Default value: ''owner'')
+
+''review'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can use ''REVIEW'' (see [[sympa-commands#user_commands|User commands]]), administrative requests.
+
+Predefined authorization scenarios are:
+
+  * ''review'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.closed|view]]);
+  * ''review'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.intranet|view]]);
+  * ''review'' ''listmaster'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.listmaster|view]]);
+  * ''review'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.owner|view]]);
+  * ''review'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.private|view]]);
+  * ''review'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.public|view]]).
+
+
+===== remind =====
+
+(Default value: ''owner'')
+
+The ''remind'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who is authorized to use the ''remind'' command. Predefined authorization scenarios are:
+
+  * ''remind'' ''listmaster'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/remind.listmaster|view]]);
+  * ''remind'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/remind.owner|view]]).
+
+=====  shared_doc =====
+
+This paragraph defines read and edit access to the shared document repository.
+
+==== d_read ====
+
+(Default value: ''private'')
+
+The ''d_read'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can read shared documents (access the contents of a list's ''shared'' directory).
+
+Predefined authorization scenarios are:
+
+  * ''d_read'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_read.owner|view]]);
+  * ''d_read'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_read.private|view]]);
+  * ''d_read'' ''p'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_read.p|view]]);
+  * ''d_read'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_read.public|view]]).
+
+==== d_edit ====
+
+(Default value: ''owner'')
+
+The ''d_edit'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can perform changes within a list's ''shared'' directory (i.e. upload files and create subdirectories).
+
+Predefined authorization scenarios are:
+
+  * ''d_edit'' ''editor'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.editor|view]]);
+  * ''d_edit'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.owner|view]]);
+  * ''d_edit'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.private|view]]);
+  * ''d_edit'' ''p'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.p|view]]);
+  * ''d_edit'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.public|view]]).
+
+Example:
+<code>
+  shared_doc
+  d_read		public
+  d_edit		private
+</code>
+
+==== quota ====
+
+''quota'' //number-of-Kbytes//
+
+This parameter specifies the disk quota for the document repository, in kilobytes. If quota is exceeded, file uploads fail.====== Archive related ======
+
+Sympa show archive both by email and web interface. In versions prior to 5.2, archives were duplicated. Mail archives were stored in the ''/home/sympa/expl/mylist/archives/'' directory.
+
+Web archives are accessed through the web interface (with access control), they are stored in a directory defined in "wwsympa.conf" ([[web-interface#arc_path|parameter arc_path]]. Version 5.2 and later use only this archive repository.
+
+
+
+===== archive (OBSOLETE) =====
+
+If the "config" file contains an "archive" paragraph, Sympa will manage an archive for this list.
+
+Example:
+
+<code>
+  archive
+  period week
+  access private
+</code>
+
+If the ''archive'' parameter is specified, archives are accessible to users through the ''GET'' [[sympa-commands#user_commands|command]], and the index of the list archives is provided in reply to the ''INDEX'' command (the last message of a list can be consulted using the ''LAST'' command).
+
+''period day | week | month | quarter | year''
+
+This parameter specifies how archiving is organized: by ''day'', ''week'', ''month'', ''quarter'' or ''year''. Generation of automatic list archives requires the creation of an archive directory at the root of the list directory (''/home/sympa/expl/mylist/archives/''), used to store these documents.
+
+''access private | public | owner | closed''
+
+This parameter specifies who is authorized to use the ''GET'', ''LAST'' and ''INDEX'' [[sympa-commands#user_commands|commands]].
+
+===== web_archive =====
+
+If the ''config'' file contains a ''web_archive'' paragraph, Sympa will copy all messages distributed via the list to the ''queueoutgoing'' spool. It is intended to be used with //WWSympa//'s HTML archive tools. This paragraph must contain at least the access parameter to control who can browse the web archive.
+
+Example:
+
+<code>
+  web_archive
+  access private
+  quota 10000
+</code>
+
+====  web_archive.access ====
+
+The ''access_web_archive'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+Predefined authorization scenarios are:
+
+  * ''access'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.closed|view]]);
+  * ''access'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.intranet|view]]);
+  * ''access'' ''listmaster'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.listmaster|view]]);
+  * ''access'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.owner|view]]);
+  * ''access'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.private|view]]);
+  * ''access'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.public|view]]).
+
+==== web_archive.quota ====
+
+''quota'' //number-of-Kbytes//
+
+This parameter specifies the disk quota for the list's web archive, in kilobytes. This parameter's default is the ''default_archive_quota'' ''sympa.conf'' parameter. If quota is exceeded, messages are no more archived and list owners are notified. When the archive reaches 95%, list owners are warnt.
+
+==== web_archive.max_month ====
+
+"max_month" parameter specify the maximum number of archives packet created. Old month are removed when new month is created. 
+
+===== archive_crypted_msg =====
+
+(Default value: ''cleartext'')
+
+''archive_crypted_msg cleartext | decrypted''
+
+This parameter defines Sympa's behavior when archiving S/MIME encrypted messages. If set to ''cleartext'', the original encrypted form of the message will be archived; if set to ''decrypted'', a decrypted message will be archived. Note that this applies to both mail and web archives, and also to digests.====== Bounce related ======
+
+===== bounce =====
+
+This paragraph defines bounce management parameters:
+
+  * ''warn_rate'' \\ (Default value: ''bounce_warn_rate robot parameter'') \\ The list owner receives a warning whenever a message is distributed and the number (percentage) of bounces exceeds this value.
+  * ''halt_rate'' \\ (Default value: ''bounce_halt_rate robot parameter'') \\ "NOT USED YET" \\ If bounce rate reaches the ''halt_rate'', messages for the list will be halted, i.e. they are retained for subsequent moderation. Once the number of bounces exceeds this value, messages for the list are no longer distributed.
+  * ''expire_bounce_task'' \\ (Default value: ''daily'') \\ Name of the task template used to remove old bounces. Useful to remove bounces for a subscriber email if some messages are distributed without receiving new bounces. In this case, the subscriber email seems to be OK again. Active if ''task_manager.pl'' is running.
+
+Example:
+
+<code>
+  ## Owners are warnt with 10% bouncing addresses
+  ## message distribution is halted with 20% bouncing rate
+  bounce
+  warn_rate	10
+  halt_rate	20
+</code>
+
+===== bouncers_level1 =====
+
+  * ''rate'' \\ (Default value: ''default_bounce_level1_rate'' sympa.conf parameter)\\ Each bouncing user has a score (from 0 to 100). This parameter defines the lower score for a user to be a level 1 bouncing user. For example, with default values, users with a score between 45 and 75 are level 1 bouncers.
+  * ''action remove_bouncers | notify_bouncers | none'' \\ (Default value: ''notify_bouncers'') \\ This parameter defines which task is automaticaly applied on level 1 bouncing users: for example, automatically notify all level 1 bouncers.
+  * ''notification none | owner | listmaster'' \\ (Default value: ''owner'') \\ When an automatic task is performed on level 1 bouncers, a notification email can be sent to listowners or listmasters. This email contains the adresses of the users concerned and the name of the action perform.
+
+===== bouncers_level2 =====
+
+  * ''rate'' \\ (Default value: ''default_bounce_level2_rate'' sympa.conf parameter) \\ Each bouncing user has a score (from 0 to 100). This parameter defines the lower score for a user to be a level 2 bouncing user. For example, with default values, users with a score between 75 and 100 are level 2 bouncers.
+  * ''action remove_bouncers | notify_bouncers | none'' \\ (Default value: ''remove_bouncers'') \\ This parameter defines which task is automatically applied on level 2 bouncing users: for example, automatically notify all level 2 bouncers.
+  * ''notification none | owner | listmaster'' \\ (Default value: ''owner'') \\ When an automatic task is performed on level 2 bouncers, a notification email can be sent to listowners or listmasters. This email contains the adresses of the users concerned and the name of the action performed.
+
+Example:
+
+<code>
+      ## All bouncing adresses with a score between 75 and 100
+      ## will be unsubscribed, and listmaster will receive an email
+      Bouncers level 2
+      rate:75 Points
+      action: remove\_bouncers
+      Notification: Listmaster
+</code>
+
+===== welcome_return_path =====
+
+''welcome_return_path unique | owner'' \\ (Default value: ''welcome_return_path robot parameter'') \\ If set to ''unique'', the welcome message is sent using a unique return path in order to remove the subscriber immediately in case of bounce. See the [[conf-parameters/part3#welcome_return_path|welcome_return_path sympa.conf parameter]].
+
+
+===== remind_return_path =====
+
+''remind_return_path unique | owner'' \\ (Default value: ''remind_return_path robot parameter'') \\ Same as ''welcome_return_path'', but applied to remind messages. See the [[conf-parameters/part3#remind_return_path|remind_return_path sympa.conf parameter]].
+
+===== verp_rate =====
+
+(Default value: ''verp_rate host parameter'') \\ See [[bounces#verp|VERP]] for more information on VERP in Sympa.
+
+When ''verp_rate'' is null, VERP is not used; if ''verp_rate'' is 100% VERP is always in use.
+
+VERP requires plussed aliases to be supported and the bounce+* alias to be installed.
+====== Data source related ======
+
+
+
+
+
+===== user_data_source =====
+
+(Default value: ''include2'', if using an RDBMS)
+
+''user_data_source file | database | include | include2''
+
+**Starting with Sympa 5.3.x ''include'' is interpreted as ''include2''. Since Sympa 5.4.x ''include2'' is the only supported value for this parameter.**
+
+**Background** : //In the former days Sympa did not use a RDBMS and subscribers informations were stored in flat ''subscribers'' files. We then introduced the ability to include members defined in an external data source and also the optional use of a RDBMS to store subscribers. Therefore we created the 'user_data_source' parameter. We ended up merging the 'database' and 'include' features with 'include2'. The goal was then to give up the 'user_data_source' parameter and we have almost reached this goal. Starting with Sympa 5.3.x the 'include' mode is considered a synonym for 'include2' and more recently we have removed the 'file' and 'database' modes in the development version of Sympa. This means that in Sympa 5.4 the only supported mode will be 'include2'. Note that migration process has been automated.//
+
+Sympa allows the mailing list manager to choose how Sympa loads subscriber and administrative data. User information can be stored in a text file or relational database, or included from various external sources (list, flat file, result of LDAP or SQL query).
+
+  * ''user_data_source'' ''file'' \\ When this value is used, subscriber data are stored in a file whose name is defined by the ''subscribers'' parameter in ''sympa.conf''. This is maintained for backward compatibility.
+  * ''user_data_source'' ''database'' \\ This mode was introduced to allow data to be stored in a relational database. This can be used for instance to share subscriber data with an HTTP interface, or simply to ease the administration of very large mailing lists. It has been tested with MySQL, using a list of 200,000 subscribers. We strongly recommend the use of a database instead of text files. It will improve performance and solve possible conflicts between Sympa and //WWSympa//. Please refer to [[database#sympa_and_its_database|Sympa and its database]].
+  * ''user_data_source'' ''include'' \\ Here, subscribers are not defined //extensively// (enumeration of their email addresses) but //intensively// (definition of criteria subscribers must satisfy). Includes can be performed by extracting email addresses using an SQL or LDAP query, or by including other mailing lists. At least one include paragraph, defining a data source, is needed. Valid include paragraphs (see below) are ''include_file'', ''include_list'', ''include_remote_sympa_list'', ''include_sql_query'' and ''include_ldap_query''.
+  * ''user_data_source'' ''include2'' \\ This is a replacement for the include mode. In this mode, the members cache is no more maintained in a DB File but in the main database instead. The behavior of the cache is detailed in the database chapter (see [[database#management_of_the_include_cache|Management of the include cache]]). This is the only mode that runs the database for administrative data in the database.
+
+
+
+===== ttl =====
+
+(Default value: ''3600'')
+
+''ttl'' ''delay_in_seconds''
+
+Sympa caches user data extracted using the ''include_xx'' configuration parameters. Their TTL (time-to-live) within Sympa can be controlled using this parameter. The default value is 3600.
+
+
+===== distribution_ttl =====
+
+''distribution_ttl'' ''delay_in_seconds''
+
+Before some actions it is useful to make sure that the user's list is up-to-date. To avoid to execute synchronization any time these actions are performed, this parameter defines the delay since the last synchronization after which the user's list will be updated before performing the action.
+
+The actions for which this parameter is checked are :
+  * list members review
+  * message distribution
+
+===== include_list =====
+
+''include_list'' ''listname''
+
+All subscribers of list ''listname'' become members of the current list. You may include as many lists as required, using one ''include_list'' ''listname'' line for each included list. Any list at all may be included; the ''user_data_source'' definition of the included list is irrelevant, and you may therefore include lists which are also defined by the inclusion of other lists. Be careful, however, not to include list ''A'' in list ''B'' and then list ''B'' in list ''A'', since this would result in an infinite loop.
+
+Example: <code>include_list local-list</code>
+
+Other example: <code>include_list other-local-list@other-local-robot</code>
+
+===== include_remote_sympa_list =====
+
+''include_remote_sympa_list''
+
+Sympa can contact another Sympa service using HTTPS to fetch a remote list in order to include each member of a remote list as a subscriber. You may include as many lists as required, using one ''include_remote_sympa_list'' paragraph for each included list. Be careful, however, not to give rise to an infinite loop making cross includes.
+
+For this operation, one Sympa site acts as a server while the other acts as a client. On the server side, the only setting needed is to give permission to the remote Sympa to review the list. This is controlled by the review authorization scenario.
+
+From the client side you must define the remote list dump URI.
+
+  * ''remote_host'' //remote_host_name//;
+  * ''port'' //port// (Default 443);
+  * ''path'' //absolute path// (in most cases, for a list name foo /sympa/dump/foo).
+
+Because HTTPS offert an easy and secure client authentication, HTTPS is the only protocol currently supported. An additional parameter is needed: the name of the certificate (and the private key) to be used:
+
+  * ''cert'' ''list'' \\ The certificate to be used is the list certificate (the certificate subject distinguished name email is the list address). The certificate and private key are located in the list directory.
+  * ''cert'' ''robot'' \\ The certificate used is then related to Sympa itself: the certificate subject distinguished name email looks like ''sympa@my.domain'' and files are located in the virtual host ''etc'' directory if a virtual host is used; otherwise, they are located in ''/home/sympa/etc''.
+
+
+===== include_sql_query =====
+
+''include_sql_query''
+
+It is used to start a paragraph defining the SQL query parameters:
+
+  * ''db_type'' //dbd_name// \\ The database type (mysql, SQLite, Pg, Oracle, Sybase, CSV, ...). This value identifies the Perl DataBase Driver (DBD) to be used, and is therefore case-sensitive.
+  * ''host'' //hostname// \\ The Database Server Sympa will try to connect to.
+  * ''db_port'' //port// \\ If not using the default RDBMS port, you can specify it.
+  * ''db_name'' //sympa_db_name// \\ The hostname of the database system.
+  * ''user'' //user_id// \\ The user id to be used when connecting to the database.
+  * ''passwd'' //some secret// \\ The user passwd for ''user''.
+  * ''sql_query'' //a query string// \\ The SQL query string. No fields other than email addresses should be returned by this query!
+  * ''connect_options'' //option1=x;option2=y// \\ This parameter is optional and specific to each RDBMS. \\ These options are appended to the connect string. \\ Example:
+<code>
+    include_sql_query
+          db_type mysql
+          host sqlserv.admin.univ-x.fr
+          user stduser
+          passwd mysecret
+          db_name studentbody
+          sql_query SELECT DISTINCT email FROM student
+          connect_options mysql_connect_timeout=5
+</code>
+Connexion timeout is set to 5 seconds.
+  * ''db_env'' //list_of_var_def// \\ This parameter is optional; it is needed for some RDBMS (Oracle). \\ Sets a list of environment variables to set before database connection. This is a ';' separated list of variable assignment. \\ Example for Oracle:
+<code>
+    db_env	ORACLE_TERM=vt100;ORACLE_HOME=/var/hote/oracle/7.3.4
+</code>
+  * ''name'' //short name// \\ This parameter is optional. It provides a human-readable name to this data source. It will be used within the REVIEW page to indicate from whicj datasource each list member comes (useful when having multiple data sources).
+  * ''f_dir'' ///var/csvdir// \\ This parameter is optional. It is only used when accessing a CSV data source.  When connecting to a CSV data source, this parameter indicates the directory where the CSV files are located.
+
+Example:
+
+<code>
+  include_sql_query
+        db_type oracle
+        host sqlserv.admin.univ-x.fr
+        user stduser
+        passwd mysecret
+        db_name studentbody
+        sql_query SELECT DISTINCT email FROM student
+</code>
+
+
+===== include_ldap_query =====
+
+''include_ldap_query''
+
+This paragraph defines parameters for a LDAP query returning a list of subscribers. This feature requires the ''Net::LDAP'' (perlldap) PERL module.
+
+  * ''host'' //ldap_directory_hostname// \\ Name of the LDAP directory host or a comma separated list of host:port. The second form is useful if you are using some replication LDAP host. \\ Example: <code>host ldap.renater.fr:389,backup-ldap.renater.fr:389</code>
+  * ''port'' //ldap_directory_port// (OBSOLETE) \\ Port on which the Directory accepts connections.
+  * ''user'' //ldap_user_name// \\ Username with read access to the LDAP directory.
+  * ''passwd'' //LDAP_user_password// \\ Password for ''user''.
+  * ''use_ssl'' //yes|no// \\ If set to ''yes'', the LDAPS protocol is used.
+  * ''ssl_version'' //sslv2|sslv3|tls// (Default value: ''sslv3'') \\ If using SSL, this parameter defines whether SSL or TLS is used.
+  * ''ssl_ciphers'' //ciphers used// (Default value: ''ALL'') \\ If using SSL, this parameter specifies which subset of cipher suites are permissible for this connection, using the standard OpenSSL string format. The default value of Net::LDAPS for ciphers is ''ALL'', which allows all ciphers, even those that do not encrypt!
+  * ''suffix'' //directory name// \\ Defines the naming space covered by the search (optional, depending on the LDAP server).
+  * ''timeout'' //delay_in_seconds// \\ Timeout when connecting the remote server.
+  * ''filter'' //search_filter// \\ Defines the LDAP search filter (RFC 2254 compliant).
+  * ''attrs'' //mail_attribute// (Default value: ''mail'') \\ The attribute containing the email address(es) in the object returned.
+  * ''select'' //first ''|'' all// (Default value: ''first'') \\ Defines whether to use only the first address, or all the addresses, in case multiple values are returned.
+  * ''scope'' //base ''|'' one ''|'' sub// (Default value: ''sub'') \\ By default, the search is performed on the whole tree below the specified base object. This may be changed by specifying a scope parameter with one of the following values:
+    * **base**: search only the base object,
+    * **one**: search the entries immediately below the base object,
+    * **sub**: search the whole tree below the base object.
+
+Example:
+<code>
+      include_ldap_query
+      host ldap.renater.fr
+      suffix dc=cru, dc=fr
+      timeout 10
+      filter (&(cn=aumont) (c=fr))
+      attrs mail
+      select first
+      scope one
+</code>
+
+===== include_ldap_2level_query =====
+
+''include_ldap_2level_query''
+
+This paragraph defines parameters for a two-level LDAP query returning a list of subscribers. Usually, the first-level query returns a list of DNs and the second-level queries convert the DNs into email addresses. This paragraph is used only if ''user_data_source'' is set to ''include''. This feature requires the ''Net::LDAP'' (perlldap) Perl module.
+
+  * ''host'' //ldap_directory_hostname// \\ Name of the LDAP directory host or a comma separated list of host:port. The second form is useful if you are using some replication LDAP host.
+Example: <code>host ldap.renater.fr:389,backup-ldap.renater.fr:389</code>
+  * ''port'' //ldap_directory_port// (OBSOLETE) \\ Port on which the Directory accepts connections (this parameter is ignored if host definition includes port specification).
+  * ''user'' //ldap_user_name// \\ Username with read access to the LDAP directory.
+  * ''passwd'' //LDAP_user_password// \\ Password for ''user''.
+  * ''use_ssl'' //yes|no// \\ If set to ''yes'', the LDAPS protocol is used.
+  * ''ssl_version'' //sslv2|sslv3|tls// (Default value: ''sslv3'') \\ If using SSL, this parameter defines whether SSL or TLS is used.
+  * ''ssl_ciphers'' //ciphers used// (Default value: ''ALL'') \\ If using SSL, this parameter specifies which subset of cipher suites are permissible for this connection, using the standard OpenSSL string format. The default value of Net::LDAPS for ciphers is ''ALL'', which allows all ciphers, even those that do not encrypt!
+  * ''suffix1'' //directory name// \\ Defines the naming space covered by the first-level search (optional, depending on the LDAP server).
+  * ''timeout1'' //delay_in_seconds// \\ Timeout for the first-level query when connecting to the remote server.
+  * ''filter1'' //search_filter// \\ Defines the LDAP search filter for the first-level query (RFC 2254 compliant).
+  * ''attrs1'' //attribute// \\ 
+The attribute containing the data in the object returned, that will be used for the second-level query. This data is referenced using the syntax ''[attrs1]''.
+  * ''select1'' //first ''|'' all ''|'' regex// (Default value: ''first'') \\ Defines whether to use only the first attribute value, all the values, or only those values matching a regular expression.
+  * ''regex1'' //regular_expression// (Default value: ) \\ The Perl regular expression to use if ''select1'' is set to ''regex''.
+  * ''scope1'' //base ''|'' one ''|'' sub// (Default value: ''sub'') \\ By default the first-level search is performed on the whole tree below the specified base object. This may be changed by specifying a scope parameter with one of the following values:
+    * **base**: search only the base object,
+    * **one**: search the entries immediately below the base object,
+    * **sub**: search the whole tree below the base object.
+  * ''suffix2'' //directory name// \\ Defines the naming space covered by the second-level search (optional, depending on the LDAP server). The ''[attrs1]'' syntax may be used to substitute data from the first-level query into this parameter.
+  * ''timeout2'' //delay_in_seconds// \\ Timeout for the second-level queries when connecting to the remote server.
+  * ''filter2'' //search_filter// \\ Defines the LDAP search filter for the second-level queries (RFC 2254 compliant). The ''[attrs1]'' syntax may be used to substitute data from the first-level query into this parameter.
+  * ''attrs2'' //mail_attribute// (Default value: ''mail'') \\ The attribute containing the email address(es) in the objects returned from the second-level queries.
+  * ''select2'' //first ''|'' all ''|'' regex// (Default value: ''first'') \\ Defines whether to use only the first address, all the addresses, or only those addresses matching a regular expression in the second-level queries.
+  * ''regex2'' //regular_expression// (Default value: ) \\ The Perl regular expression to use if ''select2'' is set to ''regex''.
+  * ''scope2'' //base ''|'' one ''|'' sub// (Default value: ''sub'') \\ By default the second-level search is performed on the whole tree below the specified base object. This may be changed by specifying a scope2 parameter with one of the following values:
+    * **base**: search only the base object,
+    * **one**: search the entries immediately below the base object,
+    * **sub**: search the whole tree below the base object.
+
+Example: 
+
+<code>
+(cn=testgroup,dc=cru,dc=fr should be a groupOfUniqueNames here)
+
+      include_ldap_2level_query
+      host ldap.univ.fr
+      port 389
+      suffix1 ou=Groups,dc=univ,dc=fr
+      scope1 one
+      filter1 (&(objectClass=groupOfUniqueNames) (| (cn=cri)(cn=ufrmi)))
+      attrs1 uniquemember
+      select1 all
+      suffix2 [attrs1]
+      scope2 base
+      filter2 (objectClass=n2pers)
+      attrs2 mail
+      select2 first
+</code>
+
+
+===== include_file =====
+
+''include_file'' ''path_to_file''
+
+The file should contain one email address per line with an optional user description, separated from the email address by spaces (lines beginning with a '#' are ignored).
+
+Sample included file:
+
+<code>
+  ## Data for Sympa member import
+  john.smith@sample.edu  John Smith - math department
+  sarah.hanrahan@sample.edu  Sarah Hanrahan - physics department
+</code>
+
+
+===== include_remote_file =====
+
+''include_remote_file''
+
+This parameter (organized as a paragraph) does the same as the ''include_file'' parameter, except that it gets a remote file. Using this method you should be able to include any //exotic// data source that is not supported by Sympa. The paragraph is made of the following entries:
+
+  * ''url'' //url_of_remote_file// \\ This is the URL of the remote file to include.
+  * ''user'' //user_name// \\ This entry is optional. It is only used if HTTP basic authentication is required to access the remote file.
+  * ''passwd'' //user_passwd// \\ This entry is optional. It is only used if HTTP basic authentication is required to access the remote file.
+
+Example:
+<code>
+  include_remote_file
+  url     http://www.myserver.edu/myfile
+  user    john_netid
+  passwd  john_passwd
+</code>====== Command related ======
+
+
+===== remind_task =====
+
+(Default value: no default value)
+
+This parameter states which model is used to create a ''remind'' task. A ''remind'' task regularly sends to the subscribers a message which reminds them of their subscription to the list.
+
+Example: <code>remind_task annual</code>
+
+
+===== expire_task =====
+
+(Default value: no default value)
+
+This parameter states which model is used to create an ''expire'' task. An ''expire'' task regularly checks the subscription (or subscription renewal) date of subscribers and asks them to renew their subscription. If they do not, they are deleted.
+
+Example: <code>expire_task annual</code>
+
+===== review =====
+
+(Default value: ''owner'')
+
+The ''review'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can use the ''REVIEW'' command (see [[sympa-commands#user_commands|User commands]]), administrative requests.
+
+Predefined authorization scenarios are:
+
+  * ''review'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.closed|view]]);
+  * ''review'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.intranet|view]]);
+  * ''review'' ''listmaster'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.listmaster|view]]);
+  * ''review'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.owner|view]]);
+  * ''review'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.private|view]]);
+  * ''review'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.public|view]]).
+
+====== List tuning ======
+
+===== max_size =====
+
+(Default value: ''max_size robot parameter'')
+
+''max_size'' //number-of-bytes//
+
+Maximum size of a message in 8-bit bytes. The default value is set in the ''/etc/sympa.conf'' file.
+
+===== loop_prevention_regex =====
+
+(Default value: ''loop_prevention_regex sympa.conf parameter'')
+
+''loop_prevention_regex'' //mailer-daemon|sympa|listserv|majordomo|smartlist|mailman//
+
+This regular expression is applied to message sender addresses. If the sender address matches the regular expression, then the message is rejected. The goal of this parameter is to prevent loops between Sympa and other robots.
+
+===== pictures_feature =====
+
+(Default value: ''pictures_feature robot parameter'')
+
+''pictures_feature'' //on | off//
+
+This enables the feature that allows list members to upload a picture that will be shown on the review page.
+
+===== cookie =====
+
+(Default value: ''cookie robot parameter'')
+
+''cookie'' //random-numbers-or-letters//
+
+This parameter is a confidential item for generating authentication keys for administrative commands (''ADD'', ''DELETE'', etc.). This parameter should remain concealed, even for owners. The cookie is applied to all list owners, and is only taken into account when the owner has the ''auth'' parameter (see [[parameters-definition#owner|owner]]).
+
+Example: <code>cookie secret22</code>
+
+
+
+===== custom_vars =====
+
+(Default value: empty)
+
+You can create an unlimited number of custom parameters to be used with authorization scenarios, web and mail templates.
+
+  * ''name'': the name of the custom parameter. Can be any character string;
+  * ''value'': the value given to this custom parameter. Can be any scalar value.
+
+Example:
+
+<code>
+custom_vars
+name    sisterList
+value   math-teachers
+</code>
+
+See [[:manual:customizing#custom_parameters|this parameter usage in Sympa]].
+
+===== custom_attribute =====
+
+(Default value: empty)
+
+This parameter allows the creation of custom user attributes. These attributes values are stored in a XML fragment. See the description of the [[:manual:customizing#custom_attribute|user custom attributes functionality]].
+
+This XML fragment has the form:
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8" ?>
+  <custom_attributes>
+    <custom_attribute id="accr">
+      <value> ultra-violet</value>
+    </custom_attribute>
+    <custom_attribute id="pt">
+      <value>0</value>
+    </custom_attribute>
+  </custom_attributes>
+</code>
+
+  * ''id'': the value of the ''id'' attribute in the ''custom_attribute'' element;
+  * ''name'': the label used for this attribute in the subscription form;
+  * ''comment'': a text displayed in the subscription form to give the users any additional informations that you would find relevant about this attribute (a description of the values to fill in, for example);
+  * ''type ( string | text | integer | enum )'': the type of data this attribute contains. The subscription form will control that the data filled by the user belong to this category. ''enum'' means that the value will be selected amongst a set allowed values you must define.
+  * ''enum_values'': if ''type'' has the value ''enum'', you must specify at least one allowed value. The web subscription form will contain a selection list with the values you specified.
+  * ''optional ( required | optional )'': use "required" if this attribute must be filled by the user, "optional" if it is not mandatory.
+
+
+=====  priority =====
+
+(Default value: ''default_list_priority robot parameter'')
+
+''priority'' //0-9//
+
+The priority with which Sympa will process messages for this list. This level of priority is applied while the message is going through the spool.
+
+0 is the highest priority. The following priorities can be used: ''0...9 z''. ''z'' is a special priority causing messages to remain spooled indefinitely (useful to hang up a list).
+
+Available since release 2.3.1.
+
+====== Spam protection ======
+
+===== spam_protection =====
+
+(Default value: ''javascript'')
+
+There is a need to protect the Sympa website against spambot which collect email addresses in public websites. Various methods are available into Sympa and you can choose from the ''spam_protection'' and ''web_archive_spam_protection'' parameters. Possible value are:
+
+  * ''javascript'': the address is hidden using a Javascript. Users who enable Javascript can see nice mailto addresses where others have nothing.
+  * ''at'': the '@' char is replaced by the string 'AT'.
+  * ''none'': no protection against spammers.
+
+===== web_archive_spam_protection =====
+
+(Default value: ''javascript'')
+
+The same as ''spam_protection'', but restricted to the web archive. An additional value is available: ''cookie'', which means that users must submit a small form in order to receive a cookie before browsing the archive. This blocks all robots, even those from search engines.======  Message topics ======
+
+A list can be configured to have message topics (this notion is different from topics used to class mailing lists). Users can subscribe to these message topics in order to receive a subset of distributed messages: a message can have one or more topics and subscribers will receive only messages that have been tagged with a topic they are subscribed to. A message can be tagged automatically, by the message sender or by the list moderator.
+
+=====  Message topic definition in a list =====
+
+Available message topics are defined by list parameters. For each new message topic, create a new ''msg_topic'' paragraph that defines the name and the title of the topic. If a thread is identified for the current message, then the automatic procedure is performed. Otherwise, to use automatic tagging, you should define keywords (see [[parameters-sending#msg_topic|msg_topic]]). To define which part of the message is used for automatic tagging, you have to define the ''msg_topic_keywords_apply_on'' list parameter (see [[parameters-sending#msg_topic_keywords_apply_on|msg_topic_keywords_apply_on]]). Tagging a message can be optional or required, depending on the [[parameters-sending#msg_topic_tagging list parameter]].
+
+=====  Subscribing to message topics for list subscribers =====
+
+This feature is only available with the ''normal'' delivery mode. Subscribers can select a message topic to receive messages tagged with this topic. To receive messages that were not tagged, users can subscribe to the topic ''other''. The message topics selected by a subscriber are stored in the Sympa database (''subscriber_table'' table).
+
+=====  Message tagging =====
+
+First of all, if one or more ''msg_topic.keywords'' are defined, Sympa tries to tag messages automatically. To trigger manual tagging, by message sender or list moderator, on the web interface, Sympa uses authorization scenarios: if the resulting action is ''editorkey'' (for example in scenario ''send.editorkey''), the list moderator is asked to tag the message. If the resulted action is ''request_auth'' (for example in scenario ''send.privatekey''), the message sender is asked to tag the message. The following variables are available as scenario variables to customize tagging: ''topic'', ''topic-sender'', ''topic-editor'', ''topic-auto'', ''topic-needed'' (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]). If message tagging is required and if it was not yet performed, Sympa will ask the list moderator.
+
+Tagging a message will create a topic information file in the ''/home/sympa/spool/topic/'' spool. Its name is based on the listname and the Message-ID. For message distribution, a ''X-Sympa-Topic'' field is added to the message, to allow members to use email filters.
+
+====== Multipart/alternative ======
+
+If available, list members can select the **TXT** or **HTML** reception modes. In these modes, the list member will receive the selected version of a message if the message's content-type is multipart/alternative.
+====== Shared documents ======
+
+Shared documents are documents that different users can manipulate online via the web interface of Sympa, provided that they are authorized to do so. A shared document web space is associated with the list, and users can upload, download, delete, etc documents in that web space.
+
+//WWSympa//'s shared web features are fairly rudimentary. It is not our aim to provide a sophisticated tool for web publishing, such as those provided by products like //Rearsite//. It is nevertheless very useful to be able to define privileges on web documents in relation to list attributes such as //subscribers//, //list owners// or //list editors//.
+
+All file and directory names are lowercased by Sympa. It is consequently impossible to create two different documents whose names differ only in their case. The reason why Sympa does this is to allow correct URL links even when using an HTML document generator (typically Powerpoint) which uses random case for file names!
+
+In order to have better control over the documents and to enforce security in the shared document web space, each document is linked to a set of specific control information: its access rights.
+
+A list's shared documents are stored in the ''/home/sympa/expl/mylist/shared'' directory. This directory is either created via the ''Create shared'' web admin feature, or at list creation time, if the list ''[[parameters-privileges#shared_doc|shared_doc]]'' parameter is set. If you don't want the document repository to be created, you should remove the ''shared_doc'' parameter from the corresponding ''create_list_templates/xx/config.tt2'' files.
+
+This chapter describes how the shared documents are managed, especially as regards their access rights. We will see:
+
+  * the kind of operations which can be performed on shared documents;
+  * access rights management;
+  * access rights control specifications;
+  * actions on shared documents;
+  * template files.
+
+===== The three kinds of operations on a document =====
+
+Where shared documents are concerned, there are three kinds of operations which have the same constraints relating to access control:
+  * the read operation;
+  * the edit operation;
+  * the control operation.
+
+==== The read operation ====
+
+If applied to a directory, it opens it and lists its contents (only the sub-documents the user is authorized to "see").
+
+If applied to a file, it downloads it, and in the case of a viewable file (//text/plain//, //text/html//, or image), displays it.
+
+==== The edit operation ====
+
+It allows:
+  * subdirectory creation;
+  * file uploading;
+  * file unzipping;
+  * description of a document (title and basic information);
+  * online editing of a text file;
+  * document (file or directory) deletion. Directories can be deleted only if they are empty.
+
+These different edit actions are equivalent as regards access rights. Users who are authorized to edit a directory can create a subdirectory or upload a file to it, as well as describe or delete it. Users authorized to edit a file can edit it online, describe it, replace or remove it.
+
+==== The control operation ====
+
+The control operation is directly linked to the notion of access rights. If we want shared documents to be secure, we have to control the access to them. Not everybody must be authorized to perform every operation on them. Consequently, each document has specific access rights for reading and editing. Performing a control action on a document involves changing its Read/Edit rights.
+
+The control operation has more restrictive access rights than the other two operations. Only the owner of a document, the privileged owner of the list and the listmaster have control rights over a document. Another possible control action on a document is therefore specifying who owns it.
+
+===== The description file =====
+
+The information (title, owner, access rights...) related to each document must be stored, and so each shared document is linked to a special file called a description file, whose name includes the ''.desc'' prefix.
+
+The description file of a directory having the path ''mydirectory/mysubdirectory'' has the path ''mydirectory/mysubdirectory/.desc'' . The description file of a file having the path ''mydirectory/mysubdirectory/myfile.myextension'' has the path ''mydirectory/mysubdirectory/.desc.myfile.myextension'' .
+
+====  Structure of description files ====
+
+The structure of a document (file or directory) description file is given below. You should //never// have to edit a description file.
+
+<code>
+  title
+    <description of the file in a few words>
+
+  creation
+    email        <email of the owner of the document>
+    date_epoch   <date_epoch of the creation of the document>
+
+  access
+   read <access rights for read>
+   edit <access rights for edit>
+</code>
+
+The following example is for a document that subscribers can read, but that only the owner of the document and the owner of the list can edit.
+
+<code>
+  title
+    module C++ which uses the class List
+
+  creation
+    email foo@some.domain.com
+    date_epoch 998698638
+
+  access
+   read  private
+   edit  owner
+</code>
+
+===== The predefined authorization scenarios =====
+
+====  The public scenario ====
+
+The ''public'' scenario is the most permissive scenario. It enables anyone (including unknown users) to perform the corresponding action.
+
+====  The private scenario ====
+
+The ''private'' scenario is the basic scenario for a shared space. Every subscriber of the list is authorized to perform the corresponding action. The ''private'' scenario is the default read scenario for ''shared'' when this shared space is created. This can be modified by editing the list configuration file.
+
+====  The scenario owner ====
+
+The scenario ''owner'' is the most restrictive scenario for a shared space. Only the listmaster, list owners and the owner of the document (or those of a parent document) are allowed to perform the corresponding action. The ''owner'' scenario is the default scenario for editing.
+
+====  The scenario editor ====
+
+The scenario ''editor'' is for a moderated shared space for editing. Every suscriber of the list is allowed to edit a document. But this document will have to be installed or rejected by the editor of the list. Documents awaiting for moderation are visible by their author and the editor(s) of the list in the shared space. The editor has also an interface with all documents awaiting. When there is a new document, the editor is notified and when the document is installed, the author is notified too. In case of reject, the editor can notify the author or not.
+
+===== Access control =====
+
+Access control is an important operation performed every time a document is accessed within the shared space.
+
+The access control related to a document in the hierarchy involves an iterative operation on all its parent directories.
+
+====  Listmaster and privileged owners ====
+
+The listmaster and privileged list owners are special users as regards the shared document web space. They are allowed to perform every action on every document. This privilege enables control over the shared space to be maintained. It is impossible to prevent the listmaster and privileged owners from performing any action they please on any document in the shared space.
+
+==== Special case of the shared directory ====
+
+In order to allow access to a root directory to be more restrictive than that of its subdirectories, the ''shared'' directory (root directory) is a special case as regards access control. The access rights for read and edit are those specified in the list configuration file. Control of the root directory is specific. Only the users authorized to edit a list's configuration may change access rights on its ''shared'' directory.
+
+====  General case ====
+
+''mydirectory/mysubdirectory/myfile'' is an arbitrary document in the shared space, but not in the //root// directory. A user **X** wishes to perform one of the three operations (read, edit, control) on this document. The access control will proceed as follows:
+
+  * Read operation \\  To be authorized to perform a read action on ''mydirectory/mysubdirectory/myfile'', **X** must be authorized to read every document making up the path; in other words, he/she must be allowed to read ''myfile'' (the authorization scenario of the description file of ''myfile'' must return ''do_it'' for user **X**), and the same goes for ''mysubdirectory'' and ''mydirectory''). \\ In addition, given that the owner of a document or of its parent directories is allowed to perform **all actions on that document**, ''mydirectory/mysubdirectory/myfile'' may also have read operations performed on it by the owners of ''myfile'', ''mysubdirectory'', and ''mydirectory''. \\ This can be schematized as follows:
+<code>
+    	X can read <a/b/c>
+    	if
+    	(X can read <c>
+    	AND X can read <b>
+    	AND X can read <a>)
+    	OR
+    	(X owner of <c>
+    	OR X owner of <b>
+    	OR X owner of <a>)
+</code>
+
+  * Edit operation \\  The access algorithm for edit is identical to the algorithm for read:
+<code>
+    	X can edit <a/b/c>
+    	if
+    	(X can edit <c>
+    	AND X can edit <b>
+    	AND X can edit <a>)
+    	OR
+    	(X owner of <c>
+    	OR X owner of <b>
+    	OR X owner of <a>)
+</code>
+
+  * Control operation \\ The access control which precedes a control action (change rights or set the owner of a document) is much more restrictive. Only the owner of a document or the owners of a parent document may perform a control action:
+<code>
+    	X can control <a/b/c>
+    	if
+    	(X owner of <c>
+    	OR X owner of <b>
+    	OR X owner of <a>)
+</code>
+
+=====  Shared document actions =====
+
+The shared web feature has called for some new actions.
+
+  * action ''D_ADMIN'' \\ Creates the shared space, closes it or restore it. The ''d_admin'' action is accessible from a list's **admin** page.
+  * action ''D_READ'' \\ Reads the document after read access control. If the document is a folder, it lists all the subdocuments that can be read. If it is a file, it displays it if it is viewable, else downloads it to disk. If the document to be read contains a file named ''index'' or ''index.htm'', and if the user has no permissions other than read on all subdocuments contained, the read action will consist in displaying the index. The ''d_read'' action is accessible from a list's **info** page.
+  * action ''D_CREATE_DIR'' \\ Creates a new subdirectory in a directory that can be edited without moderation. The creator is the owner of the directory. The access rights are those of the parent directory.
+  * action ''D_DESCRIBE'' \\ Describes a document that can be edited.
+  * action ''D_DELETE'' \\  Deletes a document after edit access control. If applied to a folder, it has to be empty.
+  * action ''D_UPLOAD'' \\ Uploads a file into a directory that can be edited.
+  * action ''D_UNZIP'' \\ Unzips a file into a directory that can be edited without moderation. The whole file hierarchy contained in the ZIP file is installed into the directory.
+  * action ''D_OVERWRITE'' \\ Overwrites a file if it can be edited. The new owner of the file is the one who has done the overwriting operation.
+  * actions ''D_EDIT_FILE'' and ''D_SAVE_FILE'' \\ Edits a file and saves it after edit access control. The new owner of the file is the one who has done the saving operation.
+  * action ''D_CHANGE_ACCESS'' \\ Changes the access rights of a document (read or edit), provided that control of this document is authorized.
+  * action ''D_SET_OWNER'' \\ Changes the owner of a directory, provided that control of this document is authorized. The directory must be empty. The new owner can be anyone, but authentication is necessary before any action can be performed on the document.
+
+=====  Template files =====
+
+The following template files have been created for the shared document web space.
+
+====  d_read.tt2 ====
+
+The default page for reading a document. If for a file, displays it (if viewable) or downloads it. If for a directory, displays all readable subdocuments, each of which will feature buttons corresponding to the different actions this subdocument allows. If the directory is editable, displays buttons to describe it or upload a file into it. If the directory is editable without moderation, it displays buttons to create a new subdirectory or to upload a ZIP file in order to install a file hierarchy. If access to the document is editable, displays a button to edit the access to it.
+
+====  d_editfile.tt2 ====
+
+The page used to edit a file. If for a text file, allows it to be edited online. This page also enables another file to be substituted in its place.
+
+====  d_control.tt2 ====
+
+The page to edit the access rights and the owner of a document.
+
+=====  d_upload.tt2 =====
+
+The page to upload a file is only used when the name of the file already exists.
+
+
+=====  d_properties.tt2 =====
+
+This page is used to edit the description file and to rename it.======  Bounce management ======
+
+Sympa allows bounce (non-delivery report) management. This prevents list owners from receiving each bounce (1 per message sent to a bouncing subscriber) in their own mailbox. Without automatic processing of bounces, list owners either go mad, or just delete them without further attention.
+
+Bounces are received at the ''mylist-owner'' address (note that the ''-owner'' suffix can be customized, see [[conf-parameters/part3#return_path_suffix|return_path_suffix]]), which should be sent to the ''bouncequeue'' program through aliases:
+
+  samplelist-owner: "|/home/sympa/bin/bouncequeue samplelist"
+
+''bouncequeue'' (see [[organization#binaries|Binaries]]) stores bounces in a ''/home/sympa/spool/bounce/'' spool.
+
+Bounces are then processed by the ''bounced.pl'' daemon. This daemon analyses bounces to find out which email addresses are concerned and what kind of error was generated. If bouncing addresses match a subscriber's address, information is stored in the Sympa database (in ''subscriber_table''). Moreover, the most recent bounce itself is archived in ''bounce_path/mylist/email'' (where ''bounce_path'' is defined in a ''wwsympa.conf'' parameter and email is the user email address). Note that the ''OTHER/'' subdirectory gathers all bounces that could not get analyzed to determine the bouncing address.
+
+When reviewing a list, bouncing addresses are tagged as bouncing. You may access further information such as dates of first and last bounces, number of bounces received for the address, the last bounce, etc.
+
+With this information, the automatic bounce management is possible:
+
+The automatic task ''eval_bouncer'' gives a score for each bouncing user. The score, between 0 to 100, allows the classification of bouncing users in two levels (level 1 or 2). According to the level, automatic actions are executed periodically by the ''process_bouncers'' task.
+
+The score evaluation main parameters are:
+  * ''Bounces count'': the number of bouncing messages received by Sympa for the user.
+  * ''Type rate'': bounces are classified depending on the type of errors generated on the user side. If the error type is ''mailbox is full'' (i.e. a temporary 4.2.2 error type), the type rate will be 0.5, whereas permanent errors (5.x.x) have a type rate equal to 1.
+  * ''Regularity rate'': this rate tells whether bounces were received regularly, compared to list traffic. The list traffic is deduced from the ''msg_count'' file data.
+
+The score formula is: <code>Score = bounce_count * type_rate * regularity_rate</code>
+
+To avoid making decisions (i.e. defining a score) without enough relevant data, the score is not evaluated if:
+  * The number of received bounces is lower than ''minimum_bouncing_count'' (see [[conf-parameters/part3#minimum_bouncing_count|minimum_bouncing_count]]).
+  * The bouncing period is shorter than ''minimum_bouncing_period'' (see [[conf-parameters/part3#minimum_bouncing_period|minimum_bouncing_period]]).
+
+Bouncing list member entries expire after a given period of time. The default period is 10 days, but it can be customized if you write a new ''expire_bounce'' task (see [[conf-parameters/part3#expire_bounce_task|expire_bounce_task]]).
+
+You can define the limit between each level through the **List configuration pannel**, in subsection **Bounce settings** (see [[parameters-bounces#bouncers_level1|bouncers_level1]]). The principle consists in associating a score interval with a level.
+
+You can also define which action must be applied on each category of user (see [[parameters-bounces#bouncers_level1|bouncers_level1]]). Each time an action will be performed, a notification email will be sent to the person of your choice (see [[parameters-bounces#bouncers_level1|bouncers_level1]]).
+
+
+====== VERP ======
+
+VERP (Variable Envelop Return Path) is used to ease automatic recognition of subscribers email addresses when receiving a bounce. If VERP is enabled, the subscriber address is encoded in the return path itself, so that the Sympa bounce management process (bounced) will use the address the bounce was received for to retrieve the subscriber email. This is very useful because sometimes, non delivery report do not contain the initial subscriber email address but an alternative address where messages are forwarded. VERP is the only solution to detect automatically these subscriber errors. However, the cost of VERP is significant, indeed VERP requires to distribute a separate message for each subscriber and breaks the bulk emailer grouping optimization.
+
+In order to benefit from VERP and keep the distribution process fast, Sympa enables VERP only for a share of the list members. If texttt ''verp_rate'' (see [[:manual:conf-parameters:part3#verp_rate|verp_rate]]) is 10%, then after 10 messages distributed in the list all subscribers have received at least one message where VERP was enabled. Later, distribution message enables VERP also for all users where some bounces were collected and analyzed by the previous VERP mechanism.
+
+If VERP is enabled, the format of the messages return path are as follows:
+
+<code>Return-Path: <bounce+user==a==userdomain==listname@listdomain></code>
+
+Note that you need to set a mail alias for the generic bounce+* alias (see [[mail-aliases#robot_aliases|Robot aliases]]).
+
+====== ARF ======
+
+ARF (Abuse Feedback Reporting Format) is a standard for reporting abuse. It is implemented mainly in the AOL email user interface. AOL servers propose to mass mailer to received automatically the users complain by formated messages. Because many subscribers do not remember how to unsubscribe they use ARF when provided by their user interface. It may be useful to configure the ARF management in Sympa. It is really simple: all what you have to do is to create a new alias for each virtual robot as the following:
+
+  abuse-feedback-report:       "| /home/sympa/bin/bouncequeue sympa@samplerobot"
+
+Then register this address as your loop back email address with ISP (for exemple AOL). This way, messages to that email adress are processed by the bounced deamon and opt-out opt-out-list abuse and automatically processed. If the bounce service can remove a user, the message report feedback is forwarded to the list owner. Unrecognized messages are forwarded to the listmaster.
+====== Antivirus ======
+
+Sympa lets you use an external antivirus solution to check incoming mails. In this case you must set the ''antivirus_path'' and ''antivirus_args'' configuration parameters (see [[conf-parameters#Antivirus_plug-in|Antivirus_plug-in]]. Sympa is already compatible with McAfee/uvscan, Fsecure/fsav, Sophos, AVP, Trend Micro/VirusWall and Clam Antivirus. For each email received, Sympa extracts its MIME parts in the ''/home/sympa/spool/tmp/antivirus'' directory and then calls the antivirus software to check them. When a virus is detected, Sympa looks for the virus name in the virus scanner STDOUT and sends a ''your_infected_msg.tt2'' warning to the sender of the email. The dmail is saved as 'bad' and the working directory is deleted (except if Sympa is running in debug mode).====== Using Sympa with LDAP ======
+
+LDAP is a client-server protocol for accessing a directory service. Sympa provide various features based on access to one or more LDAP directories:
+
+  * authentication using LDAP directory instead of the Sympa internal storage of password (see [[authentication#auth.conf|auth.conf]]);
+  * named filters used in authorization scenario condition (see [[authorization-scenarios#named_filters|Named Filters]]);
+  * LDAP extraction of list subscribers (see [[parameters-data-sources#user_data_source|user_data_source]]);
+  * LDAP extraction of list owners or editors (see [[list-definition#data_inclusion_file|Data inclusion file]]);
+  * mail aliases stored in LDAP (see [[mail-aliases#alias_manager|Alias manager]]).====== Sympa with S/MIME and HTTPS ======
+
+S/MIME is a cryptographic method for MIME messages based on X509 certificates. Before installing Sympa S/MIME features (which we call S/Sympa), you should be under no illusion about what the S stands for: ''S/MIME'' means ''Secure MIME''. That S certainly does not stand for ''Simple''.
+
+The aim of this chapter is simply to describe what security level is provided by Sympa while using S/MIME messages, and how to configure Sympa for it. It is not intended to teach anyone what S/MIME is and why it is so complex! RFCs number 2311, 2312, 2632, 2633 and 2634, along with a lot of literature about S/MIME, PKCS#7 and PKI is available on the Internet. Sympa 2.7 is the first version of Sympa to include S/MIME features as beta-testing features.
+
+======  Signed message distribution ======
+
+No action required. You probably imagine that any mailing list manager (or any mail forwarder) is compatible with S/MIME signatures, as long as it respects the MIME structure of incoming messages. You are right. Even Majordomo can distribute a signed message! As Sympa provides MIME compatibility, you do not need to do anything in order to allow subscribers to check signed messages distributed through a list. This is not an issue at all, since any process that distributes messages is compatible with end user signing processes. Sympa simply skips the message footer attachment (see [[list-definition#message_header_and_footer|Message header and footer]]) to prevent any body corruption which would break the signature.
+
+====== Use of S/MIME signatures by Sympa itself ======
+
+Sympa is able to check S/MIME signatures in order to apply S/MIME authentication methods for message handling. Currently, this feature is limited to the distribution process as well as to any commands Sympa might find in the message body. The reasons for this restriction are related to current S/MIME usage. S/MIME signature structure is based on the encryption of a digest of the message. Most S/MIME agents do not include any part of the message headers in the message digest, so anyone can modify the message header without signature corruption! This is easy to do: for example, anyone can edit a signed message with their preferred message agent, modify whatever header they want (for example ''Subject:'' , ''Date:'' and ''To:'', and redistribute the message to a list or to the robot without breaking the signature.
+
+So Sympa cannot apply the S/MIME authentication method to a command parsed in the ''Subject:'' field of a message or through the ''-subscribe'' or ''-unsubscribe'' email addresses.
+
+======  Use of S/MIME encryption ======
+
+S/Sympa is not an implementation of the ''S/MIME Symmetric Key Distribution'' internet draft. This sophisticated scheme is required for large lists with encryption. So, there is still some scope for future developments ;-)
+
+We assume that S/Sympa distributes message as received, i.e. unencrypted when the list receives an unencrypted message, but otherwise encrypted.
+
+In order to be able to send encrypted messages to a list, the sender needs to use the X509 certificate of the list. Sympa will send an encrypted message to each subscriber using the subscriber's certificate. To provide this feature, Sympa needs to manage one certificate for each list and one for each subscriber. This is available in Sympa version 2.8 and above.
+
+======  S/Sympa configuration ======
+
+===== Installation =====
+
+The only requirement is OpenSSL (http://www.openssl.org) version 0.9.5a and above. OpenSSL is used by Sympa as an external plugin (like sendmail or postfix), so it must be installed with the appropriate access (x for sympa.sympa).
+
+===== Managing user certificates =====
+
+User certificates are automatically caught by Sympa when receiving a signed S/MIME messsage, so if Sympa needs to send encrypted messages to this user, it can perform encryption using this certificate. This works fine, but it is not conpliant with the PKI theory: Sympa should be able to search for user certificates using a PKI certificate directory (LDAP).
+
+That's why Sympa tests the key usage certificate attribute to known if the certificate allows both encryption and signature.
+
+Certificates are stored as PEM files in the ''/home/sympa/expl/X509-user-certs/'' directory. Files are named user@some.domain@enc or user@some.domain@sign (the ''@enc'' and ''@sign'' suffixes are used according to certificates usage). No other tool is provided by Sympa in order to collect this certificate repository, but you can easily imagine your own tool to create those files.
+
+===== Configuration in sympa.conf =====
+
+The S/Sympa configuration is very simple. If you are used to Apache SSL, you should not feel lost. If you are an OpenSSL guru, you will feel at home, and there may even be changes you will wish to suggest to us.
+
+The basic requirement is to let Sympa know where to find the binary file for the OpenSSL program and the certificates of the trusted certificate authority. This is made using the optional parameters ''openSSL'' and ''capath'' and / or ''cafile''.
+
+  * ''[[:manual:conf-parameters:part3#openssl|openssl]]'': the path for the OpenSSL binary file, usually ''/usr/local/ssl/bin/openSSL'';
+  * ''[[:manual:conf-parameters:part3#cafile|cafile]]'' (or ''[[:manual:conf-parameters:part3#capath|capath]]''): the path of a bundle (or path of the directory) of trusted CA certificates. The file ''~/home/sympa/bin/etc/cabundle.crt'' included in Sympa distribution can be used. \\ The ''cafile'' file (or the ''capath'' directory) should be shared with your Apache+mod_ssl configuration. This is required because Sympa's web interface gets user certificates information from Apache mod_ssl module;
+  * ''[[:manual:conf-parameters:part3#key_password|key_password]]'': the password used to protect all list private keys.
+
+===== Configuration to recognize S/MIME signatures =====
+
+Once ''OpenSSL'' has been installed and ''sympa.conf'' configured, your S/Sympa is ready to use S/MIME signatures for any authentication operation. You simply need to use the appropriate authorization scenario for the operation you want to secure (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+When receiving a message, Sympa applies the authorization scenario with the appropriate authentication method parameter. In most cases, the authentication method is ''smtp'', but in cases where the message is signed and the signature has been checked and matches the sender email, Sympa applies the ''smime'' authentication method.
+
+It is essential to ensure that if the authorization scenario does not recognize this authentication method, the operation requested will be rejected. Consequently, authorization scenarios distributed prior to version 2.7 are not compatible with the OpenSSL configuration of Sympa. All standard authorization scenarios (those distributed with sympa) now include the ''smime'' method. The following example is named ''send.private_smime'', and restricts sending to subscribers using an S/mime signature:
+
+<code>
+  title.us restricted to subscribers check SMIME signature
+  title.fr limité aux abonnés, vérif de la signature SMIME
+
+  is_subscriber([listname],[sender])             smime  -> do_is_editor([listname],[sender])                 smime  -> do_it
+  is_owner([listname],[sender])                  smime  -> do_it
+</code>
+
+It as also possible to mix various authentication methods in a single authorization scenario. The following example, ''send.private_key'', requires either an MD5 return key or an S/MIME signature:
+
+<code>
+  title.us restricted to subscribers with previous MD5 authentication
+  title.fr réservé aux abonnés avec authentification MD5 préalable
+
+  is_subscriber([listname],[sender]) smtp          -> request_auth
+  true()                             md5,smime     -> do_it
+</code>
+
+===== distributing encrypted messages =====
+
+In this section, we describe S/Sympa encryption features. The goal is to use S/MIME encryption for distribution of a message to subscribers whenever the message has been received encrypted from the sender.
+
+Why is S/Sympa concerned by the S/MIME encryption distribution process ? It is because encryption is performed using the **recipient** X509 certificate, whereas the signature requires the sender's private key. Thus, an encrypted message can be read by the recipient only if he or she is the owner of the private key associated with the certificate. Consequently, the only way to encrypt a message for a list of recipients is to encrypt and send the message for each recipient. This is what S/Sympa does when distributing an encrypted message.
+
+The S/Sympa encryption feature in the distribution process assumes that Sympa has received an encrypted message for some list. To be able to encrypt a message for a list, the sender must have some access to an X509 certificate for the list. So the first requirement is to install a certificate and a private key for the list. The mechanism whereby certificates are obtained and managed is complex. Current versions of S/Sympa assume that list certificates and private keys are installed by the listmaster using the ''/home/sympa/bin/p12topem.pl'' script. This script allows you to install a PKCS#12 bundle file containing a private key and a certificate using the appropriate format.
+
+It is a good idea to have a look at the OpenCA documentation ([[http://www.openssl.org]]) and/or PKI providers' web documentation. You can use commercial certificates or home-made ones. Of course, the certificate must be approved of for email applications, and issued by one of the trusted CA's described in the ''cafile'' file or the ''capath'' Sympa configuration parameter.
+
+The list private key must be installed in a file named ''/home/sympa/expl/mylist/private_key''. All the list private keys must be encrypted using a single password defined by the ''password'' parameter in ''sympa.conf''.
+
+====  Use of navigator to obtain X509 list certificates ====
+
+In many cases email X509 certificates are distributed through a web server and loaded into the browser using your mouse: Mozilla or internet Explorer allow certificates to be exported to a file.
+
+Here is a way to install a certificat for a list:
+
+  * Get a list certificate is to obtain a personal email certificate for the canonical list address in your browser as if it was your personal certificate.
+  * Export the intended certificate it. The format used by Netscape is ''pkcs#12''. Copy this file to the list home directory.
+  * Convert the pkcs#12 file into a pair of PEM files: ''cert.pem'' and ''private_key'', using the ''/home/sympa/bin/p12topem.pl'' script. Use ''p12topem.pl -help'' for details.
+  * Be sure that ''cert.pem'' and ''private_key'' are owned by sympa with ''r'' access.
+  * As soon as a certificate is installed for a list, the list homepage includes a new link to load the certificate in the user's browser, and the welcome message is signed by the list.
+
+======  Managing certificates with tasks ======
+
+You may automate the management of certificates with two global task models provided with Sympa. See [[customizing#tasks|Tasks]] to know more about tasks. Report to the [[conf-parameters#chk_cert_expiration_task|chk_cert_expiration_task]] and [[conf-parameters#crl_update_task|crl_update_task]] ''sympa.conf'' parameters to configure your Sympa to use these facilities.
+
+=====  chk_cert_expiration.daily.task model =====
+
+A task created with the model ''chk_cert_expiration.daily.task'' checks every day the expiration date of certificates stored in the ''/home/sympa/expl/X509-user-certs/'' directory. The user is warnt with the ''daily_cert_expiration'' template when his/her certificate has expired or is going to expire within three days.
+
+=====  crl_update.daily.task model =====
+
+You may use the model ''crl_update.daily.task'' to create a task which daily updates the certificate revocation lists when needed.======  Using Sympa commands ======
+
+Users interact with Sympa, of course, when they send messages to one of the lists, but also indirectly through administrative requests (subscription, list of users, etc.).
+
+This section describes administrative requests, as well as interaction modes in the case of private and moderated lists. Administrative requests are messages whose body contains commands understood by Sympa, one per line. These commands can be indiscriminately placed in the ''Subject:'' or in the body of the message. The ''To:'' address is generally the ''Sympadomain'' alias, although it is also advisable to recognize the ''listservdomain'' address.
+
+Example:
+<code>
+  From: pda@prism.uvsq.fr
+  To: Sympa@renater.fr
+
+  LISTS
+  INFO Sympa-users
+  REVIEW Sympa-users
+  QUIT
+</code>
+
+Most user commands have three-letter abbreviations (e.g. ''REV'' instead of ''REVIEW'').
+
+======  User commands ======
+
+  * ''HELP'' \\ Provides instructions for the use of Sympa commands. The result is the content of the ''helpfile.tt2'' template file.
+  * ''INFO'' //listname// \\ Provides the parameters of the list specified (owner, subscription mode, etc.) and its description. The result is the content of ''~welcome[.mime]''.
+  * ''LISTS'' \\ Provides the names of lists managed by Sympa. This list is generated dynamically, using the ''visibility'' parameter (see [[parameters-definition#visibility|Visibility]]). The ''lists.tt2'' template defines the message returned by the ''LISTS'' command.
+  * ''REVIEW'' //listname// \\ Provides the addresses of subscribers if the run mode authorizes it. See the [[parameters-privileges#review|review parameter]] for the configuration file of each list, which controls read authorizations for the subscriber list. Since subscriber addresses can be abused by spammers, it is strongly recommended that you **only authorize owners to access the subscriber list**.
+  * ''WHICH'' \\ Returns the list of lists to which one is subscribed, as well as the configuration of his or her subscription to each of the lists (DIGEST, NOMAIL, SUMMARY, CONCEAL).
+  * ''STATS'' //listname// \\ Provides statistics for the specified list: number of messages received, number of messages sent, megabytes received, megabytes sent. This is the contents of the ''stats'' file. \\ Access to this command is controlled through the ''review'' parameter.
+  * ''INDEX'' //listname// \\ Provides index of archives for the list specified. Access rights to this function are the same as for the ''GET'' command.
+  * ''GET'' //listname// //archive// \\ To retrieve archives for list (see above). Access rights are the same as for the ''REVIEW'' command. See the [[parameters-privileges#review|review parameter]].
+  * ''LAST'' //listname// \\ To receive the last message distributed in a list (see above). Access rights are the same as for the ''GET'' command.
+  * ''SUBSCRIBE'' //listname firstname name// \\ Requests sign-up to the specified list. The //firstname// and //name// parameters are optional. If the list is configured with a restricted subscription (see the [[parameters-privileges#subscribe|subscribe parameter]]), this command is sent to the list owner for approval.
+  * ''INVITE'' //listname user@host name// \\ Invites someone to subscribe to the list specified. The //name// parameter is optional. The command is similar to ''ADD'', but the person specified is not added to the list but invited to subscribe to it in accordance with the [[parameters-privileges#subscribe|subscribe parameter]].
+  * ''SIGNOFF'' //listname// [ //user@host// ] \\ Requests unsubscription from the specified list. ''SIGNOFF *'' means unsubscription from all lists.
+  * ''SET'' //listname// ''DIGEST'' \\ Puts the subscriber in //digest// mode for the //listname// list. Instead of receiving email from the list in a normal manner, the subscriber will periodically receive it in a digest. This digest compiles a group of messages from the list, using multipart/digest mime format. The sending period for these digests is regulated by the list owner using the [[parameters-sending#digest|digest parameter]]. See the [[sympa-commands#set_mail|SET LISTNAME MAIL command]] and the [[list-definition#subscribers_file|reception parameter]].
+  * <BOOKMARK:set_summary>''SET'' //listname// ''SUMMARY'' \\ Puts the subscriber in ''summary'' mode for the //listname// list. Instead of receiving email from the list in a normal manner, the subscriber will periodically receive the list of messages. This mode is very close to the DIGEST reception mode, but the subscriber only receives the list of messages. This option is available only if the digest mode is set.
+  * <BOOKMARK:set_nomail>''SET'' //listname// ''NOMAIL'' \\ Puts subscriber in ''nomail'' mode for the //listname// list. This mode is used when a subscriber no longer wants to receive email from the list, but nevertheless wishes to retain the possibility of posting to the list. This mode therefore prevents the subscriber from unsubscribing and subscribing later on. See the [[sympa-commands#set_mail|SET LISTNAME MAIL command]] and the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''TXT'' \\ Puts subscriber in ''txt'' mode for the //listname// list. This mode is used when a subscriber wishes to receive emails sent in both format, txt/html and txt/plain only, in txt/plain format. See the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''HTML'' \\ Puts subscriber in ''html'' mode for the //listname// list. This mode is used when a subscriber wishes to receive emails sent in both format, txt/html and txt/plain only, in txt/html format. See the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''URLIZE'' \\ Puts subscriber in ''urlize'' mode for the //listname// list. This mode is used when a subscriber wishes not to receive attached files. The attached files are replaced by a URL leading to the file stored on the list site. See the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''NOT_ME'' \\ Puts subscriber in ''not_me'' mode for the //listname// list. This mode is used when a subscriber wishes not to receive back the message that he/she has sent to the list. See [[list-definition#subscribers_file|reception parameter]].
+  * <BOOKMARK:set_mail>''SET'' //listname// ''MAIL'' \\ Puts the subscriber in ''normal'' mode (default) for the //listname// list. This option is mainly used to cancel the ''nomail'', ''summary'' or ''digest'' modes. If the subscriber was in ''nomail'' mode, he or she will receive email from the list in a normal manner again. See the [[sympa-commands#set_nomail|SET LISTNAME NOMAIL command]] and the [[list-definition#subscribers_file|reception parameter]]. Moreover, this mode allows message topic subscription (see [[reception-mode#message_topics|Message topics]]).
+  * <BOOKMARK:set_conceal>''SET'' //listname// ''CONCEAL'' \\ Puts the subscriber in ''conceal'' mode for the //listname// list. The subscriber will then become invisible during ''REVIEW'' on this list. Only owners will see the whole subscriber list. See the [[sympa-commands#set_noconceal|SET LISTNAME NOCONCEAL command]] and the [[parameters-definition#visibility|Visibility parameter]].
+  * <BOOKMARK:set_noconceal>''SET'' //listname// ''NOCONCEAL'' \\ Puts the subscriber in ''noconceal'' mode (default) for the //listname// list. The subscriber will then become visible during ''REVIEW'' of this list. The ''conceal'' mode is therefore cancelled. See the [[sympa-commands#set_conceal|SET LISTNAME CONCEAL command]] and the [[parameters-definition#visibility|Visibility parameter]].
+  * ''QUIT'' \\ Ends acceptance of commands. This can be useful when the message contains additional lines, as for example in the case where a signature is automatically added by the user's email program (MUA).
+  * ''CONFIRM'' //key// \\ If the ''send'' parameter of a list is set to ''privatekey'', ''publickey'' or ''privateorpublickey'', messages are only distributed in the list after an authentication phase by return mail, using a one-time password (numeric key). For this authentication, the sender of the message is requested to post the ''CONFIRM'' //key// command to Sympa.
+  * ''QUIET'' \\ This command is used for silent (mute) processing: no performance report is returned for commands prefixed with ''QUIET''.
+
+======  Owner commands ======
+
+Some administrative requests are only available to list owners. They are essential for all procedures in limited access mode, and to perform requests in place of users. These comands are:
+
+  * ''ADD'' //listname user@host firstname name// \\ Add command similar to ''SUBSCRIBE''. You can avoid user notification by using the ''QUIET'' prefix (i.e.: ''QUIET ADD'').
+  * ''DELETE'' //listname user@host// \\ Delete command similar to ''SIGNOFF''. You can avoid user notification by using the ''QUIET'' prefix (i.e.: ''QUIET DELETE'').
+  * <BOOKMARK:cmd_remind>''REMIND'' //listname// \\ ''REMIND'' is used by list owners in order to send an individual service reminder message to each subscriber. This message is made by parsing the ''remind.tt2'' file.
+  * ''REMIND *'' \\ ''REMIND *'' is used by the listmaster to send to each subscriber of any list a single message with a summary of his/her subscriptions. In this case, the message sent is built by parsing the ''global_remind.tt2'' file. For each list, Sympa tests whether the list is configured as hidden to each subscriber (parameter lparam visibility). By default, the use of this command is restricted to listmasters. Processing may take a lot of time!
+
+These commands can be prefixed with ''QUIET'' to indicate processing without acknowledgment of receipt.
+
+====== Moderator commands ======
+
+If a list is moderated, Sympa only distributes messages enabled by one of its moderators (editors). Moderators have several methods for enabling message distribution, depending on the [[parameters-sending#send|send parameter]].
+
+  * ''DISTRIBUTE'' //listname// //key// \\ If the ''send'' parameter of a list is set to ''editorkey'' or ''editorkeyonly'', each message queued for moderation is stored in a spool (see [[conf-parameters#queuemod|queuemod]]), and linked to a key. The moderator must use this command to enable message distribution.
+  * ''REJECT'' //listname// //key// \\ The message with the //key// key will be deleted from the moderation spool of the //listname// list.
+  * ''MODINDEX'' //listname// \\ This command returns the list of messages queued for moderation for the //listname// list. The result is presented in the form of an index, which supplies, for each message, its sending date, its sender, its size, and its associated key, as well as all messages in the form of a digest.
