@@ -1,0 +1,159 @@
+<html><a name="wwsympa_sympa_s_web_interface" /></html>
+======= × WWSympa --- Sympa のウェブインタフェース=======
+<note warning>
+This content was obsoleted.
+
+</note>
+
+//WWSympa// は Sympa のウェブインタフェースです。
+
+<html><a name="WWSympa"/></html>
+<html><a name="organization" /></html>
+======構成 ======
+
+[[:manual:web-interface#organization]]
+
+<html><a name="web_server_setup" /></html>
+======ウェブサーバの設定======
+
+<html><a name="wwsympa.fcgi_access_permissions" /></html>
+=====wwsympa.fcgi のアクセス権限=====
+
+//Sympa// と //WWSympa// とは多くのファイルを共用しているので、''wwsympa.fcgi'' は ''archived.pl''、''bounced.pl''、''sympa.pl'' と同じ UID/GID で動作させなければなりません。これを実現するやりかたはいくつかあります:
+
+<html><a name="default_behaviour" /></html>
+
+==== 標準の動作 ====
+
+<html><a name="until_version_5.3setuidperl" /></html>
+=== 5.3 版まで --- SetuidPerl ===
+
+これが標準の方法ですが、セキュリティが低くなるかもしれません。configure で ''<nowiki>--</nowiki>enable_secure'' オプションを設定しなかったのなら、 ''wwsympa.fcgi'' は SetUID ビットをセットしてインストールされています。多くのシステムでは、suidperl パッケージをインストールする必要があるでしょう。
+
+<html><a name="starting_version_5.4c_wrapper" /></html>
+=== 5.4 版以降 --- C のラッパ ===
+
+5.4 版からは、前節で述べた C のラッパが自動的にビルドされるようになりました。
+
+''wwwsympa.fcgi'' を小さな C のラッパプログラム ''wwsympa-wrapper.fcgi'' から実行することで、--- セキュアでなくメンテナンスも止まっている --- SetuidPerl モードを使わなくてすみます。
+
+==== 他の方法 (すべての版で可能) ====
+
+=== Sudo ===
+
+''wwsympa.fcgi'' をユーザ ''sympa'' で動作させるのに ''sudo'' を使う。Apache の設定では ''wwsympa.fcgi'' のかわりに ''wwsympa_sudo_wrapper.pl'' を使わなければなりません。また、''/etc/sudoers'' ファイルを (''visudo'' コマンドで) 以下のように変更します: <code>apache ALL = (sympa) NOPASSWD: /home/sympa/bin/wwsympa.fcgi</code>また、''sudoers'' ファイルでは **requiretty** フラグと **env_reset** フラグをセットしないようにしなければなりません。<code>#Defaults    requiretty
+#Defaults    env_reset</code>''requiretty'' をセットすると、実際にログインしたユーザが有効期間の間だけ実行できます。''env_reset'' をセットすると、ほとんどの環境変数……サーバ名や要求された URI など……が無視されてしまいます。
+
+=== 専用の Apache サーバ ===
+
+uid:gid を ''sympa:sympa'' とした専用の Apache サーバを稼働させる (Apache の初期値は ''apache:apache'' などです)。
+
+=== Apache の suExec ===
+
+Apache の仮想ホストで uid:gid を ''sympa:sympa'' にしたものを使う。Apache を suexec 対応でコンパイルしておく必要があります。Apache の suexec では普通、suEXEC の対象となるユーザの UID/GID に下限がありますので気をつけてください。Apache のバイナリ配布を含む多くのシステムでは、初期値は通常 ''100'' です。したがって //Sympa// の UID (と GID) を 100 より大きくするか、より小さい UID/GID を使えるように suexec のほうを変えるかしなければなりません。詳しくは http://httpd.apache.org/docs/suexec.html#install を調べてください。 ''User'' ディレクティブと ''Group'' ディレクティブは、''FastCgiServer'' ディレクティブ (後述) より前に記述しなければいけません。
+
+FIXME この後未訳 [[:manual:web-interface#apache_suexec]]
+
+<html><a name="installing_wwsympa.fcgi_in_your_apache_server" /></html>
+=====wwsympa.fcgi の Apache サーバへのインストール=====
+
+<note>以降の例では、5.3 版の既定の動作 ([[web-interface#wwsympa.fcgi_access_permissions|wwsympa.fcgi のアクセス権限]]) で動作させているとします。この場合、ウェブサーバを起動させるスクリプトは ''wwsympa.fcgi'' ですが、設定によって次のように変えてください。
+
+  * [[web-interface#sudo|sudo]] を使っているのなら、''wwsympa.fcgi'' の呼び出しは ''wwsympa_sudo_wrapper.pl'' に読み替えます。
+  * [[web-interface#starting_version_5.4c_wrapper|Sympa 5.4 以降の既定の動作]] なら、 ''wwsympa.fcgi'' の呼び出しを ''wwsympa-wrapper.fcgi'' に読み替えます。
+</note>
+
+まず、Sympa が静的なコンテンツ (CSS、メンバのピクチャ、ドキュメントなど) を入れるディレクトリのエイリアスを設定して、それを Apache が直接公開できるようにする必要があります。
+
+例:
+  Alias /static-sympa /home/sympa/static_content
+
+''wwsympa.fcgi'' を単なる CGI として実行することにしたときは、スクリプトエイリアスにするだけです。
+
+例:
+  ScriptAlias /sympa /home/sympa/bin/wwsympa.fcgi
+ 
+FastCGI での実行はサーバのより高速な応答と負荷低減になります (理由を知りたければ [http://www.fastcgi.com/devkit/doc/fcgi-perf.htm]] を読んでください)
+
+//mod_fcgid// Apache モジュールを使っている場合:
+<code>
+  LoadModule fcgid_module modules/mod_fcgid.so
+
+  <IfModule mod_fcgid.c>
+    IPCCommTimeout 120
+    MaxProcessCount 2
+  </IfModule>
+
+  <Location /sympa>
+    SetHandler fcgid-script
+  </Location>
+  
+  ScriptAlias /sympa /home/sympa/bin/wwsympa.fcgi
+</code>
+
+//mod_fastcgi// Apache モジュールを使っている場合:
+<code>
+  LoadModule fastcgi_module modules/mod_fastcgi.so
+  FastCgiServer /home/sympa/bin/wwsympa.fcgi -processes 2
+  <Location /sympa>
+  SetHandler fastcgi-script
+  </Location>
+  
+  ScriptAlias /sympa /home/sympa/bin/wwsympa.fcgi
+</code>
+
+仮想ホストを実行しているときは、それぞれの FastCgiServer で複数のホストを扱えます。なお、FastCgiServer は Apache の設定の共通セクションで定義する必要があります((mod_fastcgi 2.4.x の時点では、FastCGI サーバと通信するためのソケットを作成するディレクトリがシンボリックリンクであったり、ディレクトリ自身とその親ディレクトリにウェブサーバの書き込み権限がないと、動作しません。そういうときは、FastCgiIpcDir ディレクティブでディレクトリを /tmp などに変更してください。このディレクティブは FastCgiServer よりも前に記述する必要があります)).
+
+<html><a name="installing_wwsympa.fcgi_in_nginx" /></html>
+=====  Installing wwsympa.fcgi in nginx =====
+
+[[:manual:web-interface#installing_wwsympa.fcgi_in_nginx]]
+
+<html><a name="installing_wwsympa.fcgi_in_lighttpd" /></html>
+=====  Installing wwsympa.fcgi in lighttpd =====
+
+[[:manual:web-interface#installing_wwsympa.fcgi_in_lighttpd]]
+
+<html><a name="using_fastcgi" /></html>
+=====FastCGI の利用 =====
+
+[[http://www.fastcgi.com/|FastCGI]] は、CGI を拡張して、プログラムに永続性を持たせます。これは //WWSympa// にとって極めて有用です。なぜなら、ソースコードの解釈や初期化の処理すべてを、wwsympa.fcgi のプロセスが起動する最初の一回だけ実行すればよくなるからです。起動したプロセスはサーブレットやデーモンのように動作し、クライアントからのリクエストを繰り返し受け付けます。
+
+//WWSympa// は FastCGI なしでも動作します ([[web-interface#use_fast_cgi_0_1|use_fast_cgi]] パラメータを調べてください) が、パフォーマンスが非常に悪くなります。
+
+//WWSympa// を FastCGI で実行するには、次のものをインストールする必要があります。
+
+  * ''FCGI'' Perl モジュール ([[installing-sympa#installing_perl_and_cpan_modules]] 参照)
+  * FastCGI 機能を提供する Apache モジュール。このような実装は 2 種類あるので、どちらかに決めてください。
+    * [[http://www.fastcgi.com/|mod_fastcgi]]。「歴史的」なもの。なお、これは Apache 2 で動作するようになっていません。しかし、[[http://hack.emilykwan.com/node/95|ここ]]にあるパッチを当てればできます。
+    * [[http://fastcgi.coremail.cn/|mod_fcgid]]。別実装。このモジュールと ''mod_fastcgi'' の最大の違いは、fastcgi スクリプトが Apache の起動時に起動するのではなく、クライアントのリクエストがあって初めて起動するという点です。
+
+<html><a name="wwsympa.conf_parameters" /></html>
+======wwsympa.conf のパラメータ ======
+[[:manual:web-interface#wwsympa.conf_parameters]]
+
+<html><a name="database_configuration" /></html>
+======データベース設定 ======
+[[:manual:web-interface#database_configuration]]
+
+<html><a name="logging_in_as_listmaster" /></html>
+======リストシステム管理者としてログインする======
+
+Sympa が動作するようになったらまず、特権ユーザ (リストシステム管理者) としてウェブインタフェースにログインしなければなりません。そうすると、管理インタフェースを使ったり、メーリングリストを作成したりできるようになります。
+
+''sympa.conf'' (か ''robot.conf'') の ''listmaster'' 設定パラメータ ([[#exp-admin]] 参照) では、リストシステム管理者に複数の電子メールアドレスを指定することもできます。メインのロボット (''sympa.conf'' で設定したもの) のリストシステム管理者は、仮想ホストについてもリスト管理者権限を持ちますが、それぞれの仮想ホストに関するさまざまなメール通知 (リスト作成、警告など) は受け取りません。
+
+リストシステム管理者は、自身の正式な電子メールアドレスをユーザ名としてログインしなければなりません (listmaster@my.host ではなく)。電子メールアドレスのパスワードは、sympa.conf に設定してあるわけではありません。ウェブインタフェースで「自分にパスワードを送信」ボタンを押したときに初めて、Sympa が決めます。利用者は誰でも、「個人設定」メニューで自分のパスワードを変更できます。
+
+なお、ウェブインタフェースを使うには ''sympa.pl'' のプロセスを起動しておかなくてはいけません。これがパスワード通知などのメールメッセージの配送を受け持っているからです。
+
+<html><a name="the_listmaster_web_interface" /></html>
+===== リストシステム管理者のウェブインタフェース =====
+
+[[:manual:web-interface#the_listmaster_web_interface]]
+
+====== ======
+----
+[[:manual:web-interface]] の 2008/11/08 12:11 の版を元に翻訳しました。もとの文書の更新に気づいた方は、[[http://www.sympa.org/manual:web-interface?do=revisions|差分]]を参照して更新してください。
+
+翻訳作業については [[:ja:cour]] も参照してください。

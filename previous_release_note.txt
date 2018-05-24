@@ -1,0 +1,2323 @@
+====== Sympa 6.2.16 released ======
+
+//June 17th, 2016//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2.16 is the new stable version of Sympa.\\
+
+   *[[http://www.sympa.org/distribution/sympa-6.2.16.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions if you come from pre-6.2 version]]
+
+This version //finally// fixes the old problem for primo-installation when the sympa wizard would not start to generate the sympa.conf... because the sympa.conf file was empty. Our thoughts go to the listmasters who had to fight this problem. Let them get rest knowing that, thanks to their reports, future generations will never ever have to face it. Kudos.
+
+In addition, Soji fixed a timeout problem when Sympa closed a list, because Sympa spent ages checking whether the list was included or not in another one. He simply added a table registering the lists inclusions to speed up the checking process. And because fixing the problem was not enough to him, he also added a new page in the Sympa web interface to visualize lists inclusions. In summary, what you have now is:
+
+  * "including_lists" page to get lists including particular lists.  This page is accessible only by list owners and listmasters.
+  * Now looping by include_list settings can be detected.  Inclusion is skipped if a setting will cause looping.
+  * the new 'include_sympa_list' parameter obsoletes 'include_list' in list config and named data sources. **Older one may still be used** as it is mapped to newer one internally.
+
+This version fixes also several bugs. Please have a look at the release notes to see which ones. Some points of interest are: 
+
+[Reported by P. Kissman, Commonwealth of Massachusetts and D. Stoye, Univ. Berlin] The subindex page did not allow to actually accept/reject subscriptions. This was because of a badly named parameter being passed to the templates.
+
+Improved sympa.service by ensuring other daemons will be started after invocation of sympa_msg.pl.  Note that this fix does not solve starting order of database service and Sympa: sympa.service should be customized if necessary.
+
+====== Sympa 6.2.15 released ======
+
+//May 12th, 2016//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+The most important change in this version is WWSympa does no longer respect HTTP request header fields noticing the request was forwarded ("X-Forwarded-Host:" etc.).  In particular cases, you may require adjusting configuration.
+  * Now wwsympa_url parameter defines the URL publicly accessed by users.
+  * Contrarily "http_host" and "cookie_domain" parameters indicate the URI and/or domain which are locally recognized by wwsympa, i.e taken form "http_host" ("Host:" field) and "request_uri" CGI environments.
+  * "Location:" response field sent by wwsympa to cause redirection also gives local URL.
+If requests sent from users to wwsympa are rewritten by intermediate server(s), you should make sure that wwsympa server and rewriting server(s) are appropriately configured. For example when the server is placed behind some sort of reverse-proxy including Apache mod_proxy (with ProxyPass), nginx (using proxy_pass) and squid (in accelerator mode). Note that not all reverse-proxies rewrite requests. For example, Pound does never rewrite requests by default. If it is not the case, existing configuration need not changing.
+
+A few other changes in this version:
+  * configure can take an option "--with-unitsdir=DIR" to install Systemd unit files.  It would be used with "--without-initdir" not to install System V init scripts. If specified, five unit files will be installed.  A few more unit files to support nginx environment are provided but they are not installed automatically.
+  * a new parameter, use_tls, appears to replace obsoleted  "use_ssl" and "use_start_tls" parameters; note that these obsoleted parameters can stil be used. But the new one is way more convenient: "use_tls" takes one of following values corresponding to old ones:
+    * "starttls" : use_ssl=0, use_start_tls=1.
+    * "ldaps" : use_ssl=1, use_start_tls=0.
+    * "none" : TLS/SSL is disabled.
+  * Now STARTTLS may be enabled in LDAP datasource configuration of lists along with LDAPS.
+  * The "Feedback" link will now be visible by listmasters only! We received enough mails from end users mis-interpreting this link with their local helpdesk. :-|
+  * Now [% path_cgi %] template variable respects "wwsympa_url" configuration parameter.  Previously it was taken from CGI environment variable.
+
+This version fixes also several bugs. Please have a look at the release notes to see which ones.
+
+====== Sympa 6.1.25 released ======
+
+//May 12th, 2016//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+Sympa 6.1.25 is a maintenance version for the previous 6.1 branch of Sympa.\\
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.25.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/sympa-6.1.25/NEWS|Check the release notes]]
+
+Since a long time, the Debian packagers of Sympa maintained several patches for some Sympa bugs. We finally incorporated them to the Sympa core, so the the fine packagers don't have to maintain these patches. As the 6.1 version is the one currently supported by Debian stable releases, we found relevant to tag a new 6.1 version.
+//Many thank to E. Bouthenot for both maintaining the Debian package and pointing us these patches that really needed to be integrated upstream.//
+
+**Please note that, as we did with 6.0 branch when 6.1 was the current stable branch, we will maintain the 6.1 branch and fix blocking bugs or security issues.**
+
+Matter of factedely enough, the 6.1.25 version is an anagram of the 6.2.15 version, the stable tag which was released the same day. It doesn't mean a thing but I realized this while typing the announce so I thought I would underline it for all of you, numerologist friends around.
+
+====== Sympa 6.2.14 released ======
+
+//February 26th, 2016//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2.14 is the new stable version of Sympa.\\
+
+   *[[http://www.sympa.org/distribution/sympa-6.2.14.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions if you come from pre-6.2 version]]
+
+The 6.2.13 version had a typo that made SOAP service fail. This is fixed, along with an annoying web error log that appeared when querying the lists SOAP service. Thanks to Bruno Malaval for reporting this!
+
+Soji also improved Sympa daemons to capture the SIGCHLD signal, so that defunct children will be closed quicker.
+
+As we tend to change the CSS regularly according to the different feedback you send us, we added the Sympa version number in the CSS file URL, so that it will be automatically reloaded, ignoring cache, when your users arrive on the web interface after an upgrade.
+
+A set of other bugs were fixed in this version, among which:
+
+  * [Reported by D. Pritts, Internet2] Changing web_archive_spam_protection did not update spam protection mode on past archives. Fixed by applying spam protection at the time of display, not when archives were created / rebuilt.
+  * [Reported by A. Epstein, Cornell Univ.] ''base'' element in web output should be eliminated, because it will mess reverse proxy and so on. Fixed by making partial URIs to be redirected to base URI.
+  * WWSympa: Cannot view attachments in bounce messages and moderated messages.  Fixed by correcting inappropriate relative URL paths.
+
+Once again, Soji was the spearhead in fixing these bugs. Many thanks to him and his dedication to Sympa!
+
+A word about translators: 
+  * Sympa is now - again - 100 % translated into Spanish. Thanks to A. Casado for this great work!
+  * There was a lot of work on the following languages:
+    * German, thanks to D. Stoye,
+    * Brazilian Portuguese,
+    * Catalan,
+    * Estonian, thanks to U. Buhvestov,
+
+Translation is what makes Sympa usable to non-English speaking people, so many thanks to all these great people involved in translating Sympa. Please let me know if, by any chance, I missed your work in internationalization.
+
+====== Sympa 6.2.13 released ======
+
+//February 12th, 2016//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version mainly introduces some bug fixes, code refactoring and several improvments to the web interface.
+
+Soji had an ongoing work on bug fixes and overall refactoring for better maintainability. Many thanks again to him!
+
+We had a lot of feedbacks about the web interface. Though most people agreed that it was more modern than previously, not so rare people also mentioned the bulky fonts and presentation, along with weird welcome page with lonely buttons.
+
+Ah, well.
+
+We heard you, people! The main page and Sympa menu were reorganized for - we hope - better clarity. Several bugs were fixed.
+
+====== Sympa 6.2.12 released ======
+
+//November 18th, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version mainly introduces some bug fixes, code refactoring and several improvments to the web interface.
+
+====== Sympa 6.2.11 released ======
+
+//November 5th, 2015//
+
+// Release 6.2.10 never existed actually: we had engineering problems when tagging the version - nothing to see with the code. As the branch was still created, the 6.2.10 was removed from Sympa oficiaal history. As it still existed, we changed the version number anyway.//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version mainly introduces non-blocking bug fixes.
+
+====== Sympa 6.2.9 released ======
+
+//October 13th, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version fixes bugs:
+
+  * owner_include addition failed because the source parameter was improperly used.
+  * single sympa.conf parameters with a value of '0' were considered unset, because of a badly built test,
+  * for packagers: the root user could not run "make check"
+
+====== Sympa 6.2.8 released ======
+
+//October 2nd, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version introduces a table of content in Sympa help, as well as several bug fixes.
+
+====== Sympa 6.2.7 released ======
+
+//September 25th, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version mainly fixes a severe bug introduced in 6.2.4: Parsing of VERP bounces files in spool was broken due to a typo. Consequently, VERP, tracking and automatic unsubscription for service messages did not work.
+
+====== Sympa 6.2.6 released ======
+
+//September 22th, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version mainly introduces bug fixes.
+
+Thanks to a suggestion by Y. Baouch (university of Colorado) - and development by S. Ikeda , the following problem is fixed: If DMARC protection feature munges originator field, many mail client cache such address by the replaced display name, and misleadingly associate the list address with the sender name. Now, the dmarc_protection.phrase can take the value "list_for_email". In that case, the From field will take the value : "List (on behalf of SENDER) <munged_email>".
+
+====== Formation Sympa à Strasbourg ======
+
+//September 15th, 2015//
+
+<note warning>**Attention** : Cette formation, organisée par RENATER, tutelle du projet Sympa, est réservée à la communauté Enseignement Supérieur / Recherche française.</note>
+
+===== Lieux et date =====
+
+  * les 6 et 7 octobre 2015 à l'Université de Strasbourg, UFR Math-info, 7 rue René Descartes
+  * Plan : [[https://goo.gl/maps/ZIEpk]]
+  * 9h00 - 13h00 et 14h00 - 17h00
+  * [[https://listes.renater.fr/sympa/subscribe/formation-sympa-2015-strasbourg|Inscriptions]]
+
+===== Description =====
+
+Public visé
+Taille : 20 personnes.
+
+Profil :Des administrateurs actuels ou potentiels du logiciel Sympa //appartenant à la communauté Enseignement supérieur / Recherche française//. Le TP peut convenir à des personnes connaissant déjà le logiciel et désirant explorer des fonctionnalités plus avancées, ainsi qu'à des personnes désirant découvrir le logiciel et ses potentialités.
+
+Pré-requis techniques :
+
+  * Le public doit disposer de compétences techniques raisonnables en administration Unix, messagerie et web.
+  * Il est nécessaire de disposer d'une boîte mail, professionnelle ou privée, capable de faire de la signature et de la vérification DKIM. Cette boîte mail doit être accessible par webmail.
+  * Aucun matériel n'est nécessaire : les moyens matériels sont fournis (ordinateurs et serveurs). Il est possible d'amener son propre ordinateur si vous préférez disposer de votre environnement.
+
+
+Formateurs : La formation est assurée par les auteurs du logiciel Sympa (Étienne Méléard et David Verdin).
+
+===== Logisitique =====
+
+  * Formation gratuite
+  * Repas non fournis
+  * Aucun matériel n'est nécessaire : les moyens matériels sont fournis (ordinateurs et serveurs). Il est possible d'amener son propre ordinateur si vous préférez disposer de votre environnement
+
+===== Programme =====
+
+==== Journée 1 ====
+
+
+  -     Architecture et organisation d'un serveur Sympa
+  -     Concepts de base : rôles utilisateurs, création et configuration des listes
+  -     La messagerie dans Sympa
+  -     Les interfaces de Sympa (web, mail, ligne de commande et SOAP)
+  -     Mécanismes d'autorisation : les scénarios
+  -     Sources de données pour l'alimentation des listes
+==== Journée 2 ====
+
+
+  -     Hôtes virtuels
+  -     DKIM
+  -     Authentification externe
+  -     Personnalisation de Sympa : paramètres, le langage TT2, les éléments personnalisables
+  -     Industrialisation de la gestion des listes : familles de listes et listes automatiques
+  -     Fonctionnalités de messagerie avancées : VERP, tracking, personnalisation de messages, S/MIME
+  -     Couplage Sympa - Dokuwiki
+
+
+====== Sympa 6.2.5 released ======
+
+//September 10th, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version mainly introduces bug fixes.
+
+====== Sympa 6.2.4 released ======
+
+//September 1st, 2015//
+
+This version mainly introduces bug fixes. Many thanks to all the users who reported troubles on the mailing lists!
+
+====== Sympa 6.2.3 released ======
+
+//July 16, 2015//
+
+This version mainly introduces bug fixes.
+
+====== Sympa 6.2.2 released ======
+
+//July 01, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+This version mainly introduces bug fixes, most of them being related to tweaks in the new Sympa skin.
+
+Amongst the bugs fixed, some notables are the following:
+
+  * include_''datasource''_ca parameters were editbale by list owners by default; This is wrong AND confusing, as users erroneously take these parameters as subscribers data sources.
+  * [Reported by J.L. Marrion, univ. Louvain] when testing if list admins needed to be synced, all the test cases returned true because the test was badly formed.
+  * [REported by B. Eliassen] "make" failed on Solaris.  A variable name conflicted with a predefined preprocessor macro.
+
+It was not mentioned in previous release notes, but a lot of translations have been update by our numerous contributors. Thanks to all of them!
+
+====== Sympa 6.2.1 "Damien" released ======
+
+//June 17, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2.1 "Damien" is the new stable version of Sympa.\\
+
+   *[[http://www.sympa.org/distribution/sympa-6.2.1.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+This version mainly introduces bug fixes, most of them being related to tweaks in the new Sympa skin.
+
+Amongst the bugs fixed, some notables are the following:
+
+  * [Reported by D. Lalot, univ. Aix Marseille] When a list is at 100 %	error, nobody receives the message, and nobody was warned that the message had been lost. Fixed by warning the message sender, the list owners and the listmaster when the bounce rate is at 100%.
+  * [Reported by P. Grzesina, univ. Regina] The CAS button was not showed because the cas_number value in conf was never updated.
+  * [Fixed by Soji!] If the user is listmaster of the host with large number of lists, loading create_list_request page will slow down. Fixed by not getting all lists but only owned lists.
+  * [Fixed by Soji!] "make install" fails when install(1) omitting directory arguments.
+
+It was not mentioned in previous release notes, but a lot of translations have been update by our numerous contributors. Thanks to all of them!
+
+====== Sympa 6.2 released ======
+
+//June 10, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+
+After 5 months of intensive beta testing, [[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2 is the new stable major version of Sympa.\\
+
+This version owes a lot to //Soji Ikeda//, one of the nice Sympa core developers. Soji is probably the most notable not-in-RENATER actor of Sympa 6.2's birth. He did a really great work at revamping large parts of the code. He was also the one who had the idea to put the bulk spools back to filesystem, though retaining all the bulk.pl specificities. He was eager to debug, analyze and finally solve a lot of the problems we had while working on it. May he be warmly thanked.
+
+This version introduces a great deal of new functionnalities. Consequently, we can only highlight the main improvements in this announce.
+
+To our numerous contributors: if your contribution does not appear in this announce, it does not mean we consider it less important. Actually, for some users, it can even be the key feature that will encourage them to switch to 6.2. But we prefer a reasonnably short announce that will be read rather than an exhaustive list of features. So we focused on:
+
+  * what is the largest change in code or Sympa behaviour,
+  * what represents a point of attention during upgrade
+  * what is the most visible
+
+Please refer to the release notes above for a full list of new functionnalities.
+
+Unless the name of the contributor is specified, all theses change were done by the [[https://www.sympa.org/users/authors|Sympa core developement team]].
+
+===== Messenging =====
+
+==== Tracking feature ====
+
+A great contrib from French army DGA Information  Superiority (Guillaume Colotte and laurent Cailleux) The tracking feature is a way to request DSN or DSN + MDN when sending a  message to each subscribers. In that case, Sympa (bounced.pl) collect both  DSN and MDN and store them in a new table "notification_table".
+
+Then, for  each message, the list owner can display which subscribers has displayed,  received or not received the message. This can be used for some important lists where list owner need to collect the proof of reception or display of  each message. This page is accessible via archive (button "tracking").
+
+This feature is controlled by 2 list parameters see "tracking" paragraph in "edit list config"/bounce.
+
+See : [[http://www.sympa.org/manual/bounces#message_tracking]]  and [[http://www.sympa.org/manual/parameters-bounces#tracking]]
+
+==== Spools back to filesystem ====
+
+One of the reasons why this new version took so long to be issued is that we tried to move all spools in database. Testing of this change in actual conditions proved it to be completely unscalable. we then had to revert our changes. In addition, a lot of people had recurring trouble with the current bulk spool tables, dut to limits showing in fields length or n RDBMS availability.
+
+Spool for bulk sending no longer depend on database tables: It is based on filesystem.
+
+**Packets and messages stored in database by earlier version of Sympa should be migrated using ''upgrade_bulk_spool.pl'' utility.** (See [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]] for when and how to run this utility).
+
+==== Stats ====
+
+[Submitted by W. Roquet]
+
+Now Sympa stores data whenever one of  the following event occurs:
+  * a message is sent to a list;
+  * a user subscribed to a list;
+  * a user unsubscribed from a list;
+  * a user is added to a list by another user;
+  * a user is removed from a list by another user;
+  * a user is removed from a list by the automatic bounce management;
+  * a file is uploaded to the shared directory;
+  * a file is deleted from the shared;
+  * a message to a list is rejected in moderation;
+  * a user logs in to the web interface;
+  * a user logs out;
+  * a list is created;
+  * a list is deleted;
+  * a list is restored;
+  * a human user (not a harvester) hits a page.
+
+These data are regularly aggregated by the task_manager, in order to make them anonymous and to have easily displayable data. The aggregated data are available to users, owners and listmaster in their respective interfaces. Only relevant data are presented. They are displayed in graphs to help people see trends and activity peaks. To be able to display these graphs, you must enable the static_content URL. In addition, the stats are accessible through the web interface, so if you customized  your web templates, you must update them to include the links and template processing.
+
+===== Web interface =====
+
+  * The most visible is probably the **new web interface skin**. Contributed by the **Massey university**, it is nicer, simpler, responsive and retains all the customization capabilities that make Sympa adaptable to your needs. Many thanks to Patrick Rynhart and his colleagues for this great contributions! (in addition, outputs by WWSympa have HTML5 document type definitions).
+  * Olivier Lumineau, from RENATER, worked a lot to still improve the work done by Massey. For those of you who were in the beta, you'll notice several improvments in the responsivity. Also, the Sympa top menu is back. If you don't like it, all you have to do is simply edit the ''main.tt2'' template, then set the "top_menu" variable to 0 instead of 1!
+  * **Exclusion table** was just a display of the users excluded. list owners could not do anything to restore subscriptions; This page is now a form, similar to the review page, which allows to restore users subscriptions.
+  * Added "Add subscriber" button to modindex page if the sender is not subscribed.  It may be useful because users need not know about SUB command and sympa command address. The buttons appear only when Web user is the list owner.
+  * The "Customizing" link was moved from main list admin to list config sub section as list related text files are in a way list configuration parameters as well.
+  * [Submitted by Evoltech, Riseup] Better password validation. When the user requests change of password via WWSympa or SympaSOAP, new password may be checked its strength. New parameter password_validation may be used to customize policy of password validation.  See help text of the parameter for more details.
+
+===== Web services =====
+
+
+  * [Submitted by M. Overmeer, overmeer.net, funded and led by Surfnet, [[http://www.surfnet.nl]]] Full VOOT 2.0 protocol support. VOOT is an opensocial subset to manage group membership. full details on this IETF draft here: [[http://openvoot.org]]. This feature enables Sympa to be both group provider and consumer in the VOOT protocol. VOOT in Sympa uses both Oauth 1.0 and 2.0 for authorization from and to a peer in the VOOT protocol.
+  * The soap server now exposes full review with owners, editors and gecos to list masters and list owners.
+  * [Submitted by S. Shipway, Univ. of Auckland] Adding new functions to SympaSOAP: getDetails, setDetails, getCustom and setCustom.
+
+
+===== Plug, plug, plug... =====
+
+We added or improved several ways to plug new functionnalities in Sympa.
+
+==== Template plugins ====
+
+This feature allows to package code to be used in templates. It enables foreign data integration in Sympa's UI and emails, user specific UI enhancement and much more! Integrating user targeted data retreived through a call to a webservice becomes possible in a simple way, automatically adding info from a database to outgoing emails as well ! Further details here : [[https://www.sympa.org/manual/templates_plugins]]
+
+==== Enhanced custom actions functionality ====
+
+Custom actions are used to run specific code and/or display user defined templates. They can be executed in list or global context (it is up to you to decide what to do in both cases). Previously, a custom action was a simple TT2 template added to the web interface. It could only display data, not process them. They were improved to allow greater expressiveness. You can now develop a perl module to process the data passed to your custom action.
+
+** Warning:** AFTER UPGRADING TO 6.2, ANY PRE-EXISTING CUSTOM ACTION MUST BE MOVED TO THE RELEVANT CUSTOM_ACTION DIRECTORY TO KEEP WORKING. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+See [[https://www.sympa.org/manual/customizing#custom_actions]] for full details on this functionnality.
+
+==== Mail hooks ====
+
+Sympa::Message::Plugin provides hook mechanism to intervene in processing by Sympa.  Each hook may modify messages or may break ordinary processing. This functionnality is quite new and still experimental. Please read the perldoc of Sympa::Message::Plugin for more details about how to create and enable hooks in message handling.
+
+If you have no idea what a "perldoc" or a "Sympa::Message::Plugin"" are, you should not try to use this functionnality. Ask a Perl developer nearby instead.
+
+===== Data sources =====
+
+==== Custom attributes provisionning ====
+
+Custom attributes can now be provisionned using external data sources, the same way as email addresses. For now, only SQL or LDAP datasources are supported. To use this feature, you need first to define the custom attributes as previously. This attribute must have the same name as the fields used in your queries.
+
+For example, if your query returns the user name in a field called "u_name", then your custom_attribute must also be called "u_name".
+
+New parameters:
+
+  * include_sql_ca
+  * include_ldap_ca
+  * include_ldap_2level_ca
+
+==== Synchronization disabling ====
+
+In several organizations, nightly maintenances make the datasources unavailable during some period of times. a new sub-parameter in data sources definition allow to prevent Sympa from trying to synchronize list members with these sources during a defined time range.
+
+See the [[https://www.sympa.org/manual/parameters-data-sources#nosync_time_ranges_sub-parameter|no_sync_time_ranges sub-parameter]] documentation for details.
+
+==== Extract subsets from lists ====
+
+A recurrent question regarding list inclusion was to be able to extract not the whole list, but only a subset. It is now possible.
+
+include_list parameter value can now look like this:
+
+  <code><listname> filter <filter_condition></code>
+
+''filter_condition'' is a TT2-compatible condition expression, it inherits current potential subscriber properties such as email, gecos, custom_attributes, etc. Tests like isSubscriberOf, isEditorOf and isOwnerOf are also available.
+
+Test examples :
+
+  * ''include_list foo filter email.match('@bar.tld$')'' => Includes members from list "foo" whose email domain is "bar.tld"
+  * ''include_list foo filter isSubscriberOf('bar')'' => Includes members from list "foo" who are also subscribed to list "bar"
+  * ''include_list foo filter reception == 'mail' and not 'gecos' '' => Includes members from list "foo" who have their reception mode set to mail and no gecos
+
+Please see the [[https://www.sympa.org/manual/parameters-data-sources#include_list|reference manual]] for a full description on how to extract subsets from mailing lists.
+
+==== Miscellaneous improvements ====
+
+  * [Submitted by S. Shipway, univ. Auckland] **ODBC** is now supported for email data sources.
+  * [Submitted by Patrick von der Hagen, Renan Manola and Steve Shipway] sql, ldap and ldap2 user inclusions now handles **gecos**. It uses 2nd returned column for sql and 2nd given attribute for ldap (comma separated).
+  * Now "host" parameter of the LDAP datasource in list config may include URLs (ldap, ldaps and ldapi) along with hostnames. //So "port" and "use_ssl" parameters would be obsoleted//.
+
+===== Scenarios =====
+
+  * Now CustomCondition can set the action to take (do_it, reject ...) by setting ''$<underscore>'', this allows for complex, single-module CustomConditions.
+  * "[msg_header->field][index]" returns the value of particular field.  Index may be negative. - "[msg_header->field]" still returns list of field values, additionally, ordering will be preserved. Fixes:
+    * Conditions is_listmaster, is_owner, is_editor and is_subscriber can handle multiple values.
+    * They also parse arguments as header field values to get address parts.
+
+===== New parameters =====
+
+  * New list parameter: 'member_include'. This parameters allows to defined .incl files to include list members, the same way it is done for list admins. This grants extended flexibility in datasources, allowing list owners to tweak their own data sources without accessing to the actual details of the query made to gather email addresses.
+  * New sympa.conf config parameter "sender_headers" to specify header fields by which message sender is detected. This is a enhancement to S. Shipway's improvement. RFC: What is the reasonable default for this parameter?
+  * Behavior of one time ticket lock-out is configurable. Two new robot parameters were introduced:
+    * one_time_ticket_lockout:
+      * "one_time" won't allow access again. This is previous behavior.
+      * "remote_addr" will lock the ticket on remote address accessed at first time.
+      * "open" will never lock-out tickets.
+    * one_time_ticket_lifetime: Duration before ticket expires.  Default is "2d", previous hardcoded value.
+  * New 'auth_service_friendly_name' in auth.conf CAS paragraph. This allows to set a display name for the CAS server, without the constraints that 'auth_service_name' entry has ([\w\-\.]).
+  * Changes of list config parameters on archiving. New parameter "process_archive" controls archiving. The default is "off": To enable archiving, it must be set to "on" explicitly.  OTOH even if archiving is disabled by setting it "off", past archives will be kept and accessible according to access settings.
+  * Renamed parameters. web_archive.access to archive.web_access; archive.access to archive.mail_access; web_archive.quota to archive.quota; web_archive,max_month to archive.max_month. Though config files of exisiting lists will be updated during upgrading process, **listmasters are highly recommended to check new configuration. Customized scenarios, list creation templates and edit_list.conf will never be upgraded automatically.  They should be modified manually, if neccessary.**
+
+===== Internals =====
+
+==== Send spool ====
+
+Now messages sent via WWSympa will be stored in bulk spool, directly if they are outbound messages.  On earlier releases outbound messages were injected in msg spool with special checksum. A program upgrade_send_spool.pl to migrate messages with old format is proveded. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+==== PostgreSQL ====
+
+Postgresql RDBMS are now automatically upgraded!
+
+==== Config files ====
+
+**wwsympa.conf will no longer be used: it would be migrated to sympa.conf.**
+  * Makefile.am: no longer create wwsympa.conf during installation.
+  * sympa_wizard.pl: --create argument disallows "wwsympa.conf" option.
+  * Upgrade.pm: migrate wwsympa.conf during upgrade process.
+Note: Run "sympa.pl --upgrade" to migrate wwsympa.conf into sympa.conf. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+**Default config**
+location is now /etc/sympa/ (or $sysconfig/sympa/) instead of /etc/. This solves the problem of config file lock creation being denied when trying to read the binary version of the config file at startup.
+
+**WARNING** : to upgrade the config location one MUST run sympa.pl --upgrade_config_location before any other upgrading operation. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+==== Alias management uniformization ====
+
+Now alias maintenance utilities other than newaliases may be used without special configure options nor patch to alias_manager.pl.
+Changes:
+  * aliaswrapper and virtualwrapper were deprecated and replaced with sympa_newaliases-wrapper.
+  * New alias management program sympa_newaliases.pl which will typically be called by alias_manager.pl via sympa_newaliases-wrapper.
+  * New site configuration parameters aliases_db_type and aliases_program will control behaviour of alias database maintenance.
+  * configure script:
+    * Options --with-sendmail_aliases and --with-virtual_aliases were deprecated. Use --with-aliases_file instead.
+    * New options --with-makemap and --with-postalias, along with options --with-newaliases and --with-postmap are available.
+    * Option --with-postmap_arg was removed.
+  * Alias managers can handle postmap/makemap style maps (delimited by whitespace), not only newaliases style maps (delimited by colon).
+
+==== openssl dependency dropped ====
+
+openssl(1) utility is no longer required.  Instead, a few CPAN modules are required to use S/MIME or SSL features:
+  * Crypt::SMIME
+  * Crypt::OpenSSL::X509
+The parameter "openssl" in sympa.conf was obsoleted. Note that p12topem.pl still needs openssl: To make it work, PATH environment variable should be set appropriately.
+
+
+
+===== Internationalization =====
+
+i18n titles in configuration.
+
+  * title.''lang'' lines in scenario files are available again, though this feature was broken for a while.
+  * Now topics.conf recognizes "title.gettext" lines. - scenario, task and topics.conf recognize "title" line for default title.
+  * lang value in user_table
+  * title.''lang'' line in scenario files
+  * title.''lang'' line in task files
+  * title.''lang'' line in topics.conf
+  * lang names in charset.conf
+  * lang parameters of list config, robot.conf and sympa.conf.
+
+Note that canonicalization will be done internally so that existing config must not be changed.
+
+===== Lists management =====
+
+==== List families scenari ====
+
+Now you can define a "scenari" directory in the lists family directory. These scenarii will be available for lists instantiated from this family. The "scenari" directory must be put directly in the family directory, not in the overall "families" directory. For example, if you want to define scenarii specific to the "staff" family, you must define a scenari directory in the /home/sympa/etc/families/staff/ directory. Not in /home/sympa/etc/families/.
+
+==== List families addistional files ====
+
+Until now, only the config.tt2 file was parsed when the family was instantiated, thus producing the lists' config file. As a lot of other files can be used to configure a list (footer, header, etc.), we added the possibility to instantiate these files as well.
+The list of files parsed (in addition to config.tt2) when instantiating a family are defined in a new (sympa.conf and robot.conf) parameter called 'parsed_family_files'. This parameter must contain a comma-separated list of file names. If these files exist, with the '.tt2' extension added to their name, in a family, they will be parsed and added to the list directory.
+
+The default value of the parameter is: 
+'message.footer,message.header,message.footer.mime,message.header.mime,info'.
+
+These files are updated in existing lists when a family is instantiated. note that it will overwrite any other customization.
+
+==== On the web automatic lists ====
+
+This feature existed in 6.1 but it deserved a little more advertisment.
+
+[Requested and funded by the CNRS] Automatic lists can now be manipulated through the sympa web interface, in a "user friendly" form. This is merely a web layer around the general autmatic lists feature. This feature is fully documented here: [[https://www.sympa.org/manual_6.2/user_friendly_autolists]] Additionnally, it is now possible to unsubscribe to all the lists of a given family in two clicks.
+
+===== Administration =====
+
+Widely extended logs when the log_module parameter is activated with the value 'scenario': all scenario results are evaluated.
+Remember that extended logs can be limited by the IP or the email of the user, using the 'log_condition' parameter. log_module and log_condition are now declared in sympa.conf instead of wwsympa.conf.
+Remember these parameters syntax:
+  * log_module: can take the value "scenario" - only.
+  * log condition: takes a character string as value. The form is "ip=<an.ip>,email=<an_email>". You can put ip alone, email alone or both, with the comma-separated form.
+
+Listmaster notifications can now be grouped. If, for a specific robot, several notifications are issued within a short period of time with the same operation code only the first ones are sent, the next ones are stacked. The stacking ends when no notifications are issued anymore, or when the first one is too old. All the stacked notifications are then sent as attachments of a single message. Internal settings :
+Stack if more than 3 notifications with the same operation code are issued for the same robot - Send stacked notifications if no new one satisfying the condition above was received for more than 30 seconds - Send stacked notifications if the oldest one was issued more than 60 seconds ago
+
+''sympa.pl --health_check'' checks config files, database connection and structure, and data structure version.  It is invoked at first time in sympa init script and reports errors if any. Instead, daemons such as sympa.pl no longer check database structure nor data version.
+
+File extension of lock files are changed from ".lock" to ".LOCK", because lowercase name can conflict with domain part in the future.
+
+====== Formation Sympa à Marseille ======
+
+<note warning>**Attention** : Cette formation, organisée par RENATER, tutelle du projet Sympa, est réservée à la communauté Ensignement Supérieur / Recherche française.</note>
+
+===== Lieux et date =====
+
+  * les 8 et 9 avril 2015 à l'École supérieure du professorat et de l'éducation (ESPE) - 63 la Canebière 13001 Marseille - salle 59
+  * Plan : [[http://www.openstreetmap.org/?mlat=43.29712&mlon=5.37911#map=19/43.29712/5.37910]]
+  * 9h00 - 13h00 et 14h00 - 17h00
+  * [[https://listes.renater.fr/sympa/subscribe/formation-sympa-2015-marseille|Inscriptions]]
+
+===== Description =====
+
+Public visé
+Taille : 20 personnes.
+
+Profil :Des administrateurs actuels ou potentiels du logiciel Sympa //appartenant à la communauté Enseignement supérieur / Recherche française//. Le TP peut convenir à des personnes connaissant déjà le logiciel et désirant explorer des fonctionnalités plus avancées, ainsi qu'à des personnes désirant découvrir le logiciel et ses potentialités.
+
+Pré-requis techniques :
+
+  * Le public doit disposer de compétences techniques raisonnables en administration Unix, messagerie et web.
+  * Il est nécessaire de disposer d'une boîte mail, professionnelle ou privée, capable de faire de la signature et de la vérification DKIM. Cette boîte mail doit être accessible par webmail.
+  * Aucun matériel n'est nécessaire : les moyens matériels sont fournis (ordinateurs et serveurs). Il est possible d'amener son propre ordinateur si vous préférez disposer de votre environnement.
+
+
+Formateurs : La formation est assurée par les auteurs du logiciel Sympa (Étienne Méléard et David Verdin).
+
+===== Logisitique =====
+
+  * Formation gratuite
+  * Repas non fournis
+  * Aucun matériel n'est nécessaire : les moyens matériels sont fournis (ordinateurs et serveurs). Il est possible d'amener son propre ordinateur si vous préférez disposer de votre environnement
+
+===== Programme =====
+
+==== Journée 1 ====
+
+
+  -     Installation et configuration
+  -     Architecture et organisation d'un serveur Sympa
+  -     Concepts de base : rôles utilisateurs, création et configuration des listes
+  -     La messagerie dans Sympa
+  -     Les interfaces de Sympa (web, mail, ligne de commande et SOAP)
+  -     Mécanismes d'autorisation : les scénarios
+  -     Sources de données pour l'alimentation des listes
+==== Journée 2 ====
+
+
+  -     Hôtes virtuels
+  -     DKIM
+  -     Authentification externe
+  -     Personnalisation de Sympa : paramètres, le langage TT2, les éléments personnalisables
+  -     Industrialisation de la gestion des listes : familles de listes et listes automatiques
+  -     Fonctionnalités de messagerie avancées : VERP, tracking, personnalisation de messages, S/MIME
+  -     Couplage Sympa - Dokuwiki
+
+
+====== Sympa 6.0.10 and 6.1.24 released ======
+
+//January 13, 2015//
+
+[[http://www.sympa.org|{{:logo_sympa.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.1.24 is the new stable version of Sympa branch 6.1\\
+Sympa 6.0.10 is the new stable version of Sympa branch 6.0\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.24.tar.gz|Download sources for 6.1.24]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the 6.1.24 release notes]]
+   *[[http://www.sympa.org/distribution/sympa-6.0.10.tar.gz|Download sources for 6.0.10]]
+   *[[http://www.sympa.org/distribution/sympa-6.0.10/NEWS|Check the 6.0.10 release notes]]
+
+These two versions fix a security breach. Please read the [[https://www.sympa.org/security_advisories#security_breaches_in_newsletter_posting|security advisory]].
+
+====== YAPC::EU ======
+
+David and Étienne went to YAPC::Europe at Sofia in August 2014. We finally dare presenting our software to the cream of the European Perl community. Big pressure, but the speech went quite well.
+
+This speech by David is available on the [[https://www.youtube.com/watch?v=-JMg1wdYdOU&list=UU7PuZDAIVMyE7mgkZHunXGw|YAPC Youtube account]] or just below if you prefer:
+
+<html>
+<iframe width="560" height="315" src="//www.youtube.com/embed/-JMg1wdYdOU" frameborder="0" allowfullscreen></iframe>
+</html>
+
+In addition to boosting our ego (Hi mom! I'm on the interwebs!) the speech is a good sneak peek at the main Sympa features and gives an insight on how the Sympa project works and what we plan for the future.
+
+====== Sympa 6.2 beta 9 released! ======
+
+//March 13, 2015//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:sympa_beta2.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\ 
+
+Sympa 6.2b.9 is the latest beta release of the new major version of Sympa.\\ 
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.9.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version mainly includes bug fixes. Thanks to the beta testers who reported them (P. Grzesina for CAS bug).
+
+
+===== More than one way to say Sympa =====
+
+“Sympa” means “Nice” in French. That's where the name come from actually. The acronym meaning (Système de MultiPostage Automatique) came later. Needless to say the original Sympa authors were quite happy with themselves when they finally came up with an acronym that matched a funny word.
+
+Even though Sympa is a French word, it is still developed in English. However, we took action to make Sympa easily translatable.
+
+We use the Pootle translation tool, which allows you to easily edit online Sympa translation for your language. If you feel like contributing to Sympa but you don't like/know Perl, well spending a few minutes translating a few strings on this server is [[http://pootle.sympa.org/|the way to go]]!
+
+New translations are added to the Sympa distribution each time we tag a new version.
+
+If you go there and translate, I'll tell you another edifying tale of Sympa history. Next time. Next release.
+
+
+====== Sympa 6.2 beta 8 released! ======
+
+//March 6, 2015//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:sympa_beta2.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.8 is the latest beta release of the new major version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.8.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version fixes several bugs, one of them making the upgrade crash.
+It also introduces a few changes:
+
+  *Some news about list activities and potential user errors are displayed at the home page.
+  *When upgrading from pre-6.2 beta version, archives parameters are renamed. Please have a look at [[:manual:parameters-archives|the new naming convention]].
+  *If you upgrade from Sympa 6.2a or 6.2b, statistics are cleared, because older information is no longer usable.
+
+===== ¿Hablas español? Parli italiano ? Sprechen Sie Deutsch? =====
+
+Tens of thousands users around the world can proudly say: "Yes, I use Sympa. It's easy because it's in [Put you own language here]".
+
+Do you know why? That's because some people around here did spend some time translating Sympa. Doing so, they allowed a lot of people to feel the joy of open source. Coders create tools, indeed, but translators bring these tools to the world.
+
+Did you never dream to be as cool as these guys?
+
+Well, you can.
+
+We use the Pootle translation tool, which allows you to easily edit online Sympa translation for your language. If you feel like contributing to Sympa but you don't like/know Perl, well spending a few minutes translating a few strings on this server is [[http://pootle.sympa.org/|the way to go]]!
+
+New translations are added to the Sympa distribution each time we tag a new version.
+
+Become a translator, people will love you!
+
+====== Sympa 6.2 beta 6 released! ======
+
+//February 27, 2015//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:sympa_beta2.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.6 is the latest beta release of the new major version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.6.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version mainly fixes several bugs related to list families management.
+
+It also introduces a change related to LDAP: Default cryptographic protocol of LDAP over SSL/TLS became TLSv1. Note that SSLv2 and SSLv3 are no longer recommended due to their weakness.
+The following default changes are introduced in Sympa to reflect this new defaults:
+  - List config: The default of "ssl_version" parameters in "include_ldap" paragraph and so on became "tlsv1".
+  - ldap_alias_manager.pl: New parameter "ldap_ssl_version" to specify protocol version which defaults to "tlsv1" was introduced.  On earlier releases it was fixed to "sslv3".
+
+
+====== Sympa 6.2 beta 5 released! ======
+
+//February 25, 2015//
+
+[[http://www.sympa.org|{{:authors-old:sympa_beta_small.png | }}]]
+
+
+This version mainly fixes a few bugs.
+
+It also introduces an experimental feature: running multiple sympa_msg.pl processes on a single server. This allows to rapidly absorb a large incoming messages flow. The number of sympa_msg.pl processes is controlled by the "incoming_max_count" sympa.conf parameter.
+
+Two changes are introduced:
+  * sympa_msg and sympa_automatic processes will have their name appear in logs in replacement of "sympa".
+  * digest will be store as separate files for each message instead of a single RFC934 file. Though digest will retain the capability to be sent as RFC934-compliant compilations, it will ease their manipulation.
+
+====== Sympa 6.2 beta 4 released ======
+
+//February 13, 2015//
+
+[[http://www.sympa.org|{{:authors-old:sympa_beta_small.png | }}]]
+
+
+This version mainly fixes a few bugs. Mainly one of them leading to infinite dependency loops in CPAN. Install on a fresh server proved the problem to be solved.
+
+A change is introduced in this version:  sympa.pl was splat into three programs: sympa.pl command-line utility, sympa_msg.pl daemon and sympa_automatic.pl daemon. Make sure you Sympa init script is updated after upgrade. It does not change anything to your scripts using sympa.pl, as we still use the same script name for command line.
+
+====== Sympa 6.2 beta 3 released ======
+
+//January 30, 2015//
+
+[[http://www.sympa.org|{{:authors-old:sympa_beta_small.png | }}]]
+
+
+This version mainly fixes a few bugs. Thanks to the beta testers for finding them - especially B. Eliassen for the install bugs.
+
+It also introduces the following changes:
+
+  * create_db scripts for MySQL, PostgreSQL and SQLite were dropped. Use sympa.pl --health_check instead.
+  * Tracking: DSN and MDN are no longer stored into database table: They are stored into bounce directory by each list. Additionally, notifications may be shown in a separate viewbounce page, instead of loading all notifications at the time of showing tracking index page.
+
+====== Sympa 6.2 beta 2 released ======
+
+//January 16, 2015//
+
+[[http://www.sympa.org|{{:authors-old:sympa_beta_small.png | }}]]
+
+
+This version, along with fixing a few bugs, improves the upgrade process to the new Sympa skin:
+  * the web interface colors are rest to the new defaults. if you defined custom colors, you will find them backed up in robot.conf or sympa.conf copies.
+  * the web_tt2 customization (locate in etc or etc/<robot>) are removed at upgrade. The web_tt2 directries are also backed up.
+
+====== Sympa 6.2 beta released ======
+
+//January 12, 2015//
+
+[[http://www.sympa.org|{{:sympa_beta.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.1 is the new major version of Sympa\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.2.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version introduces a great deal of new functionnalities. Consequently, we can only highlight the main improvements in this announce.
+
+To our numerous contributors: if your contribution does not appear in this announce, it does not mean we consider it less important. Actually, for some users, it can even be the key feature that will encourage them to switch to 6.2. But we prefer a reasonnably short announce that will be read rather than an exhaustive list of features. So we focused on:
+
+  * what is the largest change in code or Sympa behaviour,
+  * what represents a point of attention during upgrade
+  * what is the most visible
+
+Please refer to the release notes above for a full list of new functionnalities.
+
+Unless the name of the contributor is specified, all theses change were done by the [[https://www.sympa.org/users/authors|Sympa core developement team]].
+
+===== Messenging =====
+
+==== Tracking feature ====
+
+A great contrib from French army DGA Information  Superiority (Guillaume Colotte and laurent Cailleux) The tracking feature is a way to request DSN or DSN + MDN when sending a  message to each subscribers. In that case, Sympa (bounced.pl) collect both  DSN and MDN and store them in a new table "notification_table".
+
+Then, for  each message, the list owner can display which subscribers has displayed,  received or not received the message. This can be used for some important lists where list owner need to collect the proof of reception or display of  each message. This page is accessible via archive (button "tracking").
+
+This feature is controled by 2 list parameters see "tracking" paragraph in "edit list config"/bounce.
+
+See : [[http://www.sympa.org/manual/bounces#message_tracking]]  and [[http://www.sympa.org/manual_6.1/parameters-bounces#tracking]]
+
+==== Spools back to filesystem ====
+
+One of the reasons why this new version took so long to be issued is that we tried to move all spools in database. Testing of this change in actual conditions proved it to be coopletely unscalable. we then had to revert our changes. In addition, a lot of people had recurring trouble with the current bulk spool tables, dut to limits showing in fields length or n RDBMS availability.
+
+Spool for bulk sending no longer depend on database tables: It is based on filesystem.
+**Packets and messages stored in database by earlier version of Sympa should be migrated using ''upgrade_bulk_spool.pl'' utility.** (See [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]] for when and how to run this utility).
+
+==== Stats ====
+
+[Submitted by W. Roquet]
+
+Now Sympa stores data whenever one of  the following event occurs:
+  * a message is sent to a list;
+  * a user subscribed to a list;
+  * a user unsubscribed from a list;
+  * a user is added to a list by another user;
+  * a user is removed from a list by another user;
+  * a user is removed from a list by the automatic bounce management;
+  * a file is uploaded to the shared directory;
+  * a file is deleted from the shared;
+  * a message to a list is rejected in moderation;
+  * a user logs in to the web interface;
+  * a user logs out;
+  * a list is created;
+  * a list is deleted;
+  * a list is restored;
+  * a human user (not a harvester) hits a page.
+
+These data are regularly aggregated by the task_manager, in order to make them anonymous and to have easily displayable data. The aggregated data are available to users, owners and listmaster in their respective interfaces. Only relevant data are presented. They are displayed in graphs to help people see trends and activity peaks. To be able to display these graphs, you must enable the static_content URL. In addition, the stats are accessible through the web interface, so if you customized  your web templates, you must update them to include the links and template processing.
+
+===== Web interface =====
+
+  * The most visible is probably the** new web interface skin**. Contributed by the Massey university, it is nicer, simpler, responsive and retains all the customization capabilities that make Sympa adaptable to your needs. Many thanks to Patrick Rynhart and his colleagues for this great contributions! (in addition, outputs by WWSympa have HTML5 document type definitions).
+  * **Exclusion table** was just a display of the users excluded. list owners could not do anything to restore subscriptions; This page is now a form, similar to the review page, which allows to restore users subscriptions.
+  * Added "Add subscriber" button to modindex page if the sender is not subscribed.  It may be useful because users need not know about SUB command and sympa command address. The buttons appear only when Web user is the list owner.
+  * The "Customizing" link was moved from main list admin to list config sub section as list related text files are in a way list configuration parameters as well.
+  * [Submitted by Evoltech, Riseup] Better password validation. When the user requests change of password via WWSympa or SympaSOAP, new password may be checked its strength. New parameter password_validation may be used to customize policy of password validation.  See help text of the parameter for more details.
+
+===== Web services =====
+
+
+  * [Submitted by M. Overmeer, overmeer.net, funded and led by Surfnet, [[http://www.surfnet.nl]]] Full VOOT 2.0 protocol support. VOOT is an opensocial subset to manage group membership. full details on this IETF draft here: [[http://openvoot.org]]. This feature enables Sympa to be both group provider and consumer in the VOOT protocol. VOOT in Sympa uses both Oauth 1.0 and 2.0 for authorization from and to a peer in the VOOT protocol.
+  * The soap server now exposes full review with owners, editors and gecos to list masters and list owners.
+  * [Submitted by S. Shipway, Univ. of Auckland] Adding new functions to SympaSOAP: getDetails, setDetails, getCustom and setCustom.
+
+
+===== Plug, plug, plug... =====
+
+We added or improved several ways to plug new functionnalities in Sympa.
+
+==== Template plugins ====
+
+This feature allows to package code to be used in templates. It enables foreign data integration in Sympa's UI and emails, user specific UI enhancement and much more! Integrating user targeted data retreived through a call to a webservice becomes possible in a simple way, automatically adding info from a database to outgoing emails as well ! Further details here : [[https://www.sympa.org/manual/templates_plugins]]
+
+==== Enhanced custom actions functionality ====
+
+Custom actions are used to run specific code and/or display user defined templates. They can be executed in list or global context (it is up to you to decide what to do in both cases). Previously, a custom action was a simple TT2 template added to the web interface. It could only display data, not process them. They were improved to allow greater expressiveness. You can now develop a perl module to process the data passed to your custom action.
+
+** Warning:** AFTER UPGRADING TO 6.2, ANY PRE-EXISTING CUSTOM ACTION MUST BE MOVED TO THE RELEVANT CUSTOM_ACTION DIRECTORY TO KEEP WORKING. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+See [[https://www.sympa.org/manual/customizing#custom_actions]] for full details on this functionnality.
+
+==== Mail hooks ====
+
+Sympa::Message::Plugin provides hook mechanism to intervene in processing by Sympa.  Each hook may modify messages or may break ordinary processing. This functionnality is quite new and still experimental. Please read the perldoc of Sympa::Message::Plugin for more details about how to create and enable hooks in message handling.
+
+If you have no idea what a "perldoc" or a "Sympa::Message::Plugin"" are, you should not try to use this functionnality. Ask a Perl developer nearby instead.
+
+===== Data sources =====
+
+==== Custom attributes provisionning ====
+
+Custom attributes can now be provisionned using external data sources, the same way as email addresses. For now, only SQL or LDAP datasources are supported. To use this feature, you need first to define the custom attributes as previously. This attribute must have the same name as the fields used in your queries.
+
+For example, if your query returns the user name in a field called "u_name", then your custom_attribute must also be called "u_name".
+
+New parameters:
+
+  * include_sql_ca
+  * include_ldap_ca
+  * include_ldap_2level_ca
+
+==== Synchronization disabling ====
+
+In several organizations, nightly maintenances make the datasources unavailable during some period of times. a new sub-parameter in data sources definition allow to prevent Sympa from trying to synchronize list members with these sources during a defined time range.
+
+See the [[https://www.sympa.org/manual/parameters-data-sources#nosync_time_ranges_sub-parameter|no_sync_time_ranges sub-parameter]] documentation for details.
+
+==== Extract subsets from lists ====
+
+A recurrent question regarding list inclusion was to be able to extract not the whole list, but only a subset. It is now possible.
+
+include_list parameter value can now look like this:
+
+<code><listname> filter <filter_condition></code>
+
+''filter_condition'' is a TT2-compatible condition expression, it inherits current potential subscriber properties such as email, gecos, custom_attributes, etc. Tests like isSubscriberOf, isEditorOf and isOwnerOf are also available.
+
+Test examples :
+
+  * ''include_list foo filter email.match('@bar.tld$')'' => Includes members from list "foo" whose email domain is "bar.tld"
+  * ''include_list foo filter isSubscriberOf('bar')'' => Includes members from list "foo" who are also subscribed to list "bar"
+  * ''include_list foo filter reception == 'mail' and not gecos'' => Includes members from list "foo" who have their reception mode set to mail and no gecos
+
+Please see the [[https://www.sympa.org/manual/parameters-data-sources#include_list|reference manual]] for a full description on how to extract subsets from mailing lists.
+
+==== Miscellaneous improvements ====
+
+  * [Submitted by S. Shipway, univ. Auckland] **ODBC** is now supported for email data sources.
+  * [Submitted by Patrick von der Hagen, Renan Manola and Steve Shipway] sql, ldap and ldap2 user inclusions now handles **gecos**. It uses 2nd returned column for sql and 2nd given attribute for ldap (comma separated).
+  * Now "host" parameter of the LDAP datasource in list config may include URLs (ldap, ldaps and ldapi) along with hostnames. //So "port" and "use_ssl" parameters would be obsoleted//.
+
+===== Scenarios =====
+
+  * Now CustomCondition can set the action to take (do_it, reject ...) by setting $_, this allows for complex, single-module CustomConditions.
+  * "[msg_header->field][index]" returns the value of particular field.  Index may be negative. - "[msg_header->field]" still returns list of field values, additionally, ordering will be preserved. Fixes:
+    * Conditions is_listmaster, is_owner, is_editor and is_subscriber can handle multiple values.
+    * They also parse arguments as header field values to get address parts.
+
+===== New parameters =====
+
+  * New list parameter: 'member_include'. This parameters allows to defined .incl files to include list members, the same way it is done for list admins. This grants extended flexibility in datasources, allowing list owners to tweak their own data sources without accessing to the actual details of the query made to gather email addresses.
+  * New sympa.conf config parameter "sender_headers" to specify header fields by which message sender is detected. This is a enhancement to S. Shipway's improvement. RFC: What is the reasonable default for this parameter?
+  * Behavior of one time ticket lock-out is configurable. Two new robot parameters were introduced:
+    * one_time_ticket_lockout:
+      * "one_time" won't allow access again. This is previous behavior.
+      * "remote_addr" will lock the ticket on remote address accessed at first time.
+      * "open" will never lock-out tickets.
+    * one_time_ticket_lifetime: Duration before ticket expires.  Default is "2d", previous hardcoded value.
+  * New 'auth_service_friendly_name' in auth.conf CAS paragraph. This allows to set a display name for the CAS server, without the constraints that 'auth_service_name' entry has ([\w\-\.]).
+  * Changes of list config parameters on archiving. New parameter "process_archive" controls archiving. The default is "off": To enable archiving, it must be set to "on" explicitly.  OTOH even if archiving is disabled by setting it "off", past archives will be kept and accessible according to access settings.
+  * Renamed parameters. web_archive.access to archive.web_access; archive.access to archive.mail_access; web_archive.quota to archive.quota; web_archive,max_month to archive.max_month. Though config files of exisiting lists will be updated during upgrading process, **listmasters are highly recommended to check new configuration. Customized scenarios, list creation templates and edit_list.conf will never be upgraded automatically.  They should be modified manually, if neccessary.**
+
+===== Internals =====
+
+==== Send spool ====
+
+Now messages sent via WWSympa will be stored in bulk spool, directly if they are outbound messages.  On earlier releases outbound messages were injected in msg spool with special checksum. A program upgrade_send_spool.pl to migrate messages with old format is proveded. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+==== PostgreSQL ====
+
+Postgresql RDBMS are now automatically upgraded!
+
+==== Config files ====
+
+**wwsympa.conf will no longer be used: it would be migrated to sympa.conf.**
+  * Makefile.am: no longer create wwsympa.conf during installation.
+  * sympa_wizard.pl: --create argument disallows "wwsympa.conf" option.
+  * Upgrade.pm: migrate wwsympa.conf during upgrade process.
+Note: Run "sympa.pl --upgrade" to migrate wwsympa.conf into sympa.conf. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+**Default config**
+location is now /etc/sympa/ (or $sysconfig/sympa/) instead of /etc/. This solves the problem of config file lock creation being denied when trying to read the binary version of the config file at startup.
+
+**WARNING** : to upgrade the config location one MUST run sympa.pl --upgrade_config_location before any other upgrading operation. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+==== Alias management uniformization ====
+
+Now alias maintenance utilities other than newaliases may be used without special configure options nor patch to alias_manager.pl.
+Changes:
+  * aliaswrapper and virtualwrapper were deprecated and replaced with sympa_newaliases-wrapper.
+  * New alias management program sympa_newaliases.pl which will typically be called by alias_manager.pl via sympa_newaliases-wrapper.
+  * New site configuration parameters aliases_db_type and aliases_program will control behaviour of alias database maintenance.
+  * configure script:
+    * Options --with-sendmail_aliases and --with-virtual_aliases were deprecated. Use --with-aliases_file instead.
+    * New options --with-makemap and --with-postalias, along with options --with-newaliases and --with-postmap are available.
+    * Option --with-postmap_arg was removed.
+  * Alias managers can handle postmap/makemap style maps (delimited by whitespace), not only newaliases style maps (delimited by colon).
+
+==== openssl dependency dropped ====
+
+openssl(1) utility is no longer required.  Instead, a few CPAN modules are required to use S/MIME or SSL features:
+  * Crypt::SMIME
+  * Crypt::OpenSSL::X509
+The parameter "openssl" in sympa.conf was obsoleted. Note that p12topem.pl still needs openssl: To make it work, PATH environment variable should be set appropriately.
+
+
+
+===== Internationalization =====
+
+i18n titles in configuration.
+
+  * title.<lang> lines in scenario files are available again, though this feature was broken for a while.
+  * Now topics.conf recognizes "title.gettext" lines. - scenario, task and topics.conf recognize "title" line for default title.
+  * lang value in user_table
+  * title.<lang> line in scenario files
+  * title.<lang> line in task files
+  * title.<lang> line in topics.conf
+  * lang names in charset.conf
+  * lang parameters of list config, robot.conf and sympa.conf
+
+Note that canonicalization will be done internally so that existing config must not be changed.
+
+===== Lists management =====
+
+==== List families scenari ====
+
+Now you can define a "scenari" directory in the lists family directory. These scenarii will be available for lists instantiated from this family. The "scenari" directory must be put directly in the family directory, not in the overall "families" directory. For example, if you want to define scenarii specific to the "staff" family, you must define a scenari directory in the /home/sympa/etc/families/staff/ directory. Not in /home/sympa/etc/families/.
+
+==== List families addistional files ====
+
+Until now, only the config.tt2 file was parsed when the family was instantiated, thus producing the lists' config file. As a lot of other files can be used to configure a list (footer, header, etc.), we added the possibility to instantiate these files as well.
+The list of files parsed (in addition to config.tt2) when instantiating a family are defined in a new (sympa.conf and robot.conf) parameter called 'parsed_family_files'. This parameter must contain a comma-separated list of file names. If these files exist, with the '.tt2' extension added to their name, in a family, they will be parsed and added to the list directory.
+
+The default value of the parameter is: 
+'message.footer,message.header,message.footer.mime,message.header.mime,info'.
+
+These files are updated in existing lists when a family is instantiated. note that it will overwrite any other customization.
+
+==== On the web automatic lists ====
+
+This feature existed in 6.1 but it deserved a little more advertisment.
+
+[Requested and funded by the CNRS] Automatic lists can now be manipulated through the sympa web interface, in a "user friendly" form. This is merely a web layer around the general autmatic lists feature. This feature is fully documented here: [[https://www.sympa.org/manual_6.2/user_friendly_autolists]] Additionnally, it is now possible to unsubscribe to all the lists of a given family in two clicks.
+
+===== Administration =====
+
+Widely extended logs when the log_module parameter is activated with the value 'scenario': all scenario results are evaluated.
+Remember that extended logs can be limited by the IP or the email of the user, using the 'log_condition' parameter. log_module and log_condition are now declared in sympa.conf instead of wwsympa.conf.
+Remember these parameters syntax:
+  * log_module: can take the value "scenario" - only.
+  * log condition: takes a character string as value. The form is "ip=<an.ip>,email=<an_email>". You can put ip alone, email alone or both, with the comma-separated form.
+
+Listmaster notifications can now be grouped. If, for a specific robot, several notifications are issued within a short period of time with the same operation code only the first ones are sent, the next ones are stacked. The stacking ends when no notifications are issued anymore, or when the first one is too old. All the stacked notifications are then sent as attachments of a single message. Internal settings :
+Stack if more than 3 notifications with the same operation code are issued for the same robot - Send stacked notifications if no new one satisfying the condition above was received for more than 30 seconds - Send stacked notifications if the oldest one was issued more than 60 seconds ago
+
+''sympa.pl --health_check'' checks config files, database connection and structure, and data structure version.  It is invoked at first time in sympa init script and reports errors if any. Instead, daemons such as sympa.pl no longer check database structure nor data version.
+
+File extension of lock files are changed from ".lock" to ".LOCK", because lowercase name can conflict with domain part in the future.
+
+====== Sympa 6.1.23 released ======
+
+//September 17, 2014//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:logo_sympa_couleur.png }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.1.23 is the latest stable version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.23.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+
+This release includes mainly bug fixes.
+
+A few changes were also made to Sympa. Some important points are:
+
+  * Optimization for list search which, for very large server, could timeout and lead to an error on the web interface,
+  * Password strength validation when submitted by user,
+  * New, out-of-the-box DKIM-based scenarios,
+  * improvment for scenarios custom_conditions: custom_condition can now return the type of action to take: owner, request_auth, etc. This allows complex, single-module CustomConditions.
+
+====== Sympa 6.0.9 released ======
+
+//September 16, 2014//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:logo_sympa_couleur.png }}]]
+
+
+Sympa 6.0.9 is a single patch release. It introduces the [[https://www.sympa.org/manual/dmarc|DMARC protection]] to the 6.0.9, helping listmasters fight the side effects of DMARC without having to upgrade to 6.1 (which we still strongly recommend ;-) )\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.0.9.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/sympa-6.0.9/NEWS|Check the release notes]]
+
+The update from 6.0.7 to 6.0.9 is quick and easy.
+
+====== Sympa 6.1.22 released ======
+
+//June 6, 2014//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:logo_sympa_couleur.png }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.1.22 is the latest stable version of Sympa.\\
+
+
+This release includes mainly bug fixes.
+
+<note important>This is the release that fixes the DMARC issues related to the recent DMARC policy change from yahoo, aol and others and solved by Steve Shipway. All details about can be found on the [[https://www.sympa.org/manual/dmarc|Sympa DMARC page]].</note>
+
+===== Features =====
+
+[Submitted by S. Shipway, Univ. of Auckland] Workaround for aggressive DMARC policy such as yahoo.com.  The patch adds option #3 of this DMARC FAQ: [[http://dmarc.org/faq.html#s_3]]
+- New list config paragraph "dmarc_protection" to munge "From:" header and put original header content erc. into comment.
+
+
+
+===== Changes =====
+
+
+New parameters for merged messages. "part.description", "part.disposition", "part.encoding" and "part.type" may be used for each part of input messages.  These are all-lowercase (except "part.description").
+
+===== Bug fixes =====
+
+  * [Fixed by V. Bonamy, univ. Rouen] When usingUTF-8 encoded data, data were twice encoded before being sent by the SOAP server. Fixed by decoding from UTF-8 any text data.
+  * Scenarios were not evaluated for DKIM authlevel, because DKIM signature was found invalifd. This was due - again - by the usage of MIME::Entity::as_string to store the message as	string. Fixed by simply storing the raw data from message file instead vof using this sub.
+  * When using DKIM, both DKIM and S/MIME signatures were broken. This was due to the usage of MIME::Entity->as_string that rewrapped the message body to 60 columns - thus changing the character string of the message body and probably also the \015\12 end of line required to get valid DKIM signatures. Fixed by storing the message body fed to Mail::DKIM and concatenating it to the new headers containing the DKIM signature.
+  * DKIM parameters were not correctly loaded and dkim_signer_domain parameter was not correctly defaulted to the list service domain.
+  * When using binary cache for list configs, if the main config (sympa.conf or wwsympa.conf) was changed, binary cache were still used. Problem: These bainary cache contain default values taken from main config. If these values were changed in main config, they were not updated in binary cache. Fixed by testing the last modification time for sympa.conf and wwsympa.conf against the binary_cache last update time.
+  * WWSympa may crash due to unknown subroutine when:
+    - Anonymous user accesses to $wwsympa_url/signoff/LIST/EMAIL, i.e. specifying email but not logging-in.
+    - User does not exist in user_table.
+  This causes because wwslib::init_passwd() called in wwsympa.fcgi doesn't have qualified name.  Use qualified name and do fix another logical bug on unknown variable.
+  * If cache_list_db is "on" and list_table is empty, all users in user_table except listmaster will be purged. To prevent information loss, made purge_user_table task not to use list_table cache.
+  * [Reported by D Launay, RENATER] Signed mail body are altered. Fixed by making following functions not to alter such parts:
+	- Bulk::merge_msg()
+	- List::_append_parts()
+  * [Originally submitted by M. Howe, Univ. of Oxford] Session for multiple robots sharing same cookie domain is broken. Fixed injected bug by fix for bug #6180: the sessions were limited to each virtual robot at the first access.  The patch was modified a bit.
+
+====== Sympa 6.1.20 released ======
+
+//March 21, 2014//
+
+[[http://www.sympa.org|{{:authors:annonces:envoi:logo_sympa_couleur.png }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.1.20 is the latest stable version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.20.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+
+This release includes mainly bug fixes. The major one being a bug preventing alias creation when using virtual hosts.
+
+Here is the list of fixes:
+
+  * sympa_newaliases failed to update aliases for virtual hosts,
+  * Message-ID field is no longer duplicated,
+  * Distributed messages may have duplicate content of some header fields, i.e. Errors-To:, Precedence: and Sender: (and From: and Message-ID: when anonymous_sender is enabled).  Several content filtering systems will take off the score for such messages. Make sure that the fields will be overwritten by List::distribute_msg().
+  * Mail merge: Parameters taken from mail headers may be overwritten by ones of each subpart. Initialize $data->{'headers'} only once at calling Bulk::merge_msg(),
+  * On rebuilt archives, src attributes of HTML elements may be removed.  Because Message::clean_html() was given Message object of message without X-Sympa-To: pseudo header.  Give robot argument to this method.
+    * Following methods/functions require the argument of Robot object: Archive::clean_archived_message(), Archive::clean_archive_directory(), Message::clean_html(), tools::sanitize_html(), tools::sanitize_html_file() and tools::sanitize_var().
+    * archived.pl: Now mhonarc will be given arguments with per-robot value of wwsympa_url parameter instead of site-default value.
+  * [Reported by J. Moutinho] wwsympa: signoff crashes.  wwsympa/signoff/somelistname dies with "Cannot quote a reference" error, since mail::mail_file() may take List object as 'list' item in $data argument.	List along with HASH would be concerned.
+
+The Sympa translators are more than ever active, as the following languages have been updated. Many thanks to our loyal translators! Please follow the links if your interested in improving these languages translations.
+
+  * [[http://pootle.sympa.org/gl/|Galician]] (X. Mosquera)
+  * [[http://pootle.sympa.org/ja/|Japanese]] (S. Ikeda)
+  * [[http://pootle.sympa.org/pt_BR/|Portuguese do Brazil]] (R. Manola)
+  * [[http://pootle.sympa.org/pl/|Polish]] (strebski)
+  * [[http://pootle.sympa.org/de/|German]]
+
+
+====== Sympa 6.1.19 released ======
+
+//February 5, 2014//
+
+[[http://www.sympa.org|{{:authors:annonces:envoi:logo_sympa_couleur.png }}]]
+
+
+RENATER is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.1.19 is the latest stable version of Sympa.\\
+
+//A large part of what is made available today is due to the hard work and dedication of **Soji Ikeda**. Let he be once again thanked for all his commits, improvements and suggestions: Thanks Soji! :-)//
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.19.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+
+This release includes... See below!
+
+===== Important notes =====
+
+
+  * **Feature:** Per-language css.tt2 will override any portion of main css, not fully replacing it.  So they may be used for locale-specific customization. Background: Default css.tt2 specifies the font families covering Western scripts (Latin, Cyrillic, ...).  East Asian users may prefer consistent font family supporting Western along with Eastern scripts (Han, Hangul, ...). Once sympa is installed, you will find these dedicated CSS in default/web_tt2/<locale>, where <locale> can be "ja_JP", "ko_KR", "zh_CN" and "zh_TW".
+
+  * **Change:** Now alias maintenance utilities other than newaliases may be used without special configure options nor patch to alias_manager.pl. Changes:
+    * aliaswrapper and virtualwrapper were deprecated and replaced with sympa_newaliases-wrapper.
+    * New alias management program sympa_newaliases.pl which will typically be called by alias_manager.pl via sympa_newaliases-wrapper.
+    * New site configuration parameters aliases_db_type and aliases_program will control behaviour of alias database maintenance.
+    * configure script:
+    * Options <nowiki>--with-sendmail_aliases</nowiki> and <nowiki>--with-virtual_aliases</nowiki> were deprecated.  Use <nowiki>--with-aliases_file</nowiki> instead.
+    * New options <nowiki>--with-makemap</nowiki> and <nowiki>--with-postalias</nowiki>, along with options <nowiki>--with-newaliases</nowiki> and <nowiki>--with-postmap</nowiki> are available.
+    * Option <nowiki>--with-postmap_arg</nowiki> was removed.
+    * Alias managers can handle postmap/makemap style maps (delimited by whitespace), not only newaliases style maps (delimited by colon).
+
+  * **Change:** wwsympa: Non-privileged users can access to some restricted functions.
+    * Any users can access to skinsedit function and execute it.
+    * The remove_template function won't check argument. These are due to typos in some tables (hashes) defining functions. In addition, there are a few ineffective definitions in the tables.
+
+  * **Bug fix:** [#6180][#6979][#7079][#8056] Web session would be broken by nearly simultaneous multiple HTTP requests, such as browsing an archive page with a few images.
+    * **Database change is needed: two new fields were added to session_table: prev_id_session (varchar(30)) and refresh_date_session (int(11))?. As usual, MySQL and SQLite will be automatically updated. Postgres, Oracle and Sybase users will need to manually edit their database structure.**
+    * Optional Crypt-CipherSaber is needed to use encrypted cookie feature. Fixes:
+    * Made transition between session IDs not to occur on each access; they occur with interval specified by cookie_refresh parameter.
+    * Made raw session ID not to be disposed to clients; encrypted IDs changed by each request are used for cookie values. The first point prevents session to be broken, while it slightly weakens against the replay attack.  The second point keeps inpredictability of session cookies.
+
+===== Message sending =====
+
+
+  * **Feature:** [Submitted by S. Shipway, univ. Auckland] When mail merge is activated, new parameters can be used, taken from the mail headers:
+    * subject
+    * x-originating-ip
+    * message-id
+    * date
+    * x-original-to
+    * from
+    * to
+    * thread-topic
+    * content-type
+  * **Feature:** New site config parameter "sender_headers" to specify header fields by which message sender is detected. This is a enhancement to S. Shipway's improvement.
+
+  * **Change:** [Submitted by S. shipway, univ. Auckland] When Sympa receives a mail without 'From' field, it tries to find the sender by parsing the 'Envelope-From', 'X-Sender' and 'return-Path' fields before giving up and moving the message to bad.
+
+  * **Bug fix:** Message::fix_html_part() breaks texts encoded by several charsets such as UTF-16.  Convert parts always except their charset is UTF-8 or US-ASCII. Sympa may be crashed by the UTF-16 texts without BOM.  It is due to a feature of Encode module. Update MIME-Charset to 1.010 to prevent crash. ToDo: Workaround for modules such as MHonArc, StripScripts not supporting UTF-16.
+
+  * **Bug fix:** When sending a crypted message, it was possible that very few users would have provided their certificate to the list. In such a situation, if either all the the non VERP receipients array of receipients was empty, the message was not sent at all (the message distribution was stopped and the non VERP receipients were not distributed). Fixed by checking the number of receipients for each situation and issuing an info in the logs but without stopping the overall distribution.
+
+  * **Bug fix:** [Reported by S. Shipway, univ. Auckland] When merge was activated on a list, Sympa would merge even signed messages. Signed messages should not be altered in any way, so merge is deactivated when such a message is sent to a list. Note that an alternate solution would be to remove the incoming signature and make the list sign the message, if it has a certificate. This solution should be investigated in later versions of Sympa.
+
+  * **Bug fix:** When DKIM was activated, removing invalid DKIM signatures would break S/MIME signature.
+
+  * **Bug fix:** When adding footers, nothing appeared in the mail received by subscribers in the following condition:
+    * footer_type was set to "append"
+    * the mail was multipart/html This was due to the footer being added to the text/plain part only. Now it is added to the text/teml part as well.
+
+  * **Bug fix:** If merge_feature was on, whole or part of subscribers could be disposed by including "[% to %]" into messages. Fixed by removing 'receipients' item of bulk packets from the parameter passed to Bulk::merge_msg().
+
+
+
+===== Subscribers management =====
+
+
+  * **Feature:** [Reported by so many listmasters we lost the count] Exclusion table was just a display of the users excluded. list owners could not do anything to restore subscriptions; This page is now a form, similar to the review page, which allows to restore users subscriptions.
+
+  * **Feature:** [Submitted by S; shipway, univ. Auckland] Added quick access links in the review page to reach all users whose emails start with a given letter.
+
+  * **Bug fix:** [#8684][Reported by D. Fournier, CNRS] In some cases, such as changing a user email address through the Sympa admin > Users web interface, the email value was not set in the "update" config paragraph, leading to logs stating: 'Missing key "email" in param "update" in...'.
+
+
+===== Authorization =====
+
+  * **Change:** [Submitted by S. Shipway, univ. Auckland] several changes in privilegs to ease everyday lists moderation:
+    * Owners and lismasters can moderate messages and shared repository
+    * Editors can moderate subscriptions
+    * 'del' and 'add' sceanrios are evaluated to make their result available in each page.
+
+  * **Bug fix:** [Reported by M. Ferrante] Scenari: Inconsistent handling of header fields in rule conditions. New features:
+    * "[msg_header->field][index]" returns the value of particular field.  Index may be negative.
+    * "[msg_header->field]" still returns list of field values, additionally, ordering will be preserved. Fixes:
+    * Conditions is_listmaster, is_owner, is_editor and is_subscriber can handle multiple values.
+    * They also parse arguments as header field values to get address parts.
+
+  * **Bug fix:** Limit the header fields to be checked by scenarios.
+    * In spam_status scenario, last occurrences of X-Spam-status and so on will be checked, since others are not trustworthy.
+    * Also, the last X-sender field would be checked.
+    * In send scenario, first occurrences of Content-Type and so on will be checked, since they must appear only at once.
+
+  * **Bug fix:** [#7825] [Reported by D. Marant, Université Lille 1] spam_status scenario had no effect for messages sent to command addresses. Fixed  a typo in sympa::DoCommand(). 
+
+  * **Bug fix:** [#7526] [Submitted by Evili del Rio] SQL Filters always returned false. Though what SQLSource::fetch() returns may be arrayref of references to array of rows, it was treated as an arrayref of rows.
+
+===== Internationalization =====
+
+  * **Feature:** i18n of options for list parameters and subscriber options.
+    * Options on edit_list page are shown by i18n'ed titles.
+    * Only listmasters can view real config values.
+    * Subscriber options on review pages, command results, subscriber option pages and so on are shown by i18n'ed titles (along with real option values).
+
+This release also includes updated translations for the following languages. we will never thank enough the Sympa translators whose work is so valuable to help Sympa to spread around the world:
+
+  * Basque (thanks to "Dabid")
+  * Catalan
+  * Czech
+  * English
+  * Finnish (thanks to J.P. Paloposki)
+  * French (RENATER team)
+  * Galician (thanks to X. Mosquera)
+  * German (thanks to R. Heider)
+  * Italian
+  * Japanese (thanks to Soji Ikeda)
+  * Occitan (thanks to C. Valmary)
+  * Portuguese (Brazil) (thanks to I. fontes Ferreira and "Gomex")
+  * Russian (thanks to S. Dukachev)
+  * Spanish (thanks to A. Marin) ** Please note that Spanish translators have their own mailing list now: [[sympa-es@listes.renater.fr]]. You can subscribe to this list if you want to get involved in Sympa translation into Spanish**.
+  * Swedish (thanks to P. Freyhult and M. Amnefelt)
+  * Turkish
+
+Several translation projects were added since last release: Ido, Esperanto and Latin. If you want Sympa to be translated into your own language - and agree to do part of this yourself or with friends, just ask the [[sympa-authors@listes.renater.fr|Sympa authors]]. If you don't want to feel isolated, just do as Spanish translators did: ask us to create a dedicated mailing list for translators in your language.
+
+  * [[http://pootle.sympa.org/af/|Afrikaans]]
+  * [[http://pootle.sympa.org/ar/|Arabic]]
+  * [[http://pootle.sympa.org/eu/|Basque]]
+  * [[http://pootle.sympa.org/nb_NO/|Bokmål]]
+  * [[http://pootle.sympa.org/br/|Breton]]
+  * [[http://pootle.sympa.org/bg/|Bulgarian]]
+  * [[http://pootle.sympa.org/ca/|Catalan]]
+  * [[http://pootle.sympa.org/zh_CN/|Chinese (China)]]
+  * [[http://pootle.sympa.org/zh_TW/|Chinese (Taiwan)]]
+  * [[http://pootle.sympa.org/cs/|Czech]]
+  * [[http://pootle.sympa.org/nl/|Dutch]]
+  * [[http://pootle.sympa.org/en/|English]]
+  * [[http://pootle.sympa.org/en_US/|English (United States)]]
+  * [[http://pootle.sympa.org/eo/|Esperanto]]
+  * [[http://pootle.sympa.org/et/|Estonian]]
+  * [[http://pootle.sympa.org/fi/|Finnish]]
+  * [[http://pootle.sympa.org/fr/|French]]
+  * [[http://pootle.sympa.org/gl/|Galician]]
+  * [[http://pootle.sympa.org/de/|German]]
+  * [[http://pootle.sympa.org/el/|Greek]]
+  * [[http://pootle.sympa.org/hu/|Hungarian]]
+  * [[http://pootle.sympa.org/io/|Ido]]
+  * [[http://pootle.sympa.org/id/|Indonesian]]
+  * [[http://pootle.sympa.org/it/|Italian]]
+  * [[http://pootle.sympa.org/ja/|Japanese]]
+  * [[http://pootle.sympa.org/ko/|Korean]]
+  * [[http://pootle.sympa.org/la/|Latin]]
+  * [[http://pootle.sympa.org/ml/|Malayalam]]
+  * [[http://pootle.sympa.org/nb/|Norwegian Bokmål]]
+  * [[http://pootle.sympa.org/nn_NO/|Nynorsk]]
+  * [[http://pootle.sympa.org/oc/|Occitan]]
+  * [[http://pootle.sympa.org/pl/|Polish]]
+  * [[http://pootle.sympa.org/pt/|Portuguese]]
+  * [[http://pootle.sympa.org/pt_BR/|Portuguese (Brazil)]]
+  * [[http://pootle.sympa.org/ro/|Romanian]]
+  * [[http://pootle.sympa.org/rm/|Romansh]]
+  * [[http://pootle.sympa.org/ru/|Russian]]
+  * [[http://pootle.sympa.org/es/|Spanish]]
+  * [[http://pootle.sympa.org/sv/|Swedish]]
+  * [[http://pootle.sympa.org/tr/|Turkish]]
+  * [[http://pootle.sympa.org/vi/|Vietnamese]]
+
+
+===== Authentication =====
+
+
+  * **Bug fix:** [Reported by P. Aepli, univ. Genève] Multi-valued parameters obtained from Shibboleth IdP were badly parsed. This as due to the fact that Sympa stored additional parameters under the form: "key1=value1;key2=value2;etc." As Shibboleth uses semi-columns to separate values in multivalued attributes, values were misinterpreted as new
+    * empy
+    * attributes. Fixed by separating keys and values by totally unlikely strings.
+
+
+
+===== Sympa database =====
+
+
+  * **Feature:** [Submitted by S. Shipway, univ. Auckland] ODBC is now supported for email data sources.
+
+  * **Bug fix:** Too short DKIM database field. Expaned dkim_privatekey_spool from 1000 to 2000 o.
+
+  * **Bug fix:** [debian#642464] [Originally submitted by E Bouthenot, Debian Project] Initial installation or upgrade with SQLite failed. cf. [[http://bugs.debian.org/642464]]
+
+  * **Change:** Supplemental Unicode characters beyond BMP can't be used on MySQL. As of MySQL 5.5.3, text types supported UTF-8 characters with 4 octets (a.k.a. utf8mb4).  By them, additional characters such as CJK ideographs used in persons' names can be used. Change: Try to set 'utf8mb4' then 'utf8' as client-side character set. Note:
+    * Server also must enable utf8mb4, or supplemental characters will be ignored silently.  Add "character-set-server=utf8mb4" line to my.cnf.
+    * Tables must be defined with "DEFAULT CHARACTER SET utf8mb4" option, or run "ALTER TABLE" queries to change default character sets of preexisting tables.
+
+  * **Bug fix:** MySQL: session charset is cleared. connect() sets "mysql_auto_reconnect" driver attribute to true when the processes are running under mod_perl or CGI environment so that ping() will always succeed and then "SET NAMES utf8" will be skipped. Fixed by resetting that attribute as soon as connect() succeeded.
+
+  * **Bug fix:** [#8466][#8468][Initially Submitted by Marton J., Budapesti M?\197?\177szaki ?\195?\169s Gazdas?\195?\161gtudom?\195?\161nyi Egyetem] Oracle cannot handle messages as long type. * DBI::Oracle has a default setting of LongReadLen=80. As a result, driver does not fetch a record in bulkspool_table containing a long column that have value longer than 80 characters. * DBI::Oracle raises error if messages larger than approximately 2600 o (4000 o in base64 encoding) was sent. Fixes:
+    * Original patch was for Sympa 6.0.1; it was rewritten for sympa-6.1-branch.
+    * Set $dbh->{'LongReadLen'} to be max_size * 2.
+    * Give SQL the messages as bound parameters to avoid long text literals.
+    * Rewritten patch also includes support for Sybase which needs similar concern.
+
+  * **Bug fix:** [#8628][Submitted by Marton J., Budapesti M?\197?\177szaki ?\195?\169s Gazdas?\195?\161gtudom?\195?\161nyi Egyetem] Inproper connection pool-handling: database user is not taken into account. Modified patch was applied.
+
+  * **Bug fix:** [#8629][Submitted by Marton J., BME, Hungary] Oracle date writer formula was broken: after noon, 1 day is added.
+
+  * **Bug fix:** [#8669] create_db.SQLite was not uptodate.
+
+  * **Bug fix:** [#7459][Submitted by Mitar] Tables in PostgreSQL user schema are not detected during upgrade process.
+
+
+
+===== List families =====
+
+
+  * **Feature:** Now you can define a "scenari" directory in the lists family directory. These scenarii will be available for lists instantiated from this family. The "scenari" directory must be put directly in the family directory, not in the overall "families" directory. For example, if you want to define scenarii specific to the "staff" family, you must define a scenari directory in the /home/sympa/etc/families/staff/ directory. Not in /home/sympa/etc/families/.
+
+  * **Feature:** Now the list of files parsed (in addition to config.tt2) when instantiating a family are defined in a new (sympa.conf and robot.conf parameter called 'parsed_family_files'. This parameter must contain a comma-separated list of file names. If these files exist, with the '.tt2' extension in a family, they will be parsed and added to the list directory. The default value of the parameter is 'message.footer,message.header,message.footer.mime,message.header.mime,info'.
+
+  * **Change:** Now 'message.footer','message.header','message.footer.mime','message.header.mime','info' files are updated in existing lists when a family is instantiated. note that it will overwrite any other customization.
+
+  * **Bug fix:** In scenarios, the field [msg->spam_status] was never taken into account because the message objects fields were not made available to scenarios. Fixed by adding a new test in Scenario::request_action. Now any Message field can be accessed in scenarios.
+
+
+===== Sympa customization =====
+
+
+  * **Change:** Custom vars values can take any character string as values (previously, spaces were forbidden).
+
+  * **Change:** custom colors along with configured colors are shown during testing colors. Improved javascript.js:chooseColorNumber() to update position.
+
+
+===== Archives management =====
+
+
+  * **Change:** MHonArc 2.6.18 should be used to avoid vulnerabilities. cf. [[http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2010-4524|CVE-2010-4524]], [[http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2010-1677|CVE-2010-1677]].
+
+
+===== Lists management =====
+
+
+  * **Bug fix:** The "info.conceal" scenario was neither packaged nor installed.
+
+
+===== Web interface =====
+
+
+  * **Bug fix:** Several fixes on style sheets (CCS).
+    * Fixed broken css.tt2: Special characters were replaced by entities.
+    * Tune metrics of some items so that pages may be shown properly by most of modern browsers.
+    * Added some workaround for IE bugs, though they are not bugs of Sympa. Now IE 7 or later more or less correctly render.  Note: IE 6 or earlier is not.
+
+  * **Bug fix:** [#8712][Reported by L. Didry, CIRIL] In the main admin edition page, the database password was displayed as clear text. replaced by a series of stars.
+
+  * **Bug fix:** [#8916][Reported by Adam Bernstein, Electric Embers] wwsympa/search: Date is not displayed in human readable form in "other similar subscribers" results. Format date and update_date fields in tt2 parameters.
+
+  * **Bug fix:** [#8662][Reported by A. Bernstein, Electric Embers] wwsympa: arcsearch crashed on non-UTF-8 bytes in HTML, with error "Malformed UTF-8 character (fatal)". Marc::Search uses Unicode internally to utilize case-insensitive match.  Fixed by replacing ":utf8" input layer with ":encoding(utf8)", since former won't really check inputs.
+
+
+===== SOAP interface =====
+
+
+  * **Bug fix:** [#7318] Encoding problem on sympasoap. UTF-8 strings were encoded twice as latin-1 strings.
+
+
+
+===== Data sources =====
+
+
+  * **Change:** In attribute values for ldap_2level_query, characters '\', '(', ')', '*' and 'null' (\0) are escaped
+
+  * **Bug fix:** [Reported by F. Périchon] Users included from data sources can unsubscribe from a list provided the "unsusbscribe" scenario allows them. Unsubscription worked well, but when re-subscribing to the list, both the listmasters and the users received an error; this was because the user counter was not increased when re-including a subscriber. Fixed by changing the test and increase the counter when just removing someone from the exclusion table.
+
+  * **Bug fix:** [Reported by Ö. Sahin, univ.Lyon 2] When List::new sub was called, sync_include_admin was systematically executed, except when specifically stated. If using a lot of owenr and editor datasources, this resulted in large amount of queries to these datasources when searching lists or displaying the list of lists. This is now modulated. When calling get_lists, calling sync_include_admin is now optional and executed if the limits of the 'ttl' and 'ditribution_ttl' parameters are not exceeded.
+
+
+
+===== Sympa configuration =====
+
+
+  * **Bug fix:** Some wwsympa.conf parameters were not defined in @confdef::params, and some were redundantly defined their defaults in wwslib::load_config(). Fixes:
+    * These were added to @confdef::params: custom_archiver review_page_size viewlogs_page_size htmlarea_url
+    * This was removed: robots (wwsympa.conf parameter)
+    * Let wwslib::load_conf() get defaults from @confdef::params. More known bugs:
+    * This inconsistently refers both wwsympa.conf and sympa.conf/robot.conf: arc_path
+    * This refers sympa.conf/robot.conf by default and wwsympa.conf: cookie_domain
+    * These refers sympa.conf/robot.conf, though they are defined as wwsympa.conf parameters: password_case title default_home ldap_force_canonical_email
+
+===== Internals =====
+
+
+  * **Bug fix:** tools::get_filename() has been ignoring symbolic links.  Because "-r" file test operator returns false on symlinks.  Expand symlink paths by Cwd::abs_path() then test them by -r. This will be a part of fixes for bug #7383.
+
+  * **Bug fix:** [#7819] Creation of list is notified to super listmasters even if it belongs to virtual robot.
+
+  * **Bug fix:** [#8711][Submitted by a nice anonymous contributor aka "Luke"] When using NFS lock, timeout and stale_lock_timeout were inverted and the timout value was increased.
+
+  * **Bug fix:** [#8661][Reported by Y. Rouillard, INRA] Lock::remove_lock() doesn't properly destroy Lock object. Clear entire lock entry not only filehandle of it.
+
+  * **Bug fix:** [#8650] pod2man fails with non-ASCII characters in POD. Partially backported from 6.2-branch: Use E<...> for non-ASCII letters so that POD sources contain only ASCII. In conjunction corrected several descriptions out-of-date.
+
+----
+
+Enjoy!
+
+The Sympa developpers
+
+====== Formations Sympa 2014 ======
+
+Voici le programme des formations en français pour 2014.
+
+<note warning>**Attention** : Ces formations, organisées par RENATER, tutelle du projet Sympa, sont réservées à la communauté Ensignement Supérieur / Recherche française. Nous allons faire de notre mieux, cette année, pour fournir d'autre modes de formations aux utilisateurs du logiciel n'appartenant pas à cette communauté.</note>
+
+===== Formation 1 =====
+
+  * les 29 et 30 janvier à l'université Paris Descartes. 12, rue de l’école de médecine Paris 6e – Salle St Germain basse.
+  * 9h30 - 13h00 et 14h00 - 17h30
+  * [[https://listes.renater.fr/sympa/subscribe/formation-sympa-2014-paris|Inscriptions]]
+
+===== Formation 2 =====
+
+  * les 13 et 14 mai à l'université de Rennes 1. DSI - Université de Rennes 1 - Bât. 12D - Campus de Beaulieu - 263 avenue du Général Leclerc - premier étage, salle 102
+  * 9h30 - 13h00 et 14h00 - 17h30
+  * [[https://listes.renater.fr/sympa/subscribe/formation-sympa-2014-rennes|Inscriptions]]
+
+===== Formation 3 =====
+
+  * les 17 et 18 juin à l'université de Strasbourg, UFR Math-info, 7 rue René Descartes : [[https://goo.gl/maps/ZIEpk]]
+  * 9h30 - 13h00 et 14h00 - 17h00
+  * [[https://listes.renater.fr/sympa/subscribe/formation-sympa-2014-strasbourg|Inscriptions]]
+
+===== Description =====
+
+Public visé
+Taille : 20 personnes.
+
+Profil :Des administrateurs actuels ou potentiels du logiciel Sympa //appartenant à la communauté Enseignement supérieur / Recherche française//. Le TP peut convenir à des personnes connaissant déjà le logiciel et désirant explorer des fonctionnalités plus avancées, ainsi qu'à des personnes désirant découvrir le logiciel et ses potentialités.
+
+Pré-requis techniques :
+
+  *     Le public doit disposer de compétences techniques raisonnables en administration Unix, messagerie et web.
+  *     Il est nécessaire de disposer d'une boîte mail, professionnelle ou privée, capable de faire de la signature et de la vérification DKIM. Cette boîte mail doit être accessible par webmail.
+  *     Aucun matériel n'est nécessaire : les moyens matériels sont fournis (ordinateurs et serveurs). Il est possible d'amener son propre ordinateur si vous préférez disposer de votre environnement.
+
+
+Formateurs : La formation est assurée par les auteurs du logiciel Sympa (Étienne Méléard et David Verdin).
+
+===== Logisitique =====
+
+  * Formation gratuite
+  * Repas non fournis
+  * Les stagiaires travaillent sur des machines virtuelles préinstallées. Bien que des postes de travail soient fournis, ils sont invités à venir avec un ordianteur portable muni d'un environnement avec lequl ils sont familiers, ce qui leur permet de disposer des outils qu'il connaissent. PAr ailleurs, un poste de travail susceptible de se connecter sur leur propre serveur de liste peut permettre des comparaisons en temps réel.
+
+===== Programme =====
+
+==== Journée 1 ====
+
+
+  -     Installation et configuration
+  -     Architecture et organisation d'un serveur Sympa
+  -     Concepts de base : rôles utilisateurs, création et configuration des listes
+  -     La messagerie dans Sympa
+  -     Les interfaces de Sympa (web, mail, ligne de commande et SOAP)
+  -     Mécanismes d'autorisation : les scénarios
+  -     Sources de données pour l'alimentation des listes
+==== Journée 2 ====
+
+
+  -     Hôtes virtuels
+  -     DKIM
+  -     Authentification externe
+  -     Personnalisation de Sympa : paramètres, le langage TT2, les éléments personnalisables
+  -     Industrialisation de la gestion des listes : familles de listes et listes automatiques
+  -     Fonctionnalités de messagerie avancées : VERP, tracking, personnalisation de messages, S/MIME
+  -     Couplage Sympa - Dokuwiki
+
+
+
+====== TERENA workshop ======
+
+RENATER, TERENA and the Strasbourg university co-organize a one day workshop about Sympa.
+
+This workshop'sintended audience are our colleagues from the European NREN.
+
+See all details here: [[doc:formation:sympa_workshop|TERENA workshop]]
+
+====== Sympa 6.1.17 released ======
+
+//February 5, 2013//
+
+Here is Sympa 6.1.17, the latest stable version of Sympa.\\
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.17.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+
+This release includes a fix for potential attempts to gather informations regarding hidden lists.
+
+It also fixes several other bugs.
+
+This release also includes updated translations for the following languages. we will never thank enough the Sympa translators whose work is so valuable to help Sympa to spread around the world:
+
+  * Japanese
+  * French
+  * English
+  * Occitan
+  * Greek (kopolyzo)
+  * Catalan
+  * Dutch (kwadronaut)
+  * German (L18N)
+  * Spanish (almarin)
+  * Chinese (China) (Hongquan)
+  * Hungarian (poli12)
+  * Russian
+
+
+
+====== Sympa 6.1.16 released ======
+
+//November 16, 2012//
+
+This release includes two bug fixes. One that could make CAS authentication fail and the other one making digest composing fail and sympa being stalled.
+
+These two bugs were reported - and for one of thme, fixed, thanks François - by the community.
+
+It looks like a good place for a short reminder:  the lists sympa-users@listes.renater.fr and sympa-fr@listes.renater.fr (French speaking) are the good places to report weird behaviours and to get help.
+
+If you're sure you found a bug, please fill a bug request on our tracker: [[https://sourcesup.renater.fr/tracker/?group_id=23]]
+
+So, in short, the 6.1.16 upgrade from 6.1.15 will be:
+  * seamless as very little parts of the code moved;
+  * useful.
+
+This release also includes updated translations for the following languages. we will never thank enough the Sympa translators whose work is so valuable to help Sympa to spread around the world:
+
+  * Greek (thanks to gotsikas)
+  * Occitan (thanks to Ana ribas)
+  * Dutch
+  * Catalan (thanks to C. Valmary)
+  * German 
+  * Spanish (thanks to D. V. Ulriksen)
+  * Japanese (thanks to S. Ikeda)
+  * Brasilian Portuguese (thanks to R. Manola)
+
+====== Sympa 6.1.15 released ======
+
+//October 4, 2012//
+
+Here is Sympa 6.1.15, the latest stable version of Sympa.\\
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.15.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+
+This release includes mainly bug fixes. A lot of them were fixed by S. Ikeda after being reported by the Sympa users community. Many thanks to all of you!
+
+This release also includes updated translations for the following languages:
+
+  * Greek (thank to kopolyzo)
+  * Spanish (thank to D. V. Ulriksen)
+  * Estonian (thanks to Urmas)
+  * Italian
+  * Japanese (thanks to S. Ikeda)
+  * Brasilian Portuguese (thanks to R. Manola)
+
+====== Sympa 6.1.14 (Élias) released ======
+
+//July 27, 2012//
+
+Here is Sympa 6.1.14 (//Élias//), the latest stable version of Sympa.\\
+
+OK, the last announce was about the 6.1.11 version. What happenned to 12 and 13? They existed and were functionnal, but they suffered from some troubles, particularly at install time. So we didn't announce them and just tagged them; fixed the troubles and now we have a fully functionnal 6.1.14.
+
+Sympa 6.1.14 (//Élias//) took benefit from the very important activity of **Soji Ikeda** who, over the last two months, fixed a log of bugs and provided several improvments to the overall behaviour of Sympa. Long known for his works for a better support for internationalization in perl and messenging (see the CPAN modules [[http://search.cpan.org/~nezumi/MIME-Charset-1.009.2/Charset.pm|MIME::Charset]] or [[http://search.cpan.org/~nezumi/MIME-EncWords-1.012.4/lib/Encode/MIME/EncWords.pm|Encode::MIME::EncWords]] for example) Soji is also deeply involved in Sympa and became the first [[https://www.sympa.org/users/authors#core_developers|Sympa core developper]] outside RENATER. That means he's the only one except for the Sympa authors to be allowed to commit directly into our SVN repository.
+
+===== Feature =====
+
+Sympa 6.1.14 (//Élias//) introduces a new feature: [[manual:list-families#user-friendly_automatic_lists|User friendly automatic lists]]. This feature was requested and funded by the [[http://www.cnrs.fr/|CNRS]]. In short, it allows end-users to create and find [[manual:list-families#automatic_list_creation|automatic lists]] using the Sympa web interface. Please read the dedicated documentation to learn more about this feature.
+
+===== Changes =====
+
+This version contains several improvments / changes to Sympa:
+
+  * Improved Marc::Search (S. Ikeda):
+    * Now it also gives rich text information. arcsearch template was modified so that it would build HTML text from that information.
+    * Strip HTML tags in the file generated from HTML message. Entity references are also unescaped.
+    * Texts are handled as Unicode instead of binary text to perform case-insensitive match on non-ASCII characters.
+  * Improved handle of "Re:" munging in messages subjects with internationalized support (S. Ikeda);
+  * Replaced the "en_US" locale by "en", saving English speaking users the effort to install the en_US locale when they don't have it (inspired by J. Gilbey);
+  * By default, arcsearch (simple) searches in current month and in the previous non-empty one (S. Ikeda);
+
+===== Bug fixes =====
+
+The new version of Sympa includes also several bug fixes among which:
+
+  * Fixed the database creation scripts,
+  * List table was not populated upon command line list creation,
+  * SOAP 'add' function reset subscriber's password (S. Ikeda)
+  * [#1254][Reported by Olivier Duval] List logs page did not behave as expected, sorting failed and selecting a message to trace ended with a javascript error.
+  * [#1031][Reported by Emmanuel Eyer] Lists remained in memory cache after purge in processes, so if a new list was created with the same name it "inherited" some outdated parameters, especially param_constraint entries when using list famillies. Also the list table was not purged.
+  * [#3918] HTML tags escaped in search results (S. Ikeda).
+  * The [[https://www.sympa.org/manual/dkim|DKIM]] signature sent by Sympa were broken when admin used the "dkim_header_list" parameter. This parameter had no effect on the DKIM module but changed the DKIM header "h=". The "dkim_header_list" parameter is now obsolete. Default RFC 4871 headers are now used.
+
+===== Internationalization =====
+
+Several translations were updated. Thanks a lot to the generous contributors ((A side note to translators: Please remember to log in to the Pootle server when submitting improved trnaslations, or we will never know who did this translations. We would really like to at least thank you when we release new versions including your work.)) who spent time improving the Sympa internationalization:
+
+  * English ((Yes, we speak such a bad English that we need Native English contributors to fix it. Thanks again, guys!)) (J. Gibley)
+  * French (RENATER)
+  * Portuguese (Brazil) (R. Manola)
+  * Japanese (S. Ikeda)
+  * Polish
+  * Spanish (D. Viñar Ulriksen)
+  * Italian
+  * Portuguese
+  * Dutch (I. Verdonck)
+  * Finnish (J.P. Paloposki)
+  * Galician (X. Mosquera)
+
+====== Sympa 6.1.11 released ======
+
+//May 11, 2012//
+
+
+[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+\\
+
+This release fixes an upgrade problem with the 6.1.10 version when upgrading from version 6.1.9. In addition, it fixes a potential security threat related to archives.
+
+Hereafter is the release note for version 6.1.10 which is very close of the 6.1.11:
+
+This release fixes several bugs, including a bug leading to Sympa crashing with Perl 5.14.2 (Thanks to E. Bouthenot for fixing this one!)
+
+It includes also the following features:
+
+  * The famous [[https://riseup.net/|riseup]] patch that improves Sympa performance by moving parts of the lists config to database. This patch was strongly improved by works from both the Sympa authors and S. Ikeda.
+  * Enrichment of lists families by allowing to generate new files sucha as message footers at instantiation.
+  * Several contributions, including a new configure options by X. Bachelot and a lot of improvments by S. Ikeda,
+  * Several translations have been improved since our last release. Many thanks to the translators for their continuous efforts in improving Sympa:
+    * French
+    * Japanese (S. Ikeda)
+    * Catalan (Lorena)
+    * English
+    * Dutch
+    * Spanish
+    * Italian (Cimbala)
+    * Arabic
+    * Finnish (J.P. Paloposki)
+
+====== Sympa 6.1.10 released ======
+
+//May 10, 2012//
+
+====== Sympa 6.1.9 released ======
+
+//March 21, 2012//
+
+This release includes bug fixes, particularly a problem with the exclusion table which is fixed automatically during the upgrade.
+
+====== Sympa 6.1.7 released ======
+
+//August 25, 2011//
+
+This release includes bug fixes.\\
+
+====== Sympa 6.1.6 released ======
+
+//July 20, 2011//
+
+This release includes bug fixes.\\
+
+====== Sympa 6.1.5 released ======
+
+//June 6, 2011//
+
+This release includes several bug fixes and a slight change in our single SSO connector.\\
+
+As usual, the Sympa translators have been very active on the project. Especially, we saw several improvments in the following translations: 
+
+  * Polish (M. Woloszyn)
+  * Japanese (S. Ikeda)
+  * German (J. Krehbiel-Graether)
+
+====== Sympa 6.1.4 released ======
+
+//January 21, 2011//
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.4.tar.gz|Download sympa-6.1.4.tar.gz]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+\\
+
+This release includes a lot of bug fixes. Some improvments, too: Increased reliability of the sympa startup script, improved informations on some pages and service mails.\\
+
+There was also a big deal of work on the Sympa internationalisation, as shows the list below:
+
+  * Swedish (P. Freyhult)
+  * Russian (S. Dukachev)
+  * Polish (M. Woloszyn)
+  * Japanese (S. Ikeda)
+  * Estonian (U. Buhvestov)
+  * Hungarian (A. Bendszak)
+  * German (J. Krehbiel-Graether)
+  * Catalan (J. Giralt Baldellou)
+
+This new version owes a lot to the many users who gave us feedback, patches, and suggestions of improvments.\\
+
+Thanks a lot to you all for helping us, every day, making Sympa better.:-D
+
+====== New Pootle translation service ======
+
+  * [[http://pootle.sympa.org/|http://pootle.sympa.org/]]
+
+We've upgraded our pootle server; the web interface is much faster and therefore useable. The pootle web interface is an easy way for translators to quickly contribute to the translation effort of Sympa GUI.
+
+===== Sympa 6.1.3 released =====
+
+//November 15, 2010//
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.3.tar.gz|Download sympa-6.1.3.tar.gz]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+\\
+
+This release includes mainly bug fixes.
+
+===== Sympa 6.1.2 released =====
+
+//November 5, 2010// - Bug fixes
+
+======Sympa 6.1.1 is released======
+//October 14, 2010//  The CRU is pleased to deliver Sympa 6.1.1 to the open source community. Sympa 6.1.1 is the result of more than one year of project activity and proposes several new interesting features. This version includes a lot of new features, security enhancement and bug fixes.
+
+===== Better security =====
+Sympa 6.1.1 include a lot of fixes and internal chances to make the server more secure. Now XSS, CSRF or even brut force attack are much more difficult to perform against 6.1.1 servers. 
+
+
+===== New features =====
+
+
+==== User level message customization ====
+[developed by Julien Jourdan]
+
+[[:manual_6.1:message-handling?#customizing_messages|It is now possible to customize messages content with data specific to each subscriber]].
+
+The custom attributes are defined as TT2 parameters in distributed messages. This allows to [[/manual/message-handling#unsubscription_url|add unsubscription URL to message footers]]. Mail merge is controlled by a list/robot parameter : merge_feature on|off
+
+==== DKIM ====
+
+[[:manual_6.1:dkim|Sympa now supports DKIM for message sending and for access control]]. DKIM is an important tool for antispam but it will really become powerful when most messages received in your mailboxes will include a DKIM signature. That's why it is so important for mailing list servers to support the DKIM standard. 
+
+{{:internet2.jpg?width=50|http://www.internet2.edu}} The DKIM features included in Sympa were developped with the financial support of [[http://www.internet2.edu|Internet2]]. Listmasters who want to learn more about DKIM and mailing lists servers should [[http://datatracker.ietf.org/doc/draft-kucherawy-dkim-lists/|read the IETF draft]].
+
+  *  DKIM processing on incoming messages: [[:manual_6.1:authorization-scenarios#authentification_methods|Authorization scenarios can now use DKIM]]. Turning on the dkim_feature configuration parameter will provide a new authentication level to the authorization scenario engine. Scenario evaluation for incoming messages with a valid DKIM signature (but no S/MIME signature) will be evaluated with authentication method "dkim". So rules that use authentication method "smtp" will not match.
+  *  DKIM processing on outgoing messages: you may want to make Sympa sign outgoing messages. Almost every aspect of DKIM signature behavior can be customized via Sympa configuration parameters. Please check [[/manual/dkim|the DKIM parameters section]] for further details. Note that each parameter can also be set for a given virtual robot; and most of them are available as list parameter.
+
+
+=== DKIM server parameters ===
+
+          * [[:manual_6.1:conf-parameters:part3#dkim_feature|dkim_feature]]
+          * [[:manual_6.1:conf-parameters:part3#dkim_add_signature_to|dkim_add_signature_to]]
+          * [[:manual_6.1:conf-parameters:part3#dkim_signature_apply_on|dkim_signature_apply_on]]
+          * [[:manual_6.1:conf-parameters:part3#dkim_private_key_path|dkim_private_key_path]]
+          * [[:manual_6.1:conf-parameters:part3#dkim_selector|dkim_selector]]
+          * [[:manual_6.1:conf-parameters:part3#dkim_signer_domain|dkim_signer_domain]]
+          * [[:manual_6.1:conf-parameters:part3#dkim_signer_identity|dkim_signer_identity]]
+          * [[:manual_6.1:conf-parameters:part3#dkim_header_list|dkim_header_list]]
+
+=== DKIM list parameters ===
+
+[[:manual_6.1:parameters-dkim|See the documentation for details.]]
+          * dkim_feature
+          * dkim_signature_apply_on
+          * dkim_parameters
+                * private_key_path
+                * selector
+                * header_list
+                * signer_domain
+                * signer_identity
+
+==== User exclusion ====
+
+[developped by Julien Jourdan]
+
+[[:manual_6.1:web-interface#exclude_users|It is now possible to exclude members from lists, even if member is included through an external data source]]. Beware, that this feature is different from the blacklist. Exclusion makes sense when a list is based on external data sources; thanks to exclusion, a **user can unsubscribe (or be removed by list owner) even though he should be included via an external data source**. Users get into the exclusion table, through the standard unsubscribe / delete functions. They get off the exclusion table with the standard subscribe / add functions. New table 'exclusion_table' has been created.
+
+==== Mail reception suspension ====
+
+[developped by Julien Jourdan]
+
+[[:manual_6.1:web-interface#exclude_users|Users can suspend their list reception]]. She is still registered as a subscriber but won't receive the mails. Reception can be indefinite or have a scheduled expiration date. The reception suspension can be managed for all subscriptions in a unique web interface.
+
+==== SOAP ====
+
+The "complexWhich" SOAP method now includes subscribers information about bouncing state.
+
+==== Internationalisation ====
+
+Most supported languages have seen their translation upgraded. Among them we can remark those languages who are approximately 100 % translated:
+  * Polish (thanks to M. Woloszyn)
+  * Japanese (thanks to S. Ikeda)
+  * Russian (thanks to Chernysh)
+  * German (thanks to M. Warkus)
+  * French (eh...)
+          
+      In addition, M. Warkus did a great deal of work on Sympa typography: all the ponctuation signs are now included in the transaltion strings, so you can adapt the typography to whatever the best practices are in your language.
+
+==== Authentication ====
+
+[[:manual_6.1:authentication#generic_sso_paragraph|The format of the generic_sso paragraph in auth.conf was extended]]
+
+Two new parameters :
+  * http_header_list : allows to explicitely list HTTP header fields that should be cached in sympa user_table.
+  * http_header_value_separator : user attributes may be multi-valued (including the user email address. This parameter defines the values separator; default is ';' (adapted for Shibboleth)
+
+===== Changes =====
+
+    * [[:manual_6.1:antispam|spam_status message property]] is now evaluated from a  scenario spam_status. This scenario accept ham, spam and unsure as result. This replace the antispam_header_name antispam_tag_header_spam_regexp
+    * Is is now possible to enable topics when the reception mode is 'mail', 'notice', 'not_me', 'txt', 'html' or 'urlize'. AuthCAS module used to be distributed with Sympa. Since Sympa 6, it is a standalone CPAN module. The module still has the same name, therefore old installed versions of the module need to be removed
+
+
+
+
+====== Sympa 6.1 beta overview ======
+
+
+===== Sympa 6.1b.4 released =====
+
+{{:sympa_beta_small.png | Sympa logo}} //June 14, 2010// - Fixing query troubles
+
+<box>
+   *[[http://www.sympa.org/distribution/old/sympa-6.1b.4.tar.gz|Download sympa-6.1b.4.tar.gz]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+</box>
+\\
+
+This release fixes problems related to message sending preparation for some RDBMS.
+
+===== Sympa 6.1b.3 released =====
+
+{{:sympa_beta_small.png | Sympa logo}} //June 07, 2010// - Fixing database creation problems
+
+This release includes fixes related to database creation and DKIM.
+
+===== Sympa 6.1b.2 released =====
+
+{{:sympa_beta_small.png | Sympa logo}} //June 03, 2010// - Fixing first problems in Sympa 6.1 beta.
+
+This release includes the code necessary to ''unsubscription URL at the bottom of list messages''.
+
+
+====== Sympa 6.0.2 released ======
+
+{{:logo_sympa_small.png | Sympa logo}} The latest stabilization version of Sympa 6.0 is out now!
+
+This release includes many bug fixes, amongst which one that caused messages to be sent two times.
+
+====== Sympa 6.0.1 released ======
+
+{{:logo_sympa_small.png | Sympa logo}}
+
+This release includes, along with several bug fixes, updated translations for the following languages:
+
+  * German (M. Warkus),
+  * French (Sympa authors),
+  * Japanese (S. Ikeda),
+  * Russian (Chernysh),
+  * Polish (M. Woloszyn).
+
+Thanks to the translators for their work!
+
+====== Sympa 6.0 stable released ======
+
+{{:logo_sympa.png | Sympa logo}} The CRU is proud to bring you the first release of [[#sympa_6.0|Sympa version 6]], along with the first release of the [[#sympa_virtual_machine|Sympa virtual machine]]!
+
+So these are the new versions available in the Sympa world:
+
+  * 6.0 is the new stable version. That means that all bug fixes will now apply to both Sympa 6.0 and 6.1 versions; support for the version 5.4 will be restricted to drastic - security - issues and gradually cease, support for 5.3 and older versions is finished.
+  * 6.1 will be the new unstable version of Sympa. It is in alpha test right now and will be open for beta test soon.
+
+
+Please note that all the latest Sympa features will be presented during the [[http://events.internet2.edu/2009/fall-mm/|Fall 2009 Internet2 Member Meeting]].
+  * We will introduce the latest features during a [[http://events.internet2.edu/2009/fall-mm/agenda.cfm?go=session&id=10000841&event=980|side meeting]]
+  * We will also be able to speak about our experience in using Sympa as a [[http://events.internet2.edu/2009/fall-mm/agenda.cfm?go=session&id=10000743&event=980|group manager in virtual organizations]].
+
+Feel free to contact us during this event. We are really looking forward to meet Sympa users from the other side of the ocean!
+
+==== New mailing architecture ====
+
+New bulk.pl daemon installed with Sympa. This daemon is dedicated to mail distribution and allows to parallelize this process on a single server as well as on multiple servers. The main bulk.pl processes will automatically fork new processes, depending on the amount of messages left in the database. You can control this behavior with the parameters bulk_fork_threshold, bulk_max_count,bulk_fork_threshold.
+
+Messages spool used by the bulk.pl daemon is stored in the database, in two tables :
+  * bulkspool_table : one entry per message
+  * bulkmailer_table : subset of receipients for each message
+New associated sympa.conf parameters :
+  * bulk_fork_threshold : minimum number of packets in database before the bulk forks to increase sending rate
+  * bulk_max_count : max number of bulks that will run on the same server
+  * bulk_lazytime : number of seconds a slave bulk will remain running without processing a message before it spontaneously dies
+  * bulk_wait_to_fork : number of seconds a master bulk waits between two packets number checks
+  * sympa_packet_priority : default priority set to a packet to be sent by the bulk (for future use)
+  * pidfile_bulk : location of the daemon PID file
+
+==== Scheduled sendings ====
+
+You can trigger messages distribution day and time. This can be set on a per-list basis.
+
+==== Less data in files, more in database ====
+
+Storage of configuration in database is on its way! The colors used in the web interface are now stored in database. This is our proff of concept, opening the way towards a full storage of configuration and spools in database. These features will be important to make Sympa redundant. the first visible effect of this feature is the Sympa GUI color editor : you just have to edit colors and save them to make your Sympa server even more beautiful!
+
+==== Web style ====
+
+[Olivier Lumineau, CRU] Fresh new web CSS for the web interface.
+Here is the list of changes in the web interface :
+  * New css.tt2
+  * A new Sympa logo :-)
+  * New navigation menu through list admin menu and server admin menu
+  * Miscellaneous modifications in templates (list_admin_menu.tt2 not used anymore)
+WARNING : if you customize your own templates you may notice some mess in the page layout.  In such a case compare your templates with the new distributed version and report any difference to your own files...
+
+==== Password ====
+
+Replace storage of password with encryption by md5 fingerprint. This make remind password impossible. So now a one time ticket table is created ticket are  sent by email as an authentication token. Ticket can be used for lost password, create account, moderation request . It should be generalized to all operation that need a email chalenge.
+
+==== List cloning ====
+
+Want to create a new list that really looks like that other one you own since a year? Just click on the "clone list" button and bam! your list is created with the axact same configuration as the original, safe for the owners.
+
+==== Translations ====
+
+Four new languages are now available by default in Sympa:
+      * Bokmal (B. C. Aasgaard)
+      * Polish (L. Zygmanski)
+      * Finn (J.P. Paloposki)
+      * Vietnamese (C. Siddall)
+
+Thanks to the translators for their efforts!
+
+==== Miscellaneous ====
+
+  * New propertie in object message : spam_status .  This feature is used in modindex (listing of message awaiting moderation) to show message tagged as spam. Messages suspected as spam are not included into messages sent to list editor. 4 new related parameters :
+     * antispam_feature default off
+     * antispam_tag_header_name default X-Spam-Status
+     * antispam_tag_header_spam_regexp default ^\s*Yes
+     * antispam_tag_header_ham_regexp default ^\s*No
+
+  * Message moderation : [Peter Hart] Added a new function for the moderation of messages. Upon rejection of messages, personnalised messages can be created, saved and used to give more information as to why these messages were refused by the moderator.
+  * New //verify_netmask// scenario condition. [Peter Hart] exemple : verify_netmask('1.12.123.00/24') (changes in intanet scenarii are just comment because we don't have access to the local netmask of installation).
+  * Extended the ldap_alias_manager.pl [Roland Hopferwieser]  It used template to create LDAP entries. Also added a simulation mode for debug purpose.
+
+====== Sympa 6 beta 2 released ======
+
+{{sympa_beta.png | Sympa beta logo}} After 6 weeks of beta test, It is time to release a new beta version in which all the bug fixes we have heard of are now fixed.
+
+This version also includes a completely updated German translation, thanks to the efforts of M. Warkus.
+
+<box orange|**Install note**>Fresh installers will now have to run the sympa_wizard.pl script manually to set up their config files. The command to type is specified at the end of the make install command.</box>
+
+Older Sympa users will also note the vanishing of the "bin/etc" directory which contained all the default configuration and configuration samples. All these files and directories are now located in the new "default" directory.
+
+Finally, a new configure parameter, "''<nowiki>--enable-fhs</nowiki>''" will trigger different installation naming and location rules. If you add this option to configure, the different files used by Sympa will respect the [[http://www.pathname.com/fhs/|FHS standards]]. If not, the directories and locations will remain the same as they were in previous versions of Sympa.
+
+**Not activating** this option will be particularly useful for:
+
+  * people upgrading from a previous installation, which used custom scripts in which files and directory locations are critical
+  * anybody installing from the tar.gz distribution. Indeed, most of the files and directories being gathered in a central install directory, it is easy to inspect and customize them. It is also easy to completely remove a Sympa installation.
+
+**Activating** this option will be particularly useful for Sympa packagers.
+
+P.S.: Should the beta test keep on running smoothly, the stable release should be due at the end of August.:-D
+
+====== Here comes Sympa V6 beta ======
+
+{{sympa_beta.png | Sympa beta logo}} The CRU team is pleased to deliver Sympa V6 to the open source community. Sympa V6 is the result of more than one year of project activity and is a great improvement to Sympa earlier versions.
+
+People who want to beta test Sympa 6 will register and give informations so that we know in which environment Sympa was tested . In return, they will get a dedicated help from the Sympa development team during the full beta test. Answering to help request for a beta tester will be our first priority during these seven weeks. This will probably be at the expense of classical support lists, such as sympa-users, so feel free to involve in collaborative support to fill this lack.
+
+If you want to get involved, subscribe to the [[https://listes.renater.fr/sympa/info/sympa-beta|Sympa beta test mailing list]]. The subscriber review of this list is closed, safe to the list owners (the Sympa authors). This list is the official registration tool for beta testing. It can be a medium for general questions about the beta but, if you prefer, you can also send assistance requests directly to the sympa authors: [[sympa-authors@renater.fr]].
+
+===== What's new in Sympa V6 Beta ? =====
+
+==== Message bulk mailer ====
+Sympa comes with a new daemon that copes with low-level message distribution.The new **bulk.pl** daemon allows to parallelize mail sending across different processes and even on multiple servers. This is a major step towards Sympa clustering. Here are the nice features provided by the new bulk architecture already:
+  * //message distribution recovery// : distribution can now be stopped and restarted later without message duplication for subscribers.
+  * //priorities// : message for a list with a high priority are delivered with a very low latency even is a long distribution is started for a hugue list
+  * //scheduled message processing// : message distribution can be distributed at a specified hour (using a list parameter)
+
+Related changes :
+  * you need to start a new **bulk.pl** process;
+  * once **sympa.pl** has processed a message, it is not delivered, but stored in the bulk spool;
+  * the bulk spool is stored in the database (shareable among different servers). You may need to tune the database in order to support large message. <code>sympa.pl --test_database_message_buffer</code> allow you to test the maximum size of messages that can be stored in your database.
+
+====New pretty style====
+
+The web interface has been renewed, thanks to Olivier Lumineau (CRU) work. Apart from the new look and feel, the main changes are the new navigation menus for both list administrators and listmasters features.
+
+{{admin-menu.png | The new Sympa admin menu}}
+
+
+==== Sending HTML ====
+
+You can send HTML pages as messages to your list. this is simply done through the web interface. Just fill in the URL of the page you want to send and a message subject and bam! The page is sent. Please note that this message will be read by mail clients which are quite limited regarding web languages interpretation. So don't try sending pages in which scripts are essential for a good rendering.
+
+{{send_html.png| The HTML page sending web interface}}
+
+====Security ====
+Now password are stored as a fingerprint (by the past reversible encryption was used to be able to remind password). Reminding passwords is replaced by an identity token sent by email (thoses tokens can be used only one time and there validity it limited).
+
+<note warning>Before running Sympa after installing it, you will need to convert all the pre-existing passwords in the new storage encoding.
+This will be done using the following command:
+<code>
+sympa.pl --md5_encode_password
+</code>
+** Please note that this change in password storage is not reversible.** Once you did it, there is no way back, despite regenerating all the passwords, so proceed only if you're sure you want to keep using Sympa 6.
+</note>
+
+==== Installation process ====
+
+Guillaume Rousse (IRISA) brought a lot of modifications were brought to the autotools usage in Sympa. This is still a work in progress, but should make the life of Sympa packagers quite easier once it is finished. This work has greatly simplified all Makefiles, turned into Makefile.am. Substitutions in perl modules are now performed at the "make" time, no more during "make install"
+
+Here is the list of significant changes regarding the installation process:
+
+  * Default sympa configuration files, previously stored in ''PREFIX/bin/etc/'' are now stored in ''PREFIX/share/default/'' directory
+
+  * Most %%--with-xxdir%% configure options are now obsolete, replaced by equivalent standard %%--xxdir%% options.
+
+  * Most default installation directories have been change to adopt standard FHS-compliant locations. However, the distributed tar.gz still uses most of the previous locations to make upgrade process less awkward. If you run "./configure ; make ; make install" with the tar.gz things will install as usually. If you run autoconf, it will define the set of target directories either the old way or the FHS way, depending on whether it finds an existing /etc/sympa.conf file.
+
+  * Removed obsolete sudo wrappers ; Sympa now includes C wrappers for both wwsympa.fcgi and sympa_soap_server.fcgi. Check the manual [[http://www.sympa.org/manual/index]] for more informations on that topic
+
+  * A new library is required to build Sympa : gettext-devel. This is necessary to compile the internationalization catalogues.
+
+====administration=====
+
+==Cloning==
+You can now create a list just by copying an existing list. The newly created list has the same configuration options and customization (message headers and footer for example). It has empty subscribers list, archives and shared directory.
+
+{{clone_list.png| The list copy web interface}}
+
+==New scenario condition==
+  * ''less_than''. (Submitted by S. Amrani, gendarmerie nationale). It Allows to compare two values. Is true if the first one is less than the second one. Works with strings, too, if you like.
+  * ''verify_netmask''. Exemple : verify_netmask('1.12.123.00/24') (changes in intranet scenarii are just commented because we don't have access to the local netmask of installation).
+
+==moderation==
+Moderators can compose rejection notification messages templates for automatic later use, on the web interface.
+
+
+{{reject.jpg| The rejection templates management web interface}}
+
+== Spams ==
+
+Sympa can recognize headers added by incoming spam message filters. Sympa does not answer automatically to those messages, they are submitted in special way to moderators both by mail or in the web interface for moderation. By default rejection is done quietly.
+
+
+== External datasources ==
+
+Now you may configure a list in order to send notification for new subscribers that are collected from an external datasource. 
+
+==== Web administration ====
+
+Setting some Sympa parameters is now possible using the web interface. **Those parameters are stored in Sympa database.** In version 6.0 only colors parameters can be changed using this method, but it settles the core functionalities used to fully transfer the Sympa configuration into its database, and its subsequent edition through the web interface.
+
+{{color_edit.jpg|Color edition form in Sympa admin}} 
+
+==== Internationalization ====
+
+Four new languages were recently added to the standard Sympa distribution. Many thanks to the translators:
+
+  * Bokmål (B.C. Aasgaard)
+  * Polish (L. Zygmanski)
+  * Finn (J.P. Paloposki)
+  * Vietnamese (C. Siddall)
+
+In addition, Soji ikeda reactivated the legacy character support, as discussed in [[https://listes.renater.fr/sympa/arc/sympa-dev/2006-09/msg00029.html]] and its follow-ups. if the (new) sympa.conf parameter 'legacy_character_support_feature' value is set to 'on', the legacy character support is enabled.
+
+
+==== Bug fixes ====
+
+Lots and lots and lots and lots and lots and lots and lots and lots and lots and lots and lots and lots of bug fixes.
+
+Just have a look at the [[http://www.sympa.org/distribution/latest-unstable/NEWS|NEWS]] file in the distribution to be convinced. :-D
+
+====== Sympa 6 webinar (in French) =====
+
+Pour présenter les nouveautés de la version 6 de Sympa, le CRU a organisé un webinar qui s'est déroulé le jeudi 14 mai 2009 à 10h30 pour les administrateurs de services de listes de diffusion,
+
+Points abordés :
+  - Présentation des nouvelles fonctionnalités de la version 6, ainsi que des évolutions de l'architecture,
+  - Processus d'upgrade depuis les versions antérieures,
+  - Le principe du beta test et du support aux beta-testeurs,
+  - Où va Sympa ? Quelques axes de développement envisagés pour l'avenir.
+
+<note tip>
+<style center>
+**[[/doc/webinar/sympa_6|Accéder à l'enregistrement de ce webinar]]**
+</style>
+</note>
+<note>
+although this webinar (and the following description) is in french language, we plan to do it in  English too, though we didn't define any date yet.
+</note>
+
+====== Sympa 6 is near =====
+
+===== Starting this summer, Sympa will be able to count up to 6! :) =====
+
+{{:logo_sympa_small.png |}}We are pleased to announce that we are currently working on the latest features to be included in the next major version of Sympa: the 6.0.
+
+Sympa 6 is an evolution of the software towards scalability and high availability. It will also offer a better ease of use and improved possibilities to adapt it to your particular needs and information system.
+
+Shortly, the Sympa 6.0 will offer the following major features:
+
+  * Mail sending improvements: checkpoint recovery, scheduled sending, better priority handling...
+  * Making users life easier: personalized welcome page, good looking web interface, contextual help...
+  * For owners and moderator: reject message customization, list cloning...
+  * Easier packaging. The full autotools usage in Sympa was rewritten by //Guillaume Rousse// (INRIA) (thanks again Guillaume! :-)). This should greatly improve the life of Sympa packagers around here.
+  * As always: improved internationalization, thanks to the efforts all the fine people involved in Sympa translation.
+
+Here is the scheduled timeline to this new Sympa version: 
+
+  * Tuesday 5th May: release of Sympa 6.0 beta
+  * Tuesday 30th June: release of the stable version of Sympa 6.0
+
+===== So what with the announce three months before the release? =====
+
+{{:sympa_beta_small.png |}}
+The most attentive readers will note that, for once, we spared a 7 weeks beta test period. That's because we felt a cruel lack of beta testing in the most recent releases of Sympa. This notably led to awkward bug reports a few days after the release. These were bugs on functionalities that were tested during several months on our own production system. Problem is: due to the high diversity of systems (OS, RDBMS, MTA, web servers...) likely to be used with Sympa, there are a lot of combinations we can't test. Early bug reports are the consequences of such combinations.
+
+That's why we want to encourage people beta testing Sympa. We want you to install the beta version on production servers.
+
+So this is our proposal: **People who want to beta test Sympa 6 will register and give informations so that we know in which environment Sympa was tested . In return, they will get a dedicated help from the Sympa development team during the full beta test.** Answering to help request for a beta tester will be our first priority during these seven weeks. This will probably be at the expense of classical support lists, such as sympa-users, so feel free to involve in collaborative support to fill this lack.
+
+If you want to get involved, subscribe to the [[https://listes.renater.fr/sympa/info/sympa-beta|Sympa beta test mailing list]]. The subscriber review of this list is closed, safe to the list owners (the Sympa authors). This list is the official registration tool for beta testing. It can be a medium for general questions about the beta but, if you prefer, you can also send assistance requests directly to the sympa authors: [[sympa-authors@renater.fr]].
+
+Looking forward to see you in the beta!
+
+Cheers,
+
+The Sympa development team.
+
+====== Sympa 5.4.7 - March 30th 2009 ======
+
+<box>
+   *[[http://www.sympa.org/distribution/sympa-5.4.7.tar.gz|Download Sympa 5.4.7]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+   *[[http://www.sympa.org/documentation/manual/sympa-5.4.7.pdf|Download the manual]]
+</box>
+
+A few bug fixes in this version, which is mainly released to include the great translation work recently achieved. Thanks again to the translators!
+
+Namely, the following languages have seen their translation improved:
+
+    * Catalan, thanks to J. Giralt
+    * English, thanks to M. Radford
+    * Estonian, thanks to U. Buhvestov
+    * Finn, thanks to J.P. Paloposki
+    * Japanese, thanks to S. Ikeda
+    * Russian, thanks to Chernysh
+    * Spanish, thanks to D. Viñar Ulriksen
+    * Vietnamese, thanks to C. Siddall
+
+We also decided to make four new languages available by default in Sympa:
+
+  * Bokmal (B. C. Aasgaard)
+  * Polish (L. Zygmanski)
+  * Finn (J.P. Paloposki)
+  * Vietnamese (C. Siddall)
+
+===== Sympa 5.4.6 - February 10th 2009 =====
+
+This release mainly fixes a bug making users miss an important warning when installing Sympa.
+
+===== Sample SOAP client - January 30th 2009 =====
+
+The sample SOAP client was broken ; it has been restored : 
+  * [[http://demo.sympa.org/sampleClient.php|try the SOAP client]]
+
+This is a simple PHP SOAP client, but you can check [[http://www.sympa.org/manual/soap|the Sympa SOAP API definition]] to design more complex applications.
+
+
+===== Sympa 5.4.5 - January 20th 2009 =====
+
+This release contains bug fixes and updated translations.
+
+  * Fix a bug regarding LDAP 2 level queries partial failures
+  * Fix a bug regarding blacklist edition. //This is a potential security threat, so anybody using a Sympa server with blacklists enabled should consider upgrading shortly.//
+
+Thanks to all the contributors who submitted bug reports or even sent patches.
+
+It also includes updated translations, amongst which:
+
+  * Finnish, thanks to J.P. Paloposki,
+  * English, thanks to A. Epstein,
+  * Nederlands, thanks to R. E. Sonneveld.
+
+Thanks to all of them for their great work in Sympa internationalisation.
+
+===== Sympa 5.4.4 - December 18th 2008 =====
+
+This release is aimed at the last bug fixes - including some security issues - for the 5.4 branch, amongst which :
+
+  * Sympa was not fully compliant to the RFC 2616, leading for example to possible unwanted list deletion by administrators using prefetching tools. This was fixed by replacing all the threatening GET requests by POST requests;
+  * Use of sprint() function for creating SQL queries lead to possible SQL injection through cookie manipulation;
+  * The use of files in /tmp lead to vulnerabilities.
+
+Thanks to all the contributors who submitted bug reports or even sent patches.
+
+It also includes updated translations, amongst which:
+
+  * Modern chinese, thanks to M. Smith,
+  * Vietnamese, thanks to C. Siddall,
+  * Russian, thanks to Chernysh,
+  * Bokmål, thanks to B.C. Aasgaard,
+  * Japanese, thanks to S. Ikeda,
+  * Magyar, thanks to H. Szabolcs,
+  * Finnish, thanks to J.P. Paloposki,
+  * Estonian, thanks to U. Buhvestov,
+  * Spanish, thanks to D. Magaña,
+  * German, thanks to S. Weber,
+  * Catalan, thanks to J. Deu-Pons.
+
+Thanks to all of them for their great work in Sympa internationalisation.

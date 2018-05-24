@@ -1,0 +1,140 @@
+====== Detailed list of features ======
+
+Sympa is a mailing list management software, and as such it provides a couple of standard features which most mailing list software programs provide. In addition to this basic set of features, you may customize the software given the specifications you have for your mailing service. Below is a detailed list of features that Sympa provides. It has been organized to help you find out if Sympa meets your needs.
+
+You can [[/manual/index|refer to the manual]] for more details on each feature.
+
+===== Email commands =====
+
+^ feature ^ details ^ related documentation ^
+| subscribe/unsubscribe |  |  |
+| review list members | a list configuration parameter defines who can review list members |  |
+| available mailing lists | the WHICH command lists available mailing lists, but lists may be configured as hidden |  |
+| send message | list can be configured to request a challenge email |  |
+| contact list owners | the list-request address automatically refers to list owners |  |
+| digest | user can select the digest reception mode |  |
+| digest modes | Sympa provides different kind of digests (MIME, textplain, notice, summary) |  |
+| conceal | list members can hide from the members review page |  |
+| get archive | user can request list archive (index and messages) |  | 
+
+===== Web interface =====
+
+^ feature ^ details ^ related documentation ^
+| a single web interface | a single web interface provides user and admin interfaces | |
+| flexible user authentication | user can authenticate with Sympa's own mechanism or via an enterprise mechanism |  |
+| internationalization | the web interface is translated into 20 different languages | [[http://pootle.sympa.org/projects/sympa/|translations]] |
+| RSS feed | RSS feeds show the latest lists and the latest messages for each list |  |
+| XHTML compliance | the web interface is compliant with the W3C |  |
+| accessibility | sympa GUI is WAI compliant |  |
+| shared documents | Sympa provides a web documents sharing function with access control definition | [[/manual/shared-documents|documentation]] |
+| web archive | mailing list archives can be browsed/searched through the web |  |
+| members review | list members / owners can review the list members |  |
+| member pictures | list members can upload their pictures on to the list |  |
+| message topics | users can subscribe to message topics defined for a list | [[/manual/reception-mode#message_topics|documentation]] |
+| mail composer | subscribers can post messages from the web interface |  |
+| HTML mail composer | turning an external HTML page into a clean multipart MIME message |  |
+
+===== Web archive =====
+
+^ feature ^ details ^ related documentation ^
+| MIME compliance | web archiving uses MhOnArc tool that can easily handle complex MIME messages |  |
+| thread and chronological organization | messages are sorted and linked in both modes |  |
+| spam protection | email addresses are protected via different mechanisms | |
+| crawler protection | web archive can be protected from crawlers |  |
+| search engine | user can search web archives; it includes an advanced search mode |  |
+| private archive | access control is enforced for non-public list archives |  |
+| message reply | user can reply to messages through the web interface |  |
+| message removal | a message can be removed by the list owner or by its authenticated author |  |
+| resend message | user can ask to receive the message again |  |
+| export archive | list owners can download a ZIP of the list archive |  |
+| quota | listmaster can determine list archive quotas |  |
+| RSS feed | latest messages are published via RSS |  |
+| customizeable archive | archive organization can be customized via the MhOnArc resource file |  |
+
+===== MIME support =====
+
+^ feature ^ details ^ related documentation ^
+| RFC 2369 support | sympa sets SMTP header fields defined in RFC 2369 |  |
+| X-No-Archive header field | Sympa checks the X-No-Archive header field |  |
+| anonymize header fields | Sympa can anonymize SMTP header fields | [[/manual/conf-parameters/part2#anonymous_headers_fields|documentation]] |
+| MIME digest | sympa provides both plaintext and MIME digests | |
+| multipart/alternative support | multipart/alternative messages are handled for mail commands and text/html reception modes | |
+| S/MIME support | sympa handles S/MIME signed and encrypted messages | [[http://www.sympa.org/manual/x509|documentation]] |
+| bounces format | Sympa handles RFC1891 bouncing messages + other common formats |  |
+| headers and footers | list owner can define MIME or plaintext headers and footers |  |
+| urlize | message attachments can be detached on the server, with URL sent to list members |  |
+
+===== Bounces management =====
+
+^ feature ^ details ^ related documentation ^
+| bounce analysis | bounces are analyzed ; most bounce formats are recognized | |
+| automatic bounce management | sympa has a sophisticated algorithm to trigger bouncing user notification/removal | [[/manual/bounces|documentation]] |
+| advanced VERP | sympa does VERP for part of the list members during each mail processing | [[/manual/bounces#verp|documentation]] |
+| distribution optimization | messages are first distributed to non-bouncing users to optimize the delivery time |  |
+| web view of bouncers | list owners can view the currently bouncing users with advanced information available | |
+
+===== List owner features =====
+
+^ feature ^ details ^ related documentation ^
+| moderate messages | list moderators can moderate messages via the mail or web interfaces |  |
+| moderate subscriptions | list owners can moderate subscription requests |  |
+| edit mail service messages | owners can edit service messages (templates )|    |
+| edit list config | owners can edit list configuration, according to their profile |  |
+| view logs | list owners can view logs related to their mailing list | |
+
+===== Listmaster features =====
+
+^ feature ^ details ^ related documentation ^
+| search user | listmaster can search all the mailing lists of which a user is a member/admin | |
+| list moderation | listmaster can validate/reject pending mailing lists via the web | |
+| list removal | listmaster can close a list via the web |  |
+| list active user sessions | view all active user sessions with IP adresses |  |
+| change identity | listmaster can take someone else's identity for test purposes |  |
+| customize templates | listmaster can customize mail/web templates from the web |  |
+
+===== Performances and Scalability =====
+
+^ feature ^ details ^ related documentation ^
+| bulk mailer | mail distribution is very fast thanks to a built-in bulk mailer | [[/manual/conf-parameters/part2#bulk_mailer|parameters]]|
+| database | user information is stored in a RDBMS to gain a faster response time | [[/manual/database|documentation]] |
+| dedicated processes | sympa comes with 6 specialized processes (web, mail, archives, bounces, task manager, soap) |  |
+| fast web interface | sympa uses the fastCGI technology to have a persistant web server | [[/manual/web-interface#using_fastcgi|documentation]] |
+| big lists | up to 700.000 subscribers | |
+| many lists | up to 20.000 mailing lists | |
+| full virtual hosting | a single sympa server can provide true virtual hosting (handles the same list names within different vhosts) | [[/manual/virtual-hosts|documentation]] |
+| list families | list creation can be automated | [[/manual/list-families|documentation]] |
+
+===== Integration with third party software =====
+
+^ feature ^ details ^ related documentation ^
+| dynamic mailing lists | list members can be extracted from an external database (SQL, LDAP)| [[/manual/managing-members#dynamic_mailing_lists|documentation]] |
+| user authentication | authentication can use an LDAP database or Single Sign-On servers (CAS, Shibboleth,...) | [[/manual/authentication|documentation]] |
+| SOAP interface | most Sympa features are accessible through a SOAP interface | [[/manual/soap|documentation]] |
+| supported RDBMS | Sympa can use different RDBMS (mysql, posgresql, sqlight, oracle or sybase) | [[/manual/database|documentation]]|
+| supported MTA | Sympa can be coupled with most MTAs (sendmail, postfix, qmail, exim) | |
+
+===== Security =====
+
+^ feature ^ details ^ related documentation ^
+| loop prevention | sympa detects messages that could create loops | [[/manual/message-handling#loop_prevention|documentation]] |
+| user session management | web sessions are handled in the database in a secure way | |
+| S/MIME | both S/MIME signature and encryption are handled | [[/manual/authentication#smime_and_https_authentication|documentation]] |
+| DKIM | Use of incoming DKIM signature and optionaly signature of outgoing mail| [[/manual/conf-parameters/part3#dkim|documentation]] |
+| authorization | access control is enforced via Sympa's authorization scenarios | [[/manual/authorization-scenarios|documentation]] |
+| spam protection | anti-spam header fields can trigger custom actions | [[/manual/antispam|documentation]] |
+| virus protection | Sympa can be plugged with multiple anti-virus software (McAfee/uvscan, Fsecure/fsav, Sophos, AVP, Trend Micro/VirusWall and Clam Antivirus) | [[/manual/antivirus|documentation]] |
+| quotas | listmaster can define quotas for message size, web archives, shared documents |  |
+| XSS CSRF protection  | Web interface is protected agains XSS by filtering all HTML | | 
+
+===== Customization =====
+
+^ feature ^ details ^ related documentation ^
+| mail personnalization| custom variables to adapt content to each list member | [[/manual/message-handling#customizing_messages|documentation]] |
+| CSS | the Sympa CSS can easily be customized |  |
+| web templates | each web page is defined via a TT2 template that can be customized |  |
+| mail services templates | mail command output is defined via TT2 templates that can be customized | |
+| authorization scenarios | authorization scenarios can be customized to apply to site-specific access control rules |  |
+| SOAP interface | sites can configure their own software to call on Sympa services via SOAP | [[/manual/soap|documentation]] |
+| custom user attributes | list owner can defined custom user attributes, provisioning is done at the moment of subscription |  |
+| custom list parameters | list owner can define custom list parameters, which are later used on the web interface |  |
+| list privileges | site admin can define what list configurations can be edited by list owner |  |

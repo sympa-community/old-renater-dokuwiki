@@ -1,0 +1,116 @@
+======= Survey results for Sympa usages ======
+
+During November 2006, we asked Sympa users to answer a survey because, as project leaders, we need to have a good overview of who is using Sympa, what are the usages of the software and what we should focus on.
+
+Many thanks to those who answered.
+
+<note warning>
+129 users answered this survey. We know that the poll may not reflect perfectly the real profile of the total population.
+</note>
+
+
+===== Organization type repartition. =====
+
+{{:survey:users-institution.png|:survey:users-institution.png}}
+
+===== For how long have you been using Sympa =====
+
+^   For how long have you been using Sympa  ^^
+|less than 1 year (1) |19.05%|
+|1 to 2 years |15.08%|
+|2 to 3 years |11.11%|
+|3 to 4 years | 21.43%|
+|4 to 5 years | 8.73%|
+|more than 5 years | 24.60%|
+
+The answers show that Sympa users population is still growing.
+
+===== Which version are you running? =====
+
+
+|CVS|0.00%|
+|5.3aX |3.17%|
+|5.2 |35.71%|
+|5.1 |23.02%|
+|5.0 |2.38%|
+|4.X |26.19%|
+|older version |6.35%|
+|No answer|3.17%|
+
+We were surprised that nobody uses the CVS version. 2/3 of the installed versions are 5.X but there are still many old versions running. Most are installed from tarball (including some home made .deb orb .rpm). Binaries distribution seems marginal unless for debian. We really need better package. We will not procude them ourselves. Contributors are welcome!
+
+===== Operating system used =====
+
+|linux / debian |34.92%|
+|linux / redhat |26.19%|
+|linux / fedora |3.97%|
+|linux / suze |3.17%|
+|linux / mandriva |0.79%|
+|Linux / other distrib |8.73%|
+|solaris|11.11%|
+|freeBSD |7.94%|
+|macOs X |0.79%|
+|No answer|0.79%|
+|aix|0.00%|
+|other|1.59%|
+
+===== Why did you choose Sympa? =====
+
+The reasons why Sympa is chosen are mainly:
+  * because of its rich web interface
+  * because of LDAP integration (mainly authentication)
+  * because of internationalization
+  * because it is much more better than mailman, majordomo or listserv
+  * because of external data sources to build list members
+  * because of S/MIME integration
+  * because of virtual hosting support
+
+Of course we would like also to known "why you did **not** choose Sympa but unfortunately this question can't be part of such a survey.
+
+===== Service size =====
+
+^          ^  number of lists ^  number of virtual robots ^  biggest lists ^  numbers of registered subscribers ^ 
+^  average | 739|  4.5|  12.672|  58.882|
+^  max     | 24.000|  235|  200.000|  430.000|
+
+
+===== Are you using database backend? Which one? =====
+
+|MySQL |84.92%|
+|PostgreSQL |11.90%|
+|Oracle |1.59%|
+|other|0.79%|
+|o answer|0.79%|
+|Sybase|0.00%|
+|SQL-Lite|0.00%|
+|no RDBMS at all with my Sympa|0.00%|
+
+Great ! Nobody seems to use the old file style backend which is not supported anymore without big bugs. The other new information is that MySQL and postgrSQL are the main.
+
+
+===== Are you running one Sympa service with different servers ? =====
+
+Very few users use more than one server to provide Sympa services. Those who do aim at high-availability and security issues; only one does it for load balancing. Does this mean that only one server for a Sympa service is reasonable because Sympa does not consume so much server resources, or does this mean it is difficult to install Sympa on a load balancing environment?
+
+===== How Sympa various features are used ? =====
+
+| customized templates | 76% | |
+| customized authorization scenario | 58% | |
+| X509 features | 14% | both S/MIME signature verification and https user auth for 70% |
+| LDAP authentication | 48% | |
+| using SSO | 19% | SSO type in use is mainly CAS but Shibb is also significant |
+| list member automatic includes | 60% |  |
+
+
+
+===== What of the project should be enhanced? =====
+
+Quite difficult to present a synthetic view off answers. Only a few answers where convergent:
+  * **perf**
+  * **debian package need to be upgraded** 
+  * **make a better user documentation** (5.3 will include a great surprise for all of you). 
+  * usability
+  * versioning and upgrade process
+  * more soap features
+  * statistics
+  * alternative emails etc.

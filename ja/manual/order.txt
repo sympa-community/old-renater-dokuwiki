@@ -1,0 +1,40 @@
+  - [[presentation|はじめに]]
+  - [[organization|Sympa のなりたち]]
+  - [[installing-sympa|Sympa のインストール]]
+  - [[running-sympa|Sympa の実行]]    
+  - [[upgrading|Sympa のアップグレード]]
+  - [[mail-aliases|メールエイリアス]]
+  - [[conf-parameters|sympa.conf のパラメータ]]
+  - [[database|Sympa のデータベース]]
+  - [[web-interface|WWSympa --- Sympa のウェブインタフェース]]
+  - [[web-archives|投稿保管庫]]
+  - [[internationalization|Sympa の国際化]]
+  - [[rss|Sympa RSS チャンネル]]
+  - [[soap|Sympa SOAP サーバ]]
+  - [[authentication|認証]]
+  - [[authorization-scenarios|認可シナリオ]]
+  - [[virtual-hosts|仮想ホスト]]
+  - [[other-applications-integration|Sympa と他のアプリケーションとの協調]]
+  - [[message-handling|Message handling]]
+  - [[managing-members|Managing list members and list owners]]
+  - [[customizing|Sympa のカスタマイズ]]
+  - [[list-definition|メーリングリストの設定]]
+  - [[list-creation|リストの作成、変更、削除]]
+  - [[list-families|設定族]]
+  - [[list-parameters|リストの設定パラメータ]]
+  - [[parameters-definition|List configuration / List definition]];
+  - [[parameters-sending|List configuration / Sending and receiving setup]];
+  - [[parameters-privileges|List configuration / Privileges]];
+  - [[parameters-archives|List configuration / Archives]];
+  - [[parameters-bounces|List configuration / Bounce management]];
+  - [[parameters-data-sources|List configuration / Data sources setup]];
+  - [[parameters-others|List configuration / Others]]
+  - [[reception-mode|受け取りモード]]
+  - [[shared-documents|共有文書]]
+  - [[bounces|配送エラー処理]]
+  - [[antivirus|ウィルスチェック]]
+  - [[ldap|Using Sympa と LDAP との連携]]
+  - [[x509|Sympa と S/MIME および HTTPS]]
+  - [[sympa-commands|Sympa コマンドの利用]]
+  
+  * [[about|About this document ...]]

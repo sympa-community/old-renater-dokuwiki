@@ -1,0 +1,14 @@
+<html><a name="sympa.conf_parameters" /></html>
+====== × sympa.conf のパラメータ ======
+<note warning>
+This content was obsoleted.
+
+</note>
+
+''/etc/sympa.conf'' 設定ファイルには、//Sympa// の起動時に読み込まれる多数のパラメータがあります。このファイルを変更したら、その後で忘れず //Sympa// を再起動しなければなりません。
+
+''/etc/sympa.conf'' ファイルのディレクティブの形式は次の通りです。
+
+//keyword// //value//
+
+''#'' で始まる行はコメントです。空行もコメントとみなされて無視されます。一行にひとつのディレクティブしか書けません。ファイル中でのディレクティブの順序は重要ではありません。

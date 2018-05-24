@@ -1,0 +1,29 @@
+====== Technical support ======
+
+Sympa authors can't answer to any assistance request.  Please check available ressources :
+
+  - [[:manual|reference manual]].
+  - [[:faq|faq]]
+  -  mailing lists :   Of course, there are also  a few [[http://listes.renater.fr/wws/lists/informatique/sympa|mailing lists about Sympa]]. Please do not report any trouble in lists without having first a look in lists archives. If you contact some mailing list please check first Sympa and other usefull logs such as Apache, LDAP, MySQL or sendmail.
+
+
+=====  Commercial support =====
+
+
+Some companies can provide commercial support about Sympa, you can contact (alphabetical order)
+  *[[http://www.alcove.fr/rubrique17.html|Alcove]] (France). 
+  *[[http://www.anteria.fr/pages/support.php|Anteria]] (France)
+  *[[http://www.folly.org.uk/|Folly consulting]]
+  *[[mailto:josep.roman@zuerich-see.ch|Josep Roman]] (Suisse)
+  *[[http://www.linuxia.de/|Linuxia]] (Germany)
+  *[[http://www.luchs.at/|luchs]] (Austria)
+  *[[http://wwwnew.mandriva.com/en/enterprise/support/components|Mandriva]]
+  *[[http://www.ntcorp.com/|Network Technology Corporation]] (United States)
+  *[[http://www.pantek.com/support.php?subsect=applications|pantek]] (United States)
+  *[[http://www.edge-it.com/|Edge-it]]
+  *[[http://www.thalix.com/|Thalix]] (France)
+  *[[http://www.starxpert.fr/spip/Conseil-et-mise-en-oeuvre-de-Sympa|sartXpert]] (France)
+
+
+
+

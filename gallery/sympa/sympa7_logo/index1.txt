@@ -1,0 +1,9 @@
+<poll [id]>
+  [Choose a new logo for SYMPA7]
+
+  * [1]
+  * [2]
+  * [3]
+  * [4]
+  * [5]
+</poll>

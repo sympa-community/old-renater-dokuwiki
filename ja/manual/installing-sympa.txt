@@ -1,0 +1,224 @@
+<html><a name="installing_sympa" /></html>
+======= × Sympa のインストール=======
+<note warning>
+This content was obsoleted.  See updated description in English:
+
+  * [[https://sympa-community.github.io/manual/install.html|Installing Sympa]]
+
+</note>
+
+//Sympa// のほとんどは Perl で書かれています。また、C で書かれた専用のプログラムをいくつか含みます。
+
+<html><a name="obtaining_sympa_related_links" /></html>
+======Sympa の入手 --- 関連するリンク======
+
+//Sympa// の配布物は [[http://www.sympa.org]] で手に入ります。以下のような重要な情報は、すべてここで見ることができます:
+
+  * ソースコード。
+  * リリースノート。
+  * Linux 用の .rpm パッケージや .deb パッケージ。
+    * 利用者のメーリングリスト (「[[presentation#mailing_lists_and_support|メーリングリストおよびサポート]]」参照)。
+  * 寄贈物。
+  * ……
+
+<html><a name="migrating_from_another_software" /></html>
+====== 他のソフトウェアからの移行 ======
+他のメーリングリストソフトウェア (majordomo, GNU Mailman, LISTSERV, Lyris ListManager など) から移行しようとしているのであれば、データ (リストの設定、リストの登録情報、リストの投稿保管庫) を //Sympa// の形式に変換する必要があります。//Sympa// のユーザが書いたスクリプトを[[:contributions:|寄贈物のページ]] (英語) に挙げてありますので、これらが役に立つかもしれません。
+
+<html><a name="prerequisites" /></html>
+
+======前提条件======
+
+//Sympa// のインストールと設定は、経験ある UNIX 利用者で、これまでに Perl のパッケージをインストールしたことのある方なら、比較的容易なものです。
+
+なお、この「前提条件」に述べるものがシステムに入っていない場合、インストール作業の大半はそれを導入する作業に費すことになります。これ以外に補助的なツールなどは必要ありませんし、最近の UNIX システムでは、以下のようなもののインストールは通常きわめて簡単にできます。下に示す一覧の順にインストールと確認の手順を踏むことを強くお勧めします。それぞれの手順については後の節で詳しく説明します。
+
+  * RDBMS (Oracle、MySQL (4.1 版以降)、SQLite、Sybase、PostgreSQL のいずれか) をインストールし、//Sympa// のデータベースを作成する。これは //Sympa// 用のウェブインタフェースを利用するために必要です。「[[database|Sympa のデータベース]]」を参照してください。
+  * MTA (メッセージ配送エージェント) をインストールする。Sendmail、Postfix、qmail、exim が使えます。
+  * ウェブサーバをインストールする (Apache は最も広く利用されています)。
+  * [[http://xmlsoft.org/|libxml 2]] をインストールする。これは LibXML Perl モジュールのために必要です。
+  * [[http://www.perl.com/CPAN|CPAN]] (Comprehensive Perl Archive Network) モジュールをインストールする。
+  * 専用の UNIX ユーザを作成する。
+
+<html><a name="system_requirements" /></html>
+
+=====システムの要求事項=====
+
+//Sympa// を使うには、それなりに最近の UNIX システムでなければなりません。特に、 ANSI C コンパイラのあるシステムであることが必要です (言い換えると、コンパイラがプロトタイプに対応していなければならない、ということです)。
+
+以下のシステムでは、//Sympa// はインストールされ、テストされていますので、特に問題は起きないはずです。
+
+  * Linux (さまざまなディストリビューション)
+  * FreeBSD 2.2.x と 3.x
+  * NetBSD
+  * Digital UNIX 4.x
+  * Solaris 2.5 と 2.6
+  * AIX 4.x
+  * HP-UX 10.20
+
+お使いの OS 特有の問題についての情報は、[[:faq:|FAQ]] (英語) を参照してください。
+
+今では、ほとんどの UNIX システムに ANSI C コンパイラが付属するようになりました。そうでない場合は、''gcc'' コンパイラをインストールするとよいでしょう。近所の GNU サイトにあります。[[ftp://ftp.ring.gr.jp/pub/GNU/|日本のサイトの例]]。
+
+インストールのためには、''sendmail'' MTA の充分最近のリリースもいります。つまり、[[ftp://ftp.oleane.net/pub/mirrors/sendmail-ucb/|リリース 8.9.x]] かそれ以降のリリースです。また、''postfix'' や ''qmail'' も使えます。
+
+<html><a name="installing_perl_and_cpan_modules"/></html>
+
+=====Perl と CPAN モジュールのインストール =====
+//Sympa// を使えるようにするには、Perl 言語インタプリタのリリース 5.8 以降が必要です。また、いくつかの CPAN モジュールも必要です。
+
+''make'' の際に、''check_perl_modules.pl'' スクリプトが実行されて、必要なバージョンの Perl と CPAN モジュールがインストールされているかどうか調べます。CPAN モジュールがなかったり古かったりすると、インストールします。
+
+自分で CPAN モジュールをダウンロードしてインストールすることもできます。近所の CPAN アーカイブに Perl インタプリタの最近のリリースがあるでしょう。近所のサイトを見つけるのは、[[http://www.perl.com/CPAN/src/latest.tar.gz|CPAN multiplexer]] を使えば簡単です。
+
+<html><a name="required_cpan_modules"/></html>
+
+=====必要な CPAN モジュール =====
+以下の CPAN モジュールは、//Sympa// に必要で標準的な Perl の配布物には同梱されていないものです。''make'' の際に、//Sympa// は足りない Perl モジュールを指摘して自動的にインストールしようとします (この処理には root 権限が必要です)。
+
+//Sympa// はリリースを重ねるごとに新しい仕様が付け加わりますので、以下のモジュール一覧が最新のものではないこともありえます。
+
+  * ''CGI'';
+  * ''CipherSaber'';
+  * ''DB_File'';
+  * ''DBD'';
+  * ''DBI'';
+  * ''Digest-MD5'';
+  * ''Encode'';
+  * ''FCGI'';
+  * ''File-Spec'';
+  * ''IO-stringy'';
+  * ''libintl-perl'';
+  * ''libwww-perl'';
+  * ''MailTools'';
+  * ''MHonArc'';
+  * ''MIME-Charset'';
+  * ''MIME-EncWords'';
+  * ''MIME-tools'';
+  * ''MIME-Base64'';
+  * ''Regexp-Common'';
+  * ''Template-Toolkit'';
+  * ''XML-LibXML''.
+
+リリース 2 から、//Sympa// を適切に動作させるためには RDBMS が必要となりました。読者登録や読者の個人設定をデータベースに格納します。//Sympa// はまた、利用者のデータを外部のデータベースから展開することもできます。こういった仕様には、データベース関連の Perl ライブラリをインストールする必要があります。一般的なデータベースインタフェース (DBI) や RDBMS ごとのデータベースドライバ (DBD) といったものです。
+
+  * ご利用になる RDBMS (たとえば MySQL なら Msql-Mysql モジュール) 関連の ''DBD'' (データベースドライバ)。
+  * //Sympa// を LDAP のディレクトリと連携させて動的なメーリングリストを構築しようと考えておられるのなら、Perl LDAP ライブラリをインストールしなければなりません ---\\ ''Net::LDAP'' (perlldap)。
+  * リストの投稿保管庫を ZIP ファイル形式でダウンロードできるようにしたいのなら、書庫データ官吏の Perl モジュールをインストールしなければなりません ---\\ ''Archive::Zip''。
+  * //Sympa// SOAP サーバを実行するには ''SOAP-Lite'' が必要です。
+  * NFS ロックに対応するには ''File-NFSLock'' が必要です。
+
+<html><a name="creating_a_unix_user"/></html>
+
+=====UNIX ユーザの作成=====
+
+//Sympa// のインストールに先立つ最後の手順は、このプログラム専用の UNIX ユーザ (とたぶんグループ) を作成することです。インストールされたソフトウェアのほとんどが、このアカウントで実行されます。ユーザ名とグループ名どちらも ''sympa'' にするとよいでしょう。
+
+Sympa ユーザのログインディレクトリには数多くのファイルが置かれます。本書では、今後このログインディレクトリを ''/home/sympa'' で示します。
+
+<html><a name="creating_the_database"/></html>
+
+======データベースの作成======
+
+[[database#creating_a_sympa_database]] 参照
+
+<html><a name="compilation_and_installation"/></html>
+======コンパイルとインストール ======
+
+//Sympa// を使う前に、自分のインストールソフトウェアにあわせていくつかパラメータを指定し、ソースをカスタマイズしなければいけません。
+
+まず、アーカイブファイルを展開してソースを取り出します。展開先はたとえば ''~sympa/src/'' ディレクトリなどにします。アーカイブを展開すると ''sympa-5.4.x/'' という名前のディレクトリができ、必要なファイルやディレクトリはすべてこの中にできます。この中の ''doc/'' ディレクトリには、本書がさまざまな形式で入っています。 ''sample/'' ディレクトリには設定ファイルのサンプルがいくつか入っています。 ''locale/'' ディレクトリは多言語メッセージが入っているところです。そしてもちろん、''src/'' ディレクトリはメールロボットの、また ''wwsympa'' はウェブインタフェースのディレクトリです。
+
+例:
+
+  # su -c "gzip -dc sympa-5.4.x.tar.gz | tar xf -"
+
+これで、インストールの手順を実行できます:
+
+  $ ./configure ; make ; make install
+
+''configure'' は ''Makefile'' を構築します。以下のコマンドライン引数をとることができます;
+
+  * ''<nowiki>--</nowiki>prefix=PREFIX''。//Sympa// のホームディレクトリ (初期値 /home/sympa/)
+  * ''<nowiki>--</nowiki>with-bindir=DIR''。ユーザ実行ファイルを DIR に置く (初期値 /home/sympa/bin/)\\ ''queue'' プログラムと ''bouncequeue'' プログラムをこのディレクトリにインストールします。 Sendmail が smrsh を使うよう設定してあるとき (sendmail.cf の mailer prog の定義を調べてください) は、これを ''/etc/smrsh'' に指定しなければなりません。RedHat Linux を使っていればおそらくそうでしょう。
+  * ''<nowiki>--</nowiki>with-sbindir=DIR''。システム管理実行ファイルを DIR に置く (初期値 /home/sympa/bin)
+  * ''<nowiki>--</nowiki>with-libexecdir=DIR''。プログラム実行ファイルを DIR に置く (初期値 /home/sympa/bin)
+  * ''<nowiki>--</nowiki>with-cgidir=DIR''。CGI プログラムを DIR に置く (初期値 /home/sympa/bin)
+  * ''<nowiki>--</nowiki>with-datadir=DIR''。初期の設定データを DIR に置く (初期値 /home/sympa/bin/etc)
+  * ''<nowiki>--</nowiki>with-confdir=DIR''。//Sympa// の主設定ファイルを DIR に置く (初期値 /etc)\\ ここに ''sympa.conf'' と ''wwsympa.conf'' がインストールされます。
+  * ''<nowiki>--</nowiki>with-expldir=DIR''。可変データを DIR に置く (初期値 /home/sympa/list_data/)
+  * ''<nowiki>--</nowiki>with-libdir=DIR''。ライブラリコードを DIR に置く (初期値 /home/sympa/bin/)
+  * ''<nowiki>--</nowiki>with-mandir=DIR''。マニュアルページを DIR に置く (初期値 /usr/local/man/)
+  * ''<nowiki>--</nowiki>with-docdir=DIR''。文書ファイルを DIR に置く (初期値 /home/sympa/doc/)
+  * ''<nowiki>--</nowiki>with-initdir=DIR''。System V init スクリプトを DIR に置く (初期値 /etc/rc.d/init.d)
+  * ''<nowiki>--</nowiki>with-lockdir=DIR''。ロックファイルを DIR に作成する (初期値 /var/lock/subsys)
+  * ''<nowiki>--</nowiki>with-piddir=DIR''。 .pid ファイルを DIR に作成する (初期値 /home/sympa/)
+  * ''<nowiki>--</nowiki>with-etcdir=DIR''。利用者が作成する設定ファイルのディレクトリを DIR に置く (初期値 /home/sympa/etc)
+  * ''<nowiki>--</nowiki>with-localedir=DIR''。言語ファイルを DIR に作成する (初期値 /home/sympa/locale)
+  * ''<nowiki>--</nowiki>with-scriptdir=DIR''。スクリプトファイルを DIR に作成する (初期値 /home/sympa/script)
+  * ''<nowiki>--</nowiki>with-sampledir=DIR''。サンプルファイルを DIR に作成する (初期値 /home/sympa/sample)
+  * ''<nowiki>--</nowiki>with-spooldir=DIR''。スプールディレクトリを DIR に作成する (初期値 /home/sympa/spool)
+  * ''<nowiki>--</nowiki>with-perl=FULLPATH''。Perl インタプリタのフルパスを設定する (初期値 /usr/bin/perl)
+  * ''<nowiki>--</nowiki>with-openssl=FULLPATH''。OpenSSL のパスを設定する (初期値 /usr/local/ssl/bin/openssl)
+  * ''<nowiki>--</nowiki>with-user=LOGIN''。sympa ユーザの名前を設定する (初期値 sympa)\\ //Sympa// のデーモンはこの UID で動作します。
+  * ''<nowiki>--</nowiki>with-group=LOGIN''。sympa グループ名を設定する (初期値 sympa)\\ //Sympa// のデーモンはこの GID で動作します。
+  * ''<nowiki>--</nowiki>with-sendmail_aliases=ALIASFILE''。//Sympa// で使うエイリアスファイルを設定する (初期値 /etc/mail/sympa_aliases)。エイリアス管理を無効にするときは 'none' に設定します (''sympa.conf'' で値を設定することでこの値を上書きできます)(('none' は //Sympa// 5.3 以降で指定できます。))\\
+  * ''<nowiki>--</nowiki>with-virtual_aliases=ALIASFILE''。//Sympa// で使う Postfix の仮想エイリアスファイルを設定する (初期値 /etc/mail/sympa_virtual)\\ この設定は ''alias_manager.pl'' スクリプトに使います:
+  * ''<nowiki>--</nowiki>with-newaliases=FULLPATH''。Sendmail の newaliases コマンドのパスを設定する (初期値 /usr/bin/newaliases)
+  * ''<nowiki>--</nowiki>with-newaliases_arg=ARGS''。newaliases コマンドの引数を設定する (初期値引数なし) 以下の設定は、''postfix_manager.pl'' スクリプトに使います:
+  * ''<nowiki>--</nowiki>with-postmap=FULLPATH''。Postfix の postmap コマンドのパスを設定する (初期値 /usr/sbin/postmap)
+  * ''<nowiki>--</nowiki>with-postmap_arg=ARGS''。Postfix の postmap コマンドの引数を設定する (初期値引数なし)
+
+''make'' はいくつかバイナリ (''queue''、''bouncequeue''、''aliaswrapper'') をビルドし、必要な CPAN モジュールのインストールを助けます。
+
+''make install'' でインストール作業を行います。これは以下のオプションをとることができます:
+
+  * DESTDIR。''Makefile'' が //Sympa// を (DIR ではなく) DESTDIR/DIR にインストールするように設定します。これは RPM や DEB などのパッケージを構築するのに便利です。
+
+//Sympa// の 3.3 版からは、色は ''sympa.conf'' のパラメータになりました ([[.:conf-parameters:part1#color_parameters|color parameters]] 参照)。
+
+すべてが順調に進めば、''~sympa/bin/'' ディレクトリにさまざまな Perl プログラムと ''queue'' バイナリプログラムが入ります。なお、このバイナリは　//set-uid-on-exec// ビットがセットされています (所有者は ''sympa'' ユーザです)。これは意図的なもので、//Sympa// が正しく動作するためには欠かせないのです。
+
+<html><a name="choosing_directory_locations"/></html>
+
+=====ディレクトリ配置の決定=====
+
+ディレクトリはすべて ''/etc/sympa.conf'' で決定され、//Sympa// が実行時に読み取ります。インストール中に ''sympa.conf'' ファイルが見付かると、サンプル用のファイルが作成されます。初期のディレクトリ構成については「[[organization#organization|構成]]」を参照してください。
+
+もちろん、ファイルやディレクトリを多くの異なった場所に分散させることもできます。ですが、すべてのディレクトリやファイルを ''sympa'' ユーザのログインディレクトリ下に集めることをお勧めします。
+
+いまのところ、こういったディレクトリは手作業で作成しなければなりません。でるだけ制限のあるアクセス権限を与えてもいいでしょう。''sympa'' アカウントで動作するプログラムだけがアクセスできればよいからです。
+
+<html><a name="robot_aliases"/></html>
+======ロボットのエイリアス======
+
+「[[mail-aliases#robot_aliases|ロボットのエイリアス]]」参照。
+
+<html><a name="web_setup"/></html>
+====== ウェブの設定 ======
+「[[web-interface#web_server_setup|ウェブサーバの設定]]」参照
+
+<html><a name="logs"/></html>
+======ログ======
+
+//Sympa// では、手続きごとの記録をログファイルに残します。ただし、これには ''syslogd'' デーモンの設定が必要です。 //Sympa// の初期値では ''local1'' ファシリティを使います (''sympa.conf'' の ''syslog'' パラメータ)。 //WWSympa// のログ記録の挙動は ''wwsympa.conf'' の ''log_facility'' パラメータで定義します (初期値は //Sympa// と同じファシリティです)。\\ つまるところ、''syslogd'' の設定ファイル (''/etc/syslog.conf'') に一行追加しなければなりません。例えば:
+
+  local1.* /var/log/sympa
+
+そして、''syslogd'' を再読み込みします。
+
+プラットフォームによって、syslog デーモンは UDP を使ったり UNIX ソケットを使ったりします。 //Sympa// の初期値は UNIX ソケットを使うようになっています。 ''sympa.conf'' の [[.:conf-parameters:part2#par-log-socket-type|''log_socket_type'' パラメータ]]を変更すればこの動作を変えられます。''testlogs.pl'' を使えばログの動作を確認できます。
+
+syslog-ng が動作しているシステムでは、''syslog-ng.conf'' (''syslog-ng.conf.in'' である場合もあります) に以下の行を加えます: 
+
+  destination sympa { file ("/var/log/sympa") ; }; 
+    log { source(src); filter(f_sympa); destination(sympa); }; 
+    filter f_sympa    { facility(local1)  and match('sympa'); }; 
+
+そして、syslog を再起動します。
+
+====== ======
+----
+[[:manual:installing-sympa]] の 2009/03/25 15:28 の版をもとに翻訳しました。もとの文書の更新に気づいた方は、[[http://www.sympa.org/:manual:installing-sympa?do=revisions|差分]]を参照して更新してください。
+
+翻訳作業については [[:ja:cour]] も参照してください。

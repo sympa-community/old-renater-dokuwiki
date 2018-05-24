@@ -1,0 +1,8 @@
+====== × Security advisories ======
+
+<note warning>
+For updated information, see:
+
+  * [[https://sympa-community.github.io/security/index.html|New documentation site]]
+
+</note>

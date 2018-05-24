@@ -1,0 +1,8 @@
+{{section>title}}
+
+{{section>:manual:manuals_toc}}
+
+===== 目次 =====
+
+----
+{{page>toc}}

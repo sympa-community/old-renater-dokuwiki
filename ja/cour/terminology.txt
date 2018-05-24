@@ -1,0 +1,1684 @@
+======メーリングリストに関する用語の比較======
+
+<html>
+<table cellspacing="0" cellpadding="3">
+<caption>表1 用語の比較</caption>
+<tr>
+<th rowspan="2"  valign="center"  align="center"  style=" font-size:10pt; border-top:thick solid #000000; border-left:thick solid #000000; border-right:medium solid #000000; border-bottom:medium solid #000000;"><b>対象、分野</b></th>
+<th colspan="4"  valign="center"  align="center"  style=" font-size:10pt; border-top:thick solid #000000; border-right:medium solid #000000;"><b>Sympa</b></th>
+<th colspan="2"  valign="center"  align="center"  style=" font-size:10pt; border-top:thick solid #000000;"><b>Mailman</b></th>
+<th rowspan="2"  valign="center"  align="center"  style=" font-size:10pt; border-top:thick solid #000000; border-left:medium solid #000000; border-right:thick solid #000000; border-bottom:medium solid #000000;"><b>その他 (参考)</b></th>
+<th  style=""></th>
+
+</tr>
+<tr>
+<td  valign="center"  align="center"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:medium solid #000000; width: 12%;"><b>en</b></td>
+<td  valign="center"  align="center"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:medium solid #000000; border-left:thin solid #000000; width: 12%;"><b>fr</b></td>
+<td  valign="center"  align="center"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:medium solid #000000; border-left:thin solid #000000; width: 12%"><b>ja (5.2.1)</b></td>
+<td  valign="center"  align="center"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:medium solid #000000; border-left:thin solid #000000; border-right:medium solid #000000; width: 12%;"><b>ja (5.3a)</b></td>
+<td  valign="center"  align="center"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:medium solid #000000; width: 12%;"><b>en</b></td>
+<td  valign="center"  align="center"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:medium solid #000000; border-left:thin solid #000000; width: 12%;"><b>ja (2.1.9)</b></td>
+<td  style=""></td>
+</tr>
+<tr>
+
+<td  style=" border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt;">account</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-left:thin solid #000000;">compte</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-left:thin solid #000000;">&#12450;&#12459;&#12454;&#12531;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-left:thin solid #000000; border-right:medium solid #000000;">&#12450;&#12459;&#12454;&#12531;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-left:thin solid #000000;">-</td>
+<td  style=" border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">address</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">adresse</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12450;&#12489;&#12524;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12450;&#12489;&#12524;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">address</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12450;&#12489;&#12524;&#12473;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">administration, admin</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">administration</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#31649;&#29702;&#12289;&#31649;&#29702;&#32773;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#31649;&#29702;&#12289;&#31649;&#29702;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">administration</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#31649;&#29702;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12523;&#12471;&#12473;&#12486;&#12512;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">alias</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">alias</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12456;&#12452;&#12522;&#12450;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12456;&#12452;&#12522;&#12450;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12522;&#12473;&#12488;&#12364;&#21463;&#12369;&#20837;&#12428;&#12427;&#12450;&#12489;&#12524;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:thin solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">alias</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#21029;&#21517;</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">antivirus scan</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">l'appel &#224; l'antivirus</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12454;&#12451;&#12523;&#12473;&#12473;&#12461;&#12515;&#12531;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12454;&#12451;&#12523;&#12473;&#12473;&#12461;&#12515;&#12531;[&#12377;&#12427;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">moderation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">approval</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">autorisation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25215;&#35469;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#25215;&#35469;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">approve, approval</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25215;&#35469;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">archive</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">archive</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12450;&#12540;&#12459;&#12452;&#12502;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#25237;&#31295;&#20445;&#31649;&#24235;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">archive</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20445;&#23384;&#26360;&#24235;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">attachment</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">attachement</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#28155;&#20184;&#12501;&#12449;&#12452;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#28155;&#20184;&#12501;&#12449;&#12452;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">attachment</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#28155;&#20184;&#12501;&#12449;&#12452;&#12523;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">Web&#12452;&#12531;&#12479;&#12501;&#12455;&#12540;&#12473;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">authenticate, authentication</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">authentification</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35469;&#35388;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12525;&#12464;&#12452;&#12531;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">authenticate, authentication, login</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35469;&#35388;&#12289;&#12525;&#12464;&#12452;&#12531;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#35388;&#26126;&#26360;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">authenticate</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">authentification</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35469;&#35388;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#35469;&#35388;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">author</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">auteur</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20316;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#20316;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">author</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#30330;&#20449;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#33879;&#32773;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">blacklist</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">la liste noire</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#35442;&#24403;&#12394;&#12375;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12502;&#12521;&#12483;&#12463;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">body</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">corps</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#26412;&#25991;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#26412;&#25991;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">body</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#26412;&#25991;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12523;&#12471;&#12473;&#12486;&#12512;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">bounce</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">bounce</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12496;&#12454;&#12531;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#37197;&#36865;&#12456;&#12521;&#12540;[&#12434;&#36215;&#12371;&#12377;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">bounce</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#37197;&#36865;&#12456;&#12521;&#12540;[&#12434;&#36215;&#12371;&#12377;]&#12289;&#12456;&#12521;&#12540;&#12513;&#12540;&#12523;</td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#35388;&#26126;&#26360;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">certification authority</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">autorit&#233; de certification</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35469;&#35388;&#23616;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#35469;&#35388;&#23616;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">RSS</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">channel</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">canal</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12481;&#12515;&#12531;&#12493;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12481;&#12515;&#12531;&#12493;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">charter</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">charte</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#35442;&#24403;&#12394;&#12375;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">[&#29992;&#35486;&#26410;&#23450;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#25010;&#31456;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">GUI</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">click</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">cliquer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12463;&#12522;&#12483;&#12463;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12463;&#12522;&#12483;&#12463;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">click</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12463;&#12522;&#12483;&#12463;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#36984;&#25246;[&#12377;&#12427;]</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">closed</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">ferm&#233;e</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#38281;&#37782;&#12373;&#12428;&#12383;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#38281;&#37782;&#20013;[&#12398;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">command</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">commande</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12467;&#12510;&#12531;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12467;&#12510;&#12531;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">command</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12467;&#12510;&#12531;&#12489;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">computer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">ordinateur</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12467;&#12531;&#12500;&#12517;&#12540;&#12479;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12467;&#12531;&#12500;&#12517;&#12540;&#12479;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">machine</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12510;&#12471;&#12531;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#35336;&#31639;&#27231;&#12289;&#38651;&#33075;</td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">confirm, confirmation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">confirmer, confirmation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#30906;&#35469;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#30906;&#35469;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">confirm, confirmation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#30906;&#35469;[&#12377;&#12427;]</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">cookie</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">cookie</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">cookie&#12289;&#12463;&#12483;&#12461;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12463;&#12483;&#12461;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">cookie</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12463;&#12483;&#12461;&#12540;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">create, creation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">cr&#233;er</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20316;&#25104;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#20316;&#25104;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">create</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20316;&#25104;[&#12377;&#12427;]</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">customization</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">personnalisation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35373;&#23450;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;&#35373;&#23450;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">data source</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">source de donn&#233;es</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12487;&#12540;&#12479;&#12477;&#12540;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12487;&#12540;&#12479;&#12477;&#12540;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">database</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">base de donn&#233;es</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12487;&#12540;&#12479;&#12505;&#12540;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12487;&#12540;&#12479;&#12505;&#12540;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">database</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12487;&#12540;&#12479;&#12505;&#12540;&#12473;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">default</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">d&#233;faut</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12487;&#12501;&#12457;&#12523;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21021;&#26399;[&#20516;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">default</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12487;&#12501;&#12457;&#12523;&#12488;[&#20516;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#26082;&#23450;[&#20516;]</td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">define, definition</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">d&#233;finir, d&#233;terminer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#23450;&#32681;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#27770;&#12417;&#12427;&#12289;&#27770;&#23450;&#12377;&#12427;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">define</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#23450;&#32681;[&#12377;&#12427;]</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">diffusion</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">diffusion</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#35379;&#12373;&#12394;&#12356;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#30330;&#36865;(&#12377;&#12427;)</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">digest</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">compilation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12480;&#12452;&#12472;&#12455;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12414;&#12392;&#12417;&#35501;&#12415;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">digest</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12414;&#12392;&#12417;&#35501;&#12415;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">LDAP</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">directory</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">annuaire</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12487;&#12451;&#12524;&#12463;&#12488;&#12522;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12487;&#12451;&#12524;&#12463;&#12488;&#12522;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12501;&#12449;&#12452;&#12523;&#12471;&#12473;&#12486;&#12512;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">directory</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">dossier</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12487;&#12451;&#12524;&#12463;&#12488;&#12522;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12487;&#12451;&#12524;&#12463;&#12488;&#12522;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">directory</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12487;&#12451;&#12524;&#12463;&#12488;&#12522;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">distribute</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">diffuser</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#37197;&#36865;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#37197;&#36865;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#20849;&#26377;&#25991;&#26360;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">document repository</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">l'espace documents</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12489;&#12461;&#12517;&#12513;&#12531;&#12488;&#12522;&#12509;&#12472;&#12488;&#12522;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#25991;&#26360;&#32622;&#12365;&#22580;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">download</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">t&#233;l&#233;charger</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12480;&#12454;&#12531;&#12525;&#12540;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12480;&#12454;&#12531;&#12525;&#12540;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">e-mail address, email address</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">adresse, adresse email</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12523;&#12450;&#12489;&#12524;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#12513;&#12540;&#12523;&#12450;&#12489;&#12524;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">email address</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12523;&#12450;&#12489;&#12524;&#12473;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">email</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">email</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#12513;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">email</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12523;&#12289;&#12513;&#12540;&#12523;[&#12377;&#12427;]</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">email (address)</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">email</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12523;&#12450;&#12489;&#12524;&#12473;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#12513;&#12540;&#12523;&#12450;&#12489;&#12524;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">environment</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">environnement</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#29872;&#22659;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#29872;&#22659;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">Web interface</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">Web &#12452;&#12531;&#12479;&#12501;&#12455;&#12540;&#12473;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">expire, expiration</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">expiration</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#26399;&#38291;&#12289;&#26399;&#38480;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#26399;&#38480;&#20999;&#12428;[&#12395;&#12394;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">expire</td>
+
+<td  valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#26399;&#38480;&#12364;&#20999;&#12428;&#12427;&#12289;&#26399;&#38480;&#20999;&#12428;&#12395;&#12394;&#12427;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">family</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">famille</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12501;&#12449;&#12511;&#12522;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#35373;&#23450;&#26063;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">file</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">fichier</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12501;&#12449;&#12452;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12501;&#12449;&#12452;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">file</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12501;&#12449;&#12452;&#12523;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;&#21152;&#24037;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">footer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">pied</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12501;&#12483;&#12479;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#24460;&#20184;&#12369;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">footer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12501;&#12483;&#12479;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;&#12504;&#12483;&#12480;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">from</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">de</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">from</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#36865;&#20449;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">from</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#30330;&#20449;&#32773;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">header</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">ent&#234;te</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12504;&#12483;&#12480;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12504;&#12483;&#12480;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">header</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12504;&#12483;&#12480;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;&#21152;&#24037;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">header</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">ent&#234;te</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12504;&#12483;&#12480;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21069;&#20184;&#12369;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">header</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12504;&#12483;&#12480;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">help</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">aide</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12504;&#12523;&#12503;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12504;&#12523;&#12503;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">help</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12504;&#12523;&#12503;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">homepage</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">page d'accueil</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12507;&#12540;&#12512;&#12506;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12507;&#12540;&#12512;&#12506;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">information, info</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">information</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#24773;&#22577;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#26696;&#20869;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">listinfo</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#32207;&#21512;&#26696;&#20869;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">install</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">installer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12452;&#12531;&#12473;&#12488;&#12540;&#12523;[&#12377;&#12427;]&#12289;&#35373;&#23450;[&#12377;&#12427;]&#12289;&#25505;&#29992;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12452;&#12531;&#12473;&#12488;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">install</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12452;&#12531;&#12473;&#12488;&#12540;&#12523;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">family</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">instance of</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">instance</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#12501;&#12449;&#12511;&#12522;&#12398;]&#12452;&#12531;&#12473;&#12479;&#12531;&#12473;[&#12391;&#12354;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">[&#35373;&#23450;&#26063;&#12395;]&#20837;&#12387;&#12390;&#12356;&#12427;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">family</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">instantiate</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">instancier</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12452;&#12531;&#12473;&#12479;&#12531;&#12473;&#21270;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">[&#12522;&#12473;&#12488;&#12434;][&#35373;&#23450;&#26063;&#12395;]&#20837;&#12428;&#12427;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">interface</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">interface</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12452;&#12531;&#12479;&#12501;&#12455;&#12540;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12452;&#12531;&#12479;&#12501;&#12455;&#12540;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">interface</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12452;&#12531;&#12479;&#12501;&#12455;&#12540;&#12473;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">invite</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">convier</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25307;&#24453;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#25307;&#24453;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">invite</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25307;&#24453;[&#12377;&#12427;]</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#26263;&#21495;&#21270;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">key</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">cl&#233;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12461;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12461;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">language</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">langue</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35328;&#35486;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#35328;&#35486;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">language</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35328;&#35486;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12381;&#12398;&#20182;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">list</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">liste</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#19968;&#35239;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#19968;&#35239;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">list</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#19968;&#35239;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">list</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">liste</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#19968;&#35239;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#19968;&#35239;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">overview</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#19968;&#35239;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;&#12381;&#12398;&#12418;&#12398;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">list</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">liste</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">list</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12522;&#12473;&#12488;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;&#12471;&#12473;&#12486;&#12512;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">listmaster</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">listmaster</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12522;&#12473;&#12488;&#12510;&#12473;&#12479;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12522;&#12473;&#12488;&#12471;&#12473;&#12486;&#12512;&#31649;&#29702;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">site administrator</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12469;&#12452;&#12488;&#31649;&#29702;&#32773;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">log</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">journaux</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12525;&#12464;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12525;&#12464;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">log</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12525;&#12464;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">loop</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">boucle</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#35379;&#35486;&#26410;&#23450;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12523;&#12523;&#12540;&#12503;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">mail</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">message</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">mail</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12523;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">mailing list</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">liste, liste de diffusion</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">mailing list</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">manage. management</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">gestion</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#31649;&#29702;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#31649;&#29702;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">management</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#31649;&#29702;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">match</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">corresponder</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#19968;&#33268;[&#12377;&#12427;]&#12289;&#35442;&#24403;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21512;&#33268;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#12513;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">message</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">message</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">message</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12513;&#12540;&#12523;&#12289;&#35352;&#20107;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">message ID</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">messageID</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;ID</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">moderate</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">mod&#233;rer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#26619;&#35501;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21535;&#21619;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">moderated</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">mod&#233;r&#233;e</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12514;&#12487;&#12524;&#12540;&#12488;&#12373;&#12428;&#12427;[&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;]&#12289;&#30435;&#26619;&#12373;&#12428;&#12383;[&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;]&#12289;&#30435;&#26619;&#12373;&#12428;&#12390;&#12356;&#12427;[&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;]&#12289;[&#25237;&#31295;&#12399;]&#12514;&#12487;&#12524;&#12540;&#12488;&#12364;&#24517;&#35201;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">[&#25237;&#31295;&#12399;]&#21535;&#21619;&#12434;&#21463;&#12369;&#12427;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">moderated</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#25237;&#31295;&#12399;]&#21046;&#38480;&#12373;&#12428;&#12427;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">moderation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">mod&#233;ration</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12514;&#12487;&#12524;&#12540;&#12471;&#12519;&#12531;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21535;&#21619;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">moderation</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#21046;&#38480;(&#12514;&#12487;&#12524;&#12540;&#12471;&#12519;&#12531;)[&#12434;&#12363;&#12369;&#12427;]&#12289;&#37197;&#36865;&#20445;&#30041;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#23529;&#26619;&#12289;&#26619;&#35501;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">moderator, editor</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">mod&#233;rateur</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12514;&#12487;&#12524;&#12540;&#12479;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21535;&#21619;&#24441;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">moderator</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#12522;&#12473;&#12488;]&#21496;&#20250;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#26619;&#35501;&#32773;&#12289;&#12450;&#12471;&#12473;&#12479;&#12531;&#12488;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">multipart</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">multipart</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12510;&#12523;&#12481;&#12497;&#12540;&#12488;[&#12398;]&#12289;&#28155;&#20184;&#12501;&#12449;&#12452;&#12523;[&#12398;&#12289;&#12388;&#12365;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12510;&#12523;&#12481;&#12497;&#12540;&#12488;[&#12398;]&#12289;&#28155;&#20184;&#12501;&#12449;&#12452;&#12523;&#12398;&#12354;&#12427;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">non-delivery report</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">rapport d'anomalie</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#37197;&#36865;&#19981;&#21487;&#12398;&#22577;&#21578;&#12289;&#37197;&#36865;&#19981;&#21487;&#12398;&#12524;&#12509;&#12540;&#12488;&#12289;&#37197;&#36865;&#22833;&#25943;&#12524;&#12509;&#12540;&#12488;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#37197;&#36865;&#19981;&#33021;&#22577;&#21578;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">bounce</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#19978;&#35352;&#21442;&#29031;]</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">notify, notification</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">notifier</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36890;&#30693;[&#12377;&#12427;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#36890;&#30693;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">notify, notification</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36890;&#30693;[&#12377;&#12427;&#12289;&#12364;&#36865;&#12425;&#12428;&#12427;]</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">owner</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">propri&#233;taire</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12458;&#12540;&#12490;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12458;&#12540;&#12490;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">list administrator</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12522;&#12473;&#12488;&#31649;&#29702;&#32773;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">parameter</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">param&#232;tre</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12497;&#12521;&#12513;&#12540;&#12479;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12497;&#12521;&#12513;&#12540;&#12479;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">option entry</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35373;&#23450;&#38917;&#30446;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">password</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">mot de passe</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12497;&#12473;&#12527;&#12540;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12497;&#12473;&#12527;&#12540;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">password</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12497;&#12473;&#12527;&#12540;&#12489;</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">pending</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">en fermant</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20445;&#30041;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#25215;&#35469;&#24453;&#12385;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">pending, held</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#26410;&#20966;&#29702;&#12289;&#20445;&#30041;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">picture</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">vignette</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12500;&#12463;&#12481;&#12515;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">plain text</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">texte</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12503;&#12524;&#12452;&#12531;&#12486;&#12461;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12503;&#12524;&#12452;&#12531;&#12486;&#12461;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">plain [text]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#24179;&#25991;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">post</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">poster</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25237;&#31295;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#25237;&#31295;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">post, posting</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25237;&#31295;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#12509;&#12473;&#12488;[&#12377;&#12427;]</td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12522;&#12473;&#12488;&#35501;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">preferences</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">pr&#233;f&#233;rences</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12458;&#12503;&#12471;&#12519;&#12531;&#12289;&#35373;&#23450;&#12289;&#12518;&#12540;&#12470;&#24773;&#22577;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#20491;&#20154;&#35373;&#23450;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">member options, account</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20250;&#21729;&#12458;&#12503;&#12471;&#12519;&#12531;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">private</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">priv&#233;e</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36092;&#35501;&#32773;&#12384;&#12369;&#12364;&#21442;&#29031;&#12391;&#12365;&#12427;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#38750;&#20844;&#38283;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">closed</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#38281;&#37782;[&#12522;&#12473;&#12488;]</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">privileged [list] owner</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">propri&#233;taire privil&#233;gi&#233;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#12522;&#12473;&#12488;&#12398;]&#29305;&#27177;&#12458;&#12540;&#12490;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">[&#12522;&#12473;&#12488;&#12398;]&#29305;&#27177;&#12458;&#12540;&#12490;&#12540;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">public</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">publique</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20844;&#38283;[&#12373;&#12428;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#20844;&#38283;[&#12373;&#12428;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">public, publicly-advertised</td>
+
+<td  valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#22806;&#37096;&#12395;]&#20844;&#38283;[&#12373;&#12428;&#12390;&#12356;&#12427;]</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">purge</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">supprimer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#30772;&#26820;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#25273;&#28040;[&#12377;&#12427;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">quota</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">quota</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">quota&#12289;&#35377;&#23481;&#37327;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#23481;&#37327;&#21046;&#38480;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#21463;&#12369;&#21462;&#12426;&#12514;&#12540;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">reception</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">r&#233;ception</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#21463;&#20449;&#12289;&#12524;&#12475;&#12503;&#12471;&#12519;&#12531;&#12289;&#21463;&#12369;&#21462;&#12426;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21463;&#12369;&#21462;&#12426;&#12363;&#12383;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">delivery</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#37197;&#36865;</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">reception mode</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">mode de r&#233;ception</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36092;&#35501;&#12514;&#12540;&#12489;&#12289;&#21463;&#20449;&#12514;&#12540;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21463;&#12369;&#21462;&#12426;&#12514;&#12540;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">delivery</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#37197;&#36865;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">regular expression</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">expression r&#233;guli&#232;re</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#27491;&#35215;&#34920;&#29694;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#27491;&#35215;&#34920;&#29694;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">regular expression</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#27491;&#35215;&#34920;&#29694;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">family</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">reinstantiate</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">r&#233;instancier</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20877;&#12452;&#12531;&#12473;&#12479;&#12531;&#12473;&#21270;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">[&#35373;&#23450;&#26063;&#12434;]&#22793;&#12360;&#12427;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">reject</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">rejeter</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25298;&#21542;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#25298;&#21542;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">reject</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25298;&#21542;[&#12377;&#12427;]</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">remind</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">rapeller</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36092;&#35501;&#30906;&#35469;[&#12434;&#36865;&#12427;]&#12289;remind</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#30331;&#37682;&#30906;&#35469;[&#12434;&#36865;&#12427;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">remind, reminder, password reminder</td>
+<td  valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#12497;&#12473;&#12527;&#12540;&#12489;]&#20633;&#24536;&#36890;&#30693;[&#12434;&#36865;&#12427;]</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">remind message, reminder</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">rapel</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12522;&#12510;&#12452;&#12531;&#12480;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#30331;&#37682;&#30906;&#35469;&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">remind, reminder, password reminder</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#12497;&#12473;&#12527;&#12540;&#12489;]&#20633;&#24536;&#36890;&#30693;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">remove</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">supprimer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#38281;&#37782;[&#12377;&#12427;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#38281;&#37782;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;, &#12501;&#12449;&#12452;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">rename</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">renommer</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12522;&#12493;&#12540;&#12512;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#31227;&#21205;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">reply</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">r&#233;ponser</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36820;&#20449;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#36820;&#20449;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#12522;&#12503;&#12521;&#12452;[&#12377;&#12427;]&#12289;&#12501;&#12457;&#12525;&#12540;[&#12377;&#12427;]</td>
+
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">reply address</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">adresse de r&#233;ponse</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">Reply-To &#12450;&#12489;&#12524;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#36820;&#20449;&#20808;&#12450;&#12489;&#12524;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">Reply-To</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36820;&#20449;&#20808;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">request</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">demander</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35201;&#27714;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#30003;&#12375;&#36796;&#12415;[&#12416;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">request</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#30003;&#35531;[&#12377;&#12427;]</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">restore</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">restaurer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#24489;&#27963;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#20877;&#38283;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12456;&#12531;&#12532;&#12455;&#12525;&#12540;&#12503;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">return path</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">adresse de retour</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">return-path</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#36865;&#20449;&#20803;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12522;&#12473;&#12488;&#35501;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">review</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">acc&#232;s &#224; la liste des abonn&#233;s</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36092;&#35501;&#32773;&#19968;&#35239;[&#12434;&#35211;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#35501;&#32773;&#19968;&#35239;[&#12434;&#35211;&#12427;]</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">roster, list of subscribers</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20250;&#21729;&#21517;&#31807;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#12513;&#12531;&#12496;&#12540;&#12522;&#12473;&#12488;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">robot</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">robot</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12525;&#12508;&#12483;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12525;&#12508;&#12483;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">scenario, scenari</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">scenario</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12471;&#12490;&#12522;&#12458;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12471;&#12490;&#12522;&#12458;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">server</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">serveur</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12469;&#12540;&#12496;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12469;&#12540;&#12496;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">server</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12469;&#12540;&#12496;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">shared document</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">document publi&#233;e</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20849;&#26377;&#12489;&#12461;&#12517;&#12513;&#12531;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#20849;&#26377;&#25991;&#26360;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12381;&#12398;&#20182;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">signature</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">signature</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#32626;&#21517;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#32626;&#21517;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">signature</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#32626;&#21517;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#12471;&#12464;&#12493;&#12481;&#12515;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#32626;&#21517;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">signature</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">signature</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12471;&#12464;&#12493;&#12481;&#12515;&#12289;&#32626;&#21517;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#32626;&#21517;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#38651;&#23376;&#32626;&#21517;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">SOAP</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">SOAP</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">SOAP</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">SOAP</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">software</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">logiciel</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12477;&#12501;&#12488;&#12454;&#12455;&#12450;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12477;&#12501;&#12488;&#12454;&#12455;&#12450;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">software</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12477;&#12501;&#12488;&#12454;&#12455;&#12450;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#12420;&#12431;&#29289;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">spool</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">file d'attente</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12473;&#12503;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12473;&#12503;&#12540;&#12523;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subject</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">sujet</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20869;&#23481;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#34920;&#38988;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">description</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35500;&#26126;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;&#12504;&#12483;&#12480;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subject</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">sujet</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#38988;&#21517; (Subject)&#12289;subject&#12289;&#12469;&#12502;&#12472;&#12455;&#12463;&#12488;&#12289;&#20214;&#21517;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#34920;&#38988; (Subject)</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subject</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20214;&#21517;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#12479;&#12452;&#12488;&#12523;</td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#35388;&#26126;&#26360;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subject</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">sujet</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">subject</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#21517;&#32681;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subscribe/subscription</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">abonnement</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#12434;&#12289;&#12398;]&#36092;&#35501;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">[&#12395;&#12289;&#12408;&#12398;]&#35501;&#32773;&#30331;&#37682;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subscribe/subscription</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20837;&#20250;[&#12377;&#12427;]</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subscriber</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">abonn&#233;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36092;&#35501;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#35501;&#32773;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subscriber, member</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20250;&#21729;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#12513;&#12531;&#12496;&#12540;</td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">subscription reminder</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">rappel d'abonnement</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36092;&#35501;&#12522;&#12510;&#12452;&#12531;&#12480;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#35501;&#32773;&#30331;&#37682;&#30906;&#35469;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">password reminder</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#19978;&#35352;&#21442;&#29031;]</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">successfully -ed</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">correctement -e</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#25104;&#21151;&#12375;&#12414;&#12375;&#12383;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#23436;&#20102;&#12375;&#12414;&#12375;&#12383;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">successfully -ed</td>
+<td  valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#23436;&#20102;&#12375;&#12414;&#12375;&#12383;&#12289;[&#35379;&#12373;&#12394;&#12356;]</td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">topic</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">tag</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">marquer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12479;&#12464;[&#20184;&#12369;&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12488;&#12500;&#12483;&#12463;&#12398;&#21360;[&#12434;&#20184;&#12369;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;&#21152;&#24037;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">tag</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">marquer</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#19981;&#26126;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#30446;&#21360;[&#12434;&#20184;&#12369;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">prefix</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#21069;&#32622;&#12365;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">task</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">tache</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12479;&#12473;&#12463;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12479;&#12473;&#12463;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12523;/Web&#12452;&#12531;&#12479;&#12501;&#12455;&#12540;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">template</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">mod&#232;le</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12486;&#12531;&#12503;&#12524;&#12540;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12486;&#12531;&#12503;&#12524;&#12540;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">public HTML pages and text files</td>
+<td  valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20844;&#38283;HTML&#12506;&#12540;&#12472;&#12392;&#12486;&#12461;&#12473;&#12488;&#12501;&#12449;&#12452;&#12523;</td>
+<td  style=""></td>
+
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;&#12398;&#34920;&#31034;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">thread</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">discussions</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12473;&#12524;&#12483;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12473;&#12524;&#12483;&#12489;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">thread</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12473;&#12524;&#12483;&#12489;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;&#12504;&#12483;&#12480;</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">to</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#224;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">to</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#36865;&#20449;&#20808;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">to</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">To(&#23451;&#20808;)</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">topic</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">th&#232;me</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12488;&#12500;&#12483;&#12463;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12488;&#12500;&#12483;&#12463;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">topic</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#35441;&#38988;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12540;&#12522;&#12531;&#12464;&#12522;&#12473;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">unsubscribe/unsubscription</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">d&#233;sabonnement</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#12363;&#12425;]&#36864;&#20250;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">[&#12434;&#12289;&#12398;]&#30331;&#37682;&#35299;&#38500;[&#12377;&#12427;&#12289;&#12434;&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">unsubscribe</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#36864;&#20250;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#33073;&#36864;[&#12377;&#12427;]</td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">upload</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">chargement</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12450;&#12483;&#12503;&#12525;&#12540;&#12489;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12450;&#12483;&#12503;&#12525;&#12540;&#12489;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">upload</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12450;&#12483;&#12503;&#12525;&#12540;&#12489;[&#12377;&#12427;]</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">UNIX</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">user</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">abonn&#233;s</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12518;&#12540;&#12470;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12518;&#12540;&#12470;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#19968;&#33324;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">user</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">abonn&#233;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12518;&#12540;&#12470;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#20154;&#12289;&#35504;&#12363;&#12289;[&#35379;&#12373;&#12394;&#12356;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">user</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#20250;&#21729;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#38651;&#23376;&#35388;&#26126;&#26360;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">user cert, user certificate</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">certificat</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12518;&#12540;&#12470;&#35388;&#26126;&#26360;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12518;&#12540;&#12470;&#35388;&#26126;&#26360;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;">&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">validate</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">valider</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#30906;&#35469;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#30906;&#35469;[&#12377;&#12427;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">approve, approval</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#19978;&#35352;&#21442;&#29031;]</td>
+
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">version</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">version</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">[&#35379;&#35486;&#26410;&#23450;]</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#29256;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">version</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12496;&#12540;&#12472;&#12519;&#12531;</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">virus</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">virus</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">&#12454;&#12451;&#12523;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12454;&#12451;&#12523;&#12473;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+
+<tr>
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">Web</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">web</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">Web</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12454;&#12455;&#12502;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">Web</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">Web</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;">&#12454;&#12455;&#12483;&#12502;</td>
+<td  style=""></td>
+</tr>
+<tr>
+
+<td  style=" border-top:thin solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">Web site</td>
+<td  style=" border-top:thin solid #000000; border-left:thin solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">Web&#12469;&#12452;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#12454;&#12455;&#12502;&#12469;&#12452;&#12488;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000;">-</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-left:thin solid #000000;">-</td>
+<td  style=" border-top:thin solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+<tr>
+<td  style=" border-top:thin solid #000000; border-bottom:thick solid #000000; border-left:thick solid #000000; border-right:medium solid #000000;"></td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:thick solid #000000;">welcome message</td>
+
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:thick solid #000000; border-left:thin solid #000000;">bienvenue</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:thick solid #000000; border-left:thin solid #000000;">&#12454;&#12455;&#12523;&#12459;&#12512;&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:thick solid #000000; border-left:thin solid #000000; border-right:medium solid #000000;">&#27475;&#36814;&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:thick solid #000000;">welcome message</td>
+<td valign="top"  align="left"  style=" font-size:10pt; border-top:thin solid #000000; border-bottom:thick solid #000000; border-left:thin solid #000000;">&#27475;&#36814;&#12513;&#12483;&#12475;&#12540;&#12472;</td>
+<td  style=" border-top:thin solid #000000; border-bottom:thick solid #000000; border-left:medium solid #000000; border-right:thick solid #000000;"></td>
+<td  style=""></td>
+</tr>
+</table>
+</html>
+
+===== 更新履歴 =====
+  * 2006-10-21 hatuka(at)nezumi.nu 作成
+

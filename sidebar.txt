@@ -1,0 +1,7 @@
+
+  * [[overview:features|What's Sympa]]
+  * [[http://demo.sympa.org/sympa|demo server]]
+  * [[http://demo.sympa.org/sampleClient.php|soap client demo]]
+  * [[:dev:future|project direction]]
+  * [[internals:how_to_contribute_to_sympa|how to contribute]]
+  * [[translating_sympa|translating Sympa]]

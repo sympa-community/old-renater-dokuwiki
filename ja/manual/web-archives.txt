@@ -1,0 +1,75 @@
+<html><a name="web_archive" /></html>
+======= × 投稿保管庫 =======
+<note warning>
+This content was obsoleted.
+
+</note>
+
+//Sympa// は、メーリングリストのウェブでの投稿保管庫を (その機能が有効になってれば) 管理します。ウェブ投稿保管庫は //Sympa// のウェブインタフェースに完全に統合されていますが、HTML への変換を行う機構はサードパーティのツールである [[http://www.mhonarc.org|MHonArc]] によっています。
+
+<html><a name="features" /></html>
+====== 仕様 ======
+
+[[:manual:web-archives#features]]
+
+<html><a name="mhonarc_tool" /></html>
+======MhOnArc ツール======
+FIXME 当節は Sympa 5.3b.1 のマニュアルを元に翻訳しています。
+
+MhOnArc は MIME メッセージを HTML に変換できる便利で小さなプログラムです。 http://www.oac.uci.edu/indiv/ehood/mhonarc.html を参照してください。
+
+WWSympa 専用に、大きな MhOnArc リソースファイルを使います。MhOnArc を呼び出して HTML 文書全体を生成するわけではありません。一部だけを生成して文書全体 (''<''HTML''>'' で始まって''<''/HTML''>'' で終わるのですよね ;-) ) に組み込むのです。WWSympa の配布物にある MhOnArc リソースファイルを使うが、それを必要に応じて修正する、というのが最良のやりかたです。
+
+MhOnArc リソースファイルは ''mhonarc-ressources'' という名前です。このファイルはつぎのいずれの場所にも置けます:
+
+  - ''/home/sympa/list_data/myist/mhonarc-ressources'' (この場合、特定のリストの投稿保管庫だけ見栄えを変えます)
+  - あるいは ''/home/sympa/etc/mhonarc-ressources''
+
+<html><a name="archive_structure" /></html>
+====== 投稿保管庫の構成 ======
+
+[[:manual:web-archives#archive_structure]]
+
+<html><a name="configuration_parameters" /></html>
+====== 設定パラメータ ======
+
+[[:manual:web-archives#configuration_parameters]]
+
+<html><a name="archived.pl_daemon" /></html>
+======archived.pl デーモン======
+FIXME 当節は Sympa 5.3b.1 のマニュアルを元に翻訳しています。
+
+''archived.pl'' は、Sympa のスプールにあるメッセージを変換してから ''mhonarc'' を呼び出して HTML 版を作成します (保管場所は "arc_path" WWSympa パラメータで定義します)。投稿保管庫は Sympa の home_dir (Sympa のメール投稿保管庫格納場所の初期値: ''/home/sympa/list_data/myist'') の外に設置したほうがよいこともあるかもしれません。なお、HTML 投稿保管庫にはメッセージそれぞれのテキスト版も入っていて、Sympa の主な投稿保管庫とは完全に独立しています。
+
+  - WWSympa の "arc_path" パラメータと同じディレクトリを作成する (sympa の所有でなければいけません。また、サーバで chroot を使っているのでなければ、 Apache の領域にある必要はありません)
+  - リストごとに、ウェブ投稿保管庫が必要ならば、リスト設定にウェブ投稿保管庫の節を作成する。例:
+
+  web_archive access public|private|owner|listmaster|closed quota 10000
+
+ リストで web_archive が定義してあると、そのリストでは配信されるメッセージを ''/home/sympa/spool/outgoing/'' に複写します (メッセージの写しを受け取るために架空の読者を作成するようなことは必要ありません)。またこの例では、投稿保管庫のためのディスクの容量制限 (キロバイト単位で表します) を 10 メガオクテットに制限しています。
+
+  - ''archived.pl''、 Sympa、Apache を開始する。 - WWSympa のログを調べる。または、''archived.pl'' をデバッグモード (-d) で開始する。
+  - MhOnArc リソースを変更したので投稿保管庫全体を新しい見栄えに作りなおしたいというときは、 ''/home/sympa/spool/outgoing'' に ".rebuild.myist@myhost" という名前の空のファイルを作成するだけです。このファイルは Sympa の所有になるようにしてください。
+
+例:
+ su sympa -c "touch /home/sympa/spool/outgoing/.rebuild.sympa-fr@renater.fr"
+
+または、リストの運営ページでも、投稿保管庫を再構築することができます。
+
+ところで、リストの投稿保管庫の中身を手に入れたいのであれば、 '' リストの運営メニュー -> 投稿保管庫管理'' からできます。
+
+<html><a name="rebuilding_web_archive" /></html>
+====== 投稿保管庫の再構築 ======
+
+[[:manual:web-archives#rebuilding_web_archive]]
+
+<html><a name="importing_archives" /></html>
+====== 投稿保管庫の取り込み ======
+
+[[:manual:web-archives#importing_archives]]
+
+====== ======
+----
+[[:manual:web-arhives]] の 2007/12/10 15:35 の版 (一部は Sympa 5.3b.1 のマニュアル) を元に翻訳しました。もとの文書の更新に気づいた方は、[[http://www.sympa.org/manual:web-arhives?do=revisions|差分]]を参照して更新してください。
+
+翻訳作業については [[:ja:cour]] も参照してください。

@@ -1,0 +1,5 @@
+====== メーリングリスト管理ソフトウェア Sympa リファレンスマニュアル ======
+
+**版:** 5.3b.1
+
+**著者:** Serge Aumont, Olivier Salaün, David Verdin

@@ -1,0 +1,3 @@
+{{page>.:part1:toc}}
+{{page>.:part2:toc}}
+{{page>.:part3:toc}}

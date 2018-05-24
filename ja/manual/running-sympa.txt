@@ -1,0 +1,63 @@
+======= × Sympa の実行=======
+<note warning>
+This content was obsoleted.
+
+</note>
+
+======sympa.pl======
+
+''sympa.pl'' がメインのデーモンです。メールコマンドを処理し、メッセージの配送を担います。
+
+''sympa.pl'' は以下のコマンドラインオプションをとることができます:
+
+  * ''<nowiki>--</nowiki>add_list //設定族名// <nowiki>--</nowiki>robot //ロボット名// <nowiki>--</nowiki>input_file ///リスト用/ファイルの/パス.xml//''\\ XML ファイルで記述されるリストを//設定族名//という設定族に加えます。「[[list-families#adding_a_list_to_a_list_family|設定族にリストを追加する]]」参照。
+  * ''<nowiki>--</nowiki>close_family //設定族名// <nowiki>--</nowiki>robot //ロボット名// ''\\ //設定族名// という設定族を閉鎖します。「[[list-families#closure|設定族の閉鎖]]」参照。
+  * ''<nowiki>--</nowiki>close_list //リスト名//@//ロボット//''\\ リストを閉鎖し (リストの状況を「閉鎖中」に変え)、エイリアスを削除し (''sendmail_aliases'' パラメータが設定してあれば)、データベースから読者を削除します (リストを再開できるよう、リストのディレクトリに読者情報を書き出します)。設定族に入っているときは「[[list-families#closure|設定族の閉鎖]]」参照。
+  * ''<nowiki>--</nowiki>close_unknown''\\ このオプションで //Sympa// は、リストが設定族に入っている場合でも、黙ってリストを閉じます。 FIXME 誤訳?
+  * ''<nowiki>--</nowiki>config //設定ファイル//'' | ''-f //設定ファイル//''\\ //Sympa// が別の設定ファイルを使うようにします。初期値の動作では Makefile で決めたファイル (''$CONFIG'') を使うようになっています。
+  * ''<nowiki>--</nowiki>create_list <nowiki>--</nowiki>robot //ロボット名// <nowiki>--</nowiki>input_file ///リスト用/ファイルの/パス.xml//''\\ XML ファイルで記述されるリストを作成します。「[[list-creation#list_creation_on_command_line_with_sympa.pl|sympa.pl によるコマンドラインからのリスト作成]]」参照。
+  * ''<nowiki>--</nowiki>debug'' | ''-d''\\ //Sympa// をデバッグモードに設定し、端末と結び付けたままにします。デバッグ情報と通常のログ情報を標準エラー出力 (STDERR) に出力します。関数の呼出しをトレースします。バグを報告するときに便利です。
+  * ''<nowiki>--</nowiki>dump //リスト名//'' | ''//ALL//''\\ ある//リスト名//のリスト、ないしは全てのリストの読者を書き出します。読者情報を書き出す先は ''subscribers.db.dump'' です。
+  * ''<nowiki>--</nowiki>foreground''\\ プロセスを端末に結びつけたままにします。
+  * ''<nowiki>--</nowiki>help'' | ''-h'' sympa.pl の使いかたを印字します。
+  * ''<nowiki>--</nowiki>import //リスト名//''\\ //リスト名//のリストに読者を読み込みます。データは標準入力 (STDIN) から読みます。
+  * ''<nowiki>--</nowiki>instanciate_family //設定族名// //ロボット名// <nowiki>--</nowiki>input_file ///設定族用/ファイルの/パス.xml//''\\ //設定族名//という設定族を作成します。「[[list-families|設定族]]」参照。
+  * ''<nowiki>--</nowiki>keepcopy //格納先ディレクトリ//'' | ''-k //格納先ディレクトリ//''\\ このオプションは、//Sympa// に届いたメッセージすべての写しを保管し、削除させないようにします。//格納先ディレクトリ//はメッセージを格納するディレクトリです。
+  * ''<nowiki>--</nowiki>lang //カタログ//'' | ''-l //カタログ//''\\ このオプションは、//Sympa// が使う言語カタログを設定します。指定したカタログのファイルが ''~sympa/locale'' ディレクトリになければなりません。
+  * ''<nowiki>--</nowiki>lowercase'' データベースにある電子メールアドレスを小文字にします。
+  * ''<nowiki>--</nowiki>mail'' | ''-m''\\ //Sympa// による sendmail の呼び出しとそのときの受信者をログに記録します。メールを送るごとに記録しておきたいときに便利です (ただしログファイルが急速に大きくなります)。
+  * ''<nowiki>--</nowiki>make_alias_file''\\ ''/tmp/'' に全てのリストのエイリアス (状況が「開設中」のリストのみ) の入ったエイリアスファイルを作成します。これには ''list_aliases.tt2'' テンプレートを使います。
+  * ''<nowiki>--</nowiki>modify_list //設定族名// <nowiki>--</nowiki>robot //ロボット名// <nowiki>--</nowiki>input_file ///リスト用/ファイルの/パス.xml//''\\ //設定族//に存在するリストを XML ファイルの記述のとおりに変更します。「[[list-families#modifying_a_family_list|あるリストだけを修正する]]」参照。
+  * ''<nowiki>--</nowiki>quiet''\\ 設定族に入ったリストを作成する場合に、//Sympa// の標準出力 (STDOUT) への出力を停めます。 FIXME 誤訳?
+  * ''<nowiki>--</nowiki>reload_list_config <nowiki>--</nowiki>list=//mylist//@//dom//''\\ ''config.bin'' ファイルを全て再作成します。認可シナリオを変更したときはこのコマンドを実行しなければなりません。リストのパラメータは付けても付けなくてもかまいません。
+  * ''<nowiki>--</nowiki>service'' ''process_command'' | ''process_message'' | ''process_creation''\\ //Sympa// デーモンがメッセージ配信だけ (''process_message'')、コマンド処理だけ (''process_command'')、リスト作成申し込みの処理だけ (''process_creation'') を行うよう設定します。
+  * ''<nowiki>--</nowiki>sync_include //リストのアドレス//''\\ リストのメンバ更新を開始します。外部データベースを使っているリストに使えます。
+  * ''<nowiki>--</nowiki>upgrade <nowiki>--</nowiki>from=//X// <nowiki>--</nowiki>to=//Y//''\\ //Sympa// を //X// 版から //Y// 版へアップグレードするためのメンテナンススクリプトを実行します。
+  * ''<nowiki>--</nowiki>version'' | ''-v''\\ 現在の Sympa の版を印字します。
+
+<html><a name="init_script" /></html>
+
+======INIT スクリプト======
+
+''make install'' の段階で、sysV の init スクリプトが ''/etc/rc.d/init.d/'' ディレクトリにインストールされるはずです (この場所は ''configure'' のときに ''<nowiki>--</nowiki>with-initdir'' オプションで変更できます)。//Sympa// が Apache と MySQL の後に起動するように、ランレベルを編集しなければいけません。さらに、 MySQL は Apache より前に起動しなければいけません。これは ''wwsympa.fcgi'' のためです。
+
+このスクリプトは次のデーモンを起動します: sympa.pl、task_manager.pl、archived.pl、bounced.pl。
+
+<html><a name="stopping_sympa_and_signals" /></html>
+
+======Sympa の停止およびシグナル======
+
+<html><a name="stop-signals"/></html>
+====kill -TERM====
+
+このシグナルを sympa.pl に送る (''kill -TERM'') と、デーモンは処理で長くかかりそうな (大きなリストの) メッセージ配送をやめます。''kill -TERM'' を使うと、sympa.pl はなにかメッセージ配送を処理している最中でも即座に停止します。このような場合、sympa.pl が再起動したときにメッセージが何度も配送されることになります。
+
+====kill -HUP====
+
+このシグナルを sympa.pl に送る (''kill -HUP'') と、''<nowiki>--</nowiki>mail'' ログオプションを切り替え、処理は続行します。
+
+====== ======
+----
+[[:manual:running-sympa]] の 2009/03/10 15:44 の版をもとに翻訳しました。もとの文書の更新に気づいた方は、[[http://www.sympa.org/manual:running-sympa?do=revisions|差分]]を参照して更新してください。
+
+翻訳作業については [[:ja:cour]] も参照してください。

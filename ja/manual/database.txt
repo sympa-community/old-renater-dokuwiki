@@ -1,0 +1,112 @@
+<html><a name="sec-rdbms"/></html>
+<html><a name="database#sympa_and_its_database"/></html>
+======= × Sympa のデータベース=======
+<note warning>
+This content was obsoleted.
+
+</note>
+
+//Sympa// を実行するにはリレーショナルデータベース (RDBMS) が必要です。現在のところ、次のいずれかの RDBMS を使えます: MySQL、SQLite、PostgreSQL、Oracle、Sybase。他の RDBMS とのインタフェースは、コードに若干の修正を施すだけでできます。多くの RDBMS の DBD (データベースドライバ) を持つ [[http://www.symbolstone.org/technology/perl/DBI/|DBI]] (データベースインタフェース) の API を使っているためです,
+
+Sympa はデータベースに 3 種類の情報を、それぞれひとつのテーブルとして格納します:
+
+  * ユーザの個人設定とパスワードを ''user_table'' テーブルに。
+  * リストの読者登録情報と読者登録オプションを ''subscriber_table'' テーブルに。このテーブルには、取り込んだ利用者のキャッシュも入ります。
+  * リストの管理情報と、オーナーや吟味役のオプションを ''admin_table'' テーブルに。このテーブルには、取り込んだオーナーや吟味役のキャッシュも入ります。
+  * さらに、運用記録が ''log_table'' に。リストのオーナーは、ウェブインタフェイスでリストの運用記録を閲覧できます。
+
+<html><a name="prerequisites"/></html>
+======前提条件 ======
+データベースシステムをインストール (//Sympa// と同じホストにでなくてもかまいません) し、//Sympa// のホストにそのデータベースのためのクライアントライブラリをインストールしておく必要があります。おそらく、選択した RDBMS のための Perl DBD (データベースドライバ) が見つかるでしょう。DBI モジュールで使えるようになっているかどうか調べてください。
+
+<html><a name="installing_perl_modules"/></html>
+
+======Perl モジュールのインストール ======
+//Sympa// はデータベースシステムとのやりとりに ''DBI'' と データベースシステム用の DBD を使います。''DBI'' と ''DBD::データベース'' が CPAN モジュールとして配布されています (たとえば MySQL ならば ''Msql-Mysql'' モジュール)。モジュールのインストールの詳細については「[[installing-sympa#installing_perl_and_cpan_modules|Perl と CPAN モジュールのインストール]]」を参照してください。
+
+<html><a name="creating_a_sympa_database"/></html>
+
+======Sympa データベースの作成======
+
+<html><a name="rdbms-struct"/></html>
+<html><a name="database_structure"/></html>
+=====データベースの構成 =====
+[[:manual:database#database_structure]]
+
+<html><a name="database_automatic_creation_and_update"/></html>
+=====データベースの自動作成・更新 =====
+''sympa.pl'' プロセスは、起動時に、データベース (''sympa.conf'' に設定されている) が利用可能で期待通りの構成になっているかどうか調べます。なっていなければ、''sympa.pl'' プロセスはデータベースを作成するか、構成を更新します。**ただし、この機能が利用できるのは MySQL の場合だけ**で、他の RDBMS との連携は不完全です。なお、この自動処理では MySQL の ''root'' がパスワードを使わないようになっている必要があります。パスワードを使っているのであれば、''sympa.pl'' を最初に実行するときだけ無効にしてください。
+
+自動処理ではまた、''sympa.conf'' で宣言した ''db_user'' に権限を与えます。
+
+=====データベースの手動作成=====
+
+下記の ''create_db'' スクリプトで sympa データベースを作成できます。このスクリプトは配布物の ''script/'' ディレクトリにあります (現在、MySQL、SQLite、PostgreSQL、Oracle、Sybase 用のスクリプトがあります)。
+
+  * MySQL のデータベースを作成するスクリプト
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.mysql}}
+
+  * SQLite のデータベースを作成するスクリプト
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.SQLite}}
+
+  * PostgreSQL のデータベースを作成するスクリプト
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.Pg}}
+
+  * Sybase のデータベースを作成するスクリプト
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.Sybase}}
+
+  * Oracle のデータベースを作成するスクリプト
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.Oracle}}
+
+''mysql''、''psql''、''sqlplus'' のような簡易 SQL シェルを使ってスクリプトを実行できます。
+
+例: <code># mysql  < create_db.mysql</code>
+
+<html><a name="setting_database_privileges"/></html>
+======データベースの権限設定======
+
+sympa データベースへのアクセスを制限することを強くお勧めします。そうしておいて、''sympa.conf'' で ''db_user'' と ''db_passwd'' を設定します。
+
+MySQL では:
+
+  grant all on sympa.* to sympa@localhost identified by 'your_password';
+  flush privileges;
+
+<html><a name="importing_subscriber_data"/></html>
+======読者データのインポート ======
+[[:manual:database#importing_subscriber_data]]
+
+<html><a name="extending_database_table_format"/></html>
+======データベーステーブルの拡張 ======
+[[:manual:database#extending_database_table_format]]
+
+<html><a name="sympa_logs_in_the_database"/></html>
+======データベース中の Sympa ログ ======
+[[:manual:database#sympa_logs_in_the_database]]
+
+<html><a name="sympa_configuration"/></html>
+======Sympa の設定======
+
+新たに作成したデータベースに読者情報を格納するには、まず、稼働させるデータベースの種類を //Sympa// に教えておき、それからリストがデータベースにアクセスできるよう設定する必要があります。
+
+[[.:conf-parameters:part3#database_related|sympa.conf の関連するパラメータ]]でデータベースの置き場所を定義します。次のものです: ''db_type''、''db_name''、 ''db_host''、''db_user''、 ''db_passwd''。
+
+//Sympa// を Oracle データベースとインタフェースしているときは、
+
+  - ''db_name'' を SID にします。
+  - ''ORACLE_HOME'' 環境変数を [[.:conf-parameters:part3#db_env|sympa.conf の db_env パラメータ]]で設定しなければなりません。
+
+これで、すべてのリストでデータベースを使うよう設定ができました (ただし、''user_data_source'' リストパラメータを ''file'' か ''include'' に設定してある場合は別です)。
+
+こうして、//Sympa// はリストの利用者情報を、''subscribers'' ファイルではなく、データベースを使って取り出したり格納したりするようになります。なお、読者情報はシャットダウンのたびに ''subscribers.db.dump'' に書き出されます。これは、万一データベースがアクセス不能になった場合に、手動での復旧ができるようにするためです (''subscribers.db.dump'' の名前を ''subscribers'' に変え、''user_data_source'' パラメータを変更します)。
+
+====== ======
+----
+[[:manual:database]] の 2008/06/25 14:46 の版をもとに翻訳しました。もとの文書の更新に気づいた方は、[[http://www.sympa.org/manual:database?do=revisions|差分]]を参照して更新してください。
+
+翻訳作業については [[:ja:cour]] も参照してください。

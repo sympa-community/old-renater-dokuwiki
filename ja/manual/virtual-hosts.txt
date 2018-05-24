@@ -1,0 +1,75 @@
+<html><a name="virtual_host"/></html>
+======= × 仮想ホスト=======
+<note warning>
+This content was obsoleted.
+
+</note>
+
+Sympa は、単一のホストへの単一の Sympa のインストールで別々のメーリングリストサーバを運用できるよう設計されています。Sympa の仮想ホストは、ちょうど Apache の仮想ホストのようなものです。Sympa の仮想ホストの定義には、ロボット((本書でロボットという用語は、特定のメールアドレスに送られるメッセージを受け取って自動処理するソフトウェアのことを指します。))自体およびそのリストの電子メールアドレス、そして仮想 HTTP サーバのアドレスが含まれます。ロボットごとにアクセスできるリストの集合があり、それぞれのリストはただひとつのロボットに関連づけられます。
+
+設定パラメータのほとんどを、ロボットごとに再定義できます。ただし、Sympa のインストールに関するパラメータ (バイナリやスプールの場所、SMTP 機構、ウィルスチェックプラグイン、など) は別です。
+
+//Sympa// の文書と設定ファイルで定義する仮想ホストの名前には、仮想ホストのインターネットでのドメイン名を用います。
+
+なお、Sympa の仮想ホストにはある制限があります。別々の仮想ホストであっても、同じ名前 (ローカル部) を持つリストを 2 つ作成することはできないのです。
+
+<html><a name="how_to_create_a_virtual_host" /></html>
+======仮想ホストを作成するには======
+
+Sympa サーバを複数インストールする必要はありません。ただひとつの ''sympa.pl'' デーモンと、ひとつ以上の fastcgi サーバがあれば、すべての仮想ホストを運用できます。新たなドメインの定義を受け付けるよう、サーバの環境を設定するだけです。
+
+  * **DNS** に、新たなメール交換機 (MX レコード) の定義を設定しなければなりません。メッセージがサーバに届くようにするためです。また、新たなホスト名 (A レコード) か別名 (CNAME レコード) も必要です。新たにウェブサーバを定義するためです。
+  * **MTA** (sendmail, postfix, exim, ...) を、新たなロボットのドメイン宛てのメッセージが届いたら受け取るよう設定します。ロボットのメールエイリアスを追加します: 例 (Sendmail の場合):
+
+<code>
+    sympa@your.virtual.domain: "| /home/sympa/bin/queue sympa@your.virtual.domain"
+    listmaster@your.virtual.domain: "| /home/sympa/bin/queue listmaster@your.virtual.domain"
+    bounce+*@your.virtual.domain: "| /home/sympa/bin/bouncequeue sympa@your.virtual.domain"
+</code>
+
+  * **HTTPD サーバの仮想ホスト** を定義します。HTTPD サーバの共通セクションで定義した fastcgi サーバは、すべての仮想ホストで使えますから、仮想ホストごとに専用の fastcgi サーバを実行する必要はありません。例:
+
+<code>
+    FastCgiServer /home/sympa/bin/wwsympa.fcgi -processes 3 -idle-timeout 120
+    ……
+    <VirtualHost 195.215.92.16>
+      ServerAdmin webmaster@your.virtual.domain
+      DocumentRoot /var/www/your.virtual.domain
+      ServerName your.virtual.domain
+      <Location /sympa>
+        SetHandler fastcgi-script
+      </Location>
+      ScriptAlias /sympa /home/sympa/bin/wwsympa.fcgi
+      Alias /static-sympa /home/sympa/your.virtual.domain/static_content
+    </VirtualHost>
+</code>
+
+  * ディレクトリ ''/home/sympa/etc/your.virtual.domain/'' を作成します。ここに仮想ホストの設定が入ります。このディレクトリは ''sympa'' ユーザを所有者とし、このユーザで読み書きできなければなりません。
+  * 仮想ホストの設定ファイル ''/home/sympa/etc/your.virtual.domain/robot.conf'' を作成します。形式は ''sympa.conf'' のサブセットになっています (次節で説明します。''robot.conf'' のサンプルがあります)。
+  * ディレクトリ ''/home/sympa/list_data/your.virtual.domain/'' を作成します。ここに仮想ホストのメーリングリストのディレクトリが入ります。このディレクトリは ''sympa'' ユーザを所有者とし、このユーザで読み書きできなければなりません。
+
+<code>
+    # su sympa -c 'mkdir /home/sympa/list_data/your.virtual.domain'
+    # chmod 750 /home/sympa/list_data/your.virtual.domain
+</code>
+
+======robot.conf ======
+[[:manual:virtual-hosts#robot.conf]]
+
+<html><a name="virtual_host_customization"/></html>
+=====仮想ホストのカスタマイズ=====
+[[:manual:virtual-hosts#virtual_host_customization]]
+
+<html><a name="managing_multiple_virtual_hosts"/></html>
+
+======複数の仮想ホストを管理する======
+
+2 つ以上の仮想ホストを運用しているときは、この後、初期値のロボットのメーリングリストをすべて ''/home/sympa/list_data/my.domain.org/'' ディレクトリにある専用の仮想ホストに移してしまうとよいでしょう。このような構成にする利点としては、初期値の設定項目 (テンプレートや認可シナリオ) を引き継ぐことなく、仮想ホストごとに定義することが可能になる、ということがあります。
+
+このような仮想ホストを作成するには、''/home/sympa/list_data/my.domain.org/'' ディレクトリと ''/home/sympa/etc/my.domain.org/'' ディレクトリを作成し、 ''/home/sympa/etc/my.domain.org/robot.conf'' の ''host''、''http_host''、''wwsympa_url'' といったパラメータを初期値のロボット (''sympa.conf'' ファイルと ''wwsympa.conf'' ファイルで定義してある) と同じになるようにカスタマイズする、ということが必要です。
+
+====== ======
+----
+[[:manual:virtual-hosts]] の 2009/01/26 14:06 の版を元に翻訳しました。もとの文書の更新に気づいた方は、[[http://www.sympa.org/manual:virtual-hosts?do=revisions|差分]]を参照して更新してください。
+
+翻訳作業については [[:ja:cour]] も参照してください。

@@ -1,0 +1,4 @@
+===== Sympa photo gallery =====
+
+  * [[gallery:hackathon:20170401:index|Sympa's 20th birthday hackathon on 1st and 2nd of April 2017]]
+  * [[gallery:sympa:tee-shirts:index|Sympa's tee-shirts]]

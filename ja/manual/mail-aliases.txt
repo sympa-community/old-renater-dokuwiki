@@ -1,0 +1,137 @@
+<html><a name="mail_aliases"/></html>
+<html><a name="aliases"/></html>
+======= × メールエイリアス=======
+<note warning>
+This content was obsoleted.
+
+</note>
+
+''sympa.pl'' がメールコマンドとリスト宛てのメッセージをうけとるのには、メールエイリアスが必要です。こういったエイリアスの管理のしかたは使っている MTA (''sendmail''、''qmail''、''postfix''、''exim'') によって、またどこにエイリアスを置くかや仮想ドメインを管理するかどうかによって違ってきます。
+
+======SMRSH======
+
+''sendmail'' を使っているのなら、おそらくセキュアシェルの ''smrsh'' を使うように設定されていることでしょう。
+<code>
+# grep smrsh /etc/mail/sendmail.mc
+FEATURE(`smrsh', `/usr/sbin/smrsh')dnl
+</code>
+
+''smrsh'' の設定がされていると、専用の ''/etc/smrsh'' ディレクトリにコピーしてあるプログラムでないとメールエイリアスから呼び出すことはできません。したがって //Sympa// のバイナリを ''/etc/smrsh'' ディレクトリにインストールさせねばなりません。''configure'' で ''<nowiki>--</nowiki>with-bindir'' オプションを指定すればこれができます。
+  ./configure --with-bindir=/etc/smrsh
+
+<html><a name="robot_aliases"/></html>
+======ロボットのエイリアス======
+
+//Sympa// のような電子メールリスト管理システムは、2 段階の処理で構成されます:
+
+  * リストか //Sympa// 自体 (読者登録や登録解除などのコマンドの場合) に送られてきたメッセージを SMTP サーバが受け取る。SMTP サーバはメッセージを受け取ると、 ''queue'' プログラム (当パッケージに入っている) を実行してメッセージをスプールに入れる。
+  * ''sympa.pl'' デーモンが、システムの起動とともに待機していて、このスプールを走査している。新たなメッセージを検出すると、それを処理して必要な動作 (配送かコマンドの処理) をする。
+
+コマンド (読者登録、登録解除、利用案内の取り寄せなど) の処理をメーリングリストに向かうメッセージの処理と区別するために、管理要求用の特別なメールエイリアスを予約しておいて、//Sympa// がいつでもユーザの要求に応えられるようにしなければいけません。そういうわけで、''sendmail'' のエイリアスファイル (たいてい ''/etc/aliases'') に以下の行を加えます:
+
+  sympa: "| /home/sympa/bin/queue sympa@my.domain.org"
+  listmaster: "| /home/sympa/bin/queue listmaster@my.domain.org"
+  bounce+*: "| /home/sympa/bin/bouncequeue sympa@my.domain.org"
+  abuse-feedback-report: "| /home/sympa/bin/bouncequeue sympa@my.domain.org"
+  sympa-request: postmaster
+  sympa-owner: postmaster
+
+なお、//Sympa// を仮想ホストで運用しているときは、仮想ホストごとに ''sympa'' エイリアスのエントリをつくらなければなりません (「[[virtual-hosts|仮想ホスト]]」参照)。
+
+''sympa-request'' のエイリアス先はロボットの管理者のアドレス、つまり //Sympa// の面倒を見る人のアドレスでなければいけません (ここでは ''postmaster (at) renater.fr'' としています)。
+
+''sympa-owner'' は //Sympa// によるエラーメッセージの返送先です。
+
+bounce+* というエイリアスは、VERP (可変エンヴェロープ返送経路情報) が働いているときに、配送エラー収集専用のアドレスとなります。これは '' welcome_return_path unique''、'' remind_return_path unique''、 ''verp_rate'' のいずれかのパラメータが少なくともひとつのリストで空でないときに使います。
+
+''abuse-feedback-report''((Sympa 5.3 以降。)) というエイリアスは、ARF 形式 (Abuse Report Feedback) に準拠した自動フィードバックの処理に使います。これはエンドユーザがスパムへの苦情申し立て方法を指定するやりかたの試案で、主に AOL が使っています。
+
+''/etc/aliases'' ファイルを変えた後は、''newaliases'' を実行するのを忘れないようにしてください。
+
+なお、''listserv'' や ''majordomo'' のアドレスに慣れたユーザのために、''listserv'' 風のエイリアスも (''sympa'' 風のもののほかに) 加えるといいかもしれません。例えば:
+
+  listserv:          sympa
+  listserv-request:  sympa-request
+  majordomo:         sympa
+  listserv-owner:    sympa-owner
+
+<html><a name="list-aliases"/></html>
+<html><a name="list_aliases"/></html>
+======リストのエイリアス======
+
+リストができるごとに、最多で 6 個のエイリアス (最少 3 個) の作成が必要になります。エイリアスマネージャ (「[[#alias_manager|エイリアスマネージャ]]」参照) を運用するように設定してあれば、//Sympa// は以下のエイリアスを自動的に設置します。
+
+例えば、''myist'' メーリングリストを作成するなら、以下のエイリアスを設定しなければいけません:
+
+  mylist:               |/home/sympa/bin/queue mylist@my.domain.org
+  mylist-request:       |/home/sympa/bin/queue mylist-request@my.domain.org
+  mylist-editor:        |/home/sympa/bin/queue mylist-editor@my.domain.org
+  mylist-owner:         |/home/sympa/bin/bouncequeue mylist@my.domain.org
+  mylist-subscribe:     |/home/sympa/bin/queue mylist-subscribe@my.domain.org
+  mylist-unsubscribe:   |/home/sympa/bin/queue mylist-unsubscribe@my.domain.org
+
+''myist-request'' というアドレスは、''myist'' の管理に責任を持つ人 (オーナー) に向かうようになっていなければなりませんが、//Sympa// は ''myist-request'' 宛てのメッセージを ''/home/sympa/list_data/myist/config'' で定義されている ''myist'' のオーナーに転送してくれます。この仕様によって、リストのオーナーが代わってもエイリアスファイルを修正する必要がないというわけです。
+
+同様に、''myist-editor'' というアドレスは ''/home/sympa/list_data/myist/config'' で定義されているリストの吟味役 (もしいれば) に連絡を取るのに使えます。このアドレスは必須ではありません。
+
+''myist-owner'' というアドレスは、配送不能報告を受け取るアドレスです (なお、-owner という接尾辞はカスタマイズできます。 [[.:conf-parameters:part3#return_path_suffix]] 参照)。 ''bouncequeue'' プログラムは、こういうメッセージを ''queuebounce'' ディレクトリに入れます。そして、[[web-interface|WWSympa]] ではこれらをウェブ上で分析してアクセスできるようにします。
+
+''myist-subscribe'' というアドレスは、利用者がすぐに理解できるやりかたで読者登録ができるようにします。ですが気をつけてください。このやりかたで読者登録するのはとても簡単ですので、スパム送信者が読者登録してしまうこともありえます。
+
+''myist-unsubscribe'' というアドレスは、登録解除について同じことができるようにします。ところで、利用者が楽に登録解除できたほうが、リストの管理も楽になるのではないでしょうか。
+
+<html><a name="alias-manager"/></html>
+<html><a name="alias_manager"/></html>
+======エイリアスマネージャ======
+
+''alias_manager.pl'' スクリプトがエイリアスの管理をします。//WWSympa// がこれを実行し、新たなリストのエイリアスを設置したり閉鎖するリストのエイリアスを削除したりします。
+
+このスクリプトには次の引数を与えます:
+
+  - ''add'' | ''del''
+  - ''<''//リスト名//''>''
+  - ''<''//リストのドメイン//''>''
+
+例:
+  /home/sympa/bin/alias_manager.pl add myist renater.fr
+
+''/home/sympa/bin/alias_manager.pl'' は、(''sympa.conf'' の) ''sendmail_aliases'' 変数で定義してあるエイリアスファイル (初期値は ''/etc/mail/sympa_aliases'') に働きます。このエイリアスファイルを (Sendmail を使っているのなら) ''sendmail.mc'' で参照するようにしなければいけません:
+
+  define(`ALIAS_FILE', `/etc/aliases,/etc/mail/sympa_aliases')dnl
+
+なお、''sendmail'' では、''sympa_aliases'' と ''sympa_aliases.db'' の両方について、所有者とアクセス権に条件があります (後者は sendmail が ''newaliases'' で作成するもの)。要するに、この 2 つのファイルは、そこに至るすべてのパスが root ユーザの所有で root ユーザだけが書き込めるようなディレクトリに置かなければなりません。
+
+''/home/sympa/bin/alias_manager.pl'' は、エイリアスファイルを変更したときは、''newaliases'' コマンドを (''aliaswrapper'' 経由で) 実行します。
+
+メールサーバで仮想ドメインを運用しているときは、エイリアスマネージャが使うエイリアスの形式を変更することも必要でしょう。''list_aliases'' テンプレートをカスタマイズすればできます。リストエイリアスの生成にはこのテンプレートを使っています ([[list-definition#list_aliases.tt2]] 参照)。
+
+<html><a name="virtual-transport"/></html>
+なお、Postfix の ''virtual_transport'' のような MTA 機能を使えば、エイリアス管理は不要です((ここで説明されているやりかたはあまりお勧めしません))。その場合、''sendmail_aliases'' パラメータを ''none'' として、Sympa のエイリアス管理を無効にします((none は Sympa 5.3 以降で指定できます。))。
+
+<html><a name="ldap-aliases"/></html>
+LDAP を有効にする ''ldap_alias_manager.pl'' を Ludovic Marcotte が書き、後に British Telecom の Philippe Baumgart が拡張しています。このスクリプトは //Sympa// の配布物とともに配布されています。実際に使う LDAP パラメータに合わせて ''ldap_alias_manager.conf'' ファイルでのカスタマイズが必要です。
+
+<html><a name="virtual-domains"/></html>
+<html><a name="virtual_domains"/></html>
+======仮想ドメイン======
+
+''sendmail'' や ''postfix'' で仮想ドメインを使うときは、''/etc/aliases'' のエントリの右辺で ''myist@my.domain.org'' を参照することができません。仮想テーブルにはほかのエントリを定義する必要があります。あるドメインのためのただひとつのエントリを、正規表現で追加してもよいでしょう。
+
+Postfix では、''/etc/postfix/virtual.regexp'' ファイルを以下のように変更しなければなりません:
+
+  /^(.*)@my.domain.org$/ my.domain.org-$1
+
+''aliases'' ファイルには次のようなエントリが入るでしょう((仮想ドメインのロボットであっても、初期値のロボット (sympa.conf で定義されるもの) である場合は、エイリアスファイルに書き込まれるアドレスに ''my.domain.org-'' が付きません。これが不都合なら、エイリアステンプレートを修正してください。)):
+
+  my.domain.org-sympa:                                /home/sympa/bin/queue
+  sympa@my.domain.org  .....  my.domain.org-listA:    /home/sympa/bin/queue listA@my.domain.org
+
+Sendmail では、''/etc/mail/virtusertable'' に以下のようなエントリを加えます:
+
+  @my.domain.org my.domain.org-%1%3
+
+====== ======
+----
+[[:manual:mail-aliases]] の 2009/03/22 17:00 の版をもとに翻訳しました。もとの文書の更新に気づいた方は、[[http://www.sympa.org/:manual:mail-aliases?do=revisions|差分]]を参照して更新してください。
+
+翻訳作業については [[:ja:cour]] も参照してください。

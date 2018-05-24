@@ -1,0 +1,5 @@
+===== SVN activity as a video=====
+
+This video show the SVN logs, it's a view of Sympa project progression, starting january 2001 (when the project start using CVS) up to may 2010. 8-).
+
+{{flowplayer>:svn_sympa.flv 800,600 autoBuffering autoPlay scaling:"fit"}}

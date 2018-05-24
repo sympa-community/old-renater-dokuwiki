@@ -1,0 +1,30 @@
+====== Proposals for Sympa7 new logo ======
+
+Help us to choose a new logo for SYMPA7 !
+
+Vote for new logo on the poll below the proposals.
+
+<WRAP center round box 60%>
+|  ** Proposal 1**  |  **Proposal 2**  |
+|  {{:gallery:sympa:sympa7_logo:sympa1.png?170&nocache|}}  |  {{:gallery:sympa:sympa7_logo:sympa8.png?200&nocache|}}  |
+|  **Proposal 3**  |  **Proposal 4**  |
+|  {{:gallery:sympa:sympa7_logo:sympa5.png?200&nocache|}}  |  {{:gallery:sympa:sympa7_logo:sympa2.png?240&nocache|}}  |
+|  **Proposal 5**  |  **Proposal 6**  |
+|  {{:gallery:sympa:sympa7_logo:sympa3.png?200&nocache|}}  |  {{:gallery:sympa:sympa7_logo:sympa4.png?150&nocache|}}  |
+|  **Proposal 7**  |  **Proposal 8**  |
+|  {{:gallery:sympa:sympa7_logo:sympa9.png?200&nocache|}}  |  {{:gallery:sympa:sympa7_logo:sympa7.png?180&nocache|}}  |
+
+</WRAP>
+
+
+<poll [Sympa7 New Logo]>
+
+  * Proposal 1
+  * Proposal 2
+  * Proposal 3
+  * Proposal 4
+  * Proposal 5
+  * Proposal 6
+  * Proposal 7
+  * Proposal 8
+</poll>
