@@ -1,0 +1,146 @@
+======  List parameters: definition ======
+
+===== subject =====
+
+''subject'' //subject-of-the-list//
+
+This parameter indicates the subject of the list, which is sent in response to the ''LISTS'' mail command. The subject is a free form text limited to one line.
+
+===== visibility =====
+
+(Default value: ''conceal'')
+
+The ''visibility'' parameter is defined by an authorization scenario (see [[authorization-scenarios|Authorization scenarios]]).
+
+This parameter indicates whether the list should feature in the output generated in response to a ''LISTS'' command.
+
+  * ''visibility'' ''conceal'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/visibility.conceal|view]]) \\
+  * ''visibility'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/visibility.intranet|view]]) \\
+  * ''visibility'' ''noconceal'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/visibility.noconceal|view]]) \\
+  * ''visibility'' ''secret'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/visibility.secret|view]]) \\
+
+
+===== owner =====
+
+The ''config'' file contains one ''owner'' paragraph per owner. It concerns static owner definition. For dynamic definition, see [[parameters-definition#owner_include|owner_include]].
+
+Example:
+<code>
+  owner
+  email serge.aumont@renater.fr
+  gecos C.R.U.
+  info Tel: 02 99 76 45 34
+  reception nomail
+</code>
+
+The list owner is usually the person who has the authorization to send ''ADD'' and ''DELETE'' commands (see [[sympa-commands#owner_commands|Owner commands]]) on behalf of other users.
+
+When the [[parameters-privileges#subscribe|subscribe parameter]] specifies a restricted list, it is the owner who has the exclusive right to subscribe users, and it is therefore to the owner that ''SUBSCRIBE'' requests will be forwarded.
+
+There may be several owners of a single list; in this case, each owner is declared in a paragraph starting with the ''owner'' keyword.
+
+The ''owner'' directive is followed by one or several lines giving details regarding the owner's characteristics:
+
+  * ''email'' //address// \\  Owner's e-mail address;
+  * ''reception nomail'' \\ Optional attribute for an owner who does not wish to receive emails. Useful to define an owner with multiple email addresses: they are all recognized when Sympa receives mail, but thanks to ''reception nomail'', not all of these addresses need to receive administrative email from Sympa;
+  * ''visibility'' //conceal | noconceal// \\Define if the list owner should be listed on the list web page.
+  * ''gecos'' //data// \\ Public information about the owner;
+  * ''info'' //data// \\ Available since release 2.3. Private information about the owner;
+  * ''profile privileged | normal'' \\ Available since release 2.3.5. Profile of the owner. This is currently used to restrict access to some features of //WWSympa//, such as adding new owners to a list.
+
+
+===== owner_include =====
+
+The ''config'' file contains one ''owner_include'' paragraph per data inclusion file (see [[list-definition#data_inclusion_file|Data inclusion file]]. It concerns dynamic owner definition: inclusion of external data. For static owner definition and more information about owners see [[list-parameters#par-owner|par-owner]].
+
+Example:
+<code>
+  owner_include
+  source myfile
+  source_parameters a,b,c
+  reception nomail
+  profile normal
+</code>
+
+The ''owner_include'' directive is followed by one or several lines giving details regarding the owner(s) included characteristics:
+
+  * ''source myfile'' \\ This is an mandatory field: it indicates the data inclusion file ''myfile.incl''. This file can be a template. In this case, it will be interpreted with values given by subparameter ''source_parameter''. Note that the ''source'' parameter should NOT include the //.incl// file extension; the ''myfile.incl'' file should be located in the ''data_sources'' directory.
+  * ''source_parameters a,b,c'' \\ It contains an enumeration of the values that will be affected to the ''param'' array used in the template file (see [[list-definition#data_inclusion_file|Data inclusion file]]). This parameter is not mandatory.
+  * ''reception nomail'' \\ Optional attribute for owner(s) who does not wish to receive emails.
+  * ''visibility'' //conceal | noconceal// \\Define if the included owners should be listed on the list web page.
+  * ''profile privileged | normal'' \\ Profile of the owner(s).
+
+===== editor =====
+
+The ''config'' file contains one ''editor'' paragraph per moderator (or editor). It concerns static editor definition. For dynamic definition and more information about editors see [[parameters-definition#editor_include|editor_include]].
+
+Example:
+<code>
+  editor
+  email Pierre.Paul@myuniversity.edu
+  gecos Pierre paul (Computer center director)
+</code>
+
+Only the editor of a list is authorized to send messages to the list when the [[parameters-sending#send|send]] is set to either ''editor'', ''editorkey'', or ''editorkeyonly''. The ''editor'' parameter is also consulted in certain other cases (''privateoreditorkey'').
+
+The syntax of this directive is the same as that of the [[parameters-definition#owner|owner parameter]], even when several moderators are defined.
+
+===== editor_include =====
+
+The ''config'' file contains one ''editor_include'' paragraph per data inclusion file (see [[list-definition#data_inclusion_file|Data inclusion file]]). It concerns dynamic editor definition: inclusion of external data. For static editor definition and more information about moderation see [[parameters-definition#editor|editor]].
+
+Example:
+<code>
+  editor_include
+  reception mail
+  source myfile
+  source_parameters a,b,c
+</code>
+
+The syntax of this directive is the same as that of the [[parameters-definition#owner_include|owner_include'' parameter]], even when several moderators are defined.
+
+===== topics =====
+
+''topics'' computing/internet,education/university
+
+This parameter allows the classification of lists. You may define multiple topics as well as hierarchical ones. //WWSympa//'s list of public lists uses this parameter. This parameter is different from the ''msg_topic'' parameter used to tag emails.
+
+===== host =====
+
+(Default value: ''domain robot parameter'')
+
+''host'' //fully-qualified-domain-name//
+
+Domain name of the list, default is the robot domain name set in the related ''robot.conf'' file or in file ''/etc/sympa.conf''.
+
+===== lang =====
+
+(Default value: ''lang robot parameter'')
+
+Example:
+
+<code>lang en_US</code>
+
+This parameter defines the language used for the list. It is used to initialize a user's language preference; Sympa command reports are extracted from the associated message catalog.
+
+See [[customizing#internationalization|Internationalization]] for available languages.
+
+===== family_name =====
+
+This parameter indicates the name of the family that the list belongs to.
+
+Example:
+
+<code>family_name my_family</code>
+
+===== latest_instantiation =====
+
+This parameter indicates the date of the latest instantiation.
+
+Example:
+<code>
+  latest_instantiation
+  email joe.bar@renater.fr
+  date 27 jui 2004 at 09:04:38
+  date_epoch 1090911878
+</code>

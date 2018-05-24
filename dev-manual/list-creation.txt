@@ -1,0 +1,273 @@
+====== List creation, editing and removal ======
+
+The list creation can be done in two ways, according to listmaster needs:
+
+  * family instanciation, to create and manage a large number of related lists. In this case, lists are linked to their family all along their life (moreover, you can let Sympa automatically create lists when needed. See [[list-families#automatic_list_creation|Automatic list creation]]).
+  * command line creation of individual list with ''sympa.pl'' or on the web interface according to privileges defined by listmasters. In this case, lists are free from their creation model.
+
+Management of mailing lists by list owners is usually done through the web interface: when a list is created, whatever its status (''pending'' or ''open''), the owners can use //WWSympa// administration features to modify list parameters, to edit the welcome message, and so on.
+
+//WWSympa// keeps logs of the creation and all modifications to a list as part of the list's ''config'' file (old configuration files are archived). A complete installation requires some careful planning, although default values should be acceptable for most sites.
+
+====== List creation ======
+
+Mailing lists can have many different uses. Sympa offers a wide choice of parameters to adapt a list behavior to different situations. Users might have difficulty selecting all the correct parameters to make the list configuration, so instead of selecting each parameters, list configuration is made with a list profile. This is an almost complete list configuration, but with a number of unspecified fields (such as owner email) to be replaced by Sympa at list creation time. It is easy to create new list templates by modifying existing ones. \\ //Please note that contributions to the distribution are welcome to complete the set of existing templates...// ;-)
+
+=====  Data for list creation =====
+
+To create a list, some data concerning list parameters are required:
+
+  * **listname **: name of the list;
+  * **subject**: subject of the list (a short description);
+  * **owner(s)**: by static definition and/or dynamic definition. In case of static definition, the parameter ''owner'' and its subparameter ''email'' are required. For dynamic definition, the parameter ''owner_include'' and its subparameter ''source'' are required, indicating source file of data inclusion;
+  * **list creation template**: the typical list profile.
+
+in addition to these required data, provided values are assigned to vars being in the list creation template. Then the result is the list configuration file:
+
+On the web interface, these data are given by the list creator in the web form. On command line, these data are given through an XML file.
+
+
+
+
+===== XML file format =====
+
+The XML file provides information on:
+
+  * the list name;
+  * values to assign vars in the list creation template;
+  * the list description in order to be written in the list file information;
+  * the name of the list creation template (only for list creation on command line with ''sympa.pl''; in a family context, the template is specified by the family name).
+
+ Here is an example of XML document that you can map with the following example of list creation template:
+  
+<code>
+  <?xml version="1.0" ?>
+  <list>
+  	<listname>example</listname>
+    	<type>my_profile</type>
+    	<subject>a list example</subject>
+    	<description/>
+    	<status>open</status>
+    	<shared_edit>editor</shared_edit>
+      	<shared_read>private</shared_read>
+  	<language>fr</language>
+  	<owner multiple="1">
+  	   <email>serge.aumont@renater.fr</email>
+  	   <gecos>C.R.U.</gecos>
+  	</owner>
+  	<owner multiple="1">
+  	   <email>olivier.salaun@renater.fr</email>
+  	</owner>
+  	<owner_include multiple="1">
+  	   <source>my_file</source>
+  	</owner_include>
+  	<moderator>
+           <email>user@domain.org</email>
+        </moderator>
+        <topic>Computing</topic>
+        <sql>
+  	   <type>Oracle</type>
+  	   <host>sqlserv.admin.univ-x.fr</host>
+  	   <port>1521</port>
+           <user>stdutilisateur</user>
+  	   <pwd>monsecret</pwd>
+  	   <name>les_etudiants</name>
+           <env>ORACLE_HOME=/[oracle_path]</env>
+  	   <query>SELECT DISTINCT email FROM etudiant</query>
+  	</sql>
+  </list>
+</code>
+Then edit List Creation Template - example: /[sympahome]/bin/etc/create_list_templates/discussion_list/config.tt2
+<code>
+  subject [% subject %]
+
+  status [% status %]
+
+  [% IF topic %]
+  topics [% topic %]
+
+  [% END %]
+  visibility noconceal
+
+  send privateoreditorkey
+
+  Web_archive
+    access public
+
+  subscribe open_notify
+
+  shared_doc
+    d_edit [% shared_edit %]
+    d_read [% shared_read %]
+
+  lang [% language %]
+
+  [% FOREACH o = owner %]
+  owner
+    email [% o.email %]
+    profile privileged
+    [% IF o.gecos %]
+    gecos [% o.gecos %]
+    [% END %]
+
+  [% END %]
+  [% IF moderator %]
+     [% FOREACH m = moderator %]
+  editor
+    email [% m.email %]
+
+     [% END %]
+  [% END %]
+
+  [% IF sql %]
+  include_sql_query
+    db_type [% sql.type %]
+    db_port [% sql.port %]
+    host [% sql.host %]
+    user [% sql.user %]
+    passwd [% sql.pwd %]
+    db_name [% sql.name %]
+    db_env [% sql.env %]
+    sql_query [% sql.query %]
+
+  [% END %]
+ 
+   default_user_options
+    reception urlize|mail|digest
+
+  ttl 360
+</code>
+
+The XML file format should comply with the following rules:
+
+  * The root element is ''<list>''.
+  * One XML element is mandatory: ''<listname>'' contains the name of the list. That does not exclude mandatory parameters for list creation ("listname, subject,owner.email and/or owner_include.source").
+  * ''<type>'': this element contains the name of template list creation, it is used for list creation on command line with ''sympa.pl''. In a family context, this element is no used.
+  * ''<description>'': the text contained in this element is written in list ''info'' file (it can be a CDATA section).
+  * For other elements, the name is the name of the var to assign in the list creation template.
+  * Each element concerning multiple parameters must have the ''multiple'' attribute set to ''1'', example: ''<nowiki><owner multiple="1"></nowiki>''
+  * For composed and multiple parameters, sub-elements are used. Example for the ''owner'' parameter: ''<email>'' and ''<gecos>'' elements are contained in the ''<owner>'' element. An element can only have homogeneous content.
+  * A list requires at least one owner, defined in the XML input file with one of the following elements:
+    * ''<nowiki><owner multiple="1"> <email> ... </email> </owner></nowiki>''
+    * ''<nowiki><owner_include multiple="1"> <source> ... </source> </owner_include></nowiki>''
+
+======  List families ======
+
+See chapter [[list-families|Lists families]].
+
+
+====== List creation on command line with sympa.pl ======
+
+This way to create lists is independent of family.
+
+Here is a sample command to create one list:.
+
+<code>sympa.pl --create_list --robot my.domain.org --input_file /path/to/my_file.xml</code>
+
+The list is created under the ''my_robot'' robot and the list is described in the file ''my_file.xml''. The XML file is described before, see [[list-creation#xml_file_format|XML file format]].
+
+By default, the status of the list created is ''open''.
+
+==== Typical list profile (list template creation) ====
+
+The list creator has to choose a profile for the list and put its name in the XML element ''<type>''.
+
+List profiles are stored in ''/home/sympa/etc/create_list_templates'' or in ''/home/sympa/bin/etc/create_list_templates'' (default of distrib).
+
+You might want to hide or modify profiles (not useful, or dangerous for your site). If a profile exists both in the local site directory ''/home/sympa/etc/create_list_templates'' and in the ''/home/sympa/bin/etc/create_list_templates'' directory, then the local profile will be used by //WWSympa//.
+
+====== Creating and editing mailing lists using the Web ======
+
+The management of mailing lists is based on a strict definition of privileges which pertain respectively to the listmaster, to the main list owner, and to basic list owners. The goal is to allow each listmaster to define who can create lists, and which parameters may be set by owners.
+
+=====  List creation on the web interface =====
+
+Listmasters are responsible for validating new mailing lists and, depending on the configuration chosen, might be the only ones who can fill out the create list form.The listmaster is defined in ''sympa.conf'' and others are defined at the virtual host level. By default, any authenticated user can request a list creation, but newly created lists are then validated by the listmaster.
+
+The list rejection message and list creation notification message are both templates you can customize (''list_rejected.tt2'' and ''list_created.tt2'').
+
+
+=====  Who can create lists on the web interface =====
+
+This is defined by the [[conf-parameters/part1#create_list|create_list]] ''sympa.conf'' parameter. This parameter refers to a ''create_list'' authorization scenario. It will determine whether the //create list// button is displayed and whether list creation requires a listmaster confirmation.
+
+The authorization scenario can accept any condition concerning the [sender] (i.e. //WWSympa// user), and it returns ''reject'', ''do_it'' or ''listmaster'' as an action.
+
+Only in cases where a user is authorized by the ''create_list'' authorization scenario will the ''create'' button be available in the main menu. If the scenario returns ''do_it'', the list will be created and installed. If the scenario returns ''listmaster'', the user is allowed to create a list, but the list is created with the ''pending'' status, which means that only the list owner may view or use it. The listmaster will need to open the list of pending lists using the ''pending list'' button in the ''server admin'' menu in order to install or refuse a pending list.
+
+
+=====  Typical list profile and web interface =====
+
+As on command line creation, the list creator has to choose a list profile and to fill in the owner's email and the list subject together with a short description. But in this case, you do not need any XML file. Concerning these typical list profiles, they are described before, see [[list-creation#typical_list_profile_list_template_creation|Typical list profile (list template creation)]]. You can check available profiles. On the web interface, another way to control publicly available profiles is to edit the ''create_list.conf'' file (the default for this file is in the ''/home/sympa/bin/etc'' directory, and you may create your own customized version in ''/home/sympa/etc''). This file controls which of the available list templates are to be displayed. Example:
+<code>
+  ## This sample hides the public_anonymous create_list template
+  public_anonymous hidden
+  defaults read
+</code>
+
+===== List editing =====
+
+For each parameter, you may specify (through the ''/home/sympa/etc/edit_list.conf'' configuration file) who has the right to edit the parameter concerned; the default ''/home/sympa/bin/etc/edit_list.conf'' is reasonably safe.
+
+Each line is a set of 3 field.
+
+<code>
+  <Parameter> <Population> <Privilege>
+  <Population>: <listmaster|privileged_owner|owner>
+  <Privilege>: <write|read|hidden>
+</code>
+
+**Parameter** can be any list config parameter or the name of a template (thus controlling the edition of the template through the //customize// web admin feature. You can refer to a subentry of a structured list parameter using the '.' as a separator (examples: **owner.email** or **web_archive.quota**). **default** is a reserved parameter name that means //any other parameter//.
+
+There is no hierarchical relationship between populations in this configuration file. You need to explicitely list populations.
+
+For example, ''listmaster'' will not match rules refering to ''owner'' or ''privileged_owner''.
+
+Examples:
+<code>
+  	# only listmaster can edit user_data_source, priority, ...
+  	user_data_source listmaster write
+
+  	priority 	owner,privileged_owner 		read
+  	priority 	listmaster 			write
+
+  	# only privileged owner can modify  editor parameter, send, ...
+  	editor privileged_owner write
+
+  	send 		owner 				read
+  	send 		privileged_owner,listmaster 	write
+
+  	# other parameters can be changed by simple owners
+  	default 	owner 				write
+</code>
+
+Privileged owners are defined in the list's ''config'' file as follows:
+<code>
+  	owner
+  	email owners.email@foo.bar
+  	profile privileged
+</code>
+
+The following rules are hard coded in //WWSympa//:
+
+  * Only the listmaster can edit the ''profile privileged'' owner attribute.
+  * Owners can edit their own attributes (except profile and email).
+  * The person creating a new list becomes its privileged owner.
+  * Privileged owners can edit any gecos/reception/info attribute of any owner.
+  * Privileged owners can edit owners' email addresses (but not privileged owners' email addresses).
+
+Sympa aims at defining two levels of trust for owners (some being entitled simply to edit secondary parameters such as ''custom_subject'', others having the right to manage more important parameters), while leaving control of crucial parameters (such as the list of privileged owners and ''user_data_sources'') in the hands of the listmaster. Consequently, privileged owners can change owners' emails, but they cannot grant the responsibility of list management to others without referring to the listmaster.
+
+Concerning list editing in a family context, see [[list-families#editing_list_parameters_in_a_family_context|editing list parameters in a family context]].
+
+
+
+====== Removing a list ======
+
+You can remove (close) a list either from the command line or by using the web interface.
+
+''sympa.pl'' provides an option to remove a mailing list, see the example below:
+
+<code>sympa.pl --close_list=mylist@mydomain</code>
+
+Privileged owners can remove a mailing list through the list administration part of the web interface. Removing the mailing list consists in removing its subscribers from the database and setting its status to //closed//. Once removed, the list can still be restored by the listmaster; list members are saved in a ''subscribers.closed.dump'' file.

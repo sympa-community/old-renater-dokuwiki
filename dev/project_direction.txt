@@ -1,0 +1,38 @@
+====== Roadmap ======
+
+Here are the current orientations and deadlines for Sympa.
+
+===== Sympa 6.2 =====
+
+6.2 is currently in production on the RENATER servers.
+
+Beta is over and stable release will occur once the internationalization is finished.
+
+===== Sympa 7.0 =====
+
+Sympa 7.0 will be the result of a code reorganization.
+
+This code reorganization will lead to a recentering of Sympa as a Middleware. All functionnalities will be available through all interfaces:
+
+  * command line interface
+  * mail interface
+  * web interface
+  * SOAP interface
+  * REST interface
+
+In additions, some RFC will be implemented: 
+
+  * [[https://tools.ietf.org/html/rfc6729|RFC 6729]] implementation
+  * [[https://tools.ietf.org/html/rfc6783RFC 6783]] implementation
+
+Work on the code is already started and will be over by 3rd quarter of 2016. Relelase is scheduled in February 2016.
+
+===== Sympa 7.1 =====
+
+Sympa 7.1 will introduce several features:
+
+  * SaaS capabilities
+  * Configuration homogeneization
+
+And more. Beta is planned in October 2016. Stable release is scheduled in February 2017.
+

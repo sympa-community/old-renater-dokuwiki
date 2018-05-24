@@ -1,0 +1,192 @@
+======  Installing Sympa  ======
+
+Most pieces of Sympa are written in Perl. It also includes a few dedicated programs written in C.
+
+======  Obtaining Sympa, related links ======
+
+The Sympa distribution is available from [[http://www.sympa.org|http://www.sympa.org]]. All important resources are available there:
+
+  * sources;
+  * release notes;
+  * ''.rpm'' and ''.deb'' packages for Linux;
+  * mailing list about Sympa (see [[presentation#mailing_lists_and_support|Mailing lists and support]]);
+  * contributions;
+  * ...
+
+======  Prerequisites ======
+
+Sympa installation and configuration are relatively easy tasks for experienced UNIX users who have already installed Perl packages.
+
+Note that most of the installation time will involve putting in place the prerequisites, if they are not already on the system. No more than a handful of ancillary tools are needed, and on recent UNIX systems their installation is normally very straightforward. We strongly advise you to perform installation steps and checks in the order listed below; these steps will be explained in detail in later sections.
+
+  * installing a RDBMS (Oracle, MySQL(version 4.1 minimum), SQLite, Sybase or PostgreSQL) and creating Sympa's Database. This is required for using the web interface for Sympa. Please refer to ([[database|Sympa and its database]]).
+  * installing an MTA (Message Transfer Agent): sendmail, postfix, qmail or exim
+  * installing a web server (Apache being the most commonly used)
+  * installing [[http://xmlsoft.org/|libxml 2]], required by the LibXML Perl module;
+  * installing CPAN [[http://www.perl.com/CPAN|CPAN (Comprehensive Perl Archive Network)]] modules;
+  * creation of a dedicated UNIX user.
+
+
+=====  System requirements =====
+
+You should have a UNIX system that is more or less recent in order to be able to use Sympa. In particular, it is necessary that your system have an ANSI C compiler (in other words, your compiler should support prototypes).
+
+Sympa has been installed and tested on the following systems, therefore you should not have any special problems:
+
+  * Linux (various distributions);
+  * FreeBSD 2.2.x and 3.x;
+  * NetBSD;
+  * Digital UNIX 4.x;
+  * Solaris 2.5 and 2.6;
+  * AIX 4.x;
+  * HP-UX 10.20.
+
+For remarks regarding problems specific to your OS, please refer to the [[:faq|FAQ]].
+
+Finally, most UNIX systems are now supplied with an ANSI C compiler; if this is not the case, you can install the ''gcc'' compiler, which you will find on the nearest GNU site, for example [[ftp://ftp.oleane.net/pub/mirrors/gnu/|in France]].
+
+To complete the installation, you should make sure that you have a sufficiently recent release of the ''sendmail'' MTA, i.e. release [[ftp://ftp.oleane.net/pub/mirrors/sendmail-ucb/|8.9.x]] or a more recent release. You may also use ''postfix'' or ''qmail''.
+
+===== Installing Perl and CPAN modules =====
+
+To be able to use Sympa you must have release 5.8 or later of the Perl language, as well as several CPAN modules.
+
+At ''make'' time, the ''check_perl_modules.pl'' script is run to check for installed versions of required Perl and CPAN modules. If a CPAN module is missing or out of date, this script will install it for you.
+
+You can also download and install CPAN modules yourself. You will find a current release of the Perl interpreter in the nearest CPAN archive. If you do not know where to find a nearby site, use the [[http://www.perl.com/CPAN/src/latest.tar.gz|CPAN multiplexer]]; it will find one for you.
+
+
+
+=====  Required CPAN modules =====
+
+The following CPAN modules required by Sympa are not included in the standard Perl distribution. At ''make'' time, Sympa will prompt you for missing Perl modules and will attempt to install the missing ones automatically; this operation requires root privileges.
+
+Because Sympa features evolve from one release to another, the following list of modules might not be up to date:
+
+  * ''CGI'';
+  * ''CipherSaber'';
+  * ''DB_File'';
+  * ''DBD'';
+  * ''DBI'';
+  * ''Digest-MD5'';
+  * ''Encode'';
+  * ''FCGI'';
+  * ''File-Spec'';
+  * ''IO-stringy'';
+  * ''IO-Socket-SSL'';
+  * ''HTML-StripScripts-Parser'';
+  * ''libintl-perl'';
+  * ''libwww-perl'';
+  * ''MailTools'';
+  * ''MHonArc'';
+  * ''MIME-Charset'';
+  * ''MIME-EncWords'';
+  * ''MIME-tools'';
+  * ''MIME-Base64'';
+  * ''Regexp-Common'';
+  * ''Template-Toolkit'';
+  * ''XML-LibXML''.
+
+Since release 2, Sympa requires an RDBMS to work properly. It stores user subscriptions and preferences in a database. Sympa is also able to extract user data from an external database. These features require that you install database-related Perl libraries. This includes the generic Database interface (DBI) and a Database Driver for your RDBMS (DBD):
+
+  * ''DBD'' (DataBase Driver) related to your RDBMS (e.g. Msql-Mysql-modules for MySQL);
+  * If you plan to interface Sympa with an LDAP directory to build dynamical mailing lists, you need to install Perl LDAP libraries:\\ ''Net::LDAP'' (perlldap);
+  * If you want to Download Zip files of list's Archives, you'll need to install the Perl Module for Archive Management:\\ ''Archive::Zip''.
+  * ''SOAP-Lite'' is required if you are running the Sympa SOAP server.
+  * ''File-NFSLock''' is required to have NFS locking support.
+
+=====  Creating a UNIX user =====
+
+The final step prior to installing Sympa: create a UNIX user (and if possible a group) specific to the program. Most of the installation will be carried out with this account. We suggest that you use the name ''sympa'' for both user and group.
+
+Numerous files will be located in the Sympa user's login directory. Throughout the remainder of this documentation we shall refer to this login directory as ''/home/sympa''.
+
+
+===== Creating the database =====
+
+See [[database#creating_a_sympa_database]]
+
+
+======  Compilation and installation  ======
+
+Before using Sympa, you must customize the sources in order to specify a small number of parameters specific to your installation.
+
+First, extract the sources from the archive file, for example in the ''~sympa/src/'' directory: the archive will create a directory named ''sympa-5.3a.10/'' where all the useful files and directories will be located. In particular, you will have a ''doc/'' directory containing this documentation in various formats; a ''sample/'' directory containing a few examples of configuration files; a ''locale/'' directory where multilingual messages are stored; and, of course, the ''src/'' directory for the mail robot and the ''wwsympa'' directory for the web interface.
+
+Example:
+
+  # su -c "$ gzip -dc sympa-5.3a.10.tar.gz | tar xf " 
+
+Now you can run the installation process:
+
+  $ ./configure ; make ;make install
+
+''configure'' will build the ''Makefile''; it recognizes the following command-line arguments:
+
+  * ''- - prefix=PREFIX'', the Sympa home directory (default ''/home/sympa/'');
+  * ''- - with-bindir=DIR'', user executables in DIR (default ''/home/sympa/bin/'') \\ ''queue'' and ''bouncequeue'' programs will be installed in this directory. If sendmail is configured to use smrsh (check the mailer prog definition in your sendmail.cf), this should point to ''/etc/smrsh''. This is probably the case if you are using Linux Red Hat;
+  * ''- - with-sbindir=DIR'', system admin executables in DIR (default ''/home/sympa/bin'');
+  * ''- - with-libexecdir=DIR'', program executables in DIR (default ''/home/sympa/bin'');
+  * ''- - with-cgidir=DIR'', CGI programs in DIR (default ''/home/sympa/bin'');
+  * ''- - with-datadir=DIR'', default configuration data in DIR (default ''/home/sympa/bin/etc'');
+  * ''- - with-confdir=DIR'', Sympa main configuration files in DIR (default ''/etc''); ''sympa.conf'' and ''wwsympa.conf'' will be installed there;
+  * ''- - with-expldir=DIR'', modifiable data in DIR (default ''/home/sympa/expl/'');
+  * ''- - with-libdir=DIR'', code libraries in DIR (default ''/home/sympa/bin/'');
+  * ''- - with-mandir=DIR'', man documentation in DIR (default ''/usr/local/man/'');
+  * ''- - with-docdir=DIR'', man files in DIR (default ''/home/sympa/doc/'');
+  * ''- - with-initdir=DIR'', install System V init script in DIR (default ''/etc/rc.d/init.d'');
+  * ''- - with-lockdir=DIR'', create lock files in DIR (default ''/var/lock/subsys'');
+  * ''- - with-piddir=DIR'', create .pid files in DIR (default ''/home/sympa/'');
+  * ''- - with-etcdir=DIR'', config directories populated by the user are in DIR (default ''/home/sympa/etc'');
+  * ''- - with-localedir=DIR'', create language files in DIR (default ''/home/sympa/locale'');
+  * ''- - with-scriptdir=DIR'', create script files in DIR (default ''/home/sympa/script'');
+  * ''- - with-sampledir=DIR'', create sample files in DIR (default ''/home/sympa/sample'');
+  * ''- - with-spooldir=DIR'', create directory in DIR (default ''/home/sympa/spool'');
+  * ''- - with-perl=FULLPATH'', set full path to Perl interpreter (default ''/usr/bin/perl'');
+  * ''- - with-openssl=FULLPATH'', set path to OpenSSL (default ''/usr/local/ssl/bin/openssl'');
+  * ''- - with-user=LOGIN'', set sympa user name (default ''sympa''); Sympa daemons are running under this UID;
+  * ''- - with-group=LOGIN'', set sympa group name (default ''sympa''); Sympa daemons are running under this UID;
+  * ''- - with-sendmail_aliases=ALIASFILE'', set aliases file to be used by Sympa (default ''/etc/mail/sympa_aliases''). Set to ''none'' to disable alias management (you can overwrite this value at runtime giving its value in ''sympa.conf'');
+  * ''- - with-virtual_aliases=ALIASFILE'', set postfix virtual file to be used by Sympa (default ''/etc/mail/sympa_virtual''); this is used by the ''alias_manager.pl'' script;
+  * ''- - with-newaliases=FULLPATH'', set path to sendmail newaliases command (default ''/usr/bin/newaliases'');
+  * ''- - with-newaliases_arg=ARGS'', set arguments to newaliases command (default ''NONE''); this is used by the ''postfix_manager.pl'' script;
+  * ''- - with-postmap=FULLPATH'', set path to postfix postmap command (default ''/usr/sbin/postmap'');
+  * ''- - with-postmap_arg=ARGS'', set arguments to postfix postmap command (default ''NONE'');
+  * ''- - enable-secure'', install //WWSympa// to be run in a secure mode, without suidperl (default disabled).
+
+''make'' will build a few binaries (''queue'', ''bouncequeue'' and ''aliaswrapper'') and help you install required CPAN modules.
+
+''make install'' does the installation job. It recognizes the following option:
+
+  * DESTDIR, can be set in the main Makefile to install sympa in DESTDIR/DIR (instead of DIR). This is useful for building RPM and DEB packages.
+
+Since version 3.3 of Sympa, colors are ''sympa.conf'' parameters (see [[conf-parameters:part1#color_parameters|color parameters]]).
+
+If everything goes smoothly, the ''~sympa/bin/'' directory will contain various Perl programs as well as the ''queue'' binary. You will remark that this binary has the //set-uid-on-exec// bit set (owner is the ''sympa'' user): this is deliberate, and necessary to have Sympa run correctly.
+
+
+=====  Choosing directory locations =====
+
+All directories are defined in the ''/etc/sympa.conf'' file, which is read by Sympa at runtime. If no ''sympa.conf'' file was found during installation, a sample one will be created. For the default organization of directories, please refer to [[organization#organization|Organization]].
+
+It would, of course, be possible to disperse files and directories to a number of different locations. However, we recommend storing all the directories and files in the ''sympa'' user's login directory.
+
+These directories must be created manually. You can use restrictive authorizations if you like, since only programs running with the ''sympa'' account will need to access them.
+
+======  Robot aliases ======
+
+See [[mail-aliases#robot_aliases|Robot aliases]].
+
+
+====== Web setup ======
+ See [[web-interface#web_server_setup|Web server setup]]
+
+======  Logs ======
+
+Sympa keeps a trace of each of its procedures in its log file. However, this requires configuration of the ''syslogd'' daemon. By default Sympa will use the ''local1'' facility (''syslog'' parameter in ''sympa.conf''). //WWSympa//'s login behavior is defined by the ''log_facility'' parameter in ''wwsympa.conf'' (by default the same facility as Sympa). \\  To this end, a line must be added in the ''syslogd'' configuration file (''/etc/syslog.conf''). For example:
+
+  local1.*       /var/log/sympa
+
+Then reload ''syslogd''.
+
+Depending on your platform, your syslog daemon may use either a UDP or a UNIX socket. Sympa's default is to use a UNIX socket; you may change this behavior by editing ''sympa.conf'''s [[conf-parameters/part2#par-log-socket-type|''log_socket_type'' parameter]]. You can test log feature by using ''testlogs.pl''.

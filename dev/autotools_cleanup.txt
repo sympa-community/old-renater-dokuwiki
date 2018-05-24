@@ -1,0 +1,112 @@
+====== Autotools cleanup ======
+
+This work has been initiated by Guillaume Rousse (INRIA), sympa packager for Mandriva. This page should help to coordinate between Guillaume and Sympa developers. This page should also be helpful to validate changes, order changes by priority.
+
+The related SVN branch : [[https://svn.renater.fr/sympa/branches/sympa-autotools-cleanup]]
+
+===== Documentation =====
+
+  * [[http://www.lrde.epita.fr/~adl/autotools.html]]
+
+===== List of problems =====
+
+  * the result is not FHS compatible (/home is not a software installation prefix)
+  * the configure scripts ignore standard directories switches (--bindir,--datadir, etc...) and duplicates them as non-standard switches instead (--with-bindir, --with-datadir, etc...)
+  * the configure scripts ask for variables, such as openssl location, which are absolutly useless for installation itself
+  * the 'install' makefile target doesn't support DESTDIR= option during installation
+  * the 'install' makefile target is not usable by a normal user, due to the usage of chown/chgrp commands
+  * checks are mixed between the './configure' and 'make' steps (perl modules)
+  * distributed archive contains generated files (man pages, i86 executables, autoconf cache files, etc...)
+
+===== Concerns for the developers =====
+
+  * make the scripts more maintainable. Currently all Makefile include lots of duplicate variable definitions that we'd like to get rid of, ie define them once only.
+  * make it easier for contributors/packagers to understand Sympa installation process. This is the main advantage of doing things the "straight" way
+  * keep things working. Over time, the installation scripts have become a spaghetti plate, however it does the installation job and we need to validate any changes before committing changes ! 
+
+===== Ordering tasks =====
+
+==== High priority ====
+
+===== Task : dropping support for non-installation related tasks  =====
+
+  * drop package building targets
+  * drop usage-time targets, to be integrated into sympa wizard
+
+===== Task : switching to automake-driven build process =====
+
+Warning: installation won't be functional until completion of this stage.
+
+  * <del>conversion of all static Makefile in src and doc trees to Makefile.ams</del> <hi green>DONE</hi>
+  * removal of all targets related to execution flow (all, install, makedoc, makeman,...)
+  * removal of all targets related to directories installation
+  * definition of SUBDIRS variables to have automake handle execution flow
+  * definition of automake primaries
+  * aliasing of current sympa target directories variables for compatibility
+  * definition of EXTRA_DIST and CLEANFILES variable to ensure make clean and make dist will work as expected
+  * handling of po subdirectory
+
+
+==== Low priority ====
+
+===== Task : Autoconf cleanup =====
+
+  * <del>rename configure.in to configure.ac</del> <hi green>DONE</hi>
+  * <del>define software version inside configure.ac directly</del> <hi green>DONE</hi>
+  * <del>use current AC_INIT and AC_OUTPUT syntax</del> <hi green>DONE</hi>
+  * <del>define autoconf 2.59 as minimal version</del> <hi green>DONE</hi>
+  * <del>wrap long lines</del> <hi green>DONE</hi>
+  * <del>use AC_HELP_STRING for formatting options help output</del> <hi green>DONE</hi>
+  * <del>make all binaries tests use the same logic, meaning no default value, and only look in PATH if no value given by user</del> <hi green>DONE</hi>
+  * <del>don't call AC_SUBST for variables set through AC_PATH_PROG (done implicitely)</del> <hi green>DONE</hi>
+  * don't put explicit substitutions targets in Makefile.am, automake does it automatically
+  * <del>removal of AM_MAINTAINER_MODE in configure.ac (it prevent automatic makefile rebuild/configure re-invocation)</del><hi green>DONE</hi>
+
+===== Task : usage of a config.h headers rather than command line flags to pass C symbols for building binaries =====
+
+GR : That's not really needed, it's just cosmetic, and help having shorter
+compilation commands:\\
+gcc -DHAVE_CONFIG=1\\
+instead of\\
+gcc -DVERSION=foo -DNAME=bar -DPOSTMAP_ARGS=baz...,
+
+Feel free to ignore (or postpone).
+
+===== Task : using fewer target directories =====
+
+GR : Original configure script defines a lots of different subdirectories with similar content type, whereas most software usually just define directories for:
+  * configuration ($prefix/etc/sympa by default)
+  * non-variable content ($prefix/share/sympa by default)
+  * variable content ($prefix/var/lib/sympa by default)
+  * documentation ($prefix/share/doc/sympa by default) and then install content relatively to those top-level directories. 
+
+OS : We had this change in mind, ie gathering all perl modules in a lib/ directory, all daemons in sbin/, etc. However I'd consider this a second time work, after all the other cleaning and simplification has been done.
+
+===== Discussing issues =====
+
+===== Issue : Prefix change =====
+
+  * drop non-standard /home/sympa prefix
+<hi orange>This prefix has been used for 10 years now, therefore it's not so simple to change it because it would break existing installations during upgrades. What is the reason for having a different default ? Which one do you recommend ? </hi>
+
+===== Issue: Handling substitutions =====
+GR : use a standard in-place substitution system for variables defined by configure process, as per [[http://www.gnu.org/software/autoconf/manual/autoconf-2.57/html_mono/autoconf.html#SEC24]]
+
+GR : Performing a lot of substitutions in perl modules is cumbersome. You'd rather have a unique .pm files defining those constants (using constant pragma, or ReadOnly module), sourced by all others, so as to substitude only once. 
+
+OS : The current use of the subst.pl script is pretty satisfactory ; it's flexible and the script also allows us to do additional changes like
+ commenting do_log() calls that can be skipped (performances issue). The only drawback of this substitution process (appart its non standard
+ character) is that we need to set lots of (error-prone) environment variables in Makefiles before each call. The new substitution system that you refer to seems less flexible (you need to define a twisted sed expression in the Makefile and extend this engine for each new variable) and seems to oblige us to add the '.in' extension to perl modules, which is not convenient to us.
+
+GR : There are two points there.\\
+The first one is to when to perform substitution. What you do here is to actually generate perl scripts and modules after installing them, directly in their installation directories. This is clearly a deviation from the expected behaviour of 'build first, then install'. It's
+difficult to tell how it is bad exactly, but for instance it prevent you from testing them locally without installing them, including running
+non-regression tests. It also extend 'make install' actions, usually done under root identity, which may be dangerous. And if any failure
+occurs, chances are high you'll leave unwanted files in installation directories, for instance (I've seen this with emacs bytefile
+compilation in ocaml installation process, for instance, causing great packaging pain). So, I'd rather stick with the expected behaviour.
+
+Once you admit you have to have to achieve those substitution in the build directory, you have to use either different filenames, or different directories (harder, and won't work with autotools ability to use distinct build and source trees) to differentiate source templates from generated files. The use of .in extension is not mandatory, it's just consistent with Makefile.in -> Makefile conversion when running configure script.
+
+The second is how to perform the substitution. I personnaly find the centralized make-driven way more simple. Yes, substituting a tons of
+different files is painful. Hence my suggestion of moving all your variable in a single Constant.pm.in instead of spreading them around 10
+different ones.

@@ -1,0 +1,121 @@
+<code>
+eleve1.cines.fr. IN MX 20 195.83.185.1
+lists._domainkey.eleve1.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve1.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve1.cines.fr. IN MX 20 195.83.185.1
+lists._domainkey.a-eleve1.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve1.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve1.cines.fr. IN MX 20 195.83.185.1
+lists._domainkey.b-eleve1.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve1.cines.fr. IN TXT "dkim=unknown"
+
+eleve2.cines.fr. IN MX 20 195.83.185.2
+lists._domainkey.eleve2.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve2.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve2.cines.fr. IN MX 20 195.83.185.2
+lists._domainkey.a-eleve2.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve2.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve2.cines.fr. IN MX 20 195.83.185.2
+lists._domainkey.b-eleve2.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve2.cines.fr. IN TXT "dkim=unknown"
+
+eleve3.cines.fr. IN MX 20 195.83.185.3
+lists._domainkey.eleve3.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve3.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve3.cines.fr. IN MX 20 195.83.185.3
+lists._domainkey.a-eleve3.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve3.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve3.cines.fr. IN MX 20 195.83.185.3
+lists._domainkey.b-eleve3.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve3.cines.fr. IN TXT "dkim=unknown"
+
+eleve4.cines.fr. IN MX 20 195.83.185.4
+lists._domainkey.eleve4.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve4.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve4.cines.fr. IN MX 20 195.83.185.4
+lists._domainkey.a-eleve4.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve4.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve4.cines.fr. IN MX 20 195.83.185.4
+lists._domainkey.b-eleve4.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve4.cines.fr. IN TXT "dkim=unknown"
+
+eleve5.cines.fr. IN MX 20 195.83.185.5
+lists._domainkey.eleve5.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve5.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve5.cines.fr. IN MX 20 195.83.185.5
+lists._domainkey.a-eleve5.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve5.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve5.cines.fr. IN MX 20 195.83.185.5
+lists._domainkey.b-eleve5.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve5.cines.fr. IN TXT "dkim=unknown"
+
+eleve6.cines.fr. IN MX 20 195.83.185.6
+lists._domainkey.eleve6.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve6.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve6.cines.fr. IN MX 20 195.83.185.6
+lists._domainkey.a-eleve6.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve6.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve6.cines.fr. IN MX 20 195.83.185.6
+lists._domainkey.b-eleve6.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve6.cines.fr. IN TXT "dkim=unknown"
+
+eleve7.cines.fr. IN MX 20 195.83.185.7
+lists._domainkey.eleve7.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve7.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve7.cines.fr. IN MX 20 195.83.185.7
+lists._domainkey.a-eleve7.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve7.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve7.cines.fr. IN MX 20 195.83.185.7
+lists._domainkey.b-eleve7.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve7.cines.fr. IN TXT "dkim=unknown"
+
+eleve8.cines.fr. IN MX 20 195.83.185.8
+lists._domainkey.eleve8.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve8.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve8.cines.fr. IN MX 20 195.83.185.8
+lists._domainkey.a-eleve8.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve8.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve8.cines.fr. IN MX 20 195.83.185.8
+lists._domainkey.b-eleve8.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve8.cines.fr. IN TXT "dkim=unknown"
+
+eleve9.cines.fr. IN MX 20 195.83.185.9
+lists._domainkey.eleve9.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.eleve9.cines.fr. IN TXT "dkim=unknown"
+
+a-eleve9.cines.fr. IN MX 20 195.83.185.9
+lists._domainkey.a-eleve9.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-eleve9.cines.fr. IN TXT "dkim=unknown"
+
+b-eleve9.cines.fr. IN MX 20 195.83.185.9
+lists._domainkey.b-eleve9.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-eleve9.cines.fr. IN TXT "dkim=unknown"
+
+prof.cines.fr. IN MX 20 195.83.185.11
+lists._domainkey.prof.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.prof.cines.fr. IN TXT "dkim=unknown"
+
+a-prof.cines.fr. IN MX 20 195.83.185.11
+lists._domainkey.a-prof.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-prof.cines.fr. IN TXT "dkim=unknown"
+
+b-prof.cines.fr. IN MX 20 195.83.185.11
+lists._domainkey.b-prof.cines.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-prof.cines.fr. IN TXT "dkim=unknown"
+</code>

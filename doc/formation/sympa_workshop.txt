@@ -1,0 +1,66 @@
+====== Sympa workshop ======
+
+This workshop is co-organized by [[http://www.renater.fr/|RENATER]], [[http://www.terena.org/|TERENA]] and the [[http://www.unistra.fr/index.php?id=homepage|Strasbourg university]]. Is is held at Strasbourg university, France, on 18th and 19th November 2013.
+
+This is a technical workshop. Attendees will manipulate pre-installed Sympa server to experiment some of the major Sympa features.
+
+===== Agenda =====
+
+==== Day 1: 18th November, 13:00 - 18:00 ====
+
+  - **Basic Sympa administration**: Discover the Sympa server and discover the basis of Sympa administration
+  - **Messenging functionnalities**: Mailing lists mean mails, and mails mean a lot of different mechanisms to use and analyze: reception modes, loop prevention, alias management, error handling, etc.
+  - **Authorization mechanism**: Sympa has an original authorization mechanism based on scenario, which allows to set a very fine granularity of authorization.
+  - **Data sources for list subscribers**: Sympa is aimed at information system integration. It therefore allows to automatically populate lists with a number of external data sources: SQL, LDAP, files, etc.
+  - **Virtual hosting**: You can run several lists domains with a single Sympa instance. Learn how to!
+
+**Evening**: Let's have a small tour in Strasbourg and find some nice restaurant that can host us all (two restaurants, if we are too many)!
+
+==== Day 2: 19th November, 09:00 - 12:00 ====
+
+  - **DKIM**: Sympa implements DKIM for mailing lists. Learn more about this interesting anti-phishing mechanism.
+  - **List creation industrialisation**: Manual creation works well when you don't have to create hundreds of lists every starting year. Sympa has several levels of increasingly automated mechanisms to create numerous lists
+  - **Sympa as a group manager**: Through its web services, Sympa can propagate lists information to other applications. Coupled to the other automated lists management mechanism, Sympa can be a very usefull group manager for groupware tools.
+
+==== Support ====
+
+[[doc:formation:sympa_workshop_support|Here is the link towards the workshop guidelines]]
+
+===== Organisational details =====
+
+==== When? ====
+
+  * 18th November, from  13:00 to 18:00 CEST
+  * 19th november 2013, from 9:00 to 12:00 CEST 
+
+==== Where? ====
+
+At the UFR Math-info, Strasbourg university, 7 rue René Descartes : [[http://goo.gl/maps/fCKce]]
+
+==== How to register? ====
+
+Please register on the TERENA web site: [[https://www.terena.org/events/details.php?event_id=2671]]
+
+==== Who? ====
+
+  * Organisation at Strasbourg: Marc Chantreux, Strasbourg university (mc@unistra.fr).
+  * Workshop content management: David Verdin, RENATER (david.verdin@renater.fr). Contact for any details regarding what will be said during the workshop and who can attend it
+  * Workshop animation: Étienne Méléard and David Verdin, RENATER
+
+==== Target audience ====
+
+Technical staff from European NREN
+
+==== Pre-requisites ====
+
+Computers with network access to Sympa servers will be all set in the workshop room. If you prefer, you can bring your own laptop.
+
+You must have a good technical background as system administrator under Linux, a reasonnable understanding of web and mail protocols, and a fatherly benevolence for the French accent.
+
+==== Attendees limit ====
+
+20 people maximum can attend this workshop.
+
+==== Ho much does it cost me? ====
+
+Nothing! This workshop is free of charge. You still need to pay for your own hotel and meals, though. There is no catering service during the workshop, but we will certainly find a coffee machine somewhere near the workshop room; and we'll make a point in showing you some of the nice places Strasbourg contains in the evening.

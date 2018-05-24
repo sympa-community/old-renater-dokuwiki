@@ -1,0 +1,135 @@
+====== Mail aliases ======
+
+Mail aliases are required in Sympa for ''sympa.pl'' to receive mail commands and list messages. Management of these aliases will depend on the MTA (''sendmail'', ''qmail'', ''postfix'', ''exim'') you're using, where you store aliases and whether you are managing virtual domains or not.
+
+====== SMRSH ======
+
+If using ''sendmail'', maybe it is configured to use the secured shell ''smrsh''. 
+<code>
+# grep smrsh /etc/mail/sendmail.mc
+FEATURE(`smrsh', `/usr/sbin/smrsh')dnl
+</code>
+
+Smrsh obliges you to copy all the programs that are called from the mail aliases into the dedicated ''/etc/smrsh'' directory. Therefore you'll have to tell Sympa that binaries should be installed in the ''/etc/smrsh'' directory. This can be performed via the ''--with-bindir'' option of sympa's ''configure'' :
+  ./configure --with-bindir=/etc/smrsh
+
+====== Robot aliases ======
+
+An electronic list manager such as Sympa is built around two processing steps:
+
+  * A message sent to a list or to Sympa itself (commands such as subscribe or unsubscribe) is received by the SMTP server. When receiving the message, the SMTP server runs the ''queue'' program (supplied in this package) to store the message in a spool.
+  * The ''sympa.pl'' daemon, set in motion at system startup, scans this spool. As soon as it detects a new message, it processes it and performs the requested action (distribution or processing of a command).
+
+To separate the processing of commands (subscription, unsubscription, help requests, etc.) from the processing of messages destined to mailing lists, a special mail alias is reserved for administrative requests, so that Sympa can be permanently accessible to users. The following lines must therefore be added to the ''sendmail'' alias file (often ''/etc/aliases''):
+
+<code>
+  sympa: "| /home/sympa/bin/queue sympa@my.domain.org"
+  listmaster: "| /home/sympa/bin/queue listmaster@my.domain.org"
+  bounce+*: "| /home/sympa/bin/bouncequeue sympa@my.domain.org"
+  abuse-feedback-report: "| /home/sympa/bin/bouncequeue sympa@my.domain.org"
+  sympa-request: postmaster
+  sympa-owner: postmaster
+</code>
+
+Note: if you run Sympa virtual hosts, you will need one ''sympa'' alias entry per virtual host (see [[virtual-hosts|Virtual host]]).
+
+''sympa-request'' should be the address of the robot administrator, i.e. a person who manages Sympa (here ''postmaster(@)renater.fr'').
+
+''sympa-owner'' is the return address for Sympa error messages.
+
+The alias bounce+* is dedicated to collect bounces where VERP (variable envelope return path) was active. It is useful if ''welcome_return_path unique'' or ''remind_return_path unique'' or the ''verp_rate'' parameter is no null for at least one list.
+
+The alias ''abuse-feedback-report'' is used for processing automatically feedback that respect ARF format (Abuse Report Feedback), which is a draft to specify how end users can complain about spam. It is mainly used by AOL.
+
+Don't forget to run ''newaliases'' after any change to the ''/etc/aliases'' file!
+
+Note: aliases based on ''listserv'' (in addition to those based on ''sympa'') can be added for the benefit of users accustomed to the ''listserv'' and ''majordomo'' names. For example:
+
+  listserv:          sympa
+  listserv-request:  sympa-request
+  majordomo:         sympa
+  listserv-owner:    sympa-owner
+
+
+====== List aliases ======
+
+For each new list, it is necessary to create up to six mail aliases (at least three). If you managed to setup the alias manager (see [[mail-aliases#alias_manager|Alias manager]]), then Sympa will install automatically the following aliases for you.
+
+For example, to create the ''mylist'' list, the following aliases must be added:
+
+<code>
+  mylist:               |/home/sympa/bin/queue mylist@my.domain.org
+  mylist-request:       |/home/sympa/bin/queue mylist-request@my.domain.org
+  mylist-editor:        |/home/sympa/bin/queue mylist-editor@my.domain.org
+  mylist-owner:         |/home/sympa/bin/bouncequeue mylist@my.domain.org
+  mylist-subscribe:     |/home/sympa/bin/queue mylist-subscribe@my.domain.org
+  mylist-unsubscribe:   |/home/sympa/bin/queue mylist-unsubscribe@my.domain.org
+</code>
+
+The address ''mylist-request'' should correspond to the person responsible for managing ''mylist'' (the owner). Sympa will forward messages sent to ''mylist-request'' to the owner of ''mylist'', as defined in the ''/home/sympa/expl/mylist/config'' file. Using this feature means you will not need to modify the alias file if the list owner were to change.
+
+Similarly, the address ''mylist-editor'' can be used to contact the list editors, if defined in ''/home/sympa/expl/mylist/config''. This address definition is not compulsory.
+
+The address ''mylist-owner'' is the address receiving non-delivery reports (note that the ''-owner'' suffix can be customized, see [[conf-parameters/part3#return_path_suffix|return path suffix]]. The ''bouncequeue'' program stores these messages in the ''queuebounce'' directory. //WWSympa// (see [[web-interface|WWSympa presentation]]) may then analyze them and provide a web access to them.
+
+The address ''mylist-subscribe'' is an address enabling users to subscribe in a manner which can easily be explained to them. Beware: subscribing this way is so straightforward that you may find spammers subscribing to your list by accident.
+
+The address ''mylist-unsubscribe'' is the equivalent for unsubscribing. By the way, the easier it is for users to unsubscribe, the easier it will be for you to manage your list!
+
+
+
+
+====== Alias manager ======
+
+The ''alias_manager.pl'' script does aliases management. It is run by //WWSympa// and will install aliases for a new list and delete aliases for closed lists. To use a different alias management tool (''ldap_alias_manager.pl'' for example), you should edit the ''alias_manager'' sympa.conf parameter (see [[manual:conf-parameters:part2#alias_manager]]).
+
+The script expects the following arguments :
+
+  - ''add'' | ''del''
+  - ''<''list name''>''
+  - ''<''list domain''>''
+
+Example:
+
+<code>
+  /home/sympa/bin/alias_manager.pl add mylistrenater.fr
+</code>
+
+''/home/sympa/bin/alias_manager.pl'' works on the alias file (as defined in ''sympa.conf'') through the ''sendmail_aliases'' variable (default is ''/etc/mail/sympa_aliases''). You must refer to this aliases file in your ''sendmail.mc'' (if using sendmail):
+
+<code>
+  define(`ALIAS_FILE', `/etc/aliases,/etc/mail/sympa_aliases')dnl
+</code>
+
+Note that ''sendmail'' has requirements regarding the ownership and rights on both ''sympa_aliases'' and ''sympa_aliases.db'' files (the later being created by sendmail via the ''newaliases'' command). Anyhow, these two files should be located in a directory, every path component of which being owned by and writable only by the root user.
+
+''/home/sympa/bin/alias_manager.pl'' runs a ''newaliases'' command (via ''aliaswrapper''), after any changes to aliases file.
+
+If you manage virtual domains with your mail server, then you might want to change the form of aliases used by the alias manager. You can customize the ''list_aliases'' template that is parsed to generate list aliases (see [[list-definition#list_aliases.tt2|list_aliases.tt2]]).
+
+Note that you do not need alias management if you use MTA functionalities such as Postfix' ''virtual_transport''. Then you can disable alias management in Sympa by positioning the ''sendmail_aliases'' parameter to ''none''. The postfix regexp feature should not be used in way that would cause mail to be accepted for non-existent addresses and then bounced, creating backscatter.  
+
+Ludovic Marcotte has written a version of ''ldap_alias_manager.pl'' that is LDAP enabled. This script is distributed with Sympa distribution. The script has later been extended by Philippe Baumgart, British Telecom. You can customize the LDAP parameteres via the ''ldap_alias_manager.conf'' file.
+
+====== Virtual domains ======
+
+When using virtual domains with ''sendmail'' or ''postfix'', you can not refer to ''mylist@my.domain.org'' on the right-hand side of a ''/etc/aliases'' entry. You need to define an additional entry in a virtual table. You can also add a unique entry, with a regular expression, for your domain.
+
+With Postfix, you should edit the ''/etc/postfix/virtual.regexp'' file as follows:
+
+<code>
+  /^(.*)@my.domain.org$/ my.domain.org-$1
+</code>
+
+Entries in the 'aliases' file will look like this:
+
+<code>
+  my.domain.org-sympa:                                /home/sympa/bin/queue
+  sympa@my.domain.org  .....  my.domain.org-listA:    /home/sympa/bin/queue listA@my.domain.org
+</code>
+
+With Sendmail, add the following entry to ''/etc/mail/virtusertable'' file:
+
+<code>
+  @my.domain.org my.domain.org-%1%3
+</code>

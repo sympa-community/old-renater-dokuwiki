@@ -1,0 +1,9 @@
+====== La page des stagiaires et des stagieurs ======
+
+Vous venez faire du Sympa chez nous, Merci.
+
+Trop tard pour changer d'avis ? bon, ben commencez donc par lire ces [[doc_de_base|docs de base]].
+
+===== Pages perso stagiaires =====
+
+[[william| William : des chiffres et des listes]]

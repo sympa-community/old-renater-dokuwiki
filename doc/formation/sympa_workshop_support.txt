@@ -1,0 +1,1772 @@
+====== Sympa workshop: basic and advanced usage ======
+
+In the whole documentation, the example host is lists.domain.tld. a script allows you to enter the actual name or your server and replace all occurrences of **lists.domain.tld** in the page. You just have to enter the name in the form below.
+
+First: check your host name:
+  hostname -f
+
+Enter the host name here:\\
+
+<html>
+Your host name : <input type="text" id="nouveau_domaine" /> <input type="button" onclick="var e=document.getElementsByTagName('body')[0],n=document.getElementById('nouveau_domaine').value;e.innerHTML=e.innerHTML.replace(/lists.domain.tld/g, n);" value="Apply" />
+</html>
+
+<note important>First of all: 
+
+sudo -i
+
+</note>
+
+====== - Basic concepts ======
+
+===== Define the listmaster email =====
+
+  geany /etc/sympa.conf
+
+Edit the "listmaster" paragraph:
+
+  listmaster <you.email.address@domain.tld>
+
+Restart Sympa and Apache
+
+  /etc/init.d/sympa restart ; /etc/init.d/apache2 restart
+
+===== - connect as listmaster =====
+
+Go to [[http://lists.domain.tld/sympa]].
+
+Click on "First connexion?". Fill in the email address you defined in the sympa.conf file, then submit. Check your mailbox; Sympa sent a message. Click the validation link. you're being redirected to the Sympa web interface. Fill in your password and submit.
+
+===== - Create a list =====
+
+Click on "List creation", chose the "Public discussion list" model, then fill the form and submit.
+
+Once you have created the list, you appear as list owner in the list menu.
+
+Several files were created in the process. Check the list directory:
+  ls -1 /home/sympa/list_data/<nom-de-la-liste>
+  
+  config
+  config.0
+  config.lock
+  include_admin_user.lock
+  info
+  shared
+  stats
+  stats.lock
+
+
+===== - Subscribe addresses to the list =====
+
+Click the "Review members" link in the list menu and add addresses to the form.
+
+Note that you are not subscribed by default, though you are list owner.
+
+You can add several addresses in one time by clicking on "Multiple add" and then put one address per list.
+
+
+===== - Send a message to the list =====
+
+Well, do it. Once the message is sent, you can check that it was archived by clicking the "Archive" link.
+
+===== - subscriber view =====
+
+Create an account for one of the addresses you subscribed. Log in with this address and contemplate the different view. You have less options.
+
+===== - Add an editor and a privileged owner =====
+
+Go to « Admin > Edit list config > List definition ». Add an address in the "editors" section and another one in the "owner" section; make sure to set the owner profile as "privileged" (default is "normal").
+
+Note: If you don't defined editors, the list owners are considered as editors by default. For most lists, defining owners is enough.
+
+
+===== - List configuration options =====
+
+Log in using the "privileged owner" account you just defined.
+
+The list owner can edit list parameters through the web interface. Privileges granted to each role are defined by the edit\_list.conf configuration file. For each parameter, this file define, for each role an access level:
+
+  * hidden : users with this role can't see the parameter
+  * read : users with this role can see the parameter but can't change its value
+  * write : users with this role can edit the parameter.
+
+We will now modify the edit-list.conf file.
+
+**Before any file configuration, you must first copy the version distributed in Sympa (locate in the "default" directory) to another directory:**
+
+  * etc if you want the changes to be global to the server
+  * etc/<robot\_name\>/ (if you use virtual hosts) if you want changes to be global to a given virtual host
+  * list\_data/<list\_name\> if you want to limit the change to a single list.
+
+Customize the edit\_list.conf file:
+
+  cp -p /home/sympa/default/edit_list.conf /home/sympa/etc
+  geany /home/sympa/etc/edit_list.conf &
+
+Make the include\_sql\_query parameter critable for a privileged owner.
+
+save the file and close. Go to the list administration page, in the "data sources" section. a new form is available, allowing to configure an SQL data source.
+
+===== - Lists customization =====
+
+Here are some of the majot list customization you can do in a list.
+
+==== Footer and header ====
+
+You can add automatically a footer or a header to each list's message.
+
+Example with a footer: 
+  geany /home/sympa/list_data/<list_name>/message.footer &
+
+Type anything you like, save and close.
+
+Send a message to the list; the footer is appended at the end of the message body; Note that, by default, this footer is added as an attachment to the message.
+
+==== Homepage ====
+
+What you type here will be displayed at the home page of the list; you can use basic HTML formatting here.
+  geany /home/sympa/list_data/<nom-de-la-liste>/homepage &
+
+
+===== - Create a custom list template =====
+
+How to customize list models
+  mkdir /home/sympa/etc/create_list_templates/
+  chown -R sympa:sympa /home/sympa/etc/create_list_templates/
+  cp -pr /home/sympa/default/create_list_templates/discussion_list /home/sympa/etc/create_list_templates/
+  cd/home/sympa/etc/create_list_templates/discussion_list
+  
+  ls -al
+  
+  total 24
+  drwxrwxrwx 2 sympa sympa 4096 mai 2 17:32 .
+  drwxrwxrwx 10 root root 4096 jan 22 14:51 ..
+  -rw-r--r-- 1 sympa sympa 202 mai 2 17:32 comment.tt2
+  -rw-r--r-- 1 sympa sympa 835 mai 2 17:32 config.tt2
+  comment.tt2 : le message affiché dans l'interface de création de listes
+  config.tt2 : le modèle de configuration de la liste
+  
+  geany config.tt2 &
+
+<code>
+## Configuration de la liste sympa-l
+## Cree le Mercredi 31 Mars 99
+
+#send editorkey
+
+subject [% subject %]
+
+status [% status %]
+
+visibility noconceal
+
+subscribe open_notify
+
+unsubscribe open_notify
+
+[% FOREACH o = owner -%]
+owner
+email [% o.email %]
+profile privileged
+[% IF o.gecos -%]
+gecos [% o.gecos %]
+[% END -%]
+
+[% END -%]
+
+[% IF owner_include %]
+[% FOREACH o = owner_include -%]
+owner_include
+source [% o.source %]
+
+[% END -%]
+[% END -%]
+
+send privateoreditorkey
+
+[% IF topics -%]
+topics [% topics %]
+[% END -%]
+
+web_archive
+
+access public
+
+archive
+access owner
+period week
+
+digest 1,4 13:26
+
+review owner
+
+shared_doc
+d_edit default
+d_read public
+
+pictures_feature on
+
+creation
+date_epoch [% creation.date_epoch %]
+date [% creation.date %]
+[% IF creation_email -%]
+email [% creation_email %]
+[% END -%]
+
+</code>
+
+Replace [% creation\_email %] by your address : Any list created will be marked as created by you.
+
+
+====== - Mails in Sympa ======
+
+===== - Mail workflow =====
+
+Let's play with daemons. Stop all sympa daemons
+
+  /etc/init.d/sympa stop
+
+In another terminal, start a tail on the Sympa logs:
+
+  tail -f /var/log/sympa/sympa
+
+Subscribe an address that won't work to your list. For example: pipo@pipo.pipo
+
+Send a message to the list. Check the "msg" spool. Your message is there:
+
+  ls -al /var/spool/sympa/msg
+
+Start the sympa.pl daemon.
+
+  /home/sympa/bin/sympa.pl
+
+Look a the msg spool. The message must have disappeared.
+
+Look at the logs. The message was processed. A notification to the editors was sent to accept/reject the message.
+
+Check your inbox. You have received the notification. Accept the message to be sent.
+
+Check the outgoing spool, your message is there:
+
+  ls -al /var/spool/sympa/outgoing
+
+Check the database: Inthe "bulkspool\_table" table, you will find the message (the body was encoded in base 64). the expdition packets are located in the "bulkmailer\_table" table.
+
+Start the bulk.pl daemon:
+
+  /home/sympa/bin/bulk.pl
+
+The message is distributed. the logs show that the message is distributed. It disappears from the bulkmailer\_table. It is still in the bulkspool\_table (it will be later deleted by the Sympa task manager).
+
+Start archived.pl:
+
+  /home/sympa/bin/archived.pl
+
+The message is archived (it is written in the logs) and disappears from the outgoing spool. Click the "Archive" link in the list menu to see your archived message.
+
+Check the bounce spool:
+
+  ls -ltr /var/spool/sympa/bounce
+
+You should find the bounce for the dummy address you subscribed before.
+
+Start bounced.pl. the logs show that the bounce is handled. It disappears from the bounce spool. Click "Admin > bounces" in the web interface. the dummy address appears in the list of addresses.
+
+Tip: Sometimes, one of the Sympa processes can crash. This is because, in the wild landscape of SMTP, you can meet some very weird beasts sometimes. Anyway, if the Sympa process crash you have probably no logs explaining it. It is possible to retrieve informations in the tmp spool. Indeed, anytime a Sympa process is started, it creates a file named <pid\>.stderr (where <pid\> is its process number). It writes standard error messages to this file. so the last line in this file is probably the reason why your process crashed. Copy this line and send it to the support lists.
+
+Check it with the commands:
+
+  ps -ef | grep sympa
+  ls -ltr /home/sympa/spool/tmp
+
+
+===== - Reception modes =====
+
+  * mail : normal reception
+  * notice: Subscriber receives an empty message, the subject only remaining unchanged.
+  * digest : Subscriber regularly receives a compilation of the messages sent to the list, usually once a day. This pace can be changed through the "digest" list parameter.
+  * summary : Subscriber regularly receives - at the same pace as the digest - a shortened version of the messages sent to the list.
+  * nomail : Subscriber doesn't receive the messages sent to the list. Useful for holidays.
+  * txt : If the original message content is multipart/alternative, subscriber receives only the text/plain part.
+  * html: If the original message content is multipart/alternative, subscriber receives only the text/html part.
+  * urlize: Soma attachments are too big. If a subscriber selects this option, the attachments are kept on the mailing list server and replaced, in the message sent to the subscriber, by a link to download them.
+  * not\_me : Subscriber doesn't receive the message she sent to the list.
+
+Note : Whatever option is selected by the subscriber, Sympa will never modify a S/MIME signed message.
+
+You can use two parameters to control the size of the message sent to subscribers:
+
+  * urlize\_min\_size : can be set in sympa.conf (or robot.conf) only: defines the size below which attachments will not be stored on the server for urlize subscribers.
+  * max\_size : Can be set in sympa.conf, robot.conf or in the list's config file. This sets the max size of a message. If a message exceeds this size, it will be rejected. This parameter is evaluated before any consideration regarding the subscribers reception mode.
+
+<note important>Préparer pièces jointes</note>
+
+
+===== - Loop prevention =====
+
+Sympa contains builtin mechanisms to prevent messenging loops. One of the tested parameters is the Message-Id header. You can test it simply::
+
+  * Stop Sympa ;
+  * Send a message to a list ;
+  * Copy this message form the msg spool to /tmp ;
+  * Start Sympa; the message is sent to the list;
+  * Copy the message from /tmp to the msg spool. It is rejected.
+
+===== - Send a web page to a list =====
+
+Sympa can download the full content of a web page and convert it to a multipart/related message to send to the list. This format decreases the risk for the HTML message to be tagged as spam.
+
+In the list menu, click on "Post \> Send an HTML page".
+
+Type an URL in the field titled "Send the page from the following URL:". Type a subject, then click on "Send to selected receipient".
+
+In the message sent to the list, you can see that Sympa included all the images to the message body.
+
+===== - Alias =====
+
+Read the alis file and watch the aliases created for the new list.
+
+  geany /etc/mail/sympa_aliases
+
+This alias file is created from the /home/sympa/default/list\_aliases.tt2 template.
+
+Whent you mus rename a list, Sympa can do all the work for you. Go to the "Admin" section of the list. In the "drastic operations" section, click on "Rename the list". You just have then to type the new name of the list in the page that is displayed. All aliases are updated to conform to the new list name, the archives are renamed, the databasee and the subscribers updated, etc.
+
+Please note that you can through the same "REname list" interafce, move a list from a virtual host to another, provided it is hosted by the same Sympa instance.
+
+If you want the old list address to keep working, you can define a redirection file.
+
+Rename a list through the web interface. Say its former nam was "oldname" and the new one "newname".
+
+  geany /etc/mail/alias_redirections &
+
+Add the following files to this new file: 
+  oldname: newname
+  oldname-request: newname-request
+  oldname-owner: newname-owner
+  oldname-subscribe: newname-subscribe
+  oldname-unsubscribe: newname-unsubscribe 
+
+Tthen run:
+  newaliases 
+
+In the /etc/mail/sendmail.mc file, find the following line:
+  define(`ALIAS_FILE', `/etc/aliases,/etc/mail/sympa_aliases')dnl 
+
+Change this line to: 
+  define(`ALIAS_FILE', `/etc/aliases,/etc/mail/sympa_aliases,/etc/mail/alias_redirections')dnl 
+
+Then run:
+  make ;
+  /etc/init.d/sendmail restart ;
+
+Send a mail to the old address. It arrives to the new one.
+
+===== - Messenging parameters =====
+
+To handle the ougoing flow of message, You can define the number of bulk.pl processes. The more you run, the quicker you process a large number of messages, particularly when outgoing sessions are slow.
+
+Create a source file of email addresses from the same domain:
+  for i in $(seq 1 1000) ; do echo "pipo+$i@lists.domain.tld" ; done > /home/sympa/includes/enormeliste.incl
+
+Configure your MTA to send all messages sent to these addresses to /dev/null:
+  geany /etc/aliases
+  pipo+*: "| cat > /dev/null"
+  newaliases
+
+In a list, change the configuration to include this file to the subscribers' list (the other data sources are fully covered later). Go to "Admin > Edit list config > Data sources setup". Then fill the path to the datasource file in the "File inclusion" field and save.
+
+Run a tail that selects bulk logs:
+  tail -f /var/log/sympa | grep bulk | grep sending
+
+Send a message to the list.
+
+In the logs, you'll find an entry beginning with « Start sending message... », then a last with « Done sending message ».
+
+The gap between the "Start sending..." and the "Done sending..." gives the distribution time.
+
+Edit the Sympa config:
+  geany /etc/sympa.conf&
+
+Add the following line:
+  bulk_max_count 10
+
+Restart Sympa:
+  /etc/init.d/sympa restart
+
+Repeat the previous sending and note the difference of time.
+
+The number of bulk.pl processes is not the only way to change the distribution performance.
+
+In sympa.conf, you can play with two other parameters:
+
+  * maxsmtp : maximum number of sendmail processes that Sympa will create to send messages.
+  * nrcpt : maximum number of email addresse from the same domain that Sympa will address in a single SMTP session.
+
+Add the following lines in sympa.conf:
+  maxsmtp 100
+  
+  nrcpt 500
+
+Replay the mail sending and note the difference.
+
+These two parameters are useful but must be used carefully:
+
+  * if maxsmtp is too high, it can exhaust your server by forking too many processes.
+  * if nrcpt is too high, your server can be considered a spammer.
+
+Some domains (yahoo and gmail for example) reject sessions with two many receipients. You can tweak the number of receipients for some domains diffrently from the main sympa.conf nrcpt parameter. This donee through the nrcpt\_by\_domain.conf file.
+
+  geany /home/sympa/etc/nrcpt_by_domain.conf &
+
+Add this line:
+  lists.domain.tld 3
+
+Replay the message sending and note the difference.
+
+Finally, a last parameter is used to set tha maximum number of different domains that Sympa will use within a single sendmail call: avg.
+
+===== - Bounce management =====
+
+==== - Bounce score ====
+
+Sympa handles bounces automatically. It affects a score to bouncers. This score is used to sort bouncing addresses in three classes, corresponding to their position regarding two thresholds:
+
+  * below level 1: small bouncing score, nothing to do
+  * level 1 : a first action is executed
+  * level 2 : genrally, the address is unsubscribed.
+
+The level 1 and 2 are defined by two list parameters: "bouncer\_level\_1" and "bouncers\_level\_2" ("Admin > Edit list config > Bounces"). For each of these parameters, you can define three values:
+
+  * the score that will trigger the classification of an address into this level
+  * the action to be taken when a user reaches this score: nothing, warn or unsusbscribe
+  * the people to warn once the action has been taken.
+
+the bounce score computation is based on three factors:
+
+  * Bounces count: The number of bounces received for an address
+  * Type rate: Bounces are sorted according to their gravity. Temporary errors, such as mailbox full (code 4.2.2) have the type rate 0.5. Permantent errrors, such as User unknonw (5.x.x) have the type rate 1.
+  * Regularity rate: Value obtained by comparing the number of bounces received to the overall list activity (deducted from the "msg\_coung" file).
+
+The bounce score computing is done according to the following formula:
+  Score = bounce_count * typ_rate * regularity_rate
+
+To avoid to compute score prematurary, Sympa start computing a score only if:
+
+  * The number of bounces received for an addrfess is more than the value of the minimum\_bouncing\_count parameter.
+  * The period between the reception of the first and the last bounce is less than the valued of the minimum\_bouncing\_period parameter.
+
+If an address stops generating bounces, its bounce socre starts decreasing after a period of time deinfed by the expire\_bounce parameter (10 days by default).
+
+==== - VERP ====
+
+Variable enveloppe return path. When used, this feature encodes the original receipient address in the message Return-Path header. Indeed, some bounces don't mention it (for example, if the receipient address is redirected to another mailbox).
+
+Any mail sent to an address which generated a bounce previously is automatically sent in VERP.
+
+VERP is costly: Any message sent is VERP is customized (the Return-Path header is changed). It then requires an SMTP session of its own (it therefore impossible to group messages in VERP addressed to a single domain).
+
+You can tweak the VERP rater throught the "verp\_rate" parameter in the list config. This parameter's default value if the sympa.conf verp\_rate parameter, whose default value is 0%.
+
+===== - Mail tracking =====
+
+You take MDN and DSN into account to track the mail delivey status of each receipient for a message.
+
+In a list config, set the "tracking\_feature" parameter to "on".
+
+Send a message to the list.
+
+In the logs, you will see messages related to handling of delivery status notifications.
+
+Go the list archives: Once the message is archived, consult it. You'll see a "Tracking" button. By clicking it, you'll find a table relating the distribution staus for each receipient.
+
+
+
+===== - SMIME, =====
+
+Sympa can handle messages signed and encrypted with S/MIME. Unfortunately, we need list certificate to properly test it, whose generation process is too long to experiment it during this workshop. Please consult [[manual:x509|the Sympa manual]] to get all details regarding S/MIME.
+
+====== - Sympa interfaces ======
+
+==== - Command line ====
+
+Sympa.pl is not only the main Sympa daemon. It can be run as a command line tool. All options can be get by running:
+  sympa.pl --help
+
+You can, for example, create liast using the command line. This functionnality is especially useful to instantiate list families.
+
+==== - Mail ====
+
+Sympa users can execute basic list manipulations using mails. These mails must be sent to the Sympa robot (by default [[mailto:sympa@lists.domain.tld|sympa@lists.domain.tld]]).
+
+The most common usage is message acceptance or rejection through mail commands; The full command list is documented in the [[http://lists.domain.tld/sympa/help/mail\_commands|Sympa online help]]. This usage tends to decrease over time, gradually replaced by the web interface.
+
+==== - Web ====
+
+You know this interface better now.
+
+You can customize it using two ways:
+
+Change the web interface colors by Going to "Sympa Admin > Skins, CSS and colors".
+
+There you can select colors for categories of objects. You can apply these colors to your session only and, once you're satisfied with the result, extend them to the full server by clickng on "Install my session colors in a new static CSS".
+
+After you have done this, check that a new CSS has been created in /home/sympa/static\_content/css. A new "style.css" has been created.
+
+The web interface is generated using TT2 templates at each HTTP request. You will se further how to customize the web interface by modifying the web templates.
+
+==== - SOAP ====
+
+Sympa proposes a web service through a SOAP interface.
+
+In order for an user to manipulate Sympa through another application, it must send credentials on behalf of the user.
+
+The most common case (which is not the only one) is to establish a trust relationship between the two applications. This workshop does not offer enough time to cover this aspect of Symps. Please consult [[manual:soap|the Sympa manual]] to learn more about this interface.
+
+====== - Authorization ======
+
+For most end user actions, privileges are attributed by coputing athorization scenarios. Sending a message to a list, review the subscribers list, browse the archives and so on are all actions controled by authorization scenarios.
+
+The following items is the exhaustive list of list or server parameters whosee value corresponds to an authorization scenario :
+
+  * access\_web\_archive : browse the web archive
+  * add : add a new member to the list
+  * automatic\_list\_creation : create automatic lists
+  * create\_list : create a list (through the web or SOAP interface)
+  * d\_edit : edit the shared documents repository
+  * del: remove a member from the subscribers list
+  * d\_read : browse the shared document repository
+  * global\_remind : send to all the subscribers of a server a reminder of their subscription
+  * info : read a liist description
+  * invite: invite somebody to subscribe to the list
+  * remind : send to all the subscribers of a given list a reminder of their subscription
+  * review: review the subscribers' list
+  * send: send a message to the list
+  * subscribe: subscribe to the list
+  * topics\_visibility: see a given topic throught the web interface
+  * tracking : consult tracking information
+  * unsubscribe : unsubscribe from the list
+  * visibility : see a list in the list of lists or in a search result
+
+Practically speaking, a scenario is a file located in the relevant "scenari" directory:
+
+All the default scenarios distributed in Sympa can be found in /home/sympa/default/scenari/.
+
+You can then customize scenarios by copying them to the relevant location:
+  * At the whole site level, in the /home/sympa/etc/scenari/ directory,
+  * For a whole virtual host, in the /home/sympa/etc/<host\_name>/scenari/
+  * For a single list, in the /home/sympa/list\_data/scenari/ (or /home/sympa/expl/<host\_name>/scenari/ directory
+
+If, in the lsit config, the "send" parameter has the value "private", it means that whenever somebody wants to send a message to the list, the scenario evaluated will be the one located in a "send.private" file. When processing the message, Sympa wil first look in the lsit directory, then in the virtual host directory (if any) the in the main config, and then in the default directory.
+
+A scenario has always the same structure. It is one or more line all built following the scheme below:
+
+  <test>     <authentication method>   ->   <action>
+
+A test perform operations on variables and then return true or false. For example, the test "is\_subscriber(<email>,<listname>)" returns true if the email address corresponding to <email> is subscribed to the list named <listname>.
+
+An authentication method is one of the four methods usable to assess the authenticity of the user attempting to perform an operation. They correspond to different realities depending on the context:
+
+|Method |Mail context|Web context|
+| smtp|The value of the "From" field in the message|Not usable in this context|
+| smime|The email is S/MIME signed|An X509 is installed in the web browser|
+| md5|A MD5 hash located was present in the mail subject (used for mail commands)|The user authenticated to the web interface|
+| dkim|The email is DKIM signed| not usable in this context|
+
+The action is what Sympa must do if the test is actually performed (because we are in position to evaluate the user authenticity using the specified authentication method) AND the test returns true. If the action is "do\_it", then the requested operation is performed (the mail is sent to the list, the user can browse the subscribers, lst, etc.). If the action is "reject", the operation is forbidden (the mail is rejected, the review page is a blank page, etc.). The action can take other values which can be either moderation (the operation will be executed if an owner, an editor or the listmaster gives her explicit approval) or authentication verification (a challenge email is requested, the user must authenticate to the web interface, etc.)
+
+There is no limit to the number of lines a scenario can contain. They are evaluated one at a time, from top to bottom. As soon as a rule is verified, Sympa applies the action and stops evaluating the scenario.
+
+Scenario example: (send.private\_smime) :
+  is_subscriber([listname],[sender]) smime -> do_it # The message will be sent to the list if the user is subscribed AND his mail is signed
+  is_editor([listname],[sender]) smime -> do_it # The message will be sent to the list if the user is a list editor AND his mail is signed
+  is_owner([listname],[sender]) smime -> do_it # The message will be sent to the list if the user is a list owner AND his mail is signed
+  
+  true() smtp,dkim,md5,smime -> reject(reason='send_subscriber_smime') # For any other authentication method, the message is rejected and she receives a service message informing her that she MUST sign her messages.
+
+
+A short practice run:
+
+Say you have two lists, cleverly named A and B. Using the scenario documentation ([[http://www.sympa.org/manual/authorization-scenarios#rules_definition]]), create a scenario that forbids users subscribed to A to post a message to B using the web interface.
+
+
+===== Scenarios inclusion =====
+
+You can include a scenario in anohter one usgin the following line:
+
+  include <general>
+
+Sympa will then include all the rules contained in the scenario called "<general>.include" at the position where the "include" line appears in the including scenario. This is usefull if you have rules that must appear in moore than one scenario and that are likely to change.
+
+It is also possible to implicitely include a scenario at the beginning of all the scenarios of a class (for example, all the "send" scenarios).
+
+such an implicitely included scenario must have a name respecting the following syntax:
+
+  include.<scenario class>.header
+
+The rules that such a scenario contain will be appended at the beginning of any scenario of the same class at the same level or below (virtual host or server, depneding on where it is located).
+
+An application of this method can be spam management. Antispam softwares tag messages as spams in the subject or using headers.
+
+Another little practice run:
+
+Suppose you have an antispam software that tag spam using a header called "Antispam-Tag". If a message is a spam, it contains the following header:
+
+  Antispam-Tag: Yes
+
+Create an implicitely included scenario that will automatically moderate spams for the whole server.
+
+Test your scenario using the following method:
+
+  * Stop Sympa
+  * Send a message to a list
+  * Edit your message in the Sympa spools and add the "Antispam-Tag" header.
+  * Start Sympa
+  * checks that the message is moderated.
+Il est possible d'inclure systématiquement dans tous les scénarios un autre scénario en le postfixant avec la chîne ".header". Ainsi le fichier "include.send.header" sera systématiquement inclus à tous les scénarios "send" de son niveau (robot ou serveur, suivant l'emplacement dans lequel il se trouve).
+
+====== - Data sources for list subscribers ======
+
+Sympa is aimed at information system integration. It can threfore provision subscribers from a variety of external data sourceS.
+
+You already experimetend inclusion from a flat file sooner in the workshop.
+
+Here is the exhaustive list of available data sources:
+
+  * a file on the local filesystem (one email address per line)
+  * a remote file (or any URL returning a simple address list)
+  * a list on the same server
+  * a list on another server (requires configuration on both servers)
+  * Queries to a RDBMS
+  * Queris to an LDAP directory
+
+===== Create a table of dummy addresses =====
+
+<code>
+echo "CONNECT sympa;" > /tmp/dummy_creation
+echo 'CREATE TABLE dummy_emails (email varchar(100)) ENGINE=MyISAM;' >> /tmp/dummy_creation
+for i in $(seq 1 100) ; do echo "INSERT INTO dummy_emails VALUES ('pipo+$i@lists.domain.tld');" >> /tmp/dummy_creation; done
+mysql -u user_name -p < /tmp/dummy_creation
+</code>
+
+Edit the config of the list you used previously to include a file and add the following paragraph (this can also be done through the web interface):
+
+<code>
+include_sql_query
+db_name sympa
+db_type mysql
+host localhost
+user user_name
+passwd user_password
+sql_query SELECT email FROM dummy_emails
+</code>
+
+Save and close the config.
+
+Review the list memebers. A mesasge appears to inform you that the list was updated with your data source.
+
+In the review page, the "Sources" column shows several sources: the file and the SQL source.
+
+The subscribers' list is updated on the fly on several occasions:
+
+  * regularly, by the task\_manager.pl daemon. The synchronization rate is set by the "ttl" list parameter.
+  * each time the subscribers' list is reviewed or a message is sent to the list. To avoid overloading the server, a minimum period of time between such on the fly synchronizations is defined using the "distribution\_ttl" parameter.
+
+You can also force the synchronization by deleting the sync\_include task in the task spool. It will be immediately recreated and executed at the next task\_manager loop.
+
+<code>
+cd /home/sympa/spool/task/
+rm -f $(find . -E -regex /sync_include.....) ; tail – f /var/log/sympa
+</code>
+
+You see the messages related to task creation and execution in the logs.
+
+<code>
+ls -ltr
+</code>
+
+The tasks have been recreated.
+
+You can also click the "Synchronize list members" button in the review page.
+
+===== Exclusions =====
+
+The exclusion is a mechanism that allows to unsubscribe an address that have been included through an external data source. Practically speaking, Sympa simply adds the address to a table in its database (exclude\_table). The email addresses contained inthis table are simply ignored when the list is synchronized.
+
+There is no parameter to activate / deactivate the exclusion. It is always possible, as soon as it is possible, according to the authorization scenarios, to remove a user from the list (either  by a "del" or an "unsusbscribe" operation).
+
+===== Including owners / editors =====
+
+Owners and editors can be included using the same data source as suscribers. The configuration is slightly different, though.
+
+Owners/editors work this way: Instead of writing a paragraph directly in the list config, you write this paragraph in a separate file. This file is then referenced in the list config file. Don't see any malevolence here. This is simply a way to factorize oftenly used data sources. Indeed, the owner\_include and editor\_include parameters used to defined data sources accept a field called "source\_parameters" containing a comma-separated list of values which are interpreted as variables to change the actual datasource paragraph. That doesn't look crystal clear? Have a look below:
+
+Create a datasource file:
+<code>
+mkdir /home/sympa/etc/data_sources
+chown sympa:sympa /home/sympa/etc/data_sources
+geany /home/sympa/etc/data_sources/my_owners.incl
+</code>
+
+Add the following paragraph to the file:
+
+<code>
+include_sql_query
+db_type mysql
+host localhost
+user user_name
+passwd user_password
+db_name sympa
+sql_query SELECT DISTINCT email FROM dummy_emails WHERE email LIKE 'pipo+[%param.0%]%'
+</code>
+
+Save and close
+
+In the list config, add the following paragraph:
+
+<code>
+owner_include
+source my_owners
+source_parameters 9
+reception mail
+profile privileged
+</code>
+
+Save and close. Go to see the list in the web interface. You can see that list of owners has changed. If you change the parameter value, the owners change. You can reuse the "my\_owners.incl" file in another list with a different parameter.
+
+Yes another practice run: Go back to your beloved "A" and "B" lists. Configure list A in order that its owners are the owners of list B.
+
+====== - Sympa customization ======
+
+Sympa is a flexible tool. A lot of elements can be customized. Well, sometimes, too many: it can be overwhelming for beginners. but experienced listmasters can take advantage of these customizations to build a simpler life.
+
+===== - A few parameters =====
+
+==== Custom attributes ====
+
+In the list config, you can define user attributes beyond the email address.
+
+Go to the web interface. Click on "Edit list config > Miscellaneous". At the very bottom og the page, you can find the "custom\_parameter" parameter.
+
+It contains the following fields:
+
+Ce paramètre contient les champs suivants :
+
+  * id : internal identifier
+  * name : field name (displayed in the web interface)
+  * comment : comment (displayed in the web interface)
+  * type ( string | text | integer | enum ) : the type of value the custom parameter can take
+  * enum\_values : if the field ha the type "enum", this is the comma-separated list of values it can take.
+  * optional ( required | optional ) : optional : the user can subscribe to the lsit without having to fill in a value.
+
+When you define a custom\_parameter, the user is presented a form when subscribing. If the custom\_parameter is "required", the user can't subscribe without providing a valid value for the parameter.
+
+The value provided by the user is displayed in the review page. It is alos available in templates under the following syntax:
+
+  [% user.custom_attribute.<id>.value %]
+
+Note: in the coming 6.2 version, custom\_attributes can be provisionned fomr LDAP and SQL.
+
+==== Custom list parameters ====
+
+It is possible to create a list parameter not existent in the sympa code. It is a simple key/value pair. You define the name and the value of the custom parameter in a single list parameter: "custom\_var".
+
+In the list config file, add the following lines:
+
+  custom_var
+    name var_name
+    value var_value
+
+You can then use this var in a scenario uder the syntax:
+
+  [custom_vars->var_name]
+
+You can alos use it in mail and web temlates (in list context only) under the syntax:
+
+  [% custom_vars.var_name %]
+
+==== Custom actions ====
+
+You can define new actions in the Sympa weeb interface. These are new pages in the web interface, corresponding to URL that  you define, totally integrated in the rest of the web interface.
+
+Create a template bearing the name of you custom action:
+
+<code>
+mkdir /home/sympa/etc/web_tt2
+chown sympa:sympa /home/sympa/etc/web_tt2
+geany /home/sympa/etc/web_tt2/action_test.tt2&
+</code>
+
+Copy the following content in the editor:
+
+<code>
+<h2>A test action</h2>
+[% IF list %]
+<p>liste: [% list %]</p>
+[% END %]
+<p>Custom action name: [% custom_action %]</p>
+<p>parameters:
+<ol>
+[% FOREACH param=cap %]
+<li><b>[% param %]</b></li>
+[% END%]
+</ol>
+</p>
+</code>
+
+Display your custom action by going to:
+
+[[http://lists.domain.tld/sympa/ca/action_test/param1/param2/param3]]
+
+You can also define list custom actions. these are the same thing as above, except that you can use the whole list configuration in these actions.
+
+Copy your model in a list directory
+
+<code>
+mkdir /home/sympa/list_data/lists.domain.tld/<listname>/web_tt2
+chown sympa:sympa /home/sympa/list_data/lists.domain.tld/<listname>/web_tt2
+cp -p /home/sympa/etc/web_tt2/action_test.tt2 /home/sympa/list_data/lists.domain.tld/<listname>/web_tt2
+</code>
+
+Display your custom action by going to: [[http://lists.domain.tld/sympa/lca/action_test/<listname>/param1/param2/param3]]
+
+===== - The TT2 language =====
+
+The TT2 (for "Template toolkit") language is a mini-language, exclusive to the perl language, which allows to define dynamic content.
+
+All the dynamic content in Sympa (except the scenarios which use a home-made dialect) are done using TT2:
+  * web templates
+  * mail templates
+  * list models
+
+
+Here are a few examples of the language:
+
+Define a variable:
+
+  [% SET toto = 3 %]
+
+
+You can use tests:
+
+  [% IF age < 10 %]
+  
+  Hello [% name %], does your mother know you're 
+  
+  using her AOL account?
+  
+  [% ELSIF age < 18 %]
+  
+  Sorry, you're not old enough to enter 
+  
+  (and too dumb to lie about your age)
+  
+  [% ELSE %]
+
+  Welcome [% name %].
+  
+  [% END %]
+  
+  [% UNLESS text_mode %]
+  
+  [% INCLUDE biglogo %]
+  
+  [% END %]
+
+You can use loops:
+
+  [% FOREACH thing IN [ foo 'Bar' "$foo Baz" ] %]
+  
+  * [% thing %]
+  
+  [% END %]
+
+For risky tests, you can handle exceptions. for example, if you want to open a file that your a not sure to find, you could use such a sequence:
+
+  [% TRY %]
+  
+  [% INCLUDE myfile %]
+  
+  <div>The file is here!</div>
+  
+  [% CATCH file %]
+  
+  <div>File was not found!</div> [% error.info %]
+  
+  [% CATCH %]
+  
+  <div>An error was encountered.</div>
+  
+  [% END %]
+
+===== - Customizable elements (mail, web, scenarios, etc.) =====
+
+Before any customization, it is vital to **copy** the file from the default location you found it to the relevant directory: etc, etc/<virtual\_host> or list_data.
+Indeed: **any file in default will be overwrittent at the next Sympa update**.
+
+====== - Practices (if we have enough time) ======
+
+  - Create a list in which messages are moderated for averyone, excpet for subscriers of another list, authenticated through the web interface.
+  - Configure a list in order that any message sent to the list starts with an introductory text containing the first and last name of the subscriber.
+  - Move all Sympa spools to another directory
+  - Configure a list to allow its owners to defined data sources.
+
+====== - DKIM ======
+
+DKIM means "domain key identified mail". It allows for a mail domain to certify that a mail was actually emited by this domain. It is done through a messages signature by the mail server.
+
+Sympa can use DKIM through three ways:
+  * As an authentication method for scenario. A mail signed with DKIM - with a valid signature - will be evaluated in a rule whose authentication methods contain "dkim".
+  * Sympa can sign list messages with DKIM
+  * Sympa can sign service messages with DKIM
+
+To enable DKIM in Sympa:
+
+  geany /etc/sympa.conf&
+
+Add:
+
+  dkim_feature on
+
+Modify a send scenario. The first line will reject any mail sent with a DKIM signature, the second one will accept mails with other authentication mechanisms.
+
+If you can, send a mail to this list with a domain using DKIM, and another from a domain which doesn't.
+
+===== Fixing DKIM in Sympa 6.1.17 =====
+
+In 6.1.17 DKIM support is broken because of a bad configuration parameter processing, to fix that you must open the ''/home/sympa/bin/Conf.pm'' and go to line 270, original code looks like :
+<code perl>
+    ## Some parameters require CPAN modules
+    if ($Conf{'DKIM_feature'} eq 'on') {
+        eval "require Mail::DKIM";
+        if ($@) {
+            &do_log('err', "Failed to load Mail::DKIM perl module ; setting 'DKIM_feature' to 'off'");
+            $Conf{'DKIM_feature'} = 'off';
+        }
+    }
+    unless ($Conf{'DKIM_feature'} eq 'on'){
+	# dkim_signature_apply_ on nothing if DKIM_feature is off
+	$Conf{'dkim_signature_apply_on'} = ['']; # empty array
+    }
+</code>
+
+''DKIM\_feature'' must become ''dkim\_feature'' :
+<code perl>
+    ## Some parameters require CPAN modules
+    if ($Conf{'dkim_feature'} eq 'on') {
+        eval "require Mail::DKIM";
+        if ($@) {
+            &do_log('err', "Failed to load Mail::DKIM perl module ; setting 'dkim_feature' to 'off'");
+            $Conf{'dkim_feature'} = 'off';
+        }
+    }
+    unless ($Conf{'dkim_feature'} eq 'on'){
+	# dkim_signature_apply_ on nothing if dkim_feature is off
+	$Conf{'dkim_signature_apply_on'} = ['']; # empty array
+    }
+</code>
+
+You must then restart Sympa and Apache.
+
+===== Sign with DKIM =====
+
+For Sympa to sign with DKIM, the DNS must be adapted.
+
+For the workshop, the DKIM-related DNS reecords have been made already. The have the form:
+
+<code>
+<selector>._domainkey.lists.domain.tld. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=<public key>"
+
+_adsp._domainkey.lists.domain.tld.    IN    TXT    "dkim=unknown"
+</code>
+
+<selector> must have the same values as the "dkim\_selector" parameter. In this workshop, it has the value "lists".
+
+Here are the DKIM-related parameters:
+
+^  parameter (sympa.conf or robot.conf)   ^  default  ^  overridden by (list context)  ^
+|[[manual_6.1:conf-parameters:part3#dkim_feature|dkim_feature]]  | ''off'' |N/A    |
+|[[manual_6.1:conf-parameters:part3#dkim_add_signature_to|dkim_add_signature_to]]  |''list,robot'' |N/A  |
+|[[manual_6.1:conf-parameters:part3#dkim_signature_apply_on|dkim_signature_apply_on]]  |''md5_authenticated_messages,smime_authenticated_messages,''\\ ''dkim_authenticated_messages,editor_validated_messages''|''dkim_signature_apply_on''   |
+|[[manual_6.1:conf-parameters:part3#dkim_private_key_path|dkim_private_key_path]]  |  |dkim~~SP~~>~~SP~~key_path  |
+|[[manual_6.1:conf-parameters:part3#dkim_signer_domain|dkim_signer_domain]]  |the virtual host domain  |dkim~~SP~~>~~SP~~signer_domain  |
+|[[manual_6.1:conf-parameters:part3#dkim_selector|dkim_selector]]  |no default | dkim~~SP~~>~~SP~~signer_domain  |
+|[[manual_6.1:conf-parameters:part3#dkim_signer_identity|dkim_signer_identity]]  |none for virtual hosts, <listname>-request@vhost for lists|dkim~~SP~~>~~SP~~identity_domain  |
+
+Copy the private key below to the "dkim\_key" file.
+
+  geany /home/sympa/etc/dkim_key&
+  
+The key:
+
+<code>
+-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxL
+i0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR
+/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB
+AoGABDKZdEkWKx4eZyNxFQmCtLOWPQk7v5xhctuayAIyb/WnwzFaJ05tMn+stLEO
+0d9yFtw+N/RRrZUrTBVQUK0zX/KX3L7t/u7M5C/M1vTz8kN3CIziIdARV5kjZIjr
+JL63kT1psr5h0AAmxNk+VPsKldYYve2ZrLEeVx0fWWgPBzECQQDEY9x1gtN6Vs73
+nKwPlQDrheOx90WnL0qlBO8mq9JYdCZjtIw9Lba9B7Uo7XfpfLyfLKJlJMUMnK5i
+xldzhvxJAkEAwOagatXQuYfgNjNU1K/zGotidXOv8haeb54jP6Xh1UaMGNBbO+b8
+sfEYYV0P9bFrtOAE6MsjsCBdERonp2eikwJAbwHTN0j/qIMw8Z1JVHVw07AWiB2w
+7VM56hTj6QPuHblpiaogKuSQCkE1ETFJOl0bcQ2VrX4fM4XMvGBIRjDioQJATNWP
+3/36fWvZqr0XdQAAXPpX5WCHHG5V/S+H6rowEbtf4iJbtKh0zouxolZnHP3mYM06
+J1+Cf4zkhQNd+BgXcQJBAIBiCgK7LRK0Wr0no1UrRX9/epeLWbP1JGdCzA0ZwfJf
+UogQ4HzYTz3xjgH8jqMV5cKW+Wr/YMsV/6v/Vl5QSyc=
+-----END RSA PRIVATE KEY-----
+</code>
+
+Edit sympa.conf and add these parameters:
+
+<code>
+dkim_selector    lists
+
+dkim_signer_domain lists.domain.tld
+
+dkim_private_key_path   /home/sympa/etc/dkim_key
+
+dkim_signature_apply_on any
+</code>
+
+Restart Sympa
+
+  /etc/init.d/sympa restart
+
+Send a message to a list. It should contain a DKIM signature.
+
+====== - Virtual hosting ======
+
+We will transform our server to make a virtual host.
+
+Actually, this could have been done from the start. We indeed recommend to create a virtual host, even if you have only one domain. because one day, somebody could ask you to create a new domain, and the configuration of the two domains could ecom concurrent, as the config of the first one would be the default of the new one.
+
+Is is still interesting to practice it from the start, because you may have to perform this operation, for example, when taking control of a pre-existing installation.
+
+
+===== Creating the virtual host =====
+
+<code>
+mkdir  /home/sympa/static_content/css/lists.domain.tld
+chown sympa:sympa  /home/sympa/static_content/css/lists.domain.tld
+mkdir /home/sympa/etc/lists.domain.tld
+chown sympa:sympa /home/sympa/etc/lists.domain.tld
+cd /home/sympa/etc/lists.domain.tld
+geany robot.conf &
+</code>
+
+Copy that in the editor:
+
+<code>
+## Main robot hostname
+# was domain domain.tld
+
+host lists.domain.tld
+
+http_host lists.domain.tld
+
+listmaster      <an.email@ddres>
+
+## Who is able to create lists
+## This parameter is a scenario, check sympa documentation about scenarios if you want to define one
+create_list     public_listmaster
+
+title <A title for the service>
+
+</code>
+
+Get rid of references to you lists domain in sympa.conf:
+
+  geany /etc/sympa.conf
+
+Change these lines:
+
+<code>
+http_host   lists.domain.tld
+
+host        lists.domain.tld
+</code>
+
+<code>
+http_host   anything.but.a.domain.you.will.use
+
+host        anything.but.a.domain.you.will.use
+</code>
+
+Restart Sympa and Apache
+
+<code>
+/etc/init.d/sympa restart && /etc/init.d/apache2 restart
+</code>
+
+Go to the web interface. Wht do you see?
+
+==== Moving lists ====
+
+All the lists must be moved to the list_data directory
+
+<code>
+mkdir /home/sympa/list_data/lists.domain.tld
+chown sympa:sympa /home/sympa/list_data/lists.domain.tld
+mv /home/sympa/list_data/* /home/sympa/list_data/lists.domain.tld
+</code>
+
+No other configuration is necessary.
+
+===== Copy a list from a robot to another =====
+
+Go to the list Admin page. Click on "rename". You can select a virtual host of destination.
+
+===== Change domain =====
+
+Here is a good reason to use virtual hosts, even if you have only one domain.
+
+==== Virtual host renaming ====
+
+<code>
+cd /home/sympa/static_content/css/
+mv lists.domain.tld a-lists.domain.tld
+cd /home/sympa/etc
+mv lists.domain.tld a-lists.domain.tld
+cd a-lists.domain.tld
+geany robot.conf &
+</code>
+
+In the editor, replace all occurrences of lists.domain.tld by a-lists.domain.tld. Save and close.
+
+==== MTA Configuration ====
+
+Introduction of a new virtual host on the server implies a few configurations.
+
+  geany /etc/mail/virtual-domains &
+
+Defin e the new virtual host
+
+  a-lists.domain.tld
+
+Configure sendmail to load the virtuall-domains file
+  cd /etc/mail
+  geany sendmail.mc
+
+Add the line:
+  VIRTUSER_DOMAIN_FILE(`/etc/mail/virtual-domains')dnl
+
+Save, then:
+  make
+
+You need to rewrite virtual host aliases to a local form.
+
+  geany /etc/mail/virtusertable
+
+Add the following line:
+
+  @a-lists.domain.tld	a-lists.domain.tld-%1%3
+
+Replace local aliases by virtual host aliases:
+
+  geany /etc/mail/sympa_aliases&
+
+Rewrite the liases. Replace "listname" by "a-lists.domain.tld-listname".
+
+Geany handles regular expression. You can therefore simply replace "\n" by "\na-lists.domain.tld-" and "@lists.domain.tld" by "@a-lists.domain.tld"
+
+Add mandatory aliases for the new domain:
+
+  geany /etc/aliases&
+  
+  # General Sympa aliases
+  a-lists.domain.tld-sympa: "| /home/sympa/bin/queue sympa@a-lists.domain.tld"
+  a-lists.domain.tld-listmaster: "| /home/sympa/bin/queue listmaster@a-lists.domain.tld"
+  a-lists.domain.tld-bounce+*: "| /home/sympa/bin/bouncequeue sympa@a-lists.domain.tld"
+  a-lists.domain.tld-abuse-feedback-report: "| /home/sympa/bin/bouncequeue sympa@a-lists.domain.tld"
+  a-lists.domain.tld-sympa-request: postmaster
+  a-lists.domain.tld-sympa-owner: postmaster
+
+
+Apply changes:
+
+  cd /etc/mail
+  make
+  newaliases
+  /etc/init.d/sendmail restart
+
+
+==== Move lists ====
+
+Moving lists from a host to another implies to move the lists' config and their archives.
+
+Moving lists
+<code>
+mv /home/sympa/list_data/lists.domain.tld /home/sympa/list_data/a-lists.domain.tld
+</code>
+
+Moving archives
+<code>
+cd /home/sympa/arc
+for i in $(ls -1| grep lists.domain.tld | sed 's/@lists.domain.tld//'); do mv $i@lists.domain.tld $i@a-lists.domain.tld; done
+</code>
+
+If you want the old addresses to keep working, you can use a redirection alias file like seen previously.
+
+====== - List management industrialisation ======
+
+You can  make list creation and removal automatic. It's useful if you have several lists to create, similar, but differing on parameter values. For example: the sutdent lists you need to create each year, by promotion, class, end such.
+
+===== - Lists families =====
+
+Lists families are defined by a set of TT2 files and an XML source file. The TT2 files contain the models of the future files used by the lists. This is the "static part": the part common to all lists of a family. The XML file contains the data according to which each list of the family will vary from the models.
+
+Here are the files you can define in family:
+
+  * config.tt2 ;
+  * param\_constraint.conf ;
+  * edit\_list.conf ;
+  * automatic\_lists\_description.conf ;
+  * message.footer.tt2,message.header.tt2,message.footer.mime.tt2,message.header.mime.tt2,info.tt2 ;
+  * Customizable files
+The config.tt2 file is the only one that is mandatory. It contains the model of the list config.
+
+Let's create a family:
+
+<code>
+mkdir /home/sympa/etc/a-lists.domain.tld/families
+
+mkdir /home/sympa/etc/a-lists.domain.tld/families/mafamille
+
+chown -R sympa:sympa /home/sympa/etc/a-lists.domain.tld/families/mafamille
+
+cd /home/sympa/etc/a-lists.domain.tld/families/mafamille/
+
+geany config.tt2&
+</code>
+
+Copy this text in the ditor:
+
+
+<code>
+subject [% subject %]
+
+status [% status %]
+
+lang [% lang %]
+
+info open
+
+visibility noconceal
+
+send privateoreditorkey
+
+web_archive
+access public
+
+subscribe open_notify
+
+owner
+email ***type your email here!***
+profile privileged
+
+include_sql_query
+db_type mysql
+host localhost
+user user_name
+passwd user_password
+db_name sympa
+sql_query SELECT email FROM dummy_emails WHERE email LIKE 'pipo+[% numero %]%'
+
+</code>
+
+Create an XML file allowing the family isntantiation:
+<code>
+cd /home/sympa/etc/a-lists.domain.tld/families/mafamille
+
+geany data.xml &
+</code>
+
+Copy this text in the editor:
+
+<code xml>
+<?xml version="1.0" ?>
+<family>
+  <list>
+    <listname>lesuns</listname>
+    <subject>La liste des uns (dirigés par les neufs)</subject>
+    <numero_owner>9</numero_owner>
+    <numero>1</numero>
+    <lang>fr</lang>
+  </list>
+  <list>
+     <listname>lesdeux</listname>
+     <subject>La liste des deux (dirigés par les huits)</subject>
+     <numero_owner>8</numero_owner>
+     <numero>2</numero>
+     <lang>fr</lang>
+  </list>
+  <list>
+    <listname>lestrois</listname>
+    <subject>La liste des trois (dirigés par les septs)</subject>
+    <numero_owner>7</numero_owner>
+    <numero>3</numero>
+    <lang>fr</lang>
+  </list>
+</family>
+</code>
+
+Now instantiate the family:
+
+<code>
+/home/sympa/bin/sympa.pl --instantiate_family mafamille --robot a-lists.domain.tld --input_file /home/sympa/etc/a-lists.domain.tld/families/mafamille/data.xml
+</code>
+
+This command output s confirmation of the lists creation.
+
+Three new XML files have been created during instantiation.
+
+<code>
+ls -al /home/sympa/etc/a-lists.domain.tld/families/mafamille/
+</code>
+
+Each of these files contain the data for a single list.
+
+If you change the XML data in the dat.xml file, the config of the list will change at the next instantiation.
+
+<code>
+geany /home/sympa/etc/a-lists.domain.tld/families/mafamille/data.xml&
+</code>
+
+Replace 1 by 2 in the first list definition, then reinstantiate the family (same command). The subscribers list change.
+
+Save changes
+
+In the web interface, edit the config of the list « lesuns ». Edit the SQL query responsible for subscribers provisionning (include\_sql\_query).
+
+Save your changes, the have a look at the list directory:
+
+<code>
+ls -ltr /home/sympa/list_data/a-lists.domain.tld/lesuns
+</code>
+
+A new file appeared: config\_changes. This file was created when you edited the list through the web interface, to keep track of this manual edition. It won't be lost the next time the family is instantiated.
+
+Constraints
+
+You can set lmimits to what is possible for the list parameters in a family. These contraints are teken into account at instantiation AND when editing the config throug the web interface.
+
+they are defined in the param\_constrinat.conf file. Parameters appearing in this file are constrained on the values they can take.
+
+If a parameters appears in this file followed by a list of comma-seprated values, it must take its value amongst this serie. If there is a single value, then the parameter value is set to this value. Parameters that don't appear in this file have no constraints.
+
+A complex parameters (with several fields, like include\_sql\_query) can be constrained. You do it by constrinaing each of its fields under the form: "parameter.field".
+
+Example:
+
+  web_archive.access public,private
+
+That means that "access" field of the "web\_archive" parameter can take only two values: "public" or "private".
+
+Create a constraints file:
+
+<code>
+cd /home/sympa/etc/a-lists.domain.tld/families/mafamille
+
+geany param_constraint.conf&
+</code>
+
+add this line
+
+  lang fr
+
+Try now, while editong the list or instantiating the family, to change the language.
+
+Other family configurautions
+
+You can alos add other files, such as a footer, which will be instantitated too. It can therefore be a TT2 file.
+
+==== - Messages customization ====
+
+The message body can be customized (using custom\_attributes, for example).
+
+You do it by adding, in the message body, TT2 tags that will be interpolated for each receipient when the message is sent.
+
+For example, if you write "Good morning [ % user.gecos%]", the result will be: "Good morning Mister Vincent" in the mail the subscriber will receive.
+
+to trigger this customization, you just need to seet the "merge\_feature" paremeter value to "on" in the list cofig.
+
+Here is the list of variables you can use in merge:
+
+[% listname %]: the list name
+[% robot %]: the virtual host domain
+[% user.email %]: the receipient email
+[% user.gecos %]: the receipient gecos
+[% user.friendly\_date %]: The subscription date of the receipient
+[% user.custom\_attribute.title.value %]: A custom attribute, if define dfor this list
+
+
+An application example is the addition of individual unsubscription links in each list message.
+
+Add, in one of your families directory, the file "message.footer.tt2":
+
+  cd /home/sympa/etc/a-lists.domain.tld/families/mafamille
+  geany message.footer.tt2 &
+
+Add this:
+
+  [% TAGS <+ +> -%]The subject of the list is "<+ subject +>", click here to unsubscribe : [% wwsympa_url %]/auto_signoff/[% listname %]/[% user.escaped_email %]
+
+Then edit the config.tt2
+
+  geany config.tt2&
+
+add the line:
+
+  merge_feature on
+
+Stupid bug - to be fixed soon: files are not added to existing lists. Only fo the purpose of the workshop, delete the lists:
+
+  cd /home/sympa/list_data/a-lists.domain.tld
+  rm -rf lesuns lesdeux lestrois
+
+Then reinstantiate the family and send a message to one of the lists - to which you must be subscribed.
+
+===== - Automatic lists =====
+
+The automatic lists are one step further in list families. When you have a potentially huge number of lsts, of which only a fraction will be used. You can anticipate their creation, but //not//create them, until someone tries to use one of them.
+
+The MTA needs to be adapted to handle automatic lists.
+
+==== sympa-milter installation ====
+
+Download the last version of the sympa-milter:
+
+<code>
+aptitude install libmilter-dev
+cd /tmp
+wget http://foss.jose-marcio.org/sympa-milter/sympa-milter-0.7.tgz
+tar zxvf sympa-milter-0.7.tgz
+cd sympa-milter-0.7/
+./configure
+make
+make install
+</code>
+
+Activate the milter start:
+
+/etc/init.d/sympa-milter start
+
+Edit the milter configuration to take your future family into account:
+
+  cp -p /usr/local/sympa-milter/etc/sympa-milter.conf.example /usr/local/sympa-milter/etc/sympa-milter.conf&
+  geany /usr/local/sympa-milter/etc/sympa-milter.conf&
+
+Declare the Sympa automatic spool dir:
+
+  spool_dir               /home/sympa/spool/automatic
+
+Add this line in the <family> section
+
+  listessyndicales ^ls+.*@a-lists.domain.tld
+
+Configure the MTA to use the milter:
+
+<code>
+cd /etc/mail
+geany sendmail.mc
+</code>
+
+add this:
+
+<code>
+INPUT_MAIL_FILTER(`sympa-milter', `S=inet:2030@localhost, T=C:2m;S:20s;R:20s;E:5m')dnl
+</code>
+
+Compile
+
+  make
+
+Add an alias to cheat on sendmail (who will otherwise cry that the "listessyndicales" user does not exist).
+
+  geany /etc/aliases
+
+Add this line:
+
+  ls: /dev/null
+
+Refresh aliases
+
+  newaliases
+  /etc/init.d/sendmail restart ; /etc/init.d/sympa-milter restart
+
+
+Create a list family:
+
+<code>
+cd /home/sympa/etc/a-lists.domain.tld/families
+mkdir listessyndicales
+cd listessyndicales
+geany config.tt2
+</code>
+
+copy this in the editor:
+
+<code>
+# List config
+
+status open
+
+[%
+nemes = listname.split('\+');
+THROW autofamily "SYNTAX ERROR: listname must begin with ls" IF (nemes.size != 2 || nemes.0 != 'ls');
+tokens = nemes.1.split('-');
+THROW autofamily "SYNTAX ERROR: wrong listname syntax" IF (tokens.size != 3);
+
+%]
+
+merge_feature on
+
+custom_subject ls
+
+subject Liste automatique
+
+footer_type  append
+
+visibility conceal
+
+send newsletterkeyonly
+
+web_archive
+  access private
+
+archive
+  period year
+  access owner
+
+clean_delay_queuemod 15
+
+reply_to_header
+value sender
+
+subscribe closed
+
+unsubscribe open
+
+add closed
+
+del closed
+
+review listmaster
+
+info private
+
+delivery_time 22:00
+
+rfc2369_header_fields archive,help,owner,post,subscribe,unsubscribe
+
+available_user_options
+reception digest,mail
+
+invite closed
+
+digest 0,1,2,3,4,5,6 16:10
+
+owner
+email *** put your address here! ***
+profile privileged
+gecos Listmaster
+
+include_sql_query
+db_type mysql
+host localhost
+user user_name
+passwd user_password
+db_name sympa
+sql_query SELECT DISTINCT email FROM dummy_families where nature LIKE '[% tokens.0 %]' AND localisation LIKE '[% tokens.1 %]' AND grade LIKE '[% tokens.2 %]'
+
+shared_doc
+d_edit private
+d_read private
+
+pictures_feature on
+
+creation
+  date [% creation.date %]
+  date_epoch [% creation.date_epoch %]
+[% IF creation_email -%]
+  email [% creation_email %]
+[% END %]
+
+serial 0
+</code>
+
+
+Configure Sympa to use automatic lists
+
+  geany /etc/sympa.conf &
+
+Add these lines:
+
+<code>
+automatic_list_feature  on
+
+automatic_list_creation public
+
+automatic_list_removal    if_empty
+</code>
+
+restart Sympa:
+
+  /etc/init.d/sympa restart
+
+A second sympa.pl processes dedicated to automatic lists handling runs now.
+
+The provision the list with this query:
+
+{{:doc:formation:dummy_families_table_creation.txt|}}
+
+In this file, replace toto@pipo.pipo by one of your addresses.
+
+**Then only** apply the query to the Sympa database:
+
+  mysql -u user_name -p -D sympa < dummy_families_table_creation.txt
+
+Now, send a mail to the ls+chercheurscnrs-dr1-sc@a-lists.domain.tld mailing list.
+
+
+===== - Lists on-demand on the web =====
+
+To allow to use automatic lists through the web interface, you can enable a dedicated web interface.
+
+Once the automatic lists family has been created, you just need to add a configuration file to the family and to declare it in sympa.conf
+
+Add this to sympa.conf:
+
+  geany /etc/sympa.conf&
+  
+<code>
+automatic_list_families name=listessyndicales:prefix=ls:display=Listes syndicales:prefix_separator=+:classes_separator=-:family_owners_list=ls@a-lists.domain.tld
+
+automatic_list_creation family_owner
+
+</code>
+
+You need to delete the former value of automatic\_list\_creation parameter.
+
+Note: this parameter ig ugly. It is a workaround of the current Sympa primitives that don't allow to have more than one level of hierarchy in the configuration files.
+
+Modify you family. Add this at the beginning of the file:
+
+<code>
+[%
+p_sep = family_config.escaped_prefix_separator
+nemes = listname.split(p_sep);
+THROW autofamily "SYNTAX ERROR: listname must begin with $family_config.prefix" IF (nemes.size != 2 || nemes.0 != family_config.prefix);
+c_sep = family_config.escaped_classes_separator;
+tokens = nemes.1.split(c_sep);
+THROW autofamily "SYNTAX ERROR: wrong listname syntax" IF (tokens.size != family_config.description.class.size);
+
+%]
+</code>
+
+Replace the following parameters:
+
+<code>
+custom_subject [% family_config.prefix %]
+
+subject [% family_config.display %] ([% FOREACH i IN tokens %][% i %], [% END %])
+
+</code>
+
+finally, add an external data source for editors:
+<code>
+editor_include
+source syndicalistes
+source_parameters [% family_config.family_owners_list %]
+</code>
+
+Add the editors datasource:
+
+<code>
+mkdir /home/sympa/data_sources/
+chown sympa:sympa /home/sympa/data_sources/
+geany /home/sympa/data_sources/syndicalistes.incl&
+</code>
+
+Copy this to the editor:
+
+<code>
+include_list [% param.0 %]
+</code>
+
+Add a footer to the family messages:
+
+  geany /home/sympa/etc/a-lists.domain.tld/families/listessyndicales/message.footer.tt2&
+
+Copy this to the editor:
+
+<code>
+[% TAGS <+ +> -%]
+If you doo't want to receive messages from <+ family_config.display +>, click here: [% wwsympa_url %]/family_signoff_request/<+ family_config.name +>/[% user.escaped_email %]
+</code>
+
+Create manually the ls@a-lists.domain.tld list and subscribe to it.
+
+finally, add the configuration that enable the part of the web interface dedicated to the automatic lists.
+
+  cd /home/sympa/etc/a-lists.domain.tld/families/listessyndicales/
+  geany automatic_lists_description.conf&
+  
+  
+Copy this in the editor:
+  
+<code>
+class
+        name nature 
+        stamp Personnal category 
+        description the kind of people you want to write to
+		order 0 
+        instances order 0 --- value chercheurscnrs --- tag Researchers CNRS %%% order 1 --- value itacnrs --- tag ITA CNRS %%% order 2 --- value chercheursnoncnrs --- tag non CNRS researchers %%% order 3 --- value itanoncnrs --- tag ITA not CNRS
+
+class
+        name localisation 
+        stamp Delegation 
+        description Localization
+        order 1
+        instances order 0 --- value dr1 --- tag Area 1 %%% order 1 --- value dr2 --- tag Area 2 %%% order 2 --- value dr3 --- tag Area 3 %%% order 3 --- value dr4 --- tag Area 4
+
+class
+        name grade
+        stamp Title
+        description The title by which thou shall call them
+        order 2
+        instances order 0 --- value dr --- tag Research director %%% order 1 --- value cr --- tag Research executive %%% order 2 --- value ige --- tag Engineer d'études %%% order 3 --- value sc --- tag Lance sergeant --- default 1
+</code>
+
+Restart Sympa and Apache:
+
+  /etc/init.d/sympa restart; /etc/init.d/apache2 restart
+
+Go to the web interface. A new "Listes syndicales" tab should be there. Click on it.
+
+You have now the possibility to select categories of people you want to write to. select some and click the button. You are redirected to the posting page of a list.
+
+To illustrate the genericity of this mechanism, update the sympa.conf content:
+<code>
+automatic_list_families name=listessyndicales:prefix=ls:display=Listes syndicales:prefix_separator=+:classes_separator=-:family_owners_list=ls@a-lists.domain.tld;name=listessyndicales2:prefix=ls2:display=Listes syndicales bis:prefix_separator=+:classes_separator=-:family_owners_list=ls@a-lists.domain.tld
+
+</code>
+
+Add an entry in the sympa-milter configuration:
+
+<code>
+listessyndicales2 ^ls2+.*@a-lists.domain.tld
+</code>
+
+Create a symbolic link from listssyndicales2 to listessyndicales :
+
+  cd /home/sympa/etc/a-lists.domain.tld/families
+  ln -s listsesyndicales listessyndicales2
+
+Restart Sympa and apache:
+
+  /etc/init.d/sympa restart; /etc/init.d/apache2 restart
+
+Go to the web interface.
+

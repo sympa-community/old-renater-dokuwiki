@@ -1,0 +1,6 @@
+====== Customization contribs ======
+
+ You may upload files (zip or tar) in this page. Just edit it (in order to upload files in in this dokuwiki, use the in line editor and start the image tool {{:contribs:image.png|}}) . 
+
+Please describe the changes you did, give also a link to a public sympa server using the customization you propose as a contrib and list the version that are compatible with your contrib. If you just edit the colors, just list use the colors parameters value. Best contribs may be added in Sympa distribution so do not submit contrib unless you agree to add it in Sympa under GPL licence.
+

@@ -1,0 +1,6 @@
+  * References to PO catalogues are noted with the **<nowiki>[% loc %]</nowiki>** tag that may include parameters. Example: <code>[%|loc(list.name,list.host)%]Welcome to list %1 %2[%END%]</code>
+  * Few exceptions apart, templates cannot insert or parse a file given its full or relative path, for security reasons. Only the file name should be provided; the TT2 parser will then use the ''INCLUDE_PATH'' provided by Sympa to find the relevant file to insert/parse.
+  * The **qencode** filter should be used if a template includes SMTP header fields that should be Q-encoded. Example: <code>[% FILTER qencode %]Message à modérer[%END%]</code>
+  * You can write different versions of a template file in different languages, each of them being located in a subdirectory of the ''tt2'' directory. Example: ''/mail_tt2/fr_FR/helpfile.tt2''.
+  * Your templates can include [[#custom_parameters|custom parameters]].
+

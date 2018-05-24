@@ -1,0 +1,30 @@
+====== Arbre d'appel des fonctions ======
+
+==== tools/subroutine-tree.pl ====
+
+Retrace l'arbre d'appel des fonctions. On lui passe en paramètre le nom de la fonction recherchée. On peut lui passer la profondeur de la recherche.
+
+Exemple d'appel :
+<code>
+$ ../tools/subroutine-tree.pl /usr/local/sympa-stage2/bin get_which 2
+bounced.pl/ > get_which
+wwsympa.fcgi/ > get_which
+wwsympa.fcgi/do_multiple_subscribe > wwsympa.fcgi/do_subscribe > get_which
+wwsympa.fcgi/do_suspend_request > get_which
+wwsympa.fcgi/do_change_email > get_which
+wwsympa.fcgi/do_signoff > get_which
+wwsympa.fcgi/do_search_user > get_which
+wwsympa.fcgi/do_which > get_which
+wwsympa.fcgi/do_sso_login > List.pm/set_netidtoemail_db > get_which
+sympasoap.pm/signoff > sympasoap.pm/signoff > get_which
+Commands.pm/signoff > sympasoap.pm/signoff > get_which
+sympa_soap_client.pl/play_soap > sympasoap.pm/signoff > get_which
+sympasoap.pm/complexWhich > sympasoap.pm/which > get_which
+sympasoap.pm/signoff > Commands.pm/signoff > get_which
+Commands.pm/signoff > Commands.pm/signoff > get_which
+sympa_soap_client.pl/play_soap > Commands.pm/signoff > get_which
+sympasoap.pm/complexWhich > Commands.pm/which > get_which
+Commands.pm/help > get_which
+Commands.pm/set > Commands.pm/set > get_which
+</code>
+ 

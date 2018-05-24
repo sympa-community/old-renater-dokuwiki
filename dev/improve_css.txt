@@ -1,0 +1,5 @@
+====== Sympa CSS and HTML coherence ======
+
+That's the page to gather thoughts about how to improve Sympa web interface and CSS
+
+  * In some cases is were used as classes for CSS handling. In such cases, we often have the same ID multiple times on one page, which is bad. We should replace ids by classes.

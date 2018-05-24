@@ -1,0 +1,15 @@
+====== Quelques saines lectures pour commencer ton stage ======
+
+Voici quelques bonnes lectures qui te permettront de te lancer dans ce stage.
+
+  * Le bouquin "Introduction à Perl". Les 4 premiers chapîtres suffisent pour se faire une idée de la bête. Prends le temps de bien les lire. Sympa, c'est 99% de perl.
+  * [[http://template-toolkit.org/|TT2]], le langage de template que nous utilisons dans Sympa.
+  * Un petit coup d'œil au [[:manual:|manuel de Sympa]] ne peut pas faire de mal. Ne serait-ce que pour savoir où il est. Inutile de t'acharner à tout lire. La [[:manual:presentation|présentation]] suffit pour comprendre où tu mets les pieds. ;)
+
+Tu peux d'ores et déjà faire un tour sur [[https://listes.renater.fr/sympa|Universalistes]], notre serveur de production, sur lequel tourne la toute dernière version de Sympa. Tu verras à quoi ressemble l'interface web. Tu peux te créer un compte dessus et t'abonner à quelques listes : sympa-fr, sympa-dev et sympa-users
+
+Pour aller plus loin
+
+  * [[http://search.cpan.org/|CPAN]] : la boîte à outils de perl.
+
+Bon courage !

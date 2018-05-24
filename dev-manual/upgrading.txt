@@ -1,0 +1,186 @@
+====== Upgrading Sympa ======
+
+Sympa upgrade is a relatively riskless operation, mainly because the install process preserves your customizations (templates, configuration, authorization scenarios, ...) and also because Sympa automates a few things (DB update, CPAN modules installation).
+
+Upgrading Sympa means that you follow these steps:
+
+  - [[installing-sympa#obtaining_sympa_related_links|retrieve]] the latest source version of Sympa
+  - stop Sympa
+  - [[installing-sympa#installing_sympa|install it]] : <code>./configure ; make ; make install</code>
+  - run the following command.
+<code>sympa.pl --upgrade </code>
+
+And that' it!
+This command will perform all the required DB changes (if running MySQL) and will update the configuration files if required.
+
+====== Incompatible changes ======
+
+New features, changes and bug fixes are summarized in the ''NEWS'' file, part of the tar.gz (the ''Changelog'' file is a complete log file of CVS changes).
+
+For example, note that, starting from Sympa 5.3b.4, the minimum version for MySQL is 4.1.
+
+Sympa is a long-term project, so some major changes may need some extra work. The following list consists of well known changes that require some attention:
+
+  * version 5.1 (August 2005) uses XHTML and CSS in web templates;
+  * version 4.2b3 (August 2004) introduces TT2 template format;
+  * version 4.0a5 (September 2003) changes ''auth.conf'' (no default anymore so you may have the create this file);
+  * version 3.3.6b2 (May 2002) the list parameter ''user_data_source'' as a new value include2 which is the recommended value for any list.
+
+The file ''NEWS'' lists all changes and of course, all changes that may require some attention from the installer. As mentioned at the beginning of this file, incompatible changes are preceded by '<nowiki>*****</nowiki>'. While running the ''make install'' Sympa will detect the previously installed version and will prompt you with incompatible changes between both versions of the software. You can interrupt the install process at that stage if you are too frightened. Output of the ''make install'':
+
+<code>
+  You are upgrading from Sympa 4.2
+  You should read CAREFULLY the changes listed below; they might be incompatible changes:
+  <RETURN>
+
+  *****   require new perlmodule XML-LibXML
+
+  *****   You should update your DB structure (automatically performed by Sympa with MySQL), adding the following table (MySQL example):
+  *****   CREATE TABLE admin_table (
+  *****   list_admin              varchar(50) NOT NULL,
+  *****   user_admin              varchar(100) NOT NULL,
+  *****   role_admin              enum('listmaster','owner','editor') NOT NULL,
+  *****   date_admin              datetime NOT NULL,
+  *****   update_admin            datetime,
+  *****   reception_admin         varchar(20),
+  *****   comment_admin           varchar(150),
+  *****   subscribed_admin        enum('0','1'),
+  *****   included_admin          enum('0','1'),
+  *****   include_sources_admin   varchar(50),
+  *****   info_admin              varchar(150),
+  *****   profile_admin           enum('privileged','normal'),
+  *****   PRIMARY KEY (list_admin, user_admin,role_admin),
+  *****   INDEX (list_admin, user_admin,role_admin)
+  *****   );
+
+  *****   Extend the generic_sso feature; Sympa is now able to retrieve the user email address in a LDAP directory
+  <RETURN>
+</code>
+
+
+====== CPAN modules update ======
+
+The installation of required and optional Perl modules (CPAN) is automatically handled at the ''make'' time. You are asked before each module is installed. For optional modules, associated features are listed.
+
+Output of the ''make'' command:
+
+  Checking for REQUIRED modules:
+  ------------------------------------------
+  perl module          from CPAN       STATUS
+  -----------          ---------       ------
+  Archive::Zip         Archive-Zip    OK (1.09   >= 1.05)
+  CGI                  CGI            OK (2.89   >= 2.52)
+  DB_File              DB_FILE        OK (1.806  >= 1.75)
+  Digest::MD5          Digest-MD5     OK (2.20   >= 2.00)
+  FCGI                 FCGI           OK (0.67   >= 0.67)
+  File::Spec           File-Spec      OK (0.83   >= 0.8)
+  IO::Scalar           IO-stringy     OK (2.104  >= 1.0)
+  LWP                  libwww-perl    OK (5.65   >= 1.0)
+  Locale::TextDomain   libintl-perl   OK (1.10   >= 1.0)
+  MHonArc::UTF8        MHonArc        version is too old ( < 2.4.6).
+  >>>>>>> You must update ''MHonArc'' to version '''' <<<<<<.
+  Setting FTP Passive mode
+  Description:
+  Install module MHonArc::UTF8 ? n
+  MIME::Base64         MIME-Base64    OK (3.05   >= 3.03)
+  MIME::Tools          MIME-tools     OK (5.411  >= 5.209)
+  Mail::Internet       MailTools      OK (1.60   >= 1.51)
+  Regexp::Common       Regexp-Common  OK (2.113  >= 1.0)
+  Template             Template-ToolkitOK (2.13   >= 1.0)
+  XML::LibXML          XML-LibXML     OK (1.58   >= 1.0)
+
+  Checking for OPTIONAL modules:
+  ------------------------------------------
+  perl module          from CPAN       STATUS
+  -----------          ---------       ------
+  Bundle::LWP          LWP            OK (1.09   >= 1.09)
+  Constant subroutine CGI::XHTML_DTD redefined at /usr/lib/perl5/5.8.0/constant.pm line 108, <STDIN> line 1.
+  CGI::Fast            CGI            CGI::Fast doesn't return 1 (check it).
+  Crypt::CipherSaber   CipherSaber    OK (0.61   >= 0.50)
+  DBD::Oracle          DBD-Oracle     was not found on this system.
+  Description: Oracle database driver, required if you connect to a Oracle database.
+  Install module DBD::Oracle ?
+
+====== Database structure update ======
+
+Whatever RDBMS you are using (MySQL, SQLite, Pg, Sybase or Oracle), Sympa will check every database tables and fields. If one is missing, ''sympa.pl'' will not start. If you are using MySQL, Sympa will also check field types and will try to change them (or create them) automatically, assuming that the DB user configured has sufficient privileges. If you are not using MySQL or if the DB user configured in ''sympa.conf'' does have sufficient privileges, then you should change the database structure yourself, as mentioned in the ''NEWS'' file (database structure is describe in the //src/etc/script/// directory of distribution).
+
+Output of Sympa logs :
+
+  Table admin_table created in database sympa
+  Field 'comment_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field comment_admin added to table admin_table
+  Field 'date_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field date_admin added to table admin_table
+  Field 'include_sources_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field include_sources_admin added to table admin_table
+  Field 'included_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field included_admin added to table admin_table
+  Field 'info_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field info_admin added to table admin_table
+  Field 'list_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field list_admin added to table admin_table
+  Field 'profile_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field profile_admin added to table admin_table
+  Field 'reception_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field reception_admin added to table admin_table
+  Field 'role_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field role_admin added to table admin_table
+  Field 'subscribed_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field subscribed_admin added to table admin_table
+  Field 'update_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Field update_admin added to table admin_table
+  Field 'user_admin' (table 'admin_table' ; database 'sympa') was NOT found. Attempting to add it...
+  Setting list_admin,user_admin,role_admin fields as PRIMARY
+  Field user_admin added to table admin_table
+
+You might need, for some reason, to make Sympa run the migration procedure from version //X// to version //Y//. This procedure is run automatically by ''sympa.pl -upgrade'' when it detects that ''/data_structure.version'' is older than the current version, but you can also run trigger this procedure yourself:
+
+  sympa.pl --upgrade --from=4.1 --to=5.2
+
+
+====== Preserving your customizations ======
+
+Sympa comes with default configuration files (templates, scenarios,...) that will be installed in the ''/home/sympa/bin'' directory. If you need to customize some of them, you should copy the file first in a safe place, i.e. in the ''/home/sympa/etc'' directory. If you do so, the Sympa upgrade process will preserve your site customizations.
+
+
+====== Running two Sympa versions on a single server ======
+
+This can be very convenient to have a stable version of Sympa and a fresh version for test purpose, both running on the same server.
+
+Both Sympa instances must be completely partitioned, unless you want the make production mailing lists visible through the test service.
+
+The biggest part of the partitioning is achieved while running the ''./configure''. Here is a sample call to ''./configure'' on the test server side:
+
+  ./configure --prefix=/home/sympa-dev \
+              --with-confdir=/home/sympa-dev/etc \
+              --with-mandir=/home/sympa-dev/man \
+              --with-initdir=/home/sympa-dev/init \
+  	    --with-piddir=/home/sympa-dev/pid
+              --with-lockdir=/home/sympa-dev/lock \
+              --with-sendmail_aliases=/home/sympa-dev/etc/sympa_aliases
+
+You can also customize more parameters via the ''/home/sympa-dev/etc/sympa.conf'' file.
+
+If you wish to share the same lists in both Sympa instances, then some parameters should have the same value : ''home'', ''db_name'', ''arc_path''.
+
+
+
+====== Moving to another server ======
+
+If you're upgrading and moving to another server at the same time, we recommend you first to stop the operational service, move your data and then upgrade Sympa on the new server. This will guarantee that Sympa upgrade procedures have been applied on the data.
+
+The migration process requires that you move the following data from the old server to the new one:
+
+  * the user database. If using MySQL you can probably just stop ''mysqld'' and copy the ''/var/lib/mysql/sympa/'' directory to the new server;
+  * the ''/home/sympa/expl'' directory that contains list config;
+  * the  directory that contains the spools;
+  * the  directory ''/etc/sympa.conf'' and ''wwsympa.conf''. Sympa new installation creates a file ''/etc/sympa.conf'' (see [[conf-parameters|sympa.conf parameters]]) and randomly initializes the cookie parameter. Changing this parameter will break all passwords. When upgrading Sympa on a new server, take care that you start with the same value of this parameter, otherwise you might have problems!
+  * the web archive.
+
+In some cases, you may want to install the new version and run it for a few days before switching the existing service to the new Sympa server. In this case, perform a new installation with an empty database and play with it. When you decide to move the existing service to the new server:
+
+  - stop all sympa processes on both servers;
+  - transfer the database;
+  - edit the ''/data_structure.version'' on the new server; change the version value to reflect the old number;
+  - start "sympa.pl -upgrade", it will upgrade the database structure according to the hop you do.

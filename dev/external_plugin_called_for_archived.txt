@@ -1,0 +1,16 @@
+====== External plugins in archived.pl ======
+
+===== Related threads =====
+
+[[http://listes.renater.fr/sympa/arc/sympa-dev/2006-09/msg00032.html]]
+
+===== Required feature =====
+
+Some sites need to store Sympa archived messages elsewhere, in a relational database for example. This is required for sites that provide home-made web user interface to Sympa and wish to provide archive features. An alternative would be to add archive-related features to the Sympa SOAP server but a) mhonarc MIME features could not be used in this context b) many features would be required (get list of messages, get message, search message, next searched message,...)
+
+===== Adopted design =====
+
+The way to do is to add some new parameters in Sympa to control the archived.pl daemon. This daemon adds or removes messages in Sympa archive. What we could do is allow any external application as a plugin to archived. Such plugin could have 2 features : add a new message to the external archive, remove a message from the external archive.
+
+This solution would not change Sympa existing archiving process. Archives will be duplicated but it will be easy to maintain consistency for the 2 versions of archive (excepted for authorization).
+

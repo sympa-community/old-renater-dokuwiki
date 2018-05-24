@@ -1,0 +1,9 @@
+====== Using Sympa with LDAP ======
+
+LDAP is a client-server protocol for accessing a directory service. Sympa provide various features based on access to one or more LDAP directories:
+
+  * authentication using LDAP directory instead of the Sympa internal storage of password (see [[authentication#auth.conf|auth.conf]]);
+  * named filters used in authorization scenario condition (see [[authorization-scenarios#named_filters|Named Filters]]);
+  * LDAP extraction of list subscribers (see [[parameters-data-sources#user_data_source|user_data_source]]);
+  * LDAP extraction of list owners or editors (see [[list-definition#data_inclusion_file|Data inclusion file]]);
+  * mail aliases stored in LDAP (see [[mail-aliases#alias_manager|Alias manager]]).

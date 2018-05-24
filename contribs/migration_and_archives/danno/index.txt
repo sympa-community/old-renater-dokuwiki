@@ -1,0 +1,30 @@
+A set of scripts from Dan Pritts  Internet2 written for moving from 3.4 to 6.1 . This migration could not use standard "sympa.pl --upgrade" because a lot of lists had to be changed or closed etc.   Additionally, I was concerned that so much had changed between 3.4 and 6.1 that the upgrade might fail.
+====== createlist.pl ======
+{{:contribs:migration_and_archives:danno:createlist.pl|}}  creates a single list on the new server.  It needs access to the original config file, archives, and db as well as the new db.  As configured it moves the archives from the old list area to the new one.  I recommend you do not do this with your only copy of the list archives.
+
+**WARNING** - I discovered after the fact that this script handled lists with included_subscribers incorrectly - the intent is that  only direct subscribers are added to the list by createlist.pl; sympa will automatically add the included subscribers.   Instead what happened was that the included subscribers were added, and the direct subscribers were skipped.  Oops.
+ 
+I cannot see my error in logic in the script that is linked here; I think I must have fixed the bug before sending it to the list.  However, I recommend that you check this over before moving into production.
+
+**ALSO** - in several places you will see code like this:
+<code>
+  # our data has a bunch of cr's in it that chomp does not catch
+  $reception =~ s/^M$//;
+</code>
+
+Except that the ^M's are not listed properly.
+
+The intent was that the ^M is a literal control-M character; I did this in production by inserting the literal control-M in the script (first type control-V then the control-M).  Probably better would have been something like this - ''\cm'' matches control-m in perl regex.  
+<code>
+  # our data has a bunch of cr's in it that chomp does not catch
+  $reception =~ s/\cm$//;
+</code>
+
+====== fixuserprefs.pl ======
+{{:contribs:migration_and_archives:danno:fixuserprefs.pl|}} runs after all lists have been created on the new server.
+it updates the user prefs of included users.  You need to run this on a second pass, as some lists depended on other lists that were created later.
+
+====== parsesympaconf.pl ======
+{{:contribs:migration_and_archives:danno:parsesympaconf.pl|}}
+
+a standalone script to parse sympa list configuration files.   

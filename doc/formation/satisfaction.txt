@@ -1,0 +1,81 @@
+~~NOTOC~~
+
+====== FORMATION SYMPA - QUESTIONNAIRE DE SATISFACTION ======
+
+<WRAP center centeralign round box 60%>Stage du 17/06/2014 au 18/06/2014 à Rennes</WRAP>
+\\ \\ \\ 
+
+Merci de compléter cette fiche afin de contribuer à l'amélioration des stages qui vous sont proposés.
+\\ \\ \\ 
+
+===== - Qui êtes-vous ? =====
+\\ 
+
+<WRAP centeralign column 30%><html><span style="border:2px solid black;font-size:0.8em">&nbsp;&nbsp;&nbsp;&nbsp;</span></html> Titulaire</WRAP>
+<WRAP centeralign column 30%><html><span style="border:2px solid black;font-size:0.8em">&nbsp;&nbsp;&nbsp;&nbsp;</span></html> Non titulaire</WRAP>
+\\ 
+
+==== Personnel administratif et technique ====
+
+|  \\ \\   |  ADJAENES  |  SAENES  |  AAENES  |  ADT  |  TECH  |  ASI  |  IGE  |  IGR  |  Vacataire  |  CAE  |
+|  Université  | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html>\\ \\ \\  |
+|  Autres  |  |  |  |  |  |  |  |  |  | \\ \\ \\  |
+\\ 
+
+==== Personnel enseignant et enseignant chercheur ====
+
+|  \\ \\   |  PU  |  MCU  |  PRCE  |  PRAG  |  Doctorant  |  Post-doctorant  |
+|  Université  | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html> | <html><div style="width:5em"></div></html>\\ \\ \\  |
+|  Autres  |  |  |  |  |  | \\ \\ \\  |
+\\ 
+
+==== Si autres, précisez l'établissement ====
+\\ 
+\\ 
+\\ 
+
+===== - Comment avez-vous appris l'existence de ce stage ? =====
+
+  * <html><span style="border:2px solid black;font-size:0.8em">&nbsp;&nbsp;&nbsp;&nbsp;</span></html> Par une communication RENATER
+  * <html><span style="border:2px solid black;font-size:0.8em">&nbsp;&nbsp;&nbsp;&nbsp;</span></html> Par le site web de SYMPA
+  * <html><span style="border:2px solid black;font-size:0.8em">&nbsp;&nbsp;&nbsp;&nbsp;</span></html> Autres (précisez)
+\\ 
+
+===== - Comment avez-vous été amené à le suivre ? =====
+
+  * <html><span style="border:2px solid black;font-size:0.8em">&nbsp;&nbsp;&nbsp;&nbsp;</span></html> Je l'ai demandé
+  * <html><span style="border:2px solid black;font-size:0.8em">&nbsp;&nbsp;&nbsp;&nbsp;</span></html> On m'a proposé de le suivre
+  * <html><span style="border:2px solid black;font-size:0.8em">&nbsp;&nbsp;&nbsp;&nbsp;</span></html> J'ai été obligé de le suivre
+\\ 
+
+<html><div style="page-break-before: always"></div></html>
+
+===== - Apportez votre appréciation selon l'échelle suivante =====
+
+|  |  Très satisfait  |  Satisfait  |  Moyennement satisfait  |  Pas satisfait  |  Justifiez  |
+|  Objectifs  | <html><div style="width:10em"></div></html> | <html><div style="width:10em"></div></html> | <html><div style="width:15em"></div></html> | <html><div style="width:10em"></div></html> | <html><div style="width:35em"></div></html>\\ \\ \\ \\   |
+|  \\ Durée\\   |  |  |  |  |  \\ \\ \\ \\   |
+|  Contenu  |  |  |  |  |  \\ \\ \\ \\   |
+|  Animation  |  |  |  |  |  \\ \\ \\ \\   |
+|  Satisfaction  |  |  |  |  |  \\ \\ \\ \\   |
+|  Logistique  |  |  |  |  |  \\ \\ \\ \\   |
+|  Documentation  |  |  |  |  |  \\ \\ \\ \\   |
+|  Pertinence  |  |  |  |  |  \\ \\ \\ \\   |
+\\ 
+
+===== - Quels sont les points forts =====
+\\ 
+\\ 
+\\ 
+
+===== - Et les points faibles =====
+\\ 
+\\ 
+\\ 
+
+===== - A l'issue de cette formation avez-vous besoin d'autres stages ? Si oui dans quel domaine ? =====
+
+Merci de bien vouloir développer cette partie pour que nous puissions augmenter notre offre de formations.
+
+
+<html><script type="text/javascript">addInitEvent(function(){getElementsByClass('stylefoot', document, 'div')[0].style.display='none';});</script></html>

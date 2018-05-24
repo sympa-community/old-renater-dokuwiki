@@ -1,0 +1,457 @@
+====== Customizing Sympa/WWSympa ======
+
+
+
+====== Template file format ======
+
+Template files within Sympa used to be in a proprietary format that has been replaced with the [[http://www.tt2.org|TT2]] template format.
+
+You will find detailed documentation about the TT2 syntax on the web site: **[[http://www.tt2.org]]**
+
+If you are an emacs user, you can use the [[http://dave.org.uk/emacs/|TT2 highlighting mode]] by Dave Cross.
+
+Here are some aspects regarding templates that are specific to Sympa:
+
+{{page>customizingbisbis}}
+
+====== Mail template files ======
+
+These files are used by Sympa as service messages for several commands. These files are interpreted (parsed) by Sympa and respect the TT2 template format; every file has a **.tt2** extension. See [[customizing#template_file_format|Template file format]].
+
+Sympa looks for these files in the following order (where ''<list>'' is the listname if defined, ''<action>'' is the name of the command, and ''<lang>'' is the preferred language of the user):
+
+  - ''/home/sympa/expl/<list>/mail_tt2/<lang>/<action>.tt2''.
+  - ''/home/sympa/expl/<list>/mail_tt2/<action>.tt2''.
+  - ''/home/sympa/etc/my.domain.org/mail_tt2/<lang>/<action>.tt2''.
+  - ''/home/sympa/etc/my.domain.org/mail_tt2/<action>.tt2''.
+  - ''/home/sympa/etc/mail_tt2/<lang>/<action>.tt2''.
+  - ''/home/sympa/etc/mail_tt2/<action>.tt2''.
+  - ''/home/sympa/bin/etc/mail_tt2/<lang>/<action>.tt2''.
+  - ''/home/sympa/bin/etc/mail_tt2/<action>.tt2''.
+
+If the file starts with a From: line, it is considered as a full message and will be sent (after parsing) without adding SMTP headers. Otherwise, the file is treated as a text/plain message body.
+
+The following variables may be used in these template files:
+
+  * [% sender %]: e-mail address of the sender;
+  * [% return_path %]: Return-Path SMTP header of the message;
+  * [% fromlist %]: From SMTP header of the message;
+  * [% replyto %]: Reply-To SMTP header of the message ;
+  * [% boundary %]: MIME parts separator calculated for service messages;
+  * [% robot_domain %]: domain of a virtual host as defined in the ''host'' parameter;
+  * [% list.lang %]: default language of the list;
+  * [% list.name %]: the list name;
+  * [% list.domain %]: the domain the list is hosted by;
+  * [% list.host %]: the domain the list is hosted by;
+  * [% list.subject %]: the subject of the list;
+  * [% list.owner %]: an array containing the list owners address;
+  * [% list.dir %]: The absolute path to the list's configuration directory;
+  * [% conf.email %]: sympa email address local part;
+  * [% conf.host %]: sympa default host domain name;
+  * [% conf.sympa %]: sympa's complete email address;
+  * [% conf.request %]: return address for bounces (sympa-request);
+  * [% conf.listmaster %]: listmaster's email addresses;
+  * [% conf.wwsympa_url %]: //WWSympa//'s root URL;
+  * [% conf.title %]: Host web page title;
+  * [% conf.listmaster_email %]: listmaster'e-mail address local part;
+  * [% conf.version %]: //for global messages only!// Sympa version number;
+  * [% user.email %]: user email address;
+  * [% user.lang %]: user language;
+  * [% user.gecos %]: user gecos field (usually his/her name);
+  * [% user.password %]: user password;
+  * [% subscriber.date %]: date when the user subscribed to this list;
+  * [% subscriber.update_date %]: date when the user last updated her/his profile;
+  * [% subscriber.bounce %]: subscriber's bounce rate;
+  * [% subscriber.first_bounce %]: date when this subscriber had her/his first bounce.
+
+=====  helpfile.tt2 =====
+
+This file is sent in response to a ''HELP'' command. You may use additional variables:
+
+  * [% is_owner %]: ''TRUE'' if the user is list owner;
+
+  * [% is_editor %]: ''TRUE'' if the user is list editor.
+
+
+=====  lists.tt2 =====
+
+File returned by the ''LISTS'' command. An additional variable is available:
+
+  * [% lists %]: this is a hash table indexed by list names and containing lists' subjects. Only lists visible to the user (according to the ''visibility'' list parameter) are listed.
+
+Example:
+<code>
+  These are the public lists for [conf->email]@[conf->domain]
+
+  [% FOREACH l = lists %]
+  [% l.key %]@[% l.value.host %] : [% l.value.subject %] ([% l.value.topics.0 %])
+
+  [% END %]
+</code>
+
+=====  global_remind.tt2 =====
+
+This file is sent in response to a ''REMIND *'' command. (see [[sympa-commands#owner_commands|Owner commands]]) You may use additional variables:
+
+-[% lists %]: this is an array containing the names of the lists the user is subscribed to.
+
+Example:
+<code>
+  This is a subscription reminder.
+
+  You are subscribed to the following lists:
+  [% FOREACH l = lists %]
+
+   [% l %]: [% conf.wwsympa\_url \%]/info/[% l %]
+
+  [% END %]
+
+  Your subscriber e-mail: [% user.email %]
+  Your password: [% user.password %]
+</code>
+
+=====  your_infected_msg.tt2 =====
+
+This message is sent to warn the sender of a virus infected mail, indicating the name of the virus found (see [[antivirus#antivirus|Antivirus]]).
+
+
+====== Web template files ======
+
+You may define your own web template files, different from the standard ones. //WWSympa// first looks for list specific web templates, then for site web templates, before falling back on its defaults.
+
+Your list web template files should be placed in the ''/home/sympa/expl/mylist/web_tt2'' directory, and your site web templates in the ''~/home/sympa/etc/web_tt2'' directory.
+
+===== Sympa colors customization guide =====
+
+Sympa colors are managed using [[conf-parameters/part1#color_0_color_1_..._color_15|color_x parameters in Sympa.conf]].
+
+You will find below how these parameters are interpreted in the Sympa web interface. Note that if you activated the [[conf-parameters/part1#css_path|static CSS]], you will need to hit the "install static css" button once again to see the changes in your color definitions.
+**
+Install time:** web colors are defined in Sympa's main Makefile (see [[installing-sympa#compilation_and_installation|Compilation and installation]]).
+
+==== What are the colors used for? ====
+
+  * ''color_0'': background color of:
+    * one out of two lines in tables, alternated with ''color_5''. It is intended to be the darkest shade, as ''color_5'' has other uses.
+  * ''color_1'': background color of:
+    * main navigation tabs
+    * most of the buttons (those corresponding to the MainMenuLinks CSS class)
+  * ''color_2'': font and border color of:
+    * almost everything. Exceptions for borders are <TD/> borders; exceptions for fonts are links, buttons and some titles.
+  * ''color_3'': background color of:
+    * top box
+    * footer box
+  * ''color_4'': background color of:
+    * page
+    * table headers (at the very exception of the table displaying new lists)
+    * the rest of the buttons (which are in fact hyperlinks, corresponding to the actionMenuLinks CSS class)
+  * ''color_5'': background color of:
+    * all the main interface boxes
+    * the lightest color for the table lines, contrasting with color_0
+  * ''color_6'': background color of:
+    * active action (for example, the section of the admin options which is currently viewed, or the header corresponding to the data following which an array is currently sorted)
+    * hovered actions
+    * hovered buttons corresponding to the actionMenuLinks CSS class
+    * hovered navigation tabs
+  * ''color_7'': background color of:
+    * error messages
+    * just edited area in the administrative management section.
+  * ''color_8'': doted underscore color of:
+    * hyperlinks
+  * ''color_9'': 
+    * border color for active action (for example, the section of the admin options which is currently viewed, or the header corresponding to the data following which an array is currently sorted)
+    * border color for hovered hyperlinks corresponding to actions
+    * background color for clicked links (corresponding to the .active state in a CSS)
+  * ''color_10'': inactive buttons color. Rarely used. Don't bother.
+  * ''color_11'': font color for:
+    * active navigation tab
+    * H2 titles
+    * hovered links
+    * some hovered buttons action(which are in fact hyperlinks, corresponding to the actionMenuLinks CSS class)
+  * ''color_12'': Font color for the class smallblack. Not sure it is used.
+  * ''color_13'': Background color of:
+    * editable form areas (text areas, selection lists, ...)
+    * the rest of hovered buttons (those corresponding to the MainMenuLinks CSS class)
+  * ''color_14'': Unused
+  * ''color_15'': Unused
+
+
+
+
+==== What colors have the objects? ====
+
+Here are gathered informations about the color parameters used for specific parts of the web interface. Take care to have a look to the precedent section as changing a parameter for an object is likely to change it for a few similar objects.
+
+=== Main backgrounds ===
+
+There are for different backgrounds in the web interface:
+
+  * The page: ''color_4''; below all the rest. Just the base on which all the rest is stacked.
+  * The main boxes: ''color_5''; This is where most of the text, buttons and links are displayed.
+  * The top box and footer: ''color_3''; the top box is where your service name and main navigation tabs are displayed. The footer contains the version of Sympa.
+  * The editable forms areas: ''color_13''; This is the color in all the form widgets which can be edited by users (text areas, selection lists).
+
+=== Buttons ===
+
+The buttons color management can be confusing, so let's just stress it a little:
+
+^Color attribute ^ MainMenuLinks CSS class^actionMenuLinks CSS class^
+|Default background color|''color_1''|''color_4''|
+|Hovered background color|''color_13''|''color_6''|
+|Default font color|''color_2''|''color_2''|
+|Hovered font color|''color_1''|''color_11''|
+|Default border color|''color_2''|''color_2''|
+|Hovered border color|''color_2''|''color_2''|
+
+=== Links ===
+
+Hyperlinks have the same attributes as plain text, except:
+  - They are always underscored by a doted line of color ''color_8''
+  - When hovered, they take the color ''color_11''
+
+=== Menu links ===
+
+They have the following attributes:
+
+^State^Font^Background^Border^
+|Default|''color_2''|''None''|''None''|
+|Hovered|''color_11''|''color_6''|''color_9''|
+|Clicked|''color_2''|''color_9''|''color_6''|
+|Active|''color_2''|''color_6''|''color_9''|
+
+=== Miscellaneous ===
+
+Note these additional informations:
+  - navigation tabs have the same default parameters as the class MainMenuLinks but the same parameters as actionMenuLinks when hovered;
+  - except for the MainMenuLinks button, //anything// likely to do something if clicked takes the font color ''color_11'' when hovered;
+  - the menu links (Info, Admin, Edit list config...) are the only objects whose color actually changes on click.
+
+====== CSS files ======
+
+Sympa has four CSS stylesheets : ''style.css'', ''print.css'', ''print-preview.css'' and ''fullPage.css''.
+
+It will use a stylesheet or the other regarding the kind of request the user addressed.
+
+But, for each stylesheet, what is sent to users varies regarding the values of two parameters : ''css_path'' and ''css_url''.
+
+
+
+
+===== css_path and css_url parameters =====
+
+  * ''[[conf-parameters:part1#css_path|css_path]]'' defines the directory in which ''wwsympa'' can find static CSS files;
+  * ''[[conf-parameters:part1#css_url|css_url]]'' defines the URL used by web clients to request the web server for stylesheets.
+
+These parameters values are looked for in ''robot.conf'' first, then ''sympa.conf'', and then, if not found, set to hard-coded defaults.
+
+- If ''css_path'' isn't defined, its default is set to : ''${[[conf-parameters:part1#static_content_path|static_content_path]]}/css''.
+''static_content_path'' is the parameter defining the root path to all static content for Sympa. If  ''static_content_path''  is undefined in ''sympa.conf'' or ''robot.conf'', its value is set to : ''sympa_home_dir/static_content''.
+- If ''css_url'' isn't defined, its default is set to : ''${[[conf-parameters:part1#static_content_url|static_content_url]]}/css''.
+''static_content_url'' is the parameter defining the root url to all static content in Sympa. If ''static_content_url'' is undefined in ''sympa.conf'' or ''robot.conf'', its value is set to : ''/static-sympa''.
+
+This way :
+  * the default path to static stylesheet is : ''sympa_home_dir/static_content/css/style.css''
+
+  * the default URL to the static stylesheet is : ''%%http://host.name/static-sympa/css/style.css%%''
+
+The ''sympa_wizard.pl'' script, run at install, can set both ''static_content_path'' and ''static_content_url'' values.
+
+===== What stylesheet will be used ? =====
+
+  * Case 1 : if the directory defined by ''css_path'' exists, the value of ''css_url'' will be the one defined in Sympa config.
+
+  * Case 2 : if this directory doesn't exist, the value of ''css_url'' will be that of the ''css'' action (i.e. ''%%http://url.to.wwsympa/css/%%'').
+
+The content delivered varies greatly according to which case happens.
+
+----
+
+  * **Case 1**: the stylesheet received by the client is the **file** found in the directory that your Apache server configuration associates to this URL. It is up to you to decide whether this directory must correspond to the ''css_path'' value or not. If it corresponds to the ''css_path'' value, you must use the files generated by ''wwsympa''. If not, you will use whichever stylesheet you want to define. Whatever solution you choose, take note that ''wwsympa'' will not, opposite to case 2, be involved in the stylesheet delivery, as it won't be addressed the HTTP request. This way, your stylesheet is served directly by Apache and remains in cache, thus saving bandwidth.
+
+----
+
+  * **Case 2**: the stylesheet received by the client is the result of a **wwsympa action** called ''css''. ''wwsympa'' parses a file named ''css.tt2'' that it finds in the relevant ''web_tt2'' folder and generates on the fly a stylesheet that it returns to the client. In this case, the action is triggered any time a page is requested to ''wwsympa'' and the four stylesheets are sent along with the page. This is more bandwidth consuming than case 1, but any change in ''css.tt2'' will be applied at once, without static content generation. This is particularly usefull when experimenting a new stylesheet.
+
+===== Using wwsympa CSS generation process =====
+
+The CSS generation described in the case 2 of the previous section has two purposes :
+
+  - Serve CSS files generated on the fly for each request
+
+  - Generate static CSS files stored in the directory defined by the ''css_path'' parameter. This is done by hitting the "Install static CSS" button in the skins administration page of wwsympa. These files are subsequently used as static content.
+
+The following explanations apply whichever you use static (but sympa-generated) or dynamic CSS. Both operations use the same template file and data.
+
+  * **Colors** are defined in either ''sympa.conf'' or ''robot.conf''. The role of each color parameter is explained in the [[customizing#sympa_colors_customization_guide|color customization guide]].
+For the particular case of colors, though, note that the colors used are those from the ''robot.conf'' or ''sympa.conf'', whichever is relevant. ''wwsympa'' uses those loaded in memory at the time the CSS generation is requested, being to generate a static stylesheet or to deliver a dynamic one directly. That means that if you change colors in your configuration file, these changes must be taken into account by ''wwsympa'' prior to regenerating CSS.
+
+  * **Any other CSS information** is defined in ''css.tt2'' template. As any other template, take care not to modify the default file (in ''sympa_home/bin/etc/web_tt2'') but to copy it in ''sympa_home/etc/web_tt2'' or ''sympa_home/etc/robot_dir/web_tt2'' and modify the copies. In these copies, you can add/change/delete anything you like, it is not supposed to suffer from upgrades.
+
+===== Use custom stylesheets only =====
+
+Nothing prevents you from configuring your Apache server in order that requests to URL containing ''css_url'' be answered by serving the content of a directory different from the one corresponding to ''css_path''. This way, you can directly edit the ''style.css'' file, and this file won't be overwritten during the next update. The drawback is that you can't use the ''color_x'' parameters defined in your ''robot.conf''/''sympa.conf'' file. Indeed, they are used only when parsing ''css.tt2''.
+
+
+====== Internationalization ======
+
+Sympa was originally designed as a multilingual Mailing List Manager. Even in its earliest versions, Sympa separated messages from the code itself, messages being stored in NLS catalogues (according to the XPG4 standard). Later a ''lang'' list parameter was introduced. Nowadays, Sympa is able to keep track of individual users' language preferences.
+
+If you are willing to provide Sympa into your native language, please check the **translation howto**: [[http://www.sympa.org/howtotranslate.html]].
+
+=====  Sympa internationalization =====
+
+Every message sent by Sympa to users, owners and editors is outside the code, in a message catalog. These catalogs are located in the ''/home/sympa/locale'' directory.
+
+To tell Sympa to use a particular message catalog, you can should set the ''lang'' parameter in ''sympa.conf''.
+
+
+=====  List internationalization =====
+
+The ''lang'' list parameter defines the language for a list. It is currently used by //WWSympa// and to initialize users' language preferences at subscription time.
+
+In future versions, all messages returned by Sympa concerning a list should be in the list's language.
+
+
+
+=====  User internationalization =====
+
+The user language preference is currently used by //WWSympa// only. There is no email-based command for a user to set his/her language. The language preference is initialized when the user subscribes to his/her first list. //WWSympa// allows the user to change it.
+
+
+====== Topics ======
+
+//WWSympa//'s homepage shows a list of topics for classifying mailing lists. This is dynamically generated using the different lists' ''topics'' configuration parameters. A list may appear in multiple categories. \\
+This parameter is different from the ''msg_topic'' parameter used to tag list messages.
+
+The list of topics is defined in the ''topics.conf'' configuration file, located in the ''/home/sympa/etc'' directory. The format of this file is as follows:
+
+<code>
+  <topic1_name>
+  title	<topic1 title>
+  title.fr <topic french title>
+  visibility <topic1 visibility>
+  ....
+  <topicn_name/subtopic_name>
+  title	<topicn title>
+  title.de <topicn german title>
+</code>
+
+You will notice that subtopics can be used, the separator being <nowiki>/</nowiki>. The topic name is composed of alphanumerics (0-1a-zA-Z) or underscores (_). The order in which the topics are listed is respected in //WWSympa//'s homepage. The ''visibility'' line defines who can view the topic and subtopics. It refers to the associated ''topics_visibility'' authorization scenario. You will find a sample ''topics.conf'' in the ''sample'' directory; NONE is installed as the default.
+
+A default topic is hard-coded in Sympa: ''default''. This default topic contains all lists for which a topic has not been specified.
+
+
+
+======  Authorization scenarios ======
+
+See [[authorization-scenarios|Authorization scenarios]].
+
+
+
+
+======  Custom parameters ======
+
+You can create an unlimited number of custom parameters to be used with [[authorization-scenarios|authorization scenarios]], [[#web_template_files|web templates]] and [[#template_file_format|mail templates]].
+
+These parameters are defined in each list configuration through the web interface by using the form in //Admin -> Edit list config -> Miscellaneous// page. There, you add a parameter in the **custom parameters (custom_vars)** section.
+The **var name** field corresponds to your custom parameter name, the **var value** field corresponds to your custom parameter value.
+
+You can later access this parameter:
+
+  * in scenarios : with the syntax ''[custom_vars->your_custom_var_name]''
+  * in web or mail templates : with the syntax ''custom_vars.your_custom_var_name''
+
+
+
+==== Example ====
+
+You define a custom parameter with the following values:
+
+  * var name : ''sisterList''
+  * var value : ''math-teachers''
+
+You can use it as follows:
+
+  * in scenarios : with the syntax ''[custom_vars->sisterList]'', which will correspond to "math-teachers"
+  * in web or mail templates : with the syntax ''custom_vars.sisterList'', which will correspond to "math-teachers"
+
+====== Custom user attributes ======
+
+If the user description parameters available in Sympa don't suit your needs, you can define your own description attributes. These attributes can be used when moderating subscription or message moderation. They provide additional, useful informations, when making a decision.
+
+===== Custom attributes definition =====
+
+These attributes are defined in the list configuration by the [[parameters-others#custom_attribute|custom_attribute list parameter]].\\
+You can define as many attributes as you like.
+
+
+===== How are the custom attributes values obtained from users? =====
+
+Users can provide the information expected by your custom attributes on two occasions :
+
+  * when //subscribing// to the list through the web interface. After hitting the "subscribe" button, the user is presented a form, each field of which corresponds to a custom attribute.
+
+{{manual:sub_form.png|}}
+
+  * when //modifying their profile// through the web interface.
+
+{{manual:sub_options.png|}}
+
+===== How is it stored? =====
+
+The custom attributes are stored as XML fragments in the [[internals:index#subscriber_table|subscriber_table table]]. This fragment is located in the ''custom_attribute_subscriber'' field.
+
+Here is an example of such an XML fragment, which contains two custom attributes :
+
+  * the first one has the id "accr" and has the value "ultra-violet";
+  * the second one has thee id "pt" and has the value "0".
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8" ?>
+  <custom_attributes>
+    <custom_attribute id="accr">
+      <value> ultra-violet</value>
+    </custom_attribute>
+    <custom_attribute id="pt">
+      <value>0</value>
+    </custom_attribute>
+  </custom_attributes>
+</code>
+
+===== So, what can you do with that feature? =====
+
+For now, the custom attributes are displayed for each user in the subscribers review of the web interface.
+
+====== Loop detection ======
+
+Sympa uses multiple heuristics to avoid loops in Mailing lists.
+
+First, it rejects messages coming from a robot (as indicated by the ''From:'' and other header fields) and messages containing commands.
+
+Second, every message sent by Sympa includes an ''X-Loop'' header field set to the listname. If the message comes back, Sympa will detect that it has already been sent (unless ''X-Loop'' header fields have been erased).
+
+Third, Sympa keeps track of Message IDs and will refuse to send multiple messages with the same message ID to the same mailing list.
+
+Finally, Sympa detect loops arising from command reports (i.e. sympa-generated replies to commands). This sort of loop might occur as follows:
+
+  - X sends a command to Sympa
+  - Sympa sends a command report to X
+  - X has installed a home-made vacation program replying to messages
+  - Sympa processes the reply and sends a report
+  - Looping to step 3
+
+Sympa keeps track (via an internal counter) of reports sent to any particular address. The loop detection algorithm is:
+
+  * increment the counter
+  * If we are within the sampling period (as defined by the ''loop_command_sampling_delay'' parameter)
+    * If the counter exceeds the ''loop_command_max'' parameter, then do not send the report, and notify listmasters
+    * Else, start a new sampling period and reinitialize the counter, i.e. multiply it by the ''loop_command_decrease_factor'' parameter
+
+
+
+
+
+
+====== Tasks ======
+
+See [[manual:customizing:tasks|the dedicated chapter]].

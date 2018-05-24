@@ -1,0 +1,108 @@
+====== Authentication and authorization plugin for interfacing Dokuwiki with Sympa ======
+
+[[http://wiki.splitbrain.org/wiki%3ADokuWiki|Dokuwiki]] is a nice wiki. [[http://www.sympa.org|Sympa]] is a nice mailing list manager. This plugin allows to use Sympa password and check list membership in order to control authentication and authorization in Dokuwiki. Contrib from David Pépin david.pepin AT supelec.fr .
+
+This plugin is designed to quickly install or uninstall a new authentication mode based on a Sympa server.
+Once the plugin is installed you can set up or unset this mode in the admin menu of dokuwiki, in the subsection related to this plugin.
+
+===== Purpose =====
+
+This plugin is meant to obtain authentication and authorizations from a Sympa server using the soap protocol, for a DokuWiki server. 
+
+The different groups with DokuWiki are the same that with Sympa, despite the two authentication/authorization systems are distinct.
+The login in Dokuwiki is the mail adress of the user in Sympa. Once a user has logged in, the user attribute in Dokuwiki application (the list of groups the user is member of) is the list of the user subscription (a list of list email). So, the Dokuwiki classic groups are the mailing lists of Sympa. Suppose a namespace is limited to a group, let's say @sympa-users@renater.fr, when subscribing to this list you automatically gain access to that namespace. Sympa is used as a group manager to control Dokuwiki ressources access.
+
+===== Installation =====
+
+To install this plugin, download it from  {{contribs:sympaauth-v1.3.tar.gz|sympaauth-v1.3.tar.gz}}, using the Dokuwiki plugin manager in the admin menu.
+Once you have installed this plugin, you can set up the Sympa authentication mode if it is not set up yet, or unset it if is it is already set up. Note that you cannot unset it if you are currently using it.
+
+{{contribs:sympaauth-v1.2.tar.gz|version 1.2}} (needs nusoap)\\
+{{contribs:sympaauth-v1.3.tar.gz|version 1.3}} (only with php 5 and soap enabled)
+
+===== Configuration =====
+
+Once you have set the Sympa authentication mode up, you can select it as current authentication system in the admin configuration menu. You must fill at the same time the sympa server url in this menu. Be sure to change the super-user field if you have to, so that you do not loose your admin privileges.
+
+===== Notes =====
+
+* The wsdl description page of the soap interface must be : [[http://you-sympa-server-address/wsdl]]
+
+* The plugin requires soap enabled in php (if its shared, be sure to install all relevant packages)
+
+* You must use a higher version of dokuwiki than dokuwiki-2006-03-09 
+
+* to disable native password sending  $conf['resendpasswd'] must be filled to '0' in local.php
+
+* you can find login.txt in english and in french in sympaauth/lang directory
+
+* You can add a register-new-user-link, and a send-lost-password link. To proceed, change the html_login function in [dokuwiki-root]/inc/html.php the following way :
+
+<code>
+
+function html_login(){
+  global $lang;
+  global $conf;
+  global $ID;
+  global $auth;
+
+  print p_locale_xhtml('login');
+  ?>
+    <div class="centeralign">
+    <form action="<?php echo script()?>" accept-charset="<?php echo $lang['encoding']?>" method="post">
+      <fieldset>
+        <legend><?php echo $lang['btn_login']?></legend>
+        <input type="hidden" name="id" value="<?php echo $ID?>" />
+        <input type="hidden" name="do" value="login" />
+        <label class="block">
+          <span><?php echo $lang['user']?></span>
+          <input type="text" name="u" value="<?php echo formText($_REQUEST['u'])?>" class="edit" />
+        </label><br />
+        <label class="block">
+          <span><?php echo $lang['pass']?></span>
+          <input type="password" name="p" class="edit" />
+        </label><br />
+        <input type="submit" value="<?php echo $lang['btn_login']?>" class="button" />
+        <label for="remember__me" class="simple">
+          <input type="checkbox" name="r" id="remember__me" value="1" />
+          <span><?php echo $lang['remember']?></span>
+        </label>
+      </fieldset>
+    </form>
+  <?php
+    if($auth->canDo('addUser') && $conf['openregister']){
+      print '<p>';
+      print $lang['reghere'];
+      print ': <a href="'.wl($ID,'do=register').'" class="wikilink1">'.$lang['register'].'</a>';
+      print '</p>';
+    }
+
+    if ($auth->canDo('modPass') && $conf['resendpasswd']) {
+      print '<p>';
+      print $lang['pwdforget'];
+      print ': <a href="'.wl($ID,'do=resendpwd').'" class="wikilink1">'.$lang['btn_resendpwd'].'</a>';
+      print '</p>';
+    }
+
+    // Beginning of the extra lines for the sympa authentication mode
+    if ( $conf['authtype']=='sympa')  {
+      print '<p>';
+      print $lang['reghere'];
+      echo( ': <a href="'.$auth->server() .'/sendpasswd/" class="wikilink1">'.$lang['register'].'</a>');
+      print '</p>';
+      print '<p>';
+      print $lang['pwdforget'];
+      print ':  <a href="'. $auth->server() .'/sendpasswd/" class="wikilink1">'.$lang['btn_resendpwd'].'</a>';
+      print '</p>';
+    }
+    // End of the extra lines for sympa the authentication mode
+
+  ?>
+    </div>
+  <?php
+}
+
+</code>
+
+
+===== Discussion =====

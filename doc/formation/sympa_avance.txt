@@ -1,0 +1,1171 @@
+====== Formations Sympa : usages avancés ======
+
+Dans toute cette documentation, le nom du poste pris en exemple est **nouveau.domaine.fr**, un petit script permet d'entrer votre nom de machine et de remplacer toutes les occurrences de **nouveau.domaine.fr** dans cette page, vous pourrez à tout moment corriger ou refaire l'opération en tapant simplement votre nom de poste dans le champs ci dessous.
+
+Commençons par connaitre le nom du poste sur lequel vous travaillez :
+  hostname -f
+
+Mettez le nom du poste ainsi obtenu dans le champ suivant :\\
+<html>
+	<script type="text/javascript">
+		function sympaform_snr(search, replace, dontrecord) {
+			var body = document.getElementsByTagName('body')[0];
+			var replacetext = (typeof(replace) != 'string') ? replace.value : replace;
+			if(!replacetext || replacetext == search) return;
+			body.innerHTML = body.innerHTML.replace(new RegExp(search, 'g'), replacetext);
+			
+			if(dontrecord) return;
+			
+			var snr = '';
+			var cookies = document.cookie.split(';');
+			for(var i=0; i<cookies.length; i++) if(cookies[i].match(/^sympaform_snr=/)) snr = cookies[i].substr(14)
+			snr += (snr ? '#' : '') + search + ':' + replacetext;
+			
+			var d = new Date();
+			d.setTime(d.getTime() + (15 * 24 * 60 * 60 * 1000));
+			document.cookie = 'sympaform_snr=' + snr + '; expires=' + d.toGMTString();
+		}
+		
+		addInitEvent(function() {
+			var cookies = document.cookie.split(';');
+			for(var i=0; i<cookies.length; i++) if(cookies[i].match(/^sympaform_snr=/)) {
+				var snrl = cookies[i].substr(14).split('#');
+				for(i=0; i<snrl.length; i++) if(snrl[i]) {
+					var snr = snrl[i].split(':');
+					sympaform_snr(snr[0], snr[1], true);
+				}
+			}
+		});
+	</script>
+	
+	Nom de votre machine : <input type="text" id="sympaform_domain" /> <input type="button" onclick="sympaform_snr('nouveau.domaine.fr', document.getElementById('sympaform_domain'))" value="Appliquer" />
+	<br />
+	<br />
+	Votre editeur : <input type="text" id="sympaform_editor" /> <input type="button" onclick="sympaform_snr('emacs', document.getElementById('sympaform_editor'))" value="Appliquer" />
+</html>
+
+
+</note>
+
+====== - DKIM ======
+
+DKIM signifie domain key identified email permet à un domaine de messagerie de certifier qu'un message a bien été émis par ce domaine. C'est un signature du message par le serveur de messagerie.
+
+Sympa a trois usages possibles de DKIM :
+  * C'est une méthode d'authentification our les scénarios d'autorisation : un mail signé DKIM - avec une signature valide - sera traité dans une ligne de scénario contenant la méthode d'authentification "dkim".
+  * Sympa peut signer les messages de services avec DKIM
+  * Sympa peut signer les messages des listes avec DKIM
+
+Pour activer DKIM dans Sympa :
+
+  emacs /etc/sympa/sympa.conf
+
+Ajouter la ligne suivante pour donner la valeur "on" au paramètre "dkim_feature" :
+
+  dkim_feature on
+
+Commentez les lignes suivantes :
+
+  dkim_add_signature_to	robot,list
+  
+Et ajoutéez :
+  dkim_signer_domain	nouveau.domaine.fr
+
+Et redémarrez Sympa :
+
+  service sympa restart
+
+Modifiez le scénario send d'une liste pour modérer les mails non signés, diffuser directement les mails signés S/MIME et ceux envoyés par l'interface web et, par ailleurs, demander une confirmation à l'expéditeur pour les messages signés DKIM.
+
+Si vous le pouvez, envoyez un mail depuis un domaine signant les messages avec DKIM, puis un autre avec un domaine ne signant pas.
+
+===== Activer la signature DKIM =====
+
+Pour que Sympa puisse signer les messages avec DKIM, il est nécessaire de réaliser des enregistrements DNS.
+
+Dans le cadre du TP, ces enregistrements sont déjà réalisés. Ils sont de la forme :
+
+<code>
+<selecteur>._domainkey.nouveau.domaine.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=<clé publique>"
+</code>
+
+Vous pouvez le vérifier en tapant les deux commandes suivantes :
+
+  dig TXT lists._domainkey.nouveau.domaine.fr
+
+<nowiki><selecteur></nowiki> doit avoir la même valeur que le paramètre "dkim_selector" de la configuration. Dans le cadre du TP, il a la valeur "lists".
+
+Les paramètres de configuration de DKIM sont les suivants :
+
+^  paramètre (sympa.conf ou robot.conf)   ^  défaut  ^  écrasé par (contexte liste)  ^
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dkim_feature|dkim_feature]]  | ''off'' |non pertinent    |
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dkim_add_signature_to|dkim_add_signature_to]]  |''list,robot'' |non pertinent  |
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dkim_signature_apply_on|dkim_signature_apply_on]]  |<nowiki>md5_authenticated_messages,smime_authenticated_messages,dkim_authenticated_messages,editor_validated_messages</nowiki> | ''dkim_signature_apply_on'' |
+||[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dkim_private_key_path|dkim_private_key_path]]  |  |dkim~~SP~~>~~SP~~key_path  |
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dkim_signer_domain|dkim_signer_domain]]  |le domaine du robot  |dkim~~SP~~>~~SP~~signer_domain  |
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dkim_selector|dkim_selector]]  |pas de défaut  | dkim~~SP~~>~~SP~~signer_domain  |
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dkim_signer_identity|dkim_signer_identity]]  |aucun pou les robots, <listname>-request@robot pour les listes|dkim~~SP~~>~~SP~~identity_domain  |
+
+Recopiez la clé privé ci-dessous dans le fichier cle_dkim :
+
+  emacs /usr/local/sympa/etc/cle_dkim
+  
+Contenu de la clé :
+
+<code>
+MIICXAIBAAKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxL
+i0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR
+/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB
+AoGABDKZdEkWKx4eZyNxFQmCtLOWPQk7v5xhctuayAIyb/WnwzFaJ05tMn+stLEO
+0d9yFtw+N/RRrZUrTBVQUK0zX/KX3L7t/u7M5C/M1vTz8kN3CIziIdARV5kjZIjr
+JL63kT1psr5h0AAmxNk+VPsKldYYve2ZrLEeVx0fWWgPBzECQQDEY9x1gtN6Vs73
+nKwPlQDrheOx90WnL0qlBO8mq9JYdCZjtIw9Lba9B7Uo7XfpfLyfLKJlJMUMnK5i
+xldzhvxJAkEAwOagatXQuYfgNjNU1K/zGotidXOv8haeb54jP6Xh1UaMGNBbO+b8
+sfEYYV0P9bFrtOAE6MsjsCBdERonp2eikwJAbwHTN0j/qIMw8Z1JVHVw07AWiB2w
+7VM56hTj6QPuHblpiaogKuSQCkE1ETFJOl0bcQ2VrX4fM4XMvGBIRjDioQJATNWP
+3/36fWvZqr0XdQAAXPpX5WCHHG5V/S+H6rowEbtf4iJbtKh0zouxolZnHP3mYM06
+J1+Cf4zkhQNd+BgXcQJBAIBiCgK7LRK0Wr0no1UrRX9/epeLWbP1JGdCzA0ZwfJf
+UogQ4HzYTz3xjgH8jqMV5cKW+Wr/YMsV/6v/Vl5QSyc=
+</code>
+
+Editez le fichier de configuration sympa.conf et ajoutez/modifiez les paramètres suivants :
+
+<code>
+dkim_selector    lists
+
+dkim_private_key_path   /usr/local/sympa/etc/cle_dkim
+
+dkim_signature_apply_on any
+
+</code>
+
+Décommentz la ligne :
+
+  dkim_add_signature_to	robot,list
+
+Ajoutez la ligne suivante dans /usr/local/sympa/etc/a-nouveau.domaine.fr/robot.conf
+
+  dkim_signer_domain	a-nouveau.domaine.fr
+
+
+Redémarrez Sympa
+
+  service sympa restart
+
+Envoyez un message à une liste; Il devrait contenir une signature DKIM.
+
+====== - DMARC ======
+
+[[http://www.dmarc.org/|DMARC]] ("Domain-based Message Authentication, Reporting & Conformance") est un - autre - sytème de protection de la messagerie électronique.
+
+Le principe de DMARC est, pour un domaine émetteur de mail, de définir une politique de sécurité. Une politique DMARC autorise l'expéditeur à indiquer que ses e-mails sont protégés par SPF et/ou DKIM et dit au destinataire que faire si ces méthodes d'authentification échouent. DMARC supprime les conjectures que le destinataire doit faire à propos de la façon de gérer ces messages en échec (conjectures qui font justement la complexité de DKIM)
+
+DMARC est implémenté, via un enregistrement DNS, par de nombreux services de mail privés (yahoo, gmail et hotmail, au moins).
+
+C'est très bien. Mais pourquoi on vous en parle, après tout c'est pas le problème de Sympa.
+
+Eh ben si.
+
+**Même si le principe de DMARC est prometteur du point de vue de la protection - en particulier contre le phishing - son application stricte est une véritable tueuse de listes de diffusion.**
+
+On va partir d'un exemple.
+
+**Avant de continuer à lire, effectuez les actions suivantes :**
+
+  - Abonnez une adresse en yahoo.com à une de vos listes (yahoo**.com**, pas de yahoo.fr ou autre). Si vous n'en avez pas à disposition, David vous prête généreusement une de ses adresses poubelles : poubelle.stage@yahoo.com (mdp: turlututu).
+  - Envoyez un message à la liste depuis l'adresse en yahoo.com.
+  - Consultez les logs de Sympa. Attendez de voir passer la ligne parlant d'un bounce sur l'adresse en yahoo.com.
+  - Allez alors consulter les adresses en erreur dans l'interface web de Sympa. Vous allez trouver une erreur plutôt inhabituelle de type "mail rejected for policy reason". C'est DMARC en action.
+
+Que s'est-il passé ?
+
+Regardez l'enregistrement DMARC de Yahoo :
+
+  dig TXT _dmarc.yahoo.com
+
+Réponse :
+<code>
+[...]
+
+;; ANSWER SECTION:
+_dmarc.yahoo.com.	1800	IN	TXT	"v=DMARC1\; p=reject\; sp=none\; pct=100\; rua=mailto:dmarc-yahoo-rua@yahoo-inc.com, mailto:dmarc_y_rua@yahoo.com\;"
+
+[...]
+</code>
+
+Dans cet enregistrement, une valeur est essentiellement nuisible aux listes de diffusion : "p=reject". C'est justement le champ qui indique quoi faire quand une signature DKIM est invalide ou que le serveur d'émission n'est pas conforme à l'enregistrement SPF.
+
+Dans le cas de yahoo, la valeur est "reject". Cela signifie que Yahoo demande explicitement à tout serveur de listes respectant les politiques DMARC de jeter les mails en erreur. Et c'est la raison pour laquelle l'adresse en yahoo.com a bouncé.
+
+Analysons les raisons du bounce.
+
+En consultant les sources du message envoyé depuis yahoo.com, vous trouverez une signature DKIM de la forme suivante :
+
+<code>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s1024;
+   t=1402638912; bh=jfTywJFxP0q3rFLBc4/NyUZaMi6AJMY2kiZ/mpE4m7w=; 
+   h=Message-ID:Date:From:Reply-To:Subject:To:MIME-Version:Content-Type; 
+   b=OgZqYMhXTYU+otw9wYfv33i09m/Q4P1duGbq4gC1Ks3a6NEM6FcOHO9eMRPheUaTDayGmK1
+   OR+l+ezBQiPbpW1VVsy6nNuHWbMyxUEWp6KbBT+1lLTgXdrcbGeAPxV61W9hOtBklYfVZ4xyT
+   zuEvuGXR9UcO/crbpvV9LF1hY40=
+</code>
+
+Le sélecteur est "s1024". On peut donc facilement trouver l'enregistrement DNS suivant le schéma de nommage DKIM : <nowiki><sélecteur></nowiki>._domainkey.<nowiki><domaine></nowiki> :
+
+  dig s1024._domainkey.yahoo.com
+
+Et on obtient l'enregistrement DKIM de Yahoo :
+
+<code>
+[...]
+;; ANSWER SECTION:
+s1024._domainkey.yahoo.com. 86400 IN	TXT	"k=rsa\;
+  p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDrEee0Ri4Juz+QfiWYui/E9UGSXau/2P8LjnTD8V4Unn+2FAZVGE3kL23bzeoULYv4PeleB3gfm"
+  "JiDJOKU3Ns5L4KJAUUHjFwDebt0NP+sBK0VKeTATL2Yr/S3bT/xhy+1xtj4RkdV7fVxTn56Lb4udUnwuxK4V5b5PdOKj/+XcwIDAQAB\; n=A 1024 bit key\;"
+[...]
+</code>
+
+Le mode "test", dans l'enregistrement DKIM, n'est pas activé. Donc ce n'est pas pour de rire : si une signature DKIM est présente, elle est censée avoir été émise par yahoo.
+
+Le truc c'est que, en consulant la signature, on voit que le champ Subject fait partie de la signature. Donc, comme on ajoute un préfixe dans le sujet, on casse la signature.
+
+Bien sûr, on pourrait simlement supprimer la signature et mettre celle du serveur, mais DMARC vérifie, non seulement le respect des signatures DKIM et des enregistrements SPF, mais également leur "alignement". L'alignement est l'adéquation entre les entête SMTP et les valeurs des enregistrements SPF et DKIM. Par exemple, un mail ayant une signature DKIM valide de "domaine.tld" sera aligné du point de vue DMARC si le champ From du message est dans le même domaine.
+
+Donc pas question de simplement supprimer la signature DKIM et de la remplacer (par celle du serveur, par exemple).
+
+Au final, on est coincés :
+
+  * si on laisse la signature DKIM, on se fait jeter parce qu'elle est invalide
+  * si on supprime la signature, on se fait jeter parce qu'elle est obligatoire
+
+Par conséquent, si le domaine définit une politique DMARC restrictive (p=reject, par exemple) tout mail émis depuis ce domaine, diffusé par une liste de diffusion, va revenir en erreur pour ce domaine //et pour tous les autres domaines respectant DMARC, par exemple : gmail, hotmail, etc.//.
+
+La seule parade trouvée pour le moment, c'est de changer le champ From. Oui, c'est brutal (et ça cassera les signatures S/MIME, fort heureusement yahoo ne fait pas de signature S/MIME). Mais au moins les messages arrivent, et vous allez voir que Sympa propose [[manual_6.1:conf-parameters:part3#dmarc|des paramètres de configuration]] pour ajouter de la variabilité à son traitement de DMARC.
+
+Les paramètres de Sympa pour gérer ce problème sont les suivants :
+
+^  paramètre (sympa.conf ou robot.conf)   ^  défaut  ^  écrasé par (contexte liste)  ^
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dmarc_protection_mode|dmarc_protection_mode]]  | N/A |dmarc_protection~~SP~~>~~SP~~mode |
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dmarc_protection_domain_regex|dmarc_protection_domain_regex]]  | N/A |dmarc_protection~~SP~~>~~SP~~regex |
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dmarc_protection_phrase|dmarc_protection_phrase]]  | N/A |dmarc_protection~~SP~~>~~SP~~phrase   |
+|[[https://sympa-community.github.io/manual/man/sympa.conf.5.html#dmarc_protection_other_email|dmarc_protection_other_email]]  | N/A |dmarc_protection~~SP~~>~~SP~~other_email  |
+
+Dans le cadre du TP, contentez-vous d'ajouter les paramètres suivants à votre sympa.conf :
+
+  dmarc_protection_mode dmarc_reject
+
+Redémarrez Sympa
+
+  service sympa restart
+  
+Relancez un message à la même liste qu'au début de la section. Le message ne doit pas bouncer depuis yahoo.com.
+
+Une fois que vous avez reçu le message, consultez les sources. Vous devez observer les éléments suivants :
+
+  * Le champs From a une valeur de la forme "Bob McGuffin via mylist@lists.perl.pm mylist@lists.perl.pm",
+  * La signature DKIM est celle de a-nouveau.domaine.fr
+  * Deux champs son positionnés : X-Original-DKIM-Signature et X-Original-From qui contiennent respectivement les originaux de la signature DKIM et du champ From.
+
+Dans le cadre de votre installation, vous pouvez affiner vos réglages DMARC en vous appuyant sur les [[manual:conf-parameters:part3#dmarc|paramètres DMARC]] de Sympa.
+
+Plus d'informations sur le traitement des messages dans le cadre de la protection DMARC : [[https://www.sympa.org/manual/dmarc]].
+
+====== - Personnalisation de Sympa ======
+
+De nombreux éléments sont personnalisables dans Sympa. Trop, des fois : cela peut être déroutant quand on débute. Mais pour des administrateurs expérimentés, les options de personnalisation peuvent grandement simplifier la vie. 
+
+===== - Quelques paramètres =====
+
+==== Les attributs personnalisés ====
+
+
+Dans la configuration des listes, vous pouvez définir des attributs utilisateurs autres que l'adresse email.
+
+Allez dans l'interface d'administration de la liste. Cliquez sur « Configurer la liste → Divers ». Tout en bas de la page, se trouve le paramètre custom_attribute qui permet de définir un attribut utilisateur personnalisé.
+
+Ce paramètre contient les champs suivants :
+
+  * id : identifiant interne
+  * name : nom du champ (à afficher dans l'interface web)
+  * comment : commentaire (à afficher dans l'interface web)
+  * type ( string | text | integer | enum ) : type de valeur contenue par le champ
+  * enum_values : suite de valeurs que le champ peut prendre, s'il est de type enum
+  * optional ( required | optional ) : optional : l'utilisateur doit-il obligatoirement remplir ce champ pour s'abonner
+
+Lorsque ce paramètre est saisi, l'utilisateur se voit présenter, lorsqu'il s'abonne, un formulaire permettant de saisir une valeur pour le paramètre. Si la paramètre est obligatoire, l'abonnement est impossible tant qu'il n'est pas saisi.
+
+La valeur saisie par l'utilisateur est présentée dans la listes des abonnés. Par ailleurs, elle est disponible pour les templates, sous la forme :
+
+  [% user.custom_attribute.<id>.value %]
+
+Notez que dans la prochaine version de Sympa, ces attributs personnalisés peuvent être provisionnés depuis des sources de données externes.
+
+==== Les variables de liste personnalisées ====
+
+Il est possible d'ajouter un paramètre de configuration de liste non prévu par Sympa. C'est une simple paire clé / valeur. Vous définissez à la fois le nom et la valeur du paramètre.
+
+Dans le paramètre de configuration d'une liste, ajoutez les lignes suivantes :
+
+  custom_vars
+    name nom_var
+    value ma_valeur
+
+Par la suite, vous pouvez employer ces variables dans les scénarios, sous la forme suivante :
+
+  [custom_vars->nom_var]
+
+Vous pouvez également les employer dans les templates mail et web (dans un contexte de liste) sous la forme suivante :
+
+  [% custom_vars.nom_var %]
+
+==== Actions personnalisées ====
+
+Vous pouvez définir des actions personnalisées. Ce sont de nouvelle pages de l'interface web, qui correspondent à des URL que vous définissez, totalement intégrées dans l'interface de Sympa.
+
+Créez un template portant le nom de votre action personnalisée.
+
+<code>
+mkdir /usr/local/sympa/etc/custom_actions
+chown sympa:sympa /usr/local/sympa/etc/custom_actions
+emacs /usr/local/sympa/etc/custom_actions/action_test.tt2
+</code>
+
+Copiez le contenu ci -dessous dans l'éditeur.
+
+<code html>
+<h2>A test action</h2>
+[% IF list %]
+<p>liste: [% list %]</p>
+[% END %]
+<p>Custom action name: [% custom_action %]</p>
+<p>parameters:
+<ol>
+[% FOREACH param=cap %]
+<li><b>[% param %]</b></li>
+[% END%]
+</ol>
+</p>
+</code>
+
+Accédez ensuite à votre custom_action en tapant l'URL :
+
+[[http://nouveau.domaine.fr/sympa/ca/action_test/param1/param2/param3]]
+
+Vous pouvez également définir une action personnalisée au niveau des listes. Cela permet d'ajouter une partie de l'interface web dans un contexte de liste, en disposant des variables et des paramètres propres à cette liste.
+
+Copiez votre modèle dans un répertoire de liste :
+
+<code>
+mkdir /usr/local/sympa/list_data/a-nouveau.domaine.fr/<nom_liste>/custom_actions
+chown sympa:sympa /usr/local/sympa/list_data/a-nouveau.domaine.fr/<nom_liste>/custom_actions
+cp -p /usr/local/sympa/etc/custom_actions/action_test.tt2 /usr/local/sympa/list_data/a-nouveau.domaine.fr/<nom_liste>/custom_actions
+</code>
+
+Vous pouvez y accéder en accédant à l'URL : [[http://nouveau.domaine.fr/sympa/lca/action_test/<nom_liste>/param1/param2/param3]]
+
+===== - Le langage TT2 =====
+
+Le langage TT2 (pour Template Toolkit) est un mini-langage, exclusif au langage perl, qui permet de définir un contenu dynamique. C'est le langage employé dans Sympa pour générer du contenu dynamique.
+
+Hormis les scénarios, qui utilisent un méta-langage propre à Sympa, l'ensemble des contenus personnalisables utilisent ce langage :
+
+  * templates web
+  * templates mail
+  * modèles de liste
+
+
+Ce mini-langage est assez élaboré.
+
+Voici quelques bases de manipulation du langage :
+
+Définir une variable :
+
+
+Il définit notamment des tests :
+
+<code>
+[% IF age < 10 %]
+
+Hello [% name %], does your mother know you're 
+
+using her AOL account?
+
+[% ELSIF age < 18 %]
+
+Sorry, you're not old enough to enter 
+
+(and too dumb to lie about your age)
+
+[% ELSE %]
+
+Welcome [% name %].
+
+[% END %]
+
+[% UNLESS text_mode %]
+
+[% INCLUDE biglogo %]
+
+[% END %]
+</code>
+
+Il est également possible de définir des boucles.
+
+<code>
+[% FOREACH thing IN [ foo 'Bar' "$foo Baz" ] %]
+
+* [% thing %]
+
+[% END %]
+</code>
+
+Pour des tests risqués, il est possible de réaliser de gérer les exceptions. Par exemple, si vous devez ouvrir le contenu d'un fichier dont vous n'êtes pas certain de la présence, vous pouvez utilser le test suivant :
+
+<code>
+[% TRY %]
+
+[% INCLUDE myfile %]
+
+<div>Le fichier est bien là!</div>
+
+[% CATCH file %]
+
+<div>On n'a pas trouvé le fichier!</div> [% error.info %]
+
+[% CATCH %]
+
+<div>On a rencontré une autre erreur.</div>
+
+[% END %]
+</code>
+
+===== - Les éléments personnalisables (mail, web, scénarios d'autorisation, etc.) =====
+
+Avant toute personnalisation, il est indispensable de copier le fichier à personnaliser, soit dans le répertoire etc (ou celui d'un robot) ou bien vers un répertoire de liste. En effet, les fichier distribués par Sympa sont tous situés dans le répertoire default. Si vous les personnalisez dans ce répertoire, ils seront écrasés lors de le prochaine mise à jour.
+
+====== - Industrialisation de la gestion des listes : ======
+
+Vous pouvez automatiser la création et la suppression des listes du serveur. C'est utile si vous avez de nombreuses listes à créer, semblables mais différant par des valeurs de paramètres. Par exemple, vous devez constituer des listes d'étudiants, par promotion, par année de naissance ou par groupe de TP.
+
+===== - familles de listes =====
+
+Les familles de listes sont définies par une ensemble de fichier TT2 et un fichier XML. Les fichiers TT2 contiennent les modèles des futurs fichiers de chaque liste générée. Le fichier XML contient les données qui seront exploitées lors de l'instantiation des listes.
+
+Les familles de listes définissent les listes à partir d'un modèle d'un ensemble de modèles de fichiers :
+
+
+
+  * config.tt2 ;
+  * param_constraint.conf ;
+  * edit_list.conf ;
+  * automatic_lists_description.conf ;
+  * message.footer.tt2,message.header.tt2,message.footer.mime.tt2,message.header.mime.tt2,info.tt2 ;
+  * fichiers personnalisables.
+
+Le fichier config.tt2 est le seul obligatoire. Il contient un modèle de liste, similaire à ceux utilisés dans les modèles de listes.
+
+Commençons à créer une famille de liste :
+
+<code>
+mkdir /usr/local/sympa/etc/a-nouveau.domaine.fr/families
+
+mkdir /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille
+
+chown -R sympa:sympa /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille
+
+cd /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille/
+
+emacs config.tt2
+</code>
+
+Copiez le texte suivant dans l'éditeur :
+
+
+<code>
+subject [% subject %]
+
+status [% status %]
+
+lang [% lang %]
+
+info open
+
+visibility noconceal
+
+send privateoreditorkey
+
+process_archive on
+
+archive
+web_access private
+mail_access owner
+
+subscribe open_notify
+
+owner
+email <un_email>
+profile privileged
+
+include_sql_query
+db_type mysql
+host localhost
+user francis
+passwd AnSCB3g23etr3
+db_name dummy
+sql_query SELECT email FROM dummy_emails WHERE email LIKE 'pipo+[% numero %]%%'
+
+</code>
+
+**Note : ** Remarquez que, pour pouvoir utiliser le caractère '%' avec sa valeur spéciale dans la requête SQL, nous avons dû le doubler. En effet, Sympa utilise un sprintf pour préparer les requêtes.. Un '%' seul déclencherait donc une erreur.
+
+Créez maintenant le fichier XML qui permettra l'instantiation de la famille :
+
+<code>
+cd /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille
+
+emacs data.xml 
+</code>
+
+Copiez le texte suivant dans l'éditeur
+
+<code xml>
+<?xml version="1.0" ?>
+<family>
+  <list>
+    <listname>lesuns</listname>
+    <subject>La liste des uns (dirigés par les neufs)</subject>
+    <numero_owner>9</numero_owner>
+    <numero>1</numero>
+    <lang>fr</lang>
+  </list>
+  <list>
+     <listname>lesdeux</listname>
+     <subject>La liste des deux (dirigés par les huits)</subject>
+     <numero_owner>8</numero_owner>
+     <numero>2</numero>
+     <lang>fr</lang>
+  </list>
+  <list>
+    <listname>lestrois</listname>
+    <subject>La liste des trois (dirigés par les septs)</subject>
+    <numero_owner>7</numero_owner>
+    <numero>3</numero>
+    <lang>fr</lang>
+  </list>
+</family>
+</code>
+
+Instanciez maintenant la famille :
+
+<code>
+/usr/local/sympa/bin/sympa.pl --instantiate_family mafamille --robot a-nouveau.domaine.fr --input_file /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille/data.xml
+</code>
+
+La sortie vous confirme la création des trois listes.
+
+Au cours de l'opération, trois nouveaux fichiers XML ont été créés.
+
+<code>
+ls -al /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille/
+</code>
+
+Chacun d'entre eux contient les données propres à une liste.
+
+Si vous modifiez le fichier XML data.xml, la configuration de la liste sera modifiée.
+
+<code>
+emacs /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille/data.xml
+</code>
+
+Remplacer 1 par 2 dans la définition de la première liste, puis réinstantiez la famille. La liste des abonnés change.
+
+Sauvegarde des changements
+
+Dans l'interface web, éditez la configuration de la liste « lesuns ». Editez la requête SQL provisionnant les membres (include_sql_query).
+
+Une fois la configuration enregistrée, faites la liste des fichiers dans le répertoire de configuration de la liste :
+
+<code>
+ls -ltr /usr/local/sympa/list_data/a-nouveau.domaine.fr/lesuns
+</code>
+
+Un nouveau fichier est apparu : config_changes. Ce fichier a été généré lorsque vous avez édité la liste, pour garder la trace d'une édition manuelle par une personne habilité, qui ne doit donc pas être remplacée lors d'une prochaine instantiation.
+
+Relancez une instantiation pour le vérifier.
+
+Les contraintes
+
+Vous pouvez tout de même imposer des contraintes sur les valeurs que peuvent prendre les paramètres de configuration des listes. Ces contraintes seront prises en compte tant à l'instantiation que lors de la mise à jour des configuration par l'interface web.
+
+Ces contraintes sont imposées via le fichier param_constraint.conf. Les paramètres apparaissant dans ce fichier son soumis à des contraintes sur leurs valeur.
+
+Si un paramètre y apparaît suivi d'une liste de valeurs séparées par des virgules, alors le paramètre doit avoir sa valeur parmi celles de la liste. S'il n'y a qu'une valeur, alors la valeur du paramètre est fixée dessus. Si le paramètre n'apparaît pas dans le fichier, sa valeur est totalement libre.
+
+Un paramètre complexe (à plusieurs champs) peut être contraint. On le fait en ciblant chacun des champs à contraindre sous la forme « paramètre.champs ».
+
+Exemple :
+
+  archive.web_access public,private
+
+Signifie que le champs « web_access » du paramètre « archive » peut prendre l'une des deux valeurs « public » ou « private ».
+
+Créez un fichier de contraintes :
+
+<code>
+cd /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille
+
+emacs param_constraint.conf
+</code>
+
+Enregistrez, fermez, et attribuez les droits à Sympa :
+
+  chown sympa. param_constraint.conf
+
+ajouter la ligne suivante :
+
+  lang fr
+
+Essayez maintenant, en instantiant ou en modifiant la config en ligne, de changer la langue de la liste.
+
+Les autres configurations possibles
+
+Vous pouvez associer aux listes des familles un ensemble de fichiers tels que le fichier de pied de message, qui sera associé à la liste lors de son instantiation.
+
+===== - listes automatiques, =====
+
+Les listes automatiques sont une exploitation plus poussée des familles de listes, quand vou avez potentiellement un grand nombre de listes, dont vous ne savez pas si toutse peuvent serveir. Elles permettent de créer un potentiel de listes, qui ne sront instanttiées que si nécessaire.
+
+Ceci nécessite un aménagement de la messagerie pour permettre de traiter différemment les listes automatiques.
+
+==== Configuration de Postfix ====
+
+  emacs /etc/postfix/transport_regexp
+
+  /^ls+.*\@nouveau\.domaine\.fr$/       sympafamily:
+  ... (ajouter la ligne au début du fichier)
+
+  emacs /etc/postfix/main.cf
+
+  transport_maps = regexp:/etc/postfix/transport_regexp
+
+  emacs /etc/postfix/master.cf
+
+  ...
+  sympafamily  unix  -       n       n       -       -       pipe
+    flags=R user=sympa argv=/usr/local/sympa/bin/familyqueue ${recipient} listessyndicales
+
+  service postfix restart
+
+==== Création d'une famille de listes automatiques ====
+
+Une famille de listes automatiques diffère d'une famille de listes classique sur deux points :
+  - Le fichier config.tt2 contient du code pour analyser le nom de la liste et y récupérer des attributs
+  - La famille n'utilise pas de fichier XML. Il n'est donc pas possible de la regénérer avec instantiate_family. C'est une fonctionnalité qu'on voudrait ajouter mais on n'a pas encore eu le temps. On accepte cependant les contributions. ;-)
+
+<code>
+cd /usr/local/sympa/etc/a-nouveau.domaine.fr/families
+mkdir listessyndicales
+cd listessyndicales
+emacs config.tt2
+</code>
+
+Jusque là, c'est comme avant.
+
+Là où ça change, c'est dans le config.tt2. Copiez le contenu suivant dans l'éditeur :
+
+<code>
+# List config
+
+status open
+
+[%
+nemes = listname.split('\+');
+THROW autofamily "SYNTAX ERROR: listname must begin with ls" IF (nemes.size != 2 || nemes.0 != 'ls');
+tokens = nemes.1.split('-');
+THROW autofamily "SYNTAX ERROR: wrong listname syntax" IF (tokens.size != 3);
+%]
+
+merge_feature on
+
+custom_subject ls
+
+subject Liste automatique
+
+footer_type  append
+
+visibility conceal
+
+send private
+
+process_archive on
+
+archive
+web_access private
+mail_access owner
+
+clean_delay_queuemod 15
+
+reply_to_header
+value sender
+
+subscribe closed
+
+unsubscribe open
+
+add closed
+
+del closed
+
+review listmaster
+
+info private
+
+rfc2369_header_fields archive,help,owner,post,subscribe,unsubscribe
+
+available_user_options
+reception digest,mail
+
+invite closed
+
+digest 0,1,2,3,4,5,6 16:10
+
+######### ATTENTION : VOUS DEVEZ METTRE UNE ADRESSE EMAIL VALIDE ! ###############"
+owner
+email <votre_adresse>
+profile privileged
+gecos Listmaster
+
+include_sql_query
+db_type mysql
+host localhost
+user francis
+passwd AnSCB3g23etr3
+db_name dummy
+sql_query SELECT DISTINCT email FROM dummy_families where nature LIKE '[% tokens.0 %]' AND localisation LIKE '[% tokens.1 %]' AND grade LIKE '[% tokens.2 %]'
+
+shared_doc
+d_edit private
+d_read private
+
+pictures_feature on
+
+creation
+  date [% creation.date %]
+  date_epoch [% creation.date_epoch %]
+[% IF creation_email -%]
+  email [% creation_email %]
+[% END %]
+
+serial 0
+</code>
+
+Les quelques lignes au début du fichier analysent le nom de la liste et extraient les attributs.
+
+Configurez Sympa pour utiliser les listes automatiques.
+
+  emacs /etc/sympa/sympa.conf 
+
+Ajoutez les lignes sivantes :
+
+<code>
+automatic_list_feature  on
+
+automatic_list_creation public
+
+automatic_list_removal    if_empty
+</code>
+
+Redémarrez enuite Sympa :
+
+  service sympa restart
+
+Un second processus sympa_automatic.pl tourne désormais. Il sera dédié au traitement des messages issus des listes automatiques.
+
+La listes est provisionnée depuis une table d'une base de données SQL. Au début du TP, cette table contient des adresses factices. Pour vérifier que les messages arrivent bien ,jouez la commande ci-dessous pour qu'une de vos propres adresses email soit utilisée :
+
+  mysql -u root -pxKlI6R18WCMWZi2 -b dummy -e "UPDATE dummy_families SET email='david@webmail.com';"
+
+Envoyez maintenant un mail à la liste ls+chercheurscnrs-dr1-sc@a-nouveau.domaine.fr.
+
+
+===== - listes à la demande sur le web =====
+
+Pour permettre l'emploi des listes automatiques via l'interface web de Sympa, vous pouvez autoriser leur manipulation via un clicodrome dans l'interface web.
+
+Il suffit, une fois la famile de listes automatiques définie, d'ajouter un fichier de configuration dans la famille de listes et de la déclarer dans le fichier sympa.conf.
+
+Ajoutez la configuration suivante à la configuration de votre hôte virtuel :
+
+  emacs /usr/local/sympa/etc/a-nouveau.domaine.fr/robot.conf
+  
+<code>
+automatic_list_families name=listessyndicales:prefix=ls:display=Listes syndicales:prefix_separator=+:classes_separator=-:family_owners_list=ls@a-nouveau.domaine.fr
+
+automatic_list_creation family_owner
+
+</code>
+
+Il faut supprimer l'ancienne valeur du paramètre automatic_list_creation
+
+Notez que le formalisme de configuration est hideux : il s'agit d'une longue chaîne de caractère, où des séparateurs textuels tiennent lieu de structuration. Ceci est dû à une limite actuelle de Sympa qui limite le nombre de niveaux hiérarchiques au sein d'un dichier de configuration à un. Cette limite sera supprimée dans la prochaine version de Sympa.
+
+Modifiez ensuite votre famille de liste automatique pour tenir compte des éléments de configuration :
+
+Remplacez le début du fichier ''config.tt2'' par :
+
+<code>
+[%
+p_sep = family_config.escaped_prefix_separator
+nemes = listname.split(p_sep);
+THROW autofamily "SYNTAX ERROR: listname must begin with $family_config.prefix" IF (nemes.size != 2 || nemes.0 != family_config.prefix);
+c_sep = family_config.escaped_classes_separator;
+tokens = nemes.1.split(c_sep);
+THROW autofamily "SYNTAX ERROR: wrong listname syntax" IF (tokens.size != family_config.description.class.size);
+
+%]
+</code>
+
+Remplacez également les paramètres suivants :
+
+<code>
+custom_subject [% family_config.prefix %]
+
+subject [% family_config.display %] ([% FOREACH i IN tokens %][% i %], [% END %])
+
+</code>
+
+Ajoutez enfin une source externe pour les modérateurs.
+<code>
+editor_include
+source syndicalistes
+source_parameters [% family_config.family_owners_list %]
+</code>
+
+Ajoutez la source pour les modérateurs :
+
+<code>
+mkdir /usr/local/sympa/data_sources/
+chown sympa:sympa /usr/local/sympa/data_sources/
+emacs /usr/local/sympa/data_sources/syndicalistes.incl
+</code>
+
+Insérez le texte suivant dans l'éditeur :
+
+<code>
+include_list [% param.0 %]
+</code>
+
+Ajoutez un footer aux messages de la famille : 
+
+  emacs /usr/local/sympa/etc/a-nouveau.domaine.fr/families/listessyndicales/message.footer.tt2
+
+Insérez le texte suivant dans l'éditeur :
+
+<code>
+[% TAGS <+ +> -%]
+Pour ne plus recevoir les messages des <+ family_config.display +>, cliquez sur ce lien : [% wwsympa_url %]/family_signoff_request/<+ family_config.name +>/[% user.escaped_email %]
+</code>
+
+Notez la première ligne : on utilise des tags différents pour le code TT2, '<+' et '+>' pour préserver les tags TT2 habituels dans le résultat.
+
+Quand la lsite va être instantiée, on obtiendra le texte ''Pour ne plus recevoir les messages des Listes syndicales, cliquez sur ce lien : [% wwsympa_url %]/family_signoff_request/listessyndicales/[% user.escaped_email %]''. Lorsqu'un message sera envoyé à la liste, le TT2 ser parsé pour donner : ''Pour ne plus recevoir les messages des Listes syndicales, cliquez sur ce lien : [[http://nouveau.domaine.fr/family_signoff_request/listessyndicales/david.verdin%2Frenater.fr]]''. On a fait du TT2 dans du TT2. Yo dawg.
+
+Créez la liste ls@a-nouveau.domaine.fr et abonnez-y vous.
+
+Ajoutez enfin la configuration permettant l'affichage du clicodrome :
+
+  cd /usr/local/sympa/etc/a-nouveau.domaine.fr/families/listessyndicales/
+  emacs automatic_lists_description.conf
+  
+  
+Copier le contenu suivant dans l'éditeur.
+  
+<code>
+class
+        name nature 
+        stamp Nature du personnel 
+        description Le type de personnel visé 
+		order 0 
+        instances order 0 --- value chercheurscnrs --- tag Chercheurs CNRS %%% order 1 --- value itacnrs --- tag ITA CNRS %%% order 2 --- value chercheursnoncnrs --- tag Chercheurs non CNRS %%% order 3 --- value itanoncnrs --- tag ITA non CNRS
+
+class
+        name localisation 
+        stamp Délégation 
+        description La délégation CNRS de rattachement 
+        order 1
+        instances order 0 --- value dr1 --- tag Délégation régionale %%% order 1 --- value dr2 --- tag Délégation régionale 2 %%% order 2 --- value dr3 --- tag Délégation régionale 3 %%% order 3 --- value dr4 --- tag Délégation régionale 4
+
+class
+        name grade
+        stamp Grade du personnel
+        description Le nombre de galons dorés sur l'épaule de la personne
+        order 2
+        instances order 0 --- value dr --- tag Directeur de recherche %%% order 1 --- value cr --- tag Chargé de recherche %%% order 2 --- value ige --- tag Ingénieur d'études %%% order 3 --- value sc --- tag Sergent chef --- default 1
+</code>
+
+Enfin, redémarrez Sympa et Apache :
+
+  service sympa restart; service apache2 restart
+
+Allez dans l'interface web : un nouvel onglet doit être présent dans le menu de Sympa : "Listes syndicales". Allez dans ce menu.
+
+Vous avez maintenant la possibilité de sélectionner des catégories de personnels auxquels écrire. Sélectionnez-les et cliquez sur le bouton. Vous arrivez dans l'interface de rédaction de message de la liste.
+
+Pour illustrer la généricité du mécanisme, complétez le fichier de configuration de votre hôte virtuel :
+
+<code>
+automatic_list_families name=listessyndicales:prefix=ls:display=Listes syndicales:prefix_separator=+:classes_separator=-:family_owners_list=ls@a-nouveau.domaine.fr;name=listessyndicales2:prefix=ls2:display=Listes syndicales bis:prefix_separator=+:classes_separator=-:family_owners_list=ls@a-nouveau.domaine.fr
+
+</code>
+
+Configuration de Postfix
+
+  emacs /etc/postfix/transport_regexp
+
+  /^ls2+.*\@nouveau\.domaine\.fr$/       sympafamily2:
+  ... (ajouter la ligne au début du fichier)
+
+  emacs /etc/postfix/master.cf
+
+  ...
+  sympafamily2  unix  -       n       n       -       -       pipe
+    flags=R user=sympa argv=/usr/local/sympa/bin/familyqueue ${recipient} listessyndicales2
+
+Faite un lien symbolique de listssyndicales2 vers listessyndicales :
+
+  cd /usr/local/sympa/etc/a-nouveau.domaine.fr/families
+  ln -s listessyndicales listessyndicales2
+
+Redémarrez Sympa et Apache :
+
+  service sympa restart; service apache2 restart
+
+Allez voir dans l'interface web. Bam ! Une autre famille de listes automatiques dans l'interface web. Mêmes critères, mêmes catégories, mais listes différentes.
+
+====== - Fonctionnalités de messagerie avancées : ======
+
+===== - Antispam =====
+
+Sympa ne contient pas de filtre antispam. La bonne solution pour traiter le spam est donc de placer votre serveur de lsites derrière un antispam tiers.
+
+Si l'antispam positionne des entêtes dans les messages analysés, Sympa peut exploiter ces entêtes dans le cadre des scénarios send.
+
+Voici les mécanismes de Sympa permettant d'exploiter ces entêtes.
+
+==== - Le scénario 'spam_status' ====
+
+Le scénario 'spam_status' a cela de particulier qu'il n'est pas utilisé pour autoriser une action. Sa seule fonction est de marquer les messages entrants avec les drapeaux 'ham', 'unsure' ou 'spam'.
+
+Tout message entrant est analysé par ce scénario.
+
+Par la suite, vous disposez, pour rédiger vos scénarios "send" de la variable [msg->spam_status] qui peut prendre les valeurs "ham", "spam" ou "unsure".
+
+Regardez le scénario "spam_status" par défaut :
+
+  emacs /usr/local/sympa/default/scenari/spam_status.x-spam-status
+
+Maintenant, expérimentons cette fonction :
+
+Arrêtez Sympa :
+
+  service sympa stop
+
+Envoyez un message à une liste.
+
+Ensuite, allez dans les spools de messages et éditez le message qui vient d'arriver (le nom du fichier devrait avoir la forme [nom_liste]@a-nouveau.domaine.fr.xxx.xxx) :
+
+  cd /var/spool/sympa/msg
+  mv [nom_liste]@a-nouveau.domaine.fr.xxx.xxx bad#Mettons le message de côté pour plus tard.
+  emacs bad/[nom_liste]@a-nouveau.domaine.fr.xxx.xxx
+
+Ajouter dans les entêtes le texte suivant :
+
+  X-j-chkmail-Status:   Spam Low
+
+Maintenant, modifiez le scénario send de la liste en ajoutant, **comme première règle du scénario** :
+
+  match ([msg->spam_status], /spam/)   smtp,dkim,md5,smime   ->   editorkey
+  match ([msg->spam_status], /unsure/)   smtp,dkim,md5,smime   ->   editorkey
+
+Relancez Sympa et replacez le message dans le spool de messagerie :
+
+  service sympa start
+  cp -p bad/[nom_liste]@a-nouveau.domaine.fr.xxx.xxx .
+
+Le message est mis en modération.
+
+Maintenant, rééditez le message mis de côté dans le répertoire bad et changez l'entête pour la valeur suivante :
+
+  X-j-chkmail-Status:   Spam Hi
+
+enregistrez et copiez-le de nouveau dans le spool.
+
+  cp -p bad/[nom_liste]@a-nouveau.domaine.fr.xxx.xxx .
+
+Le message est modéré avec un message de modération particulier. Ceci est dû au paramètre décrit ci-dessous...
+
+==== - Le paramètre 'antispam_feature' ====
+
+Le parmètre antispam_feature permet d'activer l'analyse automatique. Si sa valeur est "on", le scénarion spam_status est systématiquement employé pour analyser les messages entrants. tous ceux marqués comme 'spam' par les entêtes déclarés dans le scénario spam_status seront automatiquement modérés.
+
+Éditez le fichier de configuration de Sympa :
+
+  emacs /etc/sympa/sympa.conf
+
+Ajoutez la ligne suivante :
+
+  antispam_feature on
+
+Redémarrez Sympa et Apache :
+
+  service sympa restart;service apache2 restart
+
+Allez voir dans l'interface web, l'interface de modération de votre liste : de petites poubelles sont apparues à côté des messages susepctés d'être du spam.
+
+Tentez de refuser la diffusion du message en notifiant le propriétaire.
+
+
+===== - VERP =====
+
+Variable Enveloppe Return Path. Il s'agit de personnaliser le Return-Path des messages. De cette manière, l'adresse du destinataire originale est présente dans un éventuel bounce.
+
+Le taux d'abonnés en VERP est défini par le paramètre de liste verp_rate
+
+Pour que le VERP fonctionne, vous devez modifier transport_regexp comme suit :
+
+  emacs /etc/postfix/transport_regexp
+
+Ajoutez la ligne suivante :
+
+  /^bounce+.*\@nouveau\.domaine\.fr$/ sympabounce:
+
+puis relancez postfix
+
+  service postfix reload
+
+Allez dans l'interface web, dans la configuration d'une liste, section "Gestion des erreurs". Vérifiez que la paramètre ''verp_rate'' vaut bien 0.
+
+Abonnez alors une adresse invraisemblable, qui est sure de bouncer. Laissez libre cours à votre imagination.
+
+Arrêtez bounced.pl
+
+  ps -a | grep bounced.pl | awk '{print $1}' | xargs kill
+
+Envoyez un mail à la liste. Allez ensuite voir dans les spools de bounces :
+
+  ls -la /var/spool/sympa/bounce
+
+Vous devez avoir un unique fichier et le répertoire bad.
+<code>
+total 28
+drwxr-x---.  3 sympa sympa  4096  7 oct.  14:34 .
+drwxr-xr-x. 14 sympa sympa  4096  7 oct.  12:20 ..
+drwxr-x---.  2 sympa sympa  4096  1 oct.  15:43 bad
+-rw-------   1 sympa sympa 12425  7 oct.  14:34 <nom.de.la.liste>.1443817866.14182
+</code>
+
+Examinez le fichier. Dans le champs ''To:'', vous avez une adresse de la forme **<nom.de.la.liste>-owner@a-nouveau.domaine.fr**.
+
+Maintenant retournez dans l'interface web et mettez un taux de VERP de 100%. Renvoyez ensuite un message à la liste et regardez les spools :
+
+
+  ls -la /var/spool/sympa/bounce
+
+Vous devez avoir un unique fichier et le répertoire bad.
+<code>
+total 28
+drwxr-x---.  3 sympa sympa  4096  7 oct.  14:34 .
+drwxr-xr-x. 14 sympa sympa  4096  7 oct.  12:20 ..
+drwxr-x---.  2 sympa sympa  4096  1 oct.  15:43 bad
+-rw-------   1 sympa sympa 12425  7 oct.  14:34 <nom.de.la.liste>.1443817866.14182
+-rw-------   1 sympa sympa 13136  7 oct.  14:38 bounce.1443817942.14215
+</code>
+
+Examinez le fichier ''bounce.xxx''. Dans le champs ''To:'', vous avez une adresse de la forme **bounce+<partie.locale>==a==<partie.domaine>==<nom.de.la.liste>@a-nouveau.domaine.fr**. S'y trouvent encodés l'adresse originelle du destinataire ainsi que le nom de la liste.
+
+Ceci permet d'attribuer l'erreur à l'adresse d'abonné et non à l'adresse émettrice de l'erreur.
+
+<note important>Bien que nous vous fassions positionner cette ligne seulement à ce stade du TP, il  est indispensable de la positionner dans toute installation de Sympa !</note>
+
+===== - personnalisation des messages =====
+
+Le contenu des messages peut être personnalisé, notamment à l'aide des custom_attributes.
+
+Pour cela, il suffit d'insérer, dans le corps du message, des balises TT2 correspondant aux variables à interpréter
+
+Si vous écrivez Bonjour ''[% user.gecos %]'', le réultat donnera Bonjour, Monsieur Vincent dans le mail final.
+
+Pour cela, il suffit de passer la valeur du paramètre « merge_feature » à « on » dans la configuration de la liste.
+
+Voici la liste des variables que vous pouvez utiliser dans un mail :
+
+  * ''[% listname %]'': le nom de la liste
+  * ''[% robot %]'': le nom du robot
+  * ''[% user.email %]'': l'email du destinataire
+  * ''[% user.gecos %]'': le gecos du destinataire
+  * ''[% user.friendly_date %]'': La date d'abonnement de l'utilisateur
+  * ''[% user.custom_attribute.title.value %]'': Un custom attribute, si défini pour la liste.
+
+
+Un exemple d'application est l'insertion d'un lien de désabonnement individuel en bas de chaque message :
+
+Ajoutez, dans une de vos familles de liste, le fichier message.footer.tt2 dans le répertoire de la famille :
+
+  cd /usr/local/sympa/etc/a-nouveau.domaine.fr/families/mafamille
+  emacs message.footer.tt2 
+
+Ajoutez le contenu suivant :
+
+  [% TAGS <+ +> -%]The subject of the list is "<+ subject +>", click here to unsubscribe : [% wwsympa_url %]/auto_signoff/[% listname %]/[% user.escaped_email %]
+
+Ensuite, éditez config.tt2
+
+  emacs config.tt2
+
+ajoutez la ligne :
+
+  merge_feature on
+
+Puis réinstantiez la famille.
+
+Envoyez un message à une des listes (à laquelle vous vous êtes auparavant abonné).
+
+===== - SMIME =====
+
+Sympa peut traiter des messages signés et chiffrés S/MIME. Malheureusement la nécessité de disposer de certificats personnels et de certificats de liste rend trop difficile sa mise en œuvre dans le cadre du TP.
+
+===== - Suivi de la délivrance des messages =====
+
+Dans certains cas, il est important de disposer d'informations sur la délivrance des messages (bounce, reçu, lu, etc.)
+
+Sympa permet d'exploiter les notification de délivrance (en anglais delivery status notification ou DSN) et les accusés de réception (en anglais message disposition notification ou MDN).
+
+En configurant une liste pour exploiter cette fonctionnalité, les messages vont être envoyés en VERP à 100% et les DSN interceptées par bounced.pl pour alimenter une table rattachée à chaque message.
+
+Allez dans la configuration d'un liste via l'interface web, section "Gestion des erreurs".
+
+Dans la section "Fonctionnalité de suivi des messages (tracking)", vous avez 4 paramètres :
+
+  * delivery_status_notification : définit si on va demander une DSN au serveur destinataire.
+  * message_disposition_notification : définit dans quelles conditions on va demander une MDN : jamais, toujours, ou à la demande (on ne le demande alors que si l'émetteur du message l'a lui-même demandée)
+  * tracking : définit qui pourra voir les notifications (c'est un scénario)
+  * retention_period : période de temps pendant laquelle on va conserver les notifications.
+
+Positionnez delivery_status_notification à "on", enregistrez et envoyez un message à votre liste (de préferece à une liste avec au moins une adresse qui génère des erreurs).
+
+Regardez les logs de Sympa : vous allez avoir des logs de bounced pour chaque destinataire du message est des infos sur le traitement des DSN.
+
+Allez ensuite dans les archives de la liste. Cliquez sur le message que vous venez d'envoyer. un bouton "Suivi des messages" est là (qui n'y était pas avant que vous n'activiez le suivi). En cliquant dessus, vous avez un tableau avec, pour chaque destinataire, des infos sur la délivrance du message. Les infos n'iront pas au-delà de "relayed", qui indique que le message a été transmis au dernier MTA de la chaîne. Pour savoir si le message a été lu, il fuat utilser les MDN.
+
+Mettez maintenant le paramètre ''message_disposition_notification'' sur ''on_demand'' et renvoyez un message.
+
+Si vous ne voyez rien de spécial dans les archives, renvoyez un message en demandant un accusé de réception. Dans la boîte mail d'un des destinataires, envoyez l'accusé de réception. Retournez dans les archives pour voir le suivi du message.
+
+Si vous le désirez, vous pouvez aussi mettre le paramètre ''message_disposition_notification'' sur ''on''. C'est désormais Sympa qui demandera un accusé de réception, que l'expditeur du message le veuille ou non.
+
+====== De saines lectures... ======
+
+Pour aller plus loin, nous avons quelques lectures à vous recommander :
+
+  * [[https://sympa-community.github.io/manual/|Le manuel de Sympa]] AKA RTFM. Il est perfectible mais contient déjà nombre d'informations utiles,
+  * [[https://www.renater.fr/IMG/pdf/operer_un_serveur_de_listes_de_diffusion_v271114.pdf|le guide des bonnes pratiques des listes de diffusion]] rédigé par des listmasters de la communauté RENATER, il contient plein de bons conseils marqués du sceau de l'expérience. Ce ne sont pas des règles absolues, juste des recettes qui ont fait leurs preuves, pour organiser et maintenir un outil de listes de diffusion.

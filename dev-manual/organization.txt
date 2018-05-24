@@ -1,0 +1,127 @@
+====== Organization ======
+
+Here is a snapshot of what Sympa looks like once installed on your system. This also illustrates the Sympa philosophy, we guess. Almost all configuration files can be defined for a particular list, for a virtual host or for the entire site, and most of them have a reasonable default value provided by Sympa distribution.
+
+The following reference manual assumes a particular location for all files and directories. Note that binary distributions usually change those locations according to the operating system file organization. When installing Sympa from source kit, //configure// can be called with command options in order to change all default file locations.
+
+
+  *  ''/home/sympa'' \\  The root directory of Sympa. You will find almost everything related to Sympa under this directory, except logs and main configuration files.
+  * ''/home/sympa/bin''\\  This directory contains the binaries, including the CGI. It also contains the default authorization scenarios, templates and configuration files as in the distribution. ''/home/sympa/bin'' may be completely overwritten by the ''make install'' so you must not customize templates and authorization scenarios under ''/home/sympa/bin''.
+  * ''/home/sympa/bin/etc''\\  Here Sympa stores the default versions of what it will otherwise find in ''/home/sympa/etc'' (task models, authorization scenarios, templates and configuration files, recognized S/Mime certificates, families).
+  * ''/home/sympa/etc''\\  This is your site's configuration directory. Consult ''/home/sympa/bin/etc'' when drawing up your own.
+  * ''/home/sympa/etc/create_list_templates/''\\  List templates (suggested at list creation time).
+  * ''/home/sympa/etc/scenari/''\\  This directory will contain your authorization scenarios. If you don't know what the hell an authorization scenario is, refer to [[authorization-scenarios|Authorization scenarios]]. Those authorization scenarios are default scenarios but you may look at ''/home/sympa/etc/my.domain.org/scenari/'' for default scenarios of my.domain.org virtual host and ''/home/sympa/list_data/mylist/scenari'' for scenarios specific to a particular list.
+  * ''/home/sympa/etc/data_sources/''\\  This directory will contain your .incl files (see [[list-definition#data_inclusion_file|Data inclusion file]]). At the moment it only deals with files required by paragraphs ''owner_include'' and ''editor_include'' in the config file.
+  * ''/home/sympa/etc/list_task_models/''\\  This directory will store your own list task models (see [[customizing#tasks|Customizing tasks]]).
+  * ''/home/sympa/etc/global_task_models/''\\  Contains your global task models (see [[customizing#tasks|Customizing tasks]]).
+  * ''/home/sympa/etc/web_tt2/'' (used to be ''/home/sympa/etc/wws_templates/'') \\  The web interface (//WWSympa//) is composed of template HTML files parsed by the CGI program. Templates can also be defined for a particular list in ''/home/sympa/list_data/mylist/web_tt2/'' or in ''/home/sympa/etc/my.domain.org/web_tt2/''
+  * ''/home/sympa/etc/mail_tt2/'' (used to be ''/home/sympa/etc/templates/'') \\  Some of the mail robot's replies are defined by templates (''welcome.tt2'' for SUBSCRIBE). You can overload these template files in the individual list directories or for each virtual host, but these are the defaults.
+  * ''/home/sympa/etc/families/''\\  Contains your family directories (see [[list-creation#list_creation|Mailing list creation]]). Family directories can also be created in ''/home/sympa/etc/my.domain.org/families/''
+  * ''/home/sympa/etc/my.domain.org''\\  The directory to define the virtual host my.domain.org dedicated to management of all lists of this domain (list description of my.domain.org are stored in ''/home/sympa/list_data/my.domain.org''). Those directories for virtual hosts have the same structure as ''/home/sympa/etc'' which is the configuration dir of the default robot.
+  * ''/home/sympa/list_data''\\ Sympa's working directory.
+  * ''/home/sympa/list_data/mylist''\\  The list directory (refer to [[list-definition|Mailing list definition]]). Lists stored in this directory belong to the default robot as defined in sympa.conf file, but a list can be stored in ''/home/sympa/list_data/my.domain.org/mylist'' directory and it is managed by my.domain.org virtual host.
+  * ''/home/sympa/list_data/X509-user-certs''\\  The directory where Sympa stores all user's certificates.
+  * ''/home/sympa/locale''\\  Internationalization directory. It contains message catalogues in the GNU .po format.
+  * ''/home/sympa/spool''\\ Sympa uses 9 different spools (see [[#spools|Spools]]).
+  * ''/home/sympa/src/''\\ Sympa sources.
+
+
+====== Programs ======
+
+  * ''sympa.pl''\\  The main daemon; it processes commands and delivers messages. Continuously scans the ''msg/'' spool.
+  * ''sympa_wizard.pl''\\  A wizard to edit ''sympa.conf'' and ''wwsympa.conf''. Maybe it is a good idea to run it at the beginning, but these files can also be edited with your favorite text editor.
+  * ''wwsympa.fcgi''\\  The CGI program offering a complete web interface to mailing lists. It can work in both classical CGI and FastCGI modes, although we recommend FastCGI mode, being up to 10 times faster.
+  * ''bounced.pl''\\  This daemon processes bounces (non-delivered messages), looking for bad addresses. List owners will later access bounce information via //WWSympa//. Continuously scans the ''bounce/'' spool.
+  * ''archived.pl''\\  This daemon feeds the web archives, converting messages to HTML format and linking them. It uses the amazing ''MhOnArc''. Continuously scans the ''outgoing/'' spool.
+  * ''task_manager.pl''\\  The daemon which manages the tasks: creation, checking, execution. It regularly scans the ''task/'' spool.
+  * ''sympa_soap_server.fcgi''\\  The server will process SOAP (web services) request. This server requires FastCGI; it should be referenced from within your HTTPS config.
+  * ''queue''\\  This small program gets the incoming messages from the aliases and stores them in ''msg/'' spool.
+  * ''bouncequeue''\\  Same as ''queue'' for bounces. Stores bounces in ''bounce/'' spool.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+======  Configuration files ======
+
+  * ''/etc/sympa.conf''\\  The main configuration file. See [[.conf-parameters:index|Sympa.conf parameters]].
+  * ''/etc/wwsympa.conf''\\ //WWSympa// configuration file. See [[presentation#wwsympa_intro|the description of WWSympa]].
+  * ''edit_list.conf''\\  Defines which parameters/files are editable by owners. See [[list-creation#list_editing|List editing]].
+  * ''topics.conf''\\  Contains the declarations of your site's topics (classification in //WWSympa//), along with their titles. A sample is provided in the ''sample/'' directory of the Sympa distribution. See [[customizing#topics|Topics]].
+  * ''auth.conf''\\  Defines authentication backend organization (LDAP-based authentication, CAS-based authentication and Sympa internal).
+  * ''robot.conf''\\  It is a subset of ''sympa.conf'' defining a Virtual host (one per Virtual host).
+<html>
+<a name="crawlers_detection.conf"></a>
+</html>
+  * ''crawlers_detection.conf''\\ This file specify how Sympa detect web crawlers. It is used in order optimize Sympa web interface answers and internal mecchanism   for crawlers. In this version the file is limited to a list of user agent string, but in the futur it may be enriched with IP adress. When a crawler is detected, Sympa allows the web client to cache pages so crawlers should not browse old archives every days. In addition, Sympa do not create http sessions for crawlers. This keep the Sympa session table quite small.  
+<html>
+<a name="nrcpt_by_domain.conf"></a>
+</html>
+  * ''nrcpt_by_domain.conf''\\  This file is used to limit the number of recipients per SMTP session. Some ISPs trying to block spams reject sessions with too many recipients. In such case you can set the [[.conf-parameters:part2#nrcpt|nrcpt]] robot.conf parameter to a lower value but this will affect all SMTP sessions with any remote MTA. This file is used to limit the number of recipients for some particular domains. The file must contain a list of domains followed by the maximum number of recipients per SMTP session. Example:
+
+         yohaa.com 3
+         oal.com 5
+
+  * ''data_structure.version''\\  This file is automatically created and maintained by Sympa itself. It contains the current version of your Sympa service and is used to detect upgrades and trigger maintenance procedures such as database structure changes.
+
+  * ''ldap_alias_manager.conf''\\ This file defines the parameters for a LDAP directory, when using ''ldap_alias_manager.pl'' as the mail aliases management script.
+
+
+====== Spools ======
+
+See [[manual/conf-parameters:part2#spool_related|Spool related]] for spool definition in ''sympa.conf''.
+
+  * ''/home/sympa/spool/auth/''\\  For storing messages until they have been confirmed. Files are created and processed by the ''sympa.pl'' program.
+  * ''/home/sympa/spool/bounce/''\\  For storing incoming bouncing messages. Files are created by the ''bouncequeue'' program (via mail aliases) and processed by the ''bounced.pl'' daemon.
+  * ''/home/sympa/spool/bounce/bad/''\\  For storing bouncing messages for which bounce management failed, though an user was identified. Files are moved there by the ''bounced.pl'' daemon.
+  * ''/home/sympa/spool/bounce/OTHER/''\\  Stores bouncing messages for which Sympa couldn't determine the original sender. Files are moved there by the ''bounced.pl'' daemon.
+  * ''/home/sympa/spool/digest/''\\  For storing message digests before they are sent. Files are created and processed by the ''sympa.pl'' daemon.
+  * ''/home/sympa/spool/mod/''\\  For storing unmoderated messages. Files are created by the ''sympa.pl'' program and processed by either ''sympa.pl'' or ''wwsympa.fcgi''.
+  * ''/home/sympa/spool/msg/''\\  For storing incoming messages (including commands). Files are created by the ''queue'' program (via mail aliases) and processed by the ''sympa.pl'' program.
+  * ''/home/sympa/spool/msg/bad/''\\ Sympa stores rejected messages in this directory. Files are created by the ''sympa.pl'' daemon.
+  * ''/home/sympa/spool/distribute/''\\  For storing messages ready for distribution. This spool is used only if the installation runs 2 ''sympa.pl'' daemons, one for commands, one for messages.
+  * ''/home/sympa/spool/distribute/bad/''\\ Sympa stores rejected messages in this directory. Files are created by the ''sympa.pl'' process dedicated to message distribution.
+  * ''/home/sympa/spool/task/''\\  For storing all tasks created. Files are created and processed by the ''task_manager.pl'' daemon.
+  * ''/home/sympa/spool/outgoing/''\\ ''sympa.pl'' dumps messages in this spool to await archiving by ''archived.pl''. ''wwsympa.fcgi'' may also create files in this spool.
+  * ''/home/sympa/spool/outgoing/bad/''\\ For storing messages which couldn't be archived. Files are moved there by the ''archived.pl'' daemon.
+  * ''/home/sympa/spool/topic/''\\  For storing topic information files.
+  * ''/home/sympa/spool/tmp/''\\  For storing temporary informations, as stderr flux from processes or messages parts submitted to anti-virus
+
+
+====== Roles and privileges ======
+
+You can assign roles to users (identified via their email addresses) at different levels in Sympa; privileges are associated (or can be associated) to these roles. We list these roles below (from the most powerful to the least), along with the relevant privileges.
+
+=====  (Super) listmasters =====
+
+These are the persons administrating the service, defined in the ''sympa.conf'' file. They inherit the listmaster role in virtual hosts and are the default set of listmasters for virtual hosts.
+
+=====  (Robot) listmasters =====
+
+You can define a different set of listmasters at a virtual host level (in the ''robot.conf'' file). They are responsible for moderating mailing lists creation (if list creation is configured this way), editing default templates, providing help to list owners and moderators. Users defined as listmasters get a privileged access to the Sympa web interface. Listmasters also inherit the privileges of list owners (for any list defined in the virtual host), but not the moderator privileges.
+
+=====  Privileged list owners =====
+
+The first defined privileged owner is the person who requested the list creation. Later it can be changed or extended. They inherit (basic) owner privileges and are also responsible for managing the list owners and editors themselves (through the web interface). With Sympa's default behavior, privileged owners can edit more list parameters than (basic) owners can do; but this can be customized via the ''edit-list.conf'' file.
+
+=====  (Basic) list owners =====
+
+They are responsible for managing the members of the list, editing the list configuration and templates. Owners (and privileged owners) are defined in the list config file.
+
+=====  Moderators (also called Editors) =====
+
+Moderators are responsible for the messages distributed in the mailing list (as opposed to owners who look after list members). Moderators are active if the list has been setup as a moderated mailing list. If no moderator is defined for the list, then list owners will inherit the moderator role.
+
+=====  Subscribers (or list members) =====
+
+Subscribers are the persons who are members of a mailing list; they either subscribed, or got added directly by the listmaster or via a data source (LDAP, SQL, another list, ...). These subscribers receive messages posted in the list (unless they have set the ''nomail'' option) and have special privileges to post in the mailing list (unless it is a newsletter). Most privileges a subscriber may have are not hard coded in Sympa but expressed via the so-called authorization scenarios (see [[authorization-scenarios|Scenarios]]).

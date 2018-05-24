@@ -1,0 +1,212 @@
+<html>
+<ul id="monmenu">
+<li class="sub hover"><a href="part1">conf-parameters part1</a>
+<ul>  <li><a href="part1#sympa.conf_parameters">sympa.conf parameters</a></li>
+  <li class="fly"><a href="part1#site_customization">Site customization</a>
+<ul>
+<li><a href="part1#domain">domain</a></li>
+<li><a href="part1#email">email</a></li>
+<li><a href="part1#listmaster">listmaster</a></li>
+<li><a href="part1#listmaster_email">listmaster_email</a></li>
+<li><a href="part1#wwsympa_url">wwsympa_url</a></li>
+<li><a href="part1#soap_url">soap_url</a></li>
+<li><a href="part1#spam_protection">spam_protection</a></li>
+<li><a href="part1#web_archive_spam_protection">web_archive_spam_protection</a></li>
+<li><a href="part1#color_0,_color_1,_...,_color_15">color_0, color_1, ..., color_15</a></li>
+<li><a href="part1#obsolete_color_parameters">Obsolete color parameters</a></li>
+<li><a href="part1#logo_html_definition">logo_html_definition</a></li>
+<li><a href="part1#main_menu_custom_button">main_menu_custom_button</a></li>
+<li><a href="part1#css_path">css_path</a></li>
+<li><a href="part1#css_url">css_url</a></li>
+<li><a href="part1#static_content_path">static_content_path</a></li>
+<li><a href="part1#static_content_url">static_content_url</a></li>
+<li><a href="part1#pictures_feature">pictures_feature</a></li>
+<li><a href="part1#pictures_max_size">pictures_max_size</a></li>
+<li><a href="part1#cookie">cookie</a></li>
+<li><a href="part1#create_list">create_list</a></li>
+<li><a href="part1#automatic_list_feature">automatic_list_feature</a></li>
+<li><a href="part1#automatic_list_creation">automatic_list_creation</a></li>
+<li><a href="part1#automatic_list_removal">automatic_list_removal</a></li>
+<li><a href="part1#global_remind">global_remind</a></li>
+<li><a href="part1#allow_subscribe_if_pending">allow_subscribe_if_pending</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="part2">conf-parameters part2</a>
+<ul>  <li><a href="part2#sympa.conf_parameters">sympa.conf parameters</a></li>
+  <li class="fly"><a href="part2#directories">Directories</a>
+<ul>
+<li><a href="part2#home">home</a></li>
+<li><a href="part2#etc">etc</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part2#system_related">System related</a>
+<ul>
+<li><a href="part2#syslog">syslog</a></li>
+<li><a href="part2#log_level">log_level</a></li>
+<li><a href="part2#log_module">log_module</a></li>
+<li><a href="part2#log_condition">log_condition</a></li>
+<li><a href="part2#log_socket_type">log_socket_type</a></li>
+<li><a href="part2#pidfile">pidfile</a></li>
+<li><a href="part2#pidfile_creation">pidfile_creation</a></li>
+<li><a href="part2#umask">umask</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part2#antispam_related">Antispam related</a>
+<ul>
+<li><a href="part2#antispam_feature">antispam_feature</a></li>
+<li><a href="part2#antispam_tag_header_name">antispam_tag_header_name</a></li>
+<li><a href="part2#antispam_tag_header_spam_regexp">antispam_tag_header_spam_regexp</a></li>
+<li><a href="part2#antispam_tag_header_ham_regexp">antispam_tag_header_ham_regexp</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part2#sending_related">Sending related</a>
+<ul>
+<li><a href="part2#distribution_mode">distribution_mode</a></li>
+<li><a href="part2#maxsmtp">maxsmtp</a></li>
+<li><a href="part2#log_smtp">log_smtp</a></li>
+<li><a href="part2#use_blacklist">use_blacklist</a></li>
+<li><a href="part2#max_size">max_size</a></li>
+<li><a href="part2#misaddressed_commands">misaddressed_commands</a></li>
+<li><a href="part2#misaddressed_commands_regexp">misaddressed_commands_regexp</a></li>
+<li><a href="part2#nrcpt">nrcpt</a></li>
+<li><a href="part2#avg">avg</a></li>
+<li><a href="part2#alias_manager">alias_manager</a></li>
+<li><a href="part2#sendmail">sendmail</a></li>
+<li><a href="part2#sendmail_args">sendmail_args</a></li>
+<li><a href="part2#sendmail_aliases">sendmail_aliases</a></li>
+<li><a href="part2#rfc2369_header_fields">rfc2369_header_fields</a></li>
+<li><a href="part2#remove_headers">remove_headers</a></li>
+<li><a href="part2#remove_outgoing_headers">remove_outgoing_headers</a></li>
+<li><a href="part2#ignore_x_no_archive_header_feature">ignore_x_no_archive_header_feature</a></li>
+<li><a href="part2#anonymous_headers_fields">anonymous_headers_fields</a></li>
+<li><a href="part2#list_check_smtp">list_check_smtp</a></li>
+<li><a href="part2#list_check_suffixes">list_check_suffixes</a></li>
+<li><a href="part2#urlize_min_size">urlize_min_size</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part2#quotas">Quotas</a>
+<ul>
+<li><a href="part2#default_shared_quota">default_shared_quota</a></li>
+<li><a href="part2#default_archive_quota">default_archive_quota</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part2#spool_related">Spool related</a>
+<ul>
+<li><a href="part2#spool">spool</a></li>
+<li><a href="part2#queue">queue</a></li>
+<li><a href="part2#queuedistribute">queuedistribute</a></li>
+<li><a href="part2#queuemod">queuemod</a></li>
+<li><a href="part2#queuedigest">queuedigest</a></li>
+<li><a href="part2#queueauth">queueauth</a></li>
+<li><a href="part2#queueoutgoing">queueoutgoing</a></li>
+<li><a href="part2#queuetopic">queuetopic</a></li>
+<li><a href="part2#queuebounce">queuebounce</a></li>
+<li><a href="part2#queuetask">queuetask</a></li>
+<li><a href="part2#queueautomatic">queueautomatic</a></li>
+<li><a href="part2#tmpdir">tmpdir</a></li>
+<li><a href="part2#sleep">sleep</a></li>
+<li><a href="part2#clean_delay_queue">clean_delay_queue</a></li>
+<li><a href="part2#clean_delay_queueoutgoing">clean_delay_queueoutgoing</a></li>
+<li><a href="part2#clean_delay_queuebounce">clean_delay_queuebounce</a></li>
+<li><a href="part2#clean_delay_queueother">clean_delay_queueother</a></li>
+<li><a href="part2#clean_delay_queuemod">clean_delay_queuemod</a></li>
+<li><a href="part2#clean_delay_queueauth">clean_delay_queueauth</a></li>
+<li><a href="part2#clean_delay_queuesubscribe">clean_delay_queuesubscribe</a></li>
+<li><a href="part2#clean_delay_queuetopic">clean_delay_queuetopic</a></li>
+<li><a href="part2#clean_delay_queueautomatic">clean_delay_queueautomatic</a></li>
+<li><a href="part2#clean_delay_tmpdir">clean_delay_tmpdir</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="part3">conf-parameters part3</a>
+<ul>  <li><a href="part3#sympa.conf_parameters">sympa.conf parameters</a></li>
+  <li class="fly"><a href="part3#internationalization_related">Internationalization related</a>
+<ul>
+<li><a href="part3#localedir">localedir</a></li>
+<li><a href="part3#supported_lang">supported_lang</a></li>
+<li><a href="part3#lang">lang</a></li>
+<li><a href="part3#web_recode_to">web_recode_to</a></li>
+<li><a href="part3#filesystem_encoding">filesystem_encoding</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part3#bounce_related">Bounce related</a>
+<ul>
+<li><a href="part3#verp_rate">verp_rate</a></li>
+<li><a href="part3#welcome_return_path">welcome_return_path</a></li>
+<li><a href="part3#remind_return_path">remind_return_path</a></li>
+<li><a href="part3#return_path_suffix">return_path_suffix</a></li>
+<li><a href="part3#expire_bounce_task">expire_bounce_task</a></li>
+<li><a href="part3#purge_orphan_bounces_task">purge_orphan_bounces_task</a></li>
+<li><a href="part3#eval_bouncers_task">eval_bouncers_task</a></li>
+<li><a href="part3#process_bouncers_task">process_bouncers_task</a></li>
+<li><a href="part3#minimum_bouncing_count">minimum_bouncing_count</a></li>
+<li><a href="part3#minimum_bouncing_period">minimum_bouncing_period</a></li>
+<li><a href="part3#bounce_delay">bounce_delay</a></li>
+<li><a href="part3#default_bounce_level1_rate">default_bounce_level1_rate</a></li>
+<li><a href="part3#default_bounce_level2_rate">default_bounce_level2_rate</a></li>
+<li><a href="part3#bounce_email_prefix">bounce_email_prefix</a></li>
+<li><a href="part3#bounce_warn_rate">bounce_warn_rate</a></li>
+<li><a href="part3#bounce_halt_rate">bounce_halt_rate</a></li>
+<li><a href="part3#default_remind_task">default_remind_task</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part3#tuning">Tuning</a>
+<ul>
+<li><a href="part3#cache_list_config">cache_list_config</a></li>
+<li><a href="part3#lock_method">lock_method</a></li>
+<li><a href="part3#sympa_priority">sympa_priority</a></li>
+<li><a href="part3#request_priority">request_priority</a></li>
+<li><a href="part3#owner_priority">owner_priority</a></li>
+<li><a href="part3#default_list_priority">default_list_priority</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part3#database_related">Database related</a>
+<ul>
+<li><a href="part3#update_db_field_types">update_db_field_types</a></li>
+<li><a href="part3#db_type">db_type</a></li>
+<li><a href="part3#db_name">db_name</a></li>
+<li><a href="part3#db_host">db_host</a></li>
+<li><a href="part3#db_port">db_port</a></li>
+<li><a href="part3#db_user">db_user</a></li>
+<li><a href="part3#db_passwd">db_passwd</a></li>
+<li><a href="part3#db_timeout">db_timeout</a></li>
+<li><a href="part3#db_options">db_options</a></li>
+<li><a href="part3#db_env">db_env</a></li>
+<li><a href="part3#db_additional_subscriber_fields">db_additional_subscriber_fields</a></li>
+<li><a href="part3#db_additional_user_fields">db_additional_user_fields</a></li>
+<li><a href="part3#purge_user_table_task">purge_user_table_task</a></li>
+<li><a href="part3#purge_logs_table_task">purge_logs_table_task</a></li>
+<li><a href="part3#logs_expiration_period">logs_expiration_period</a></li>
+<li><a href="part3#purge_session_table_task">purge_session_table_task</a></li>
+<li><a href="part3#session_table_ttl">session_table_ttl</a></li>
+<li><a href="part3#purge_chalenge_table_task">purge_chalenge_table_task</a></li>
+<li><a href="part3#chalenge_table_ttl">chalenge_table_ttl</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part3#loop_prevention">Loop prevention</a>
+<ul>
+<li><a href="part3#loop_command_max">loop_command_max</a></li>
+<li><a href="part3#loop_command_sampling_delay">loop_command_sampling_delay</a></li>
+<li><a href="part3#loop_command_decrease_factor">loop_command_decrease_factor</a></li>
+<li><a href="part3#loop_prevention_regex">loop_prevention_regex</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part3#s/mime_configuration">S/MIME configuration</a>
+<ul>
+<li><a href="part3#openssl">openssl</a></li>
+<li><a href="part3#capath">capath</a></li>
+<li><a href="part3#cafile">cafile</a></li>
+<li><a href="part3#key_passwd">key_passwd</a></li>
+
+</ul></li>
+  <li class="fly"><a href="part3#antivirus_plug-in">Antivirus plug-in</a>
+<ul>
+<li><a href="part3#antivirus_path">antivirus_path</a></li>
+<li><a href="part3#antivirus_args">antivirus_args</a></li>
+<li><a href="part3#antivirus_notify">antivirus_notify</a></li>
+
+</ul></li>
+</ul>
+</ul>
+</html>

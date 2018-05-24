@@ -1,0 +1,159 @@
+====== List vacation message ======
+
+Using a ''CustomCondition'' it is possible (at least as of Sympa 6.2.9) to automatically send a vacation message when in a date range.
+
+The custom condition (put it under ''<sympa>/etc/custom\_conditions/'' or ''<sympa>/etc/<robot>/custom\_conditions/'') :
+
+<file perl vacation.pm>
+#!/usr/bin/perl
+
+package CustomCondition::vacation;
+
+use strict;
+
+use English qw(-no_match_vars);
+use MIME::EncWords;
+
+use Sympa::Log;
+use Sympa::List;
+
+use Exporter;
+our @EXPORT_OK = qw(verify);
+
+my $log = Sympa::Log->instance;
+
+sub verify {
+    eval { require DateTime::Format::DateParse; };
+    if ($EVAL_ERROR) {
+        $log->syslog(
+            'err',
+            'Error requiring DateTime::Format::DateParse : %s (%s)',
+            "$EVAL_ERROR",
+            ref($EVAL_ERROR)
+        );
+        return 1;
+    }
+    
+    # Get parameters
+    my $list_address = shift;
+    my $vacation_start = shift;
+    my $vacation_end = shift;
+    my $sender = shift;
+    my $subject = shift;
+    
+    $subject = shift @$subject if ref $subject eq 'ARRAY';
+    $subject = MIME::EncWords::decode_mimewords($subject);
+    
+    # Parse dates
+    my $dt_start = DateTime::Format::DateParse->parse_datetime($vacation_start);
+    my $dt_end   = DateTime::Format::DateParse->parse_datetime($vacation_end);
+    
+    unless($dt_start) {
+        $log->syslog(
+            'err',
+            'Unable to parse date "%s"',
+            $vacation_start
+        );
+        return 1;
+    }
+    
+    unless($dt_end) {
+        $log->syslog(
+            'err',
+            'Unable to parse date "%s"',
+            $vacation_end
+        );
+        return 1;
+    }
+    
+    $vacation_start = $dt_start->epoch();
+    $vacation_end   = $dt_end->epoch();
+    
+    # Check time range, return if not vacation
+    return 1 unless time >= $vacation_start and time <= $vacation_end;
+    
+    # We are in vacation range, notify sender
+    
+    # Retreive List object
+    my ($list_name, $robot) = split(/@/, $list_address);
+    my $list = Sympa::List->new($list_name, $robot);
+    
+    # Send notification
+    my $tpl = 'vacation';
+    unless (
+        Sympa::send_file(
+            $list,
+            $tpl,
+            $sender,
+            {
+                'auto_submitted' => 'auto-replied',
+                'vacation_start' => $vacation_start,
+                'vacation_end' => $vacation_end,
+                'subject' => $subject
+            }
+        )
+    ) {
+        $log->syslog(
+            'notice',
+            'Unable to send template "%s" to %s',
+            $tpl,
+            $sender
+        );
+    }
+    
+    return 1;
+}
+
+# Packages must return true
+1;
+</file>
+
+
+The response template (put it under ''<sympa>/etc/mail\_tt2/'', ''<sympa>/etc/<robot>/mail\_tt2/'' or ''<sympa>/list\_data/<list>/mail\_tt2/'') :
+
+<file tt2 vacation.tt2>
+To: [% to %]
+Subject: List [% list.name %] vacation
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+
+[%- USE date -%]
+
+Your message "[% subject %]" has been sent to the [% list.name %] list.
+
+We are on vacation from [% date.format(vacation_start, '%D') %] to [% date.format(vacation_end, '%D') %] ...
+</file>
+
+
+Now add the folowing line BEFORE the first line having a ''do\_it'' action in your list's ''send'' scenario :
+
+<code>
+CustomCondition::vacation([list->address],vacation_start_date,vacation_end_date,[sender],[msg_header->Subject]) smtp,smime,md5,dkim -> do_it
+</code>
+
+
+Example :
+
+<code>
+CustomCondition::vacation([list->address],"2015-12-15","2015-12-20",[sender],[msg_header->Subject]) smtp,smime,md5,dkim -> do_it
+</code>
+
+
+You can even use some list's custom vars :
+
+<code>
+CustomCondition::vacation([list->address],[custom_vars->vacation_start],[custom_vars->vacation_end],[sender],[msg_header->Subject]) smtp,smime,md5,dkim -> do_it
+</code>
+
+As the CustomCondition skips undefined/unparsable dates this allows you to let the list owner define his vacation date range without modifying the scenario so you can lock the scenario but still let owners specify a vacation when needed !
+
+
+Here is the trick, the ''do\_it'' at the end of this rule doesn't matter as the custom condition will never say it matched, this allows to use a custom condition as some kind of "message listener" !
+
+You can easily tweak the vacation message on a per list basis if needed.
+
+You can also specify several vacation date ranges, just add as much versions of the rule as needed !
+
+Dates given in the scenario are parsed using [[http://search.cpan.org/perldoc/DateTime::Format::DateParse|the DateTime::Format::DateParse module]], compatible date formats can be found [[http://search.cpan.org/perldoc/Date::Parse|on the Date::Parse module documentation]].
+
+When rendering dates in the vacation message template one should use [[http://template-toolkit.org/docs/modules/Template/Plugin/Date.html|TT2's Date plugin]] (see sample message above), format specifier follows [[http://man7.org/linux/man-pages/man3/strftime.3.html|POSIX's strftime format]].

@@ -1,0 +1,12 @@
+====== sympa.conf parameters ======
+
+The ''/etc/sympa.conf'' configuration file contains numerous parameters which are read on start-up of Sympa. If you change this file, do not forget that you will need to restart Sympa afterwards.
+
+The ''/etc/sympa.conf'' file contains directives in the following format:
+
+//keyword value//
+
+Comments start with the ''#'' character at the beginning of a line. Empty lines are also considered as comments and are ignored. There should only be one directive per line, but their order in the file is of no importance.
+
+{{page>toc}}
+

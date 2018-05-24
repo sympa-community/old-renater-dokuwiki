@@ -1,0 +1,239 @@
+====== Plugins ======
+
+Starting version 6.2, you can add plusings to Sympa.
+
+The full list of currently available plugins can be found here: [[:templates_plugins:index|template plugins list]].
+
+The documentation about how to write a Sympa plugin in the [[manual:templates_plugins|template plugins documentation]].
+
+====== Contribs ======
+
+You may become a contributor :[[:internals:how_to_contribute_to_sympa|how to contribute to Sympa]]
+
+===== Moderation reminder =====
+
+Benoît Marchal produced a script to remind users that messages are awainting modeartion and / or authentification.
+
+This is usefull to prevent overbooked moderators from forgetting messages in your spools.
+
+Two warnings:
+
+  - the script contains, at the beginning, hard-coded values (directories and names) that you should edit to match you own server,
+  - the script is in French and will send messages in French. You should translate it if you wish to use another language.
+
+Download the script: {{:contribs:rappelcle.pl|}}
+
+===== Steve's Add-ons =====
+
+Steve Shipway is very active in the Sympa community. He wrote a bunch of add-ons to Sympa. On of them is allowing mail trecking based on the merge feature. The other one is enabling white/black listing in mailng lists.
+
+You can find all these add-ons on [[http://www.steveshipway.org/software/f_sympa.html|Steve's web site]].
+
+===== PgSQL upgrade =====
+
+Here is a query that eases migration from 5.0 to 6.1.17:
+
+{{:contribs:upgrade_db_pgsql_5.0_to_6.1.17.sql.txt|}}
+
+Many thanks to R. boufenghour (Linagora) for this contribution!
+
+===== css, customized templates, etc =====
+
+Do you want to win a Sympa tee shirt ? Add your CSS, customized templates or colors proposition in the [[contribs:customize:index|customize section]].
+
+===== Easy configuration for Postfix =====
+
+[[bastien.roucaries+debian@gmail.com|B. Roucaries]] wrote this script that makes using postfix with Sympa easy.
+
+Install [[http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=10;filename=postfix-to-sympa.pl;att=1;bug=592969
+|this file]] as /var/lib/sympa/bin/postfix-to-sympa.pl.
+
+It will replace //any// configuration.
+
+On the sympa side we should ask to not generate alias (by setting the ''alias_manager'' parameter value to ''/bin/true'') and it will automagically configure.
+
+To configure a virtual domain (lists.example.com) to connect to sympa, edit Postfix thusly:
+
+**/etc/postfix/main.cf**
+<code>
+      relay_domains = ... lists.example.com
+      transport_maps = hash:/etc/postfix/transport
+      sympa_destination_recipient_limit = 1
+</code>
+
+**/etc/postfix/master.cf**
+<code>
+    sympa unix  -       n       n       -       -       pipe
+      flags=FR user=sympa
+      argv=/var/lib/sympa/bin/postfix-to-sympa.pl ${nexthop} ${mailbox}
+</code>
+
+**/etc/postfix/transport**
+<code>
+   lists.example.com   sympa:
+</code>
+
+Note that (root|postmaster|abuse|mailer-daemon|sympa-request|sympa-owner|listowner)@lists.exemple.com
+are redirected to listmaster@exemple.com.
+
+===== Migrations and archives =====
+
+We received a lot of contribs related to migration and:or archives. Please browse the section of the contribs repository dedicated to [[./migration_and_archives/index|migration and archives]].
+
+===== Mail to News gateway =====
+
+([[gaio@linux.it|Marco Gaiarin]])
+
+Marco has provided a script that wraps around Sympa's mhonarc call to do a mail->news gateway.
+
+ * [[http://www.sympa.org/distribution/contrib/mail2news|Download]]
+
+===== Making many lists using LDAP and Sympa instanciation - March 2007 =====
+
+([[jean-hugues.belpois@univ-brest.fr|Jean-Hugues Belpois]])
+
+This document describe how to make/update lists automatically from an LDAP directory. This is use for making/updating students lists in a university environnement, but can easily be adpated to others. Two files are availables :
+
+  * Odf document (in French, ask for english version) describing the way to proceed : {{:contribs:students_lists_instanciation.odt|:contribs:students_lists_instanciation.odt}}
+
+  * Shell script use to forge the XML file of Sympa instanciation : {{:contribs:create_xml.sh.txt|:contribs:create_xml.sh.txt}}
+
+===== LemonLDAP plugin - December 2006 =====
+
+LemonLDAP is a Single Sign-On system.
+
+The authentication module for Sympa : 
+
+  * [[http://sourceforge.net/projects/pluglemonsympa/]]
+
+===== Reset of traffic lists statistics - January 2007 =====
+
+By using this small shell script you can (re)set to zero the trafic statistics (i.e : the number of emails send to the list) of all the lists of a sympa server. To do that, you **must** : 
+
+  - Be 'root' or 'sympa' user
+  - Run the script in the home directory of sympa (near the list_data directory)
+
+  * Download script : {{:contribs:reset-trafic.sh.txt|:contribs:reset-trafic.sh.txt}}
+
+  * Discuss about it : [[http://sympa.org/cgi-bin/nomailto.cgi?rcpt=jean-hugues.belpois%univ-brest.fr|Jean-Hugues Belpois]]
+
+===== Statistics module for Sympa - June 2006 =====
+
+([[hagen@rz.uni-karlsruhe.de|Patrick von der Hagen]])
+
+This plugin for Munin, collects statistics about the spools of Sympa :
+
+    * [[https://www.lists.uni-karlsruhe.de/munin|Download the plugin]]
+    * [[https://www.lists.uni-karlsruhe.de/munin/listserv-sympa_spool-month.png|Sample output]]
+
+===== sympa-milter - November 2006 =====
+
+([[http://www.sympa.org/cgi-bin/nomailto.cgi?rcpt=Jose-Marcio.Martins%ensmp.fr|Jose-Marcio Martins da Cruz]])
+
+This milter checks each (enveloppe) recipient to see if it's one of the lists managed by Sympa, and if it finds any, it adds a header ''X-Sympa-RCPT'' to the message. This header allows Sympa to retrieve full original recipient information including "plussed" addresses, before any rewriting done by sendmail.
+
+    * [[http://j-chkmail.ensmp.fr/sympa-milter|sympa-milter homepage]] 
+
+===== LDAP based alias management =====
+
+([[ludovic@Sophos.ca|Ludovic Marcotte]])
+
+This contrib replace it for ldap based alias management. It is now distributed with Sympa, starting with Sympa 5.2.
+[[http://listes.renater.fr/wws/arc/sympa-dev/2004-06/msg00001.html|Read comment from Ludovic]]
+
+
+===== Coupling Sympa and DokuWiki =====
+
+[[templates_plugins:dokuwiki_plugin|]]
+
+===== Apache::authSympa authentication/authorization module =====
+
+The goal is to control access to some resources using subscribers definition for a particular list.
+
+    * [[http://www.renater.fr/documentation/federation/apache_sympaauth|Documentation of the module]]
+
+
+===== Uportal Sympa chanel =====
+
+([[http://www.esup-portail.org/|esup-portail consortium]])
+
+A soap client to be included in u-portal product (need sympasoap.pl). It use SSO authentication based on CAS proxy credential.
+
+        * [[http://www.esup-portail.org/consortium/espace/download/CSympa/]]
+
+
+===== dumping subscribers data =====
+
+([[tech@murrain.net|Michelle Murrain]])
+
+The script extracts data from sympa, and either prints a list of email addresses to STDOUT, outputs a comma-delimited file with the fields you want, or maps the data to a database of your choice (postgres or mysql), and INSERTS lines. (no update yet)
+
+        * [[http://www.sympa.org/distribution/contrib/sympa_extract.pl|sympa_extract.pl]]
+
+
+===== PHP SOAP Library =====
+
+([[dereckson@espace-win.org|Sébastien Santoro]])
+
+This script, based on the SOAP extension of PHP 5, allows using the Sympa SOAP interface.
+
+  * {{http://bitbucket.org/dereckson/sympatrustedapp/src/tip/SympaTrustedApp.php|the class itself}}
+
+  * {{http://bitbucket.org/dereckson/sympatrustedapp/src/tip/sample.php|a use case of the class}}
+
+===== Ruby SOAP Library =====
+
+[[http://github.com/djberg96/mail-sympa|a ruby Sympa soap interface]] from Daniel Berger
+
+===== How to share Sympa Session with other PHP applications =====
+
+([[lists@oak-wood.co.uk|Chris Hastie]])
+
+I put together to enable an existing PHP application to set Sympa's session cookie. Obviously all the authentication logic is handled by the PHP app. Once that is satisfied that the user should be authenticated to sympa it can use this class to make the appropriate updates to sympa's session_table, then set a cookie:
+
+<code php>
+include ('SympaSession.php');
+$ss = new SympaSession($email);
+$sympa_session_id = $ss->getid();
+setcookie("sympa_session", $sympa_session_id, 0, '/',
+$sympa_session_domain, FALSE);
+</code>
+
+It suits my purposes, but is not hugely flexible. See it as an example to be modified, not a fully tested and guaranteed working class.
+
+download {{contribs:sympasession.php.tar.gz|SympaSession.php.tar.gz}}
+
+===== a custom archiver engine based on a database =====
+
+Starting with Sympa 6, mhonarc can be replaced by some other archiver engine. [[:contribs:custom_web_archiver|Here is one based on MySQL]], it may use as an example for any other. The program is plugued in Sympa by editing wwsympa.conf to add the custom_archiver parameter with the path of this program asx parameter. 
+
+{{:contribs:custom_archiver.pl.txt|custom_archiver.pl}}
+
+===== reporting spam plugin for Sympa =====
+
+Starting in version 6.2, Sympa moderatition allow list moderator to report undetected spam message that are waiting in moderation spool. When choosing this option, messages are rejected without notification but in addition, the related message as stored by Sympa is flushed in the standrd input of an external script. This pluggin script can be designed in order to transfert the message to the appropriate location preserving headers. See [[.conf-parameters/part2#reporting_spam_script_path|reporting_spam_script_path]] robot parameter.
+
+The following {{:contribs:report-spam-plugin.tar|tar}} includes 2 perl scripts as example of such plugin. 
+  * one send a message using "[[http://wordtothewise.com/resources/arf.html|Abuse Report Format]]" 
+  * one push the spam mesage to an imap folder (probably a very simple solution to collect spam preserving headers)
+
+=====sympa_menu.pl (listcreatemodify)=====
+
+Script to assist with list family modifications and to automate some features: 
+
+  * Create a new list
+  * Add a new list to an existing family
+  * Instantiate a new family, or update changed settings on a family
+  * Remove a list, keeping an archive
+  * Remove a list completely
+  * Automate customization of footer
+
+
+[[http://www.sympa.org/contribs/listscreatemodifytool]]
+
+
+===== List vacation message =====
+
+Uses a ''CustomCondition'' to send a vacation message when in date range.
+
+[[.:vacation]]

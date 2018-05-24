@@ -1,0 +1,148 @@
+===== info =====
+
+The scenario definition of who can view the info page of a list.
+
+===== subscribe =====
+
+(Default value: ''open'')
+
+The ''subscribe'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+The ''subscribe'' parameter defines the rules for subscribing to the list. Predefined authorization scenarios are:
+
+  * ''subscribe'' ''auth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.auth|view]]);
+  * ''subscribe'' ''auth_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.auth_notify|view]]);
+  * ''subscribe'' ''auth_owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.auth_owner|view]]);
+  * ''subscribe'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.closed|view]]);
+  * ''subscribe'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.intranet|view]]);
+  * ''subscribe'' ''intranetorowner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.intranetorowner|view]]);
+  * ''subscribe'' ''open'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.open|view]]);
+  * ''subscribe'' ''open_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.open_notify|view]]);
+  * ''subscribe'' ''open_quiet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.open_quiet|view]]);
+  * ''subscribe'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.owner|view]]);
+  * ''subscribe'' ''smime'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.smime|view]]);
+  * ''subscribe'' ''smimeorowner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/subscribe.smimeorowner|view]]).
+
+===== unsubscribe =====
+
+(Default value: ''open'')
+
+The ''unsubscribe'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies the unsubscription method for the list. Use ''open_notify'' or ''auth_notify'' to allow owner notification of each unsubscribe command. Predefined authorization scenarios are:
+
+  * ''unsubscribe'' ''auth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.auth|view]]);
+  * ''unsubscribe'' ''auth_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.auth_notify|view]]);
+  * ''unsubscribe'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.closed|view]]);
+  * ''unsubscribe'' ''open'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.open|view]]);
+  * ''unsubscribe'' ''open_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.open_notify|view]]);
+  * ''unsubscribe'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/unsubscribe.owner|view]]).
+
+===== add =====
+
+(Default value: ''owner'')
+
+''add'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who is authorized to use the ''ADD'' command. Predefined authorization scenarios are:
+
+  * ''add'' ''auth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/add.auth|view]]);
+  * ''add'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/add.closed|view]]);
+  * ''add'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/add.owner|view]]);
+  * ''add'' ''owner_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/add.owner_notify|view]]).
+
+===== del =====
+
+(Default value: ''owner'')
+
+The ''del'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who is authorized to use the ''DEL'' command. Predefined authorization scenarios are:
+
+  * ''del'' ''auth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/del.auth|view]]);
+  * ''del'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/del.closed|view]]);
+  * ''del'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/del.owner|view]]);
+  * ''del'' ''owner_notify'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/del.owner_notify|view]]).
+
+===== invite =====
+
+(Default value: ''owner'')
+
+The invite command is used to invite someone to subscribe. It should be prefered to the ''add'' command in most cases. This parameter define who can use it. The privilege uses scenario specification.
+
+===== review =====
+
+(Default value: ''owner'')
+
+''review'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can use ''REVIEW'' (see [[sympa-commands#user_commands|User commands]]), administrative requests.
+
+Predefined authorization scenarios are:
+
+  * ''review'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.closed|view]]);
+  * ''review'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.intranet|view]]);
+  * ''review'' ''listmaster'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.listmaster|view]]);
+  * ''review'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.owner|view]]);
+  * ''review'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.private|view]]);
+  * ''review'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.public|view]]).
+
+
+===== remind =====
+
+(Default value: ''owner'')
+
+The ''remind'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who is authorized to use the ''remind'' command. Predefined authorization scenarios are:
+
+  * ''remind'' ''listmaster'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/remind.listmaster|view]]);
+  * ''remind'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/remind.owner|view]]).
+
+=====  shared_doc =====
+
+This paragraph defines read and edit access to the shared document repository.
+
+==== d_read ====
+
+(Default value: ''private'')
+
+The ''d_read'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can read shared documents (access the contents of a list's ''shared'' directory).
+
+Predefined authorization scenarios are:
+
+  * ''d_read'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_read.owner|view]]);
+  * ''d_read'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_read.private|view]]);
+  * ''d_read'' ''p'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_read.p|view]]);
+  * ''d_read'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_read.public|view]]).
+
+==== d_edit ====
+
+(Default value: ''owner'')
+
+The ''d_edit'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can perform changes within a list's ''shared'' directory (i.e. upload files and create subdirectories).
+
+Predefined authorization scenarios are:
+
+  * ''d_edit'' ''editor'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.editor|view]]);
+  * ''d_edit'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.owner|view]]);
+  * ''d_edit'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.private|view]]);
+  * ''d_edit'' ''p'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.p|view]]);
+  * ''d_edit'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/d_edit.public|view]]).
+
+Example:
+<code>
+  shared_doc
+  d_read		public
+  d_edit		private
+</code>
+
+==== quota ====
+
+''quota'' //number-of-Kbytes//
+
+This parameter specifies the disk quota for the document repository, in kilobytes. If quota is exceeded, file uploads fail.

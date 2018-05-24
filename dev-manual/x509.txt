@@ -1,0 +1,108 @@
+====== Sympa with S/MIME and HTTPS ======
+
+S/MIME is a cryptographic method for MIME messages based on X509 certificates. Before installing Sympa S/MIME features (which we call S/Sympa), you should be under no illusion about what the S stands for: ''S/MIME'' means ''Secure MIME''. That S certainly does not stand for ''Simple''.
+
+The aim of this chapter is simply to describe what security level is provided by Sympa while using S/MIME messages, and how to configure Sympa for it. It is not intended to teach anyone what S/MIME is and why it is so complex! RFCs number 2311, 2312, 2632, 2633 and 2634, along with a lot of literature about S/MIME, PKCS#7 and PKI is available on the Internet. Sympa 2.7 is the first version of Sympa to include S/MIME features as beta-testing features.
+
+======  Signed message distribution ======
+
+No action required. You probably imagine that any mailing list manager (or any mail forwarder) is compatible with S/MIME signatures, as long as it respects the MIME structure of incoming messages. You are right. Even Majordomo can distribute a signed message! As Sympa provides MIME compatibility, you do not need to do anything in order to allow subscribers to check signed messages distributed through a list. This is not an issue at all, since any process that distributes messages is compatible with end user signing processes. Sympa simply skips the message footer attachment (see [[list-definition#message_header_and_footer|Message header and footer]]) to prevent any body corruption which would break the signature.
+
+====== Use of S/MIME signatures by Sympa itself ======
+
+Sympa is able to check S/MIME signatures in order to apply S/MIME authentication methods for message handling. Currently, this feature is limited to the distribution process as well as to any commands Sympa might find in the message body. The reasons for this restriction are related to current S/MIME usage. S/MIME signature structure is based on the encryption of a digest of the message. Most S/MIME agents do not include any part of the message headers in the message digest, so anyone can modify the message header without signature corruption! This is easy to do: for example, anyone can edit a signed message with their preferred message agent, modify whatever header they want (for example ''Subject:'' , ''Date:'' and ''To:'', and redistribute the message to a list or to the robot without breaking the signature.
+
+So Sympa cannot apply the S/MIME authentication method to a command parsed in the ''Subject:'' field of a message or through the ''-subscribe'' or ''-unsubscribe'' email addresses.
+
+======  Use of S/MIME encryption ======
+
+S/Sympa is not an implementation of the ''S/MIME Symmetric Key Distribution'' internet draft. This sophisticated scheme is required for large lists with encryption. So, there is still some scope for future developments ;-)
+
+We assume that S/Sympa distributes message as received, i.e. unencrypted when the list receives an unencrypted message, but otherwise encrypted.
+
+In order to be able to send encrypted messages to a list, the sender needs to use the X509 certificate of the list. Sympa will send an encrypted message to each subscriber using the subscriber's certificate. To provide this feature, Sympa needs to manage one certificate for each list and one for each subscriber. This is available in Sympa version 2.8 and above.
+
+======  S/Sympa configuration ======
+===== Installation =====
+
+The only requirement is OpenSSL [[http://www.openssl.org]] version 0.9.5a and above. OpenSSL is used by Sympa as an external plugin (like sendmail or postfix), so it must be installed with the appropriate access (x for sympa.sympa).
+
+===== Managing user certificates =====
+
+User certificates are automatically caught by Sympa when receiving a signed S/MIME messsage, so if Sympa needs to send encrypted messages to this user, it can perform encryption using this certificate. This works fine, but it is not conpliant with the PKI theory: Sympa should be able to search for user certificates using a PKI certificate directory (LDAP).
+
+That's why Sympa tests the key usage certificate attribute to known if the certificate allows both encryption and signature.
+
+Certificates are stored as PEM files in the ''/home/sympa/expl/X509-user-certs/'' directory. Files are named user@some.domain@enc or user@some.domain@sign (the ''@enc'' and ''@sign'' suffixes are used according to certificates usage). No other tool is provided by Sympa in order to collect this certificate repository, but you can easily imagine your own tool to create those files.
+
+===== Configuration in sympa.conf =====
+
+The S/Sympa configuration is very simple. If you are used to Apache SSL, you should not feel lost. If you are an OpenSSL guru, you will feel at home, and there may even be changes you will wish to suggest to us.
+
+The basic requirement is to let Sympa know where to find the binary file for the OpenSSL program and the certificates of the trusted certificate authority. This is made using the optional parameters ''openSSL'' and ''capath'' and / or ''cafile''.
+
+  * ''[[conf-parameters:part3#openssl|openssl]]'': the path for the OpenSSL binary file, usually ''/usr/local/ssl/bin/openSSL'';
+  * ''[[conf-parameters:part3#cafile|cafile]]'' (or ''[[conf-parameters:part3#capath|capath]]''): the path of a bundle (or path of the directory) of trusted CA certificates. The file ''~/home/sympa/bin/etc/cabundle.crt'' included in Sympa distribution can be used. \\ The ''cafile'' file (or the ''capath'' directory) should be shared with your Apache+mod_ssl configuration. This is required because Sympa's web interface gets user certificates information from Apache mod_ssl module;
+  * ''[[conf-parameters:part3#key_password|key_password]]'': the password used to protect all list private keys.
+
+===== Configuration to recognize S/MIME signatures =====
+
+Once ''OpenSSL'' has been installed and ''sympa.conf'' configured, your S/Sympa is ready to use S/MIME signatures for any authentication operation. You simply need to use the appropriate authorization scenario for the operation you want to secure (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+When receiving a message, Sympa applies the authorization scenario with the appropriate authentication method parameter. In most cases, the authentication method is ''smtp'', but in cases where the message is signed and the signature has been checked and matches the sender email, Sympa applies the ''smime'' authentication method.
+
+It is essential to ensure that if the authorization scenario does not recognize this authentication method, the operation requested will be rejected. Consequently, authorization scenarios distributed prior to version 2.7 are not compatible with the OpenSSL configuration of Sympa. All standard authorization scenarios (those distributed with sympa) now include the ''smime'' method. The following example is named ''send.private_smime'', and restricts sending to subscribers using an S/mime signature:
+
+<code>
+  title.us restricted to subscribers check SMIME signature
+  title.fr limité aux abonnés, vérif de la signature SMIME
+
+  is_subscriber([listname],[sender])             smime  -> do_is_editor([listname],[sender])                 smime  -> do_it
+  is_owner([listname],[sender])                  smime  -> do_it
+</code>
+
+It as also possible to mix various authentication methods in a single authorization scenario. The following example, ''send.private_key'', requires either an MD5 return key or an S/MIME signature:
+
+<code>
+  title.us restricted to subscribers with previous MD5 authentication
+  title.fr réservé aux abonnés avec authentification MD5 préalable
+
+  is_subscriber([listname],[sender]) smtp          -> request_auth
+  true()                             md5,smime     -> do_it
+</code>
+
+===== distributing encrypted messages =====
+
+In this section, we describe S/Sympa encryption features. The goal is to use S/MIME encryption for distribution of a message to subscribers whenever the message has been received encrypted from the sender.
+
+Why is S/Sympa concerned by the S/MIME encryption distribution process ? It is because encryption is performed using the **recipient** X509 certificate, whereas the signature requires the sender's private key. Thus, an encrypted message can be read by the recipient only if he or she is the owner of the private key associated with the certificate. Consequently, the only way to encrypt a message for a list of recipients is to encrypt and send the message for each recipient. This is what S/Sympa does when distributing an encrypted message.
+
+The S/Sympa encryption feature in the distribution process assumes that Sympa has received an encrypted message for some list. To be able to encrypt a message for a list, the sender must have some access to an X509 certificate for the list. So the first requirement is to install a certificate and a private key for the list. The mechanism whereby certificates are obtained and managed is complex. Current versions of S/Sympa assume that list certificates and private keys are installed by the listmaster using the ''/home/sympa/bin/p12topem.pl'' script. This script allows you to install a PKCS#12 bundle file containing a private key and a certificate using the appropriate format.
+
+It is a good idea to have a look at the OpenCA documentation ([[http://www.openssl.org]]) and/or PKI providers' web documentation. You can use commercial certificates or home-made ones. Of course, the certificate must be approved of for email applications, and issued by one of the trusted CA's described in the ''cafile'' file or the ''capath'' Sympa configuration parameter.
+
+The list private key must be installed in a file named ''/home/sympa/expl/mylist/private_key''. All the list private keys must be encrypted using a single password defined by the ''password'' parameter in ''sympa.conf''.
+
+====  Use of navigator to obtain X509 list certificates ====
+
+In many cases email X509 certificates are distributed through a web server and loaded into the browser using your mouse: Mozilla or internet Explorer allow certificates to be exported to a file.
+
+Here is a way to install a certificat for a list:
+
+  * Get a list certificate is to obtain a personal email certificate for the canonical list address in your browser as if it was your personal certificate.
+  * Export the intended certificate it. The format used by Netscape is ''pkcs#12''. Copy this file to the list home directory.
+  * Convert the pkcs#12 file into a pair of PEM files: ''cert.pem'' and ''private_key'', using the ''/home/sympa/bin/p12topem.pl'' script. Use ''p12topem.pl -help'' for details.
+  * Be sure that ''cert.pem'' and ''private_key'' are owned by sympa with ''r'' access.
+  * As soon as a certificate is installed for a list, the list homepage includes a new link to load the certificate in the user's browser, and the welcome message is signed by the list.
+
+======  Managing certificates with tasks ======
+
+You may automate the management of certificates with two global task models provided with Sympa. See [[customizing#tasks|Tasks]] to know more about tasks. Report to the [[conf-parameters#chk_cert_expiration_task|chk_cert_expiration_task]] and [[conf-parameters#crl_update_task|crl_update_task]] ''sympa.conf'' parameters to configure your Sympa to use these facilities.
+
+=====  chk_cert_expiration.daily.task model =====
+
+A task created with the model ''chk_cert_expiration.daily.task'' checks every day the expiration date of certificates stored in the ''/home/sympa/expl/X509-user-certs/'' directory. The user is warnt with the ''daily_cert_expiration'' template when his/her certificate has expired or is going to expire within three days.
+
+=====  crl_update.daily.task model =====
+
+You may use the model ''crl_update.daily.task'' to create a task which daily updates the certificate revocation lists when needed.

@@ -1,0 +1,46 @@
+====== sympa.pl ======
+
+''sympa.pl'' is the main daemon; it processes mail commands and is in charge of messages distribution.
+
+''sympa.pl'' recognizes the following command line arguments:
+
+  * ''-- add_list //familyname// - - robot //robotname// - - input_file ///path/to/list_file.xml//''\\ Adds the list described in the XML file to the //familyname// family. See: [[list-families#adding_a_list_to_a_list_family|Adding a list to a list family]].
+  * ''-- close_family //familyname// - - robot //robotname//''\\ Closes the //familyname// family. See: [[list-families#closure|List family closure]].
+  * ''-- close_list //listname@robot//''\\ Closes the list (changing its status to closed), removes aliases (if ''sendmail_aliases'' parameter was set) and removes subscribers from DB (a dump is created in the list directory to allow the list restoration). When you are in a family context, refer to: [[list-families#closure|List family closure]].
+  * ''-- close_unknown''\\ When instanciating a family, this option tells Sympa to silently close lists unknown to the family.
+  * ''-- config //config_file//'' | ''-f //config_file//''\\ Forces Sympa to use an alternative configuration file. The default behavior is to use the configuration file as defined in the ''Makefile'' (''$CONFIG'').
+  * ''-- create_list -- robot //robotname// - - input_file ///path/to/list_file.xml//''\\ Creates the list described by the xml file, see: [[list-creation#list_creation_on_command_line_with_sympa.pl|List creation on command line with sympa.pl]].
+  * ''-- debug'' | ''-d''\\ Sets Sympa in debug mode and keeps it attached to the terminal. Debugging information is output to STDERR, along with standard log information. Each function call is traced. Useful while reporting a bug.
+  * ''-- dump //listname ''|'' ALL//''\\ Dumps subscribers, either of the list //listname// or of all lists. Subscribers are dumped in ''subscribers.db.dump''.
+  * ''-- help'' | ''-h''\\ Prints sympa.pl usage.
+  * ''-- import //listname//''\\ Imports subscribers in the //listname// list. Data are read from STDIN.
+  * ''-- instanciate_family //familyname// //robotname// - - input_file ///path/to/family_file.xml//''\\ Instantiates the family //familyname//. See [[list-families|Lists families]].
+  * ''-- keepcopy //recipient_directory//'' | ''-k //recipient_directory//''\\ Tells Sympa to keep a copy of every incoming message instead of deleting them. //recipient_directory// is the directory to store messages.
+  * ''-- lang //catalog//'' | ''-l //catalog//''\\ Set this option to use a language catalog for Sympa. The corresponding catalog file must be located in ''~sympa/locale'' directory.
+  * ''-- lowercase''\\ Lowercases e-mail addresses in database.
+  * ''-- mail'' | ''-m''\\ Sympa will log calls to sendmail, including recipients. Useful to keep track of each mail sent (log files may grow faster though).
+  * ''-- make_alias_file''\\ Creates an aliases file in ''/tmp/'' with all list aliases (only lists whose status is 'open'). It uses the list_aliases.tt2 template.
+  * ''-- modify_list //familyname// - - robot //robotname// - - input_file ///path/to/list_file.xml//''\\ Modifies the existing family list, with description contained in the XML file. See: [[list-families#modifying_a_family_list|Modifying a family list]].
+  * ''--quiet''\\ When instanciating a family, this option tells Sympa to skip output to STDOUT.
+  * ''-- reload_list_config - -list=mylist@dom ''\\ Recreates all ''configbin'' files. You should run this command if you edit authorization scenarios. The ''list'' parameter is optional.
+  * ''service'' //process_command// | //process_message// | //process_creation//\\ Sets Sympa daemon to process only message distribution (process_message) or only commands (process_command) or list creation requests (process_creation).
+  * ''-- sync_include //listaddress// ''\\ Triggers an update of list members, useful if the list uses external data sources.
+  * ''-- upgrade - - from=X - -to=Y ''\\ Runs Sympa maintenance script to upgrade from version X to version Y.
+  * ''-- version'' | ''-v''\\ Prints current version of Sympa.
+
+
+====== INIT script ======
+
+The ''make install'' step should have installed a sysV init script in your ''/etc/rc.d/init.d/'' directory (you can change this at ''configure'' time with the ''-with-initdir'' option). You should edit your runlevels to make sure Sympa starts after Apache and MySQL. Note that MySQL should also start before Apache because of ''wwsympa.fcgi''.
+
+This script starts these daemons: ''sympa.pl'', ''task_manager.pl'', ''archived.pl'' and ''bounced.pl''.
+
+====== Stopping Sympa and signals ======
+
+==== kill -TERM ====
+
+When this signal is sent to ''sympa.pl'' (''kill -TERM''), the daemon is stopped, ending message distribution in progress and this can be long (for big lists). If ''kill -TERM'' is used, ''sympa.pl'' will stop immediately whatever a distribution message is in progress. In this case, when ''sympa.pl'' restarts, messages will be distributed many times.
+
+==== kill -HUP ====
+
+When this signal is sent to ''sympa.pl'' (''kill -HUP''), it switches of the ''-mail'' login option and continues current task.

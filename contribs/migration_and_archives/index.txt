@@ -1,0 +1,98 @@
+====== Migration scripts for archive, subscribers lists or configuration files  ======
+===== Migration from Sympa 3 to Sympa 6  =====
+
+This is [[.:danno:index|a contrib from Dan Pritts (Internet2)]]. It includes a parser script for list config file.   
+
+===== import_mbox =====
+
+[[eyer@esrf.fr|eyer@esrf.fr]]
+
+This script imports a set of emails (in the mbox format) in a list web archive ; it is a wrapper around mbox2sympa.pl and arc2webarc.pl.
+
+ * [[http://www.sympa.org/distribution/contrib/import_mbox.sh|Download]]
+
+
+===== Mailman2Sympa =====
+
+([[pallart@nordnet.fr|Philippe Allart]], [[andreas@depretis.at|Andreas de Pretis]], [[daniel@cacert.org|Daniel Black]], [[jsb@cs.brown.edu|John Bazik]] and [[david.verdin@renater.fr|David Verdin]])
+
+Mailman2sympa provides a set of scripts to migrate mailman to Sympa. Updated in 2016 to match the new archives parameters formalism.
+
+  * [[http://www.sympa.org/distribution/contrib/mailman2sympa|download mailman2sympa]]
+
+===== Majordomo2Sympa6 =====
+([[warkusm@hrz.uni-marburg.de|Matthias Warkus]])
+
+majord2sympa6 is a migration script that will move a single list from Majordomo to Sympa version 6. It migrates subscriptions, ownership and moderation data, some configuration, the info file, headers, footers and of course the archives. **This script is configured via constants and thus needs editing before use.**
+
+{{:contribs:migration_and_archives:majordomo2sympa6.pl|download}}
+
+===== smartlist2sympa.pl =====
+
+([[research@ijs.co.nz|Craig Carey]])
+
+smartlist2sympa.pl is perl filter to be introduced in aliases in order to make -request adresses compatible with smartlist scheme.
+  
+
+  * [[http://www.ijs.co.nz/sympa/|Download]]
+
+
+
+===== mbox2sympa.pl =====
+
+([[adam@amberbug.org|Adam Bernstein]])
+
+mbox2sympa.pl is a Perl script to convert either a single mbox file or a directory of arbitrarily named files to Sympa monthly archive files. It's expanded from mjarc2sympa.pl in the current Contribs section on the Web site (for Majordomo archives), and should actually still work on Majordomo archives, as well as Listproc and anything else that uses something close to standard mbox format. It use "Date:" message header to divided up can into monthly directory as needed by Sympa.
+
+
+  * [[http://www.sympa.org/distribution/contrib/mbox2sympa.pl|mbox2sympa.pl]]
+
+===== yahoo2mbox =====
+
+yahoo2mbox is a small Perl script which retrieves all messages from a mailing list archive at Yahoo! Groups (there is a missing copyright sign somewhere here probably) and stores them into a local file in MBOX which is recognized by all Unix mail readers and good many of other ones.
+
+  * [[http://www.tt-solutions.com/en/products/yahoo2mbox/]]
+
+
+===== ezmlm2mbox =====
+
+([[dean@arctic.org|Dean Gaudet]])
+
+This tool converts ezmlm archive to mbox format.
+
+  * [[http://www.arctic.org/~dean/scripts/ezmlm2mbox]]
+
+
+===== Arc 2 MhonArc =====
+
+Arc2Mhonarc will convert your Sympa mail archives to WWSympa web archive format.
+
+  * [[http://www.sympa.org/distribution/contrib/arc2mhonarc|download Arc2Mhonarc]]
+
+
+===== ls2sympa =====
+
+([[o-men@gmx.de|Olaf Menkens]])
+
+This script imports listserv archive files into a sympa list web archive; it is based on code from ls2mail.pl by David Kilzer and mbox2sympa.pl by Adam Bernstein.
+
+ * {{contribs:ls2sympa.pl.txt|Download}}
+
+
+===== lp2sympa =====
+
+([[daleg@umbc.edu|Dale Ghent]])
+
+This script helps to migrate from CREN Lisproc to Sympa.
+It will convert list settings, owners, moderators, archives, and subscribers. 
+It'll require some SQL query changes to make it compatible with more recent sympa versions, but it'll work for the most part.
+
+  * {{http://elektronkind.org/outbox/lp2sympa.tar.gz|Download}}
+
+===== maildir2sympa =====
+
+([[n@shaplov.ru|Nikolay Shaplov]])
+
+This script helps to import mail dirs into Sympa mail archive without converting it to mailbox, running arch2web scripts etc.
+
+  * {{http://shaplov.ru/files/sympa/maildir2sympa.pl|Download}}

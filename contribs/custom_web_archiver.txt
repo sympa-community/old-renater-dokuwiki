@@ -1,0 +1,71 @@
+====== Custom web archives ======
+<note warning>
+
+  * Description in this page is not applicable to recent version of Sympa (at least 6.x).
+  * There is a problem on database structure so that stored messages may be broken.
+
+</note>
+
+This feature must allow Sympa users to store archives in a different place that the classical web archives based on MHonArc.
+
+The development was requested and paid by Bendlin GmbH.
+
+===== Storage database =====
+
+The provided custom archiver stores the messages in a database. As long as a [[http://search.cpan.org/modlist/Database_Interfaces/DBD|perl DBD]] exists for the chosen RDBMS, there should be no problem to transfer data from Sympa to this RDBMS.
+
+===== Storage structure =====
+
+^Field name  ^Data type  ^Field description  ^
+|message_key  |int(11)  |an autoincremental numerical key  |
+|message_id  |varchar(150)  |the SMTP message identifier  |
+|group_id  |varchar(150)  |the name of the mailing list to which the message was sent  |
+|timestamp  |int(11)  |the epoch date when the message was sent  |
+|subject  |varchar(300)  |the content of the SMTP Subject field in the orginal message  |
+|message  |text  |the full SMTP message, including all the headers  |
+|uid  | varchar(150) | a header X-UID from the message |
+
+===== Customization mechanism =====
+
+A parameter in sympa.conf activates / desactivates this feature : ''custom_archiver''.
+
+We add a test to archived.pl. When archiving a message, if the ''custom_archiver'' parameter is set to ''on'', an external script is called -- instead of the code using MHonArc -- that will store the message into the chosen database.
+
+A few details about this script:
+
+  * **Content**: The script contains only the code specifically used for archive storage in an RDBMS. It uses the Sympa scripts and libraries to work. It then contains the path to the Sympa bin directory. However, details about the connection to the database will have to be final user defined by editing the script. We don't think it is relevant to include the connection parameters to the archives database in one of the Sympa configuration files. Consequently, the distributed script must be considered as an example script. It can remain in the sources or be installed in one of the Sympa directories. Either ways, it must be copied in a place that will not be overwritten during the next Sympa upgrade.
+  * **Distribution**. In the Sympa sources, you will find the script in the ''<sympa_home>/bin/etc/scripts/'' directory under the name ''db_archiver.pl''.
+  * **Name and path**. We use a parameter named ''archiver_path'' that replaces the existing ''[[https://www.sympa.org/manual/web-interface#mhonarc|mhonarc]]'' parameter. This parameter can be defined at the list or virtual level. You can use any script name or path for the script. You can have as much versions of the script as you want. One for each list if you like.
+
+====== Go! ======
+
+You can download  the script as a tar file which is version **5.4.6ca** or a patch that can be applied in versions **5.4**
+
+  * {{:contribs:custom_archiver.pl.txt|}}
+
+This modification is allready in Sympa 6.0
+
+You can use this version just now. As long as you don't modify wwsympa.conf, it won't change Sympa's behaviour. You will introduce the new archiver engine by changing //custom_archiver// parameter in wwsympa.conf.
+ 
+CAUTION: Note that Sympa always guess that the custom archiver script accepts two variables : "--list" whose value is the full name of the list (including the domain part) and "--file" that will contain the absolute path to the message file that will be archived. Each time the custom archiver is called, it is called with these two parameters with their values filled.
+
+To use our sample custom archiver, you need to:
+
+  - create the database in which you want to store, with a table having the fields we defined above
+  - modify the wwsympa.conf to add the following paragraph:  <hi #98fb98>custom_archiver  <absolute_path_to_custom_archiver.pl></hi>
+  - restart archived.pl (you may check everything using debug mode : "archived -d"
+
+In archived.pl, the parameters related to the database are:
+<code>
+host name: 'localhost'
+database type: 'mysql';
+database name: 'custom_archive';
+table in which data are stored: 'archive';
+user name: 'toto';
+password: 'tutu';
+</code>
+
+Either you use this values to test or you change them in custom_archiver.pl. 
+
+If you have any problem, please report first by mail with as many details as possible, you can also phone Serge : +33 2 2323 7147 ((often not in my desk but ...)), we will pleased to help you. Let us known if this does what you ask for.
+

@@ -1,0 +1,199 @@
+====== Developers HowTo ======
+
+This page aims at listing a few points contributors to Sympa should care about :
+
+
+
+
+
+===== New subroutine =====
+
+Subroutine names should be lower-cased, with each word separated by the ''_''character.\\
+Example: sub mysub_does_that {}
+
+Incoming parameters should be defined as follows (though not all existing subroutines use it yet) :
+<code>
+sub mysub_does_that {
+  my $self = shift; ## First get the current object, if this is an object method
+  my %param = @_; ## Then put all the other parameters in a hash
+
+  printf "p12 parameter: %s\n", $param{'p12'}; ## You can access each parameter this way
+</code>
+
+The subroutine call then looks like this:
+<code>
+&mysub_does_that(p1 => 'value for P1',
+                 p2 => \@array2,
+                 p3 => 'value for P2');
+</code>
+
+The main advantages of this method:
+  - subroutine call is more readable/maintainable
+  - less errors because of wrong order when reading parameters in subroutine
+  - it's easy to add new parameters to an existing  subroutine
+  - it's a standard notation
+
+===== Logs =====
+
+Two functions generate logs in Sympa:
+  * do_log for most cases;
+  * wwslog used in wwsympa.fcgi and wwslib.pm //only//. This function embed do_log and add informations relative to the web client performing the request.
+
+These two functions have the following syntax:
+<code>&function(<log_level>,<message>,<parameters>)
+
+<log_level> ::= debug | debug2 | debug3 | notice | err | warn | info
+
+<message> ::= A character string containing '%x' indications to be replaced by the values found in <parameters>
+
+<parameters> ::= a comma separated list of values or variables. they will be substituted to the '%x' indications in <message>, formatted according to 'x'.
+</code>
+
+Example:
+<code perl>&do_log('notice','Value of the parameter var: %s',$var);</code>
+
+This is the general use cases of log levels in Sympa:
+  * **''debug''** or **''debug2''**: at the start of any function, add a log with this level. If the function is very frequently used, favor debug2; very very frequently, debug3 :-); these logs won't be recorded in the Sympa logs files;
+  * **''notice''**: each time a major action succeeds, log it with this level;
+  * **''err''**: When your action fails, it must log with this level;
+  * **''warn''**: marks a non fatal problem;
+  * **''info''**: more or less the same as ''notice''.
+
+===== New parameters =====
+
+When adding new parameters to sympa.conf, wwsympa.conf, robot.conf or the list config you should follow the following rules :
+
+  - parameters name should be **lower cased**, made of **a-z**, each word separated by the **_** character.
+  - list or global parameters should have the same prefix
+  - if the parameter is a boolean, then the formalism should be **'prefix_feature' => {'format' => ['on' | 'off'], ...**, where ''prefix'' is the action triggered when the parameter is set to ''on''.
+  - if a sympa.conf or wwsympa.conf parameters is created, the corresponding robot.conf parameter should be considered
+
+You must add your parameter's name to the ''valid_options'' list and declare its default value in the ''Default_Conf'' hash.
+
+Example:
+
+<code>
+             my @valid_options = qw(
+		       [...]
+		       previous_parameter1 previous_parameter2 **my_parameter** previous_parameter3 previous_parameter4
+                       [...]
+                      );
+             my %Default_Conf = 
+                       ([...]
+                       'my_parameter' => my_parameter_default,
+                       [...]
+                      );
+</code>
+
+If you want your parameter to be able to be differently valued for each virtual host, you must declare it in the ''valid_robot_key_words'' hash.
+
+Example :
+
+<code>
+    my %valid_robot_key_words =
+                         ([...]
+                         'my_parameter'     => 1, 
+                          [...]
+                         );
+</code>
+
+===== Adding a new feature to the web interface =====
+
+
+==== General informations about wwsympa.fcgi ====
+
+''Wwsympa.fcgi'' is designed to run as a fastcgi. Therefore the body of the program consists of and endless loop, waiting for requests. 
+
+Parameters are handled globally and made available to all subroutines. Incoming parameters are available via the ''%in'' hash ; outgoing parameters are stored in the ''$param'' hashref. The ''check_param_in'' subroutine prepares incoming parameters (including List objects) whereas ''check_param_out'' subroutine prepares outgoing parameters. Parameters way either be received via GET or POST HTTP methods. If GET is used, then Sympa uses the PATH_INFO of the request to send them (for better usability) ; therefore you need to define the order of these expected parameters for each action.
+
+HTML output is also processed globally. The output template name is deduced from the name of the last action performed.
+
+The ''action'' incoming parameter determines which subroutine will be run and subsequently which templates will be used. The exit code of the action subroutine follows the following rules :
+  * return 1 : the action succeeded, the corresponding template will be returned
+  * return undef : the action failed ; the error template will be returned to the end user
+  * return 'other_action' : another action will be run after the current one. A loop detection is used.
+
+Directly associated to an action are one or two subs : ''do_action_name()'' and, sometimes, ''do_action_name_request()''.
+  * ''do_action_name_request()'' is used to determine the display of a page allowing to perform the action.
+  * ''do_action_name()'' performs the action.
+The first one is not always necessary, as some actions don't need a dedicated page (removing an user for example, which is done from the review page). Parsing the code, you will maybe note that some ''do_action_name()'' subs actually perform the two functions. That is because we no longer feel necessary to separate them into two subs. We keep the former subs because, well, they work. But for future developments, it isn't necessary to split action handling into two subs.
+
+
+
+==== Things to add for a new action ====
+
+Here is the procedure to add a new action to wwsympa.fcgi, let's consider the new action ''new_action'' :
+
+  - add a subroutine to ''wwsympa.fcgi'' that does the expected work. The subroutine should be named ''do_new_action''.  The subroutine should prepare data required by the template in the ''$param'' hashref ; subroutine should return ''1'' in case of success.
+  - create a new web template in the ''web_tt2'' directory, named after the action, ie ''new_action.tt2''. Check other templates or [[http://www.tt2.org/|TT2 web site]] to learn about the TT2 format.
+  - Add an entry in the ''%comm'' hash to tell what subroutine will process the action.
+  - Add an entry to ''%action_args'' hash to tell what parameters are expected if the GET HTTP method is used.
+  - Add en entry to ''%required_args'' hash to define the required parameters
+  - Add en entry to ''%required_privileges'' hash to define the required privileges to run the action
+ - Add an entry to the ''%action_type'' hash if the action is for list administrators.
+  - Define the allowed format for parameters to ''%in_regexp'' hash if you use new parameters and if these parameters have an allowed format different from the default one.
+  - Define the required incoming parameters for the action, through the ''%required_args'' hash. Note that param.user.email and param.list and two specific parameters : param.user.email is used to require the user to be authenticated
+  - Define the required privileges, if any, through an entry in the ''%'required_privileges'' hash.
+
+
+===== Coping with errors in the code =====
+
+Subroutines that fail should always return the **undef** value and might raise an error with  **&do_log('err', $error_string)** (or &wwslog() in wwsympa.fcgi). 
+
+You should NOT use **print STDERR** because sympa daemons redirect it to /dev/null while daemonizing.
+
+All Sympa services (mail, web, SOAP) provide a sophisticated (home made) mecanism for error handling. It allows to print error messages to the user in his language. Check the mail_tt2 and web_tt2. 
+
+If a major error occurs you can notify listmaster by email (&List::send_notify_to_listmaster()) or end the current process (&fatal_err()).
+
+===== Templates and internationalization =====
+
+If you add or extend a Sympa feature, you might need to add/change GUI elements such as emails sent by Sympa or web contents. Both are defined in Sympa through templates. These templates use the TT2 format ([[http://www.tt2.org/|see the related documentation]]) and are located in the **mail_tt2** and **web_tt2**.
+
+When customizing these templates, you should keep in mind that each translatable string in the templates is internationalized and therefore refers to a gettext catalog entry. Below is a simple example of such a string :
+  [%|loc%]Managing bouncing subscribers:[%END%]
+
+A translatable string may also use variables ; then variables are listed in the opening **loc** tag and you can refer to them using as **%1,%2,%n**. See the example belox :
+  [%|loc(who,list.name)%]User "%1" has been automatically removed from list %2. [%END%]
+
+===== Makefile =====
+
+You should not edit the main Makefile directly but the Makefile.am instead. You can then update the Makefile with the following command :
+
+  automake ; aclocal ; ./configure
+
+''automake'' will update the ''Makefile.in'' file, given the ''Makefile.am'' file.\\
+''configure'' will update the ''Makefile'' file, given the ''Makefile.in'' file.
+
+===== Documentation =====
+
+You should provide documentation along with any new feature. You should at least describe new configuration parameters or even describe your feature behavior in a new section.
+
+===== Perl traps =====
+
+These are unexpected Perl behaviors.
+
+The following command fills the array with one row that contains the ''undef'' value. Therefore be careful while processing subroutine output that might be ''undef''.
+  @my_array = undef; printf "Size of table: %d\n", $#my_array+1;
+
+The following command creates the hash and its ''level1'' entry though they did not exist before the check :
+  if ($my_hash{'level1'}{'level2'}) {...}
+
+The @_ array providing parameters of a subroutine should be used carefuly : changes done to its entry will also modif parameters in the main program :
+  foreach my $p (@_) {$p = lc($p);} ## avoid this ; use an intermediate variable instead
+
+
+===== Diff options =====
+
+Using the appropriate **diff** options will help us integrate your patch because it will lessen the manual work on our side.
+
+Here is the proposed diff command to run on your development server : 
+  diff -bBruN --exclude-from=exclusion.txt sympa-your-work/ sympa-5.x/ > your-feature.patch
+
+What the arguments stand for :
+  * -b : make diff ignore changes regarding white spaces
+  * -B : make diff ignore changes regarding empty lines
+  * -r : make the diff command recursive
+  * -u : use the unified diff format
+  * -N : add new files/removed files to the patch
+  * --exclude-from=exclusion : exclude files listed in the **exclusion.txt** file. Useful to skip changes in Makefiles, etc... You can download {{internals:exclusion.txt|the exclusion.txt file}}.

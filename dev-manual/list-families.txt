@@ -1,0 +1,542 @@
+====== List families ======
+
+A list can have from three up to dozens of parameters. Some listmasters need to create a set of lists that have the same profile. In order to simplify the apprehension of these parameters, list families define a lists typology. Families provide a new level for defaults: in the past, defaults in Sympa were global and most sites using Sympa needed multiple defaults for different groups of lists. Moreover, families allow listmasters to delegate a part of configuration list to owners, in a controlled way according to family properties. Distribution will provide defaults families.
+
+====== Family concept ======
+
+A family provides a model for all of its lists. It is specified by the following characteristics:
+
+  * a list creation template providing a common profile for each list configuration file;
+  * a degree of independence between the lists and the family: list parameters editing rights and constraints on these parameters can be ''free'' (no constraint), ''controlled'' (a set of available values defined for these parameters) or ''fixed'' (the value for the parameter is imposed by the family). That prevents lists from diverging from the original and it allows list owner customizations in a controlled way;
+  * a filiation kept between lists and family all along the list life: family modifications are applied on lists while keeping listowners customizations.
+
+Here is a list of operations performed on a family:
+
+  * definition: definition of the list creation template, the degree of independence and family customizations;
+  * instantiation: list creation or modifications of existing lists while respecting family properties. The set of data defining the lists is an XML document;
+  * modification: modification of family properties. The modification is effective at the next instantiation time and has consequences on every list;
+  * closure: closure of each list;
+  * adding a list to a family;
+  * closing a family list;
+  * modifying a family list.
+
+====== Using family ======
+
+=====  Definition =====
+
+Families can be defined at the robot level, at the site level or on the distribution level (where default families are provided). So, you have to create a sub directory named after the family's name in a ''families'' directory:
+
+Examples:
+<code>
+  /home/sympa/etc/families/my_family
+  /home/sympa/etc/my_robot/families/my_family
+</code>
+
+In this directory, you must provide the following files:
+
+  * ''config.tt2'' (mandatory);
+  * ''param_constraint.conf'' (mandatory);
+  * ''edit_list.conf'';
+  * customizable files.
+
+==== config.tt2 ====
+
+This is a list creation template, this file is mandatory. It provides default values for parameters. This file is an almost complete list configuration, with a number of missing fields (such as owner email) to be replaced by data obtained at the time of family instantiation. It is easy to create new list templates by modifying existing ones. See [[list-definition#list_template_files|List template files]] and [[customizing#template_file_format|Template file format]].
+
+Example:
+<code>
+  subject [% subject %]
+
+  status [% status %]
+
+  [% IF topic %]
+  topics [% topic %]
+
+  [% END %]
+  visibility noconceal
+
+  send privateoreditorkey
+
+  web_archive
+    access public
+
+  subscribe open_notify
+
+  shared_doc
+    d_edit [% shared_edit %]
+    d_read [% shared_read %]
+
+  lang [% language %]
+
+  [% FOREACH o = owner %]
+  owner
+    email [% o.email %]
+    profile privileged
+    [% IF o.gecos %]
+    gecos [% o.gecos %]
+    [% END %]
+
+  [% END %]
+  [% IF moderator %]
+     [% FOREACH m = moderator %]
+  editor
+    email [% m.email %]
+
+     [% END %]
+  [% END %]
+
+  [% IF sql %]
+  include_sql_query
+    db_type [% sql.type %]
+    host [% sql.host %]
+    user [% sql.user %]
+    passwd [% sql.pwd %]
+    db_name [% sql.name %]
+    sql_query [% sql.query %]
+
+  [% END %]
+  ttl 360
+</code>
+
+==== param_constraint.conf ====
+
+This file is mandatory. It defines constraints on parameters. There are three kinds of constraints:
+
+  * ''free'' parameters: no constraint on these parameters, they are not written in the ''param_constraint.conf'' file.
+  * ''controlled'' parameters: these parameters must select their values in a set of available values indicated in the ''param_constraint.conf'' file.
+  * ''fixed'' parameters: these parameters must have the imposed value indicated in the ''param_constraint.conf'' file.
+
+The parameters constraints will be checked at every list loading.
+
+**WARNING**: Some parameters cannot be constrained, they are: ''msg_topic.keywords'' (see [[parameters-sending#msg_topic|msg-topic]]),''owner_include.source_parameter'' (see [[parameters-definition#owner_include|owner_include]]) and ''editor_include.source_parameter'' (see [[parameters-definition#editor_include|editor_include]]). About ''digest'' parameter (see [[parameters-sending#digest|digest]]), only days can be constrained.
+
+Example:
+<code>
+  lang                fr,us
+  archive.period      days,week,month
+  visibility          conceal,noconceal
+  shared_doc.d_read   public
+  shared_doc.d_edit   editor
+</code>
+
+====  edit_list.conf ====
+
+This is an optional file. It defines which parameters/files are editable by owners. See [[list-creation#list_editing|List editing]]. If the family does not have this file, Sympa will look for the one defined on robot level, server site level or distribution level (this file already exists without family context). \\ Note that by default, the ''family_name'' parameter is not writable, you should not change this editing right.
+
+====  customizable files ====
+
+Families provide a new level of customization for scenarios (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]), templates for service messages (see [[customizing#site_template_files|Site template files]]) and templates for web pages (see [[customizing#web_template_files|Web template files]]). Sympa looks for these files in the following level order: list, family, robot, server site or distribution.
+
+Example of custom hierarchy:
+<code>
+  /home/sympa/etc/families/myfamily/mail_tt2/
+  /home/sympa/etc/families/myfamily/mail_tt2/bye.tt2
+  /home/sympa/etc/families/myfamily/mail_tt2/welcome.tt2
+</code>
+
+
+===== Instantiation =====
+
+Instantiation allows to generate lists. You must provide an XML file made of list descriptions, the root element being ''family'' and which is only composed of ''list'' elements. List elements are described in section [[list-creation#xml_file_format|XML file format]]. Each list is described by the set of values for affectation list parameters.
+
+Here is a sample command to instantiate a family:
+
+<code>
+sympa.pl --instantiate_family my_family --robot samplerobot --input_file /path/to/my_file.xml
+</code>
+
+This means lists that belong to family ''my_family'' will be created under the robot ''my_robot'' and these lists are described in the file ''my_file.xml''. Sympa will split this file into several XML files describing lists. Each list XML file is put in each list directory.
+
+**--close_unknown** option can be added to automatically close undefined lists during a new instantation\\
+**--quiet** option can be added to skip the report printed to STDOUT
+
+Example:
+
+<code>
+  <?xml version="1.0" ?>
+  <family>
+    <list>
+      <listname>liste1</listname>
+      <subject>a list example</subject>
+      <description/>
+      <status>open</status>
+      <shared_edit>editor</shared_edit>
+      <shared_read>private</shared_read>
+      <language>fr</language>
+      <owner multiple="1">
+        <email>foo@renater.fr</email>
+        <gecos>C.R.U.</gecos>
+      </owner>
+      <owner multiple="1">
+        <email>foo@emnsp.fr</email>
+      </owner>
+      <owner_include multiple="1">
+        <source>my_file</source>
+      </owner_include>
+      <sql>
+        <type>oracle</type>
+        <host>sqlserv.admin.univ-x.fr</host>
+        <user>stdutilisateur</user>
+        <pwd>monsecret</pwd>
+        <name>les_etudiants</name>
+        <query>SELECT DISTINCT email FROM etudiant</query>
+      </sql>
+    </list>
+    <list>
+      <listname>liste2</listname>
+      <subject>a list example</subject>
+      <description/>
+      <status>open</status>
+      <shared_edit>editor</shared_edit>
+      <shared_read>private</shared_read>
+      <language>fr</language>
+      <owner multiple="1">
+        <email>foo@renater.fr</email>
+        <gecos>C.R.U.</gecos>
+      </owner>
+      <owner multiple="1">
+        <email>foo@enmsp.fr</email>
+      </owner>
+      <owner_include multiple="1">
+        <source>my_file</source>
+      </owner_include>
+      <sql>
+        <type>oracle</type>
+        <host>sqlserv.admin.univ-x.fr</host>
+        <user>stdutilisateur</user>
+        <pwd>monsecret</pwd>
+        <name>les_etudiants</name>
+        <query>SELECT DISTINCT email FROM etudiant</query>
+      </sql>
+    </list>
+     ...
+  </family>
+</code>
+
+Each instantiation describes lists. Compared with the previous instantiation, there are three cases:
+
+  * list creation: new lists described by the new instantiation;
+  * list modification: lists already existing but possibly changed because of changed parameters values in the XML file or because of changed family properties;
+  * list removal: lists no more described by the new instantiation. In this case, the listmaster must validate his choice on command line. If the list is removed, it is set in status ''family_closed'', or if the list is recovered, the list XML file from the previous instantiation is got back to go on as a list modification then.
+
+After list creation or modification, parameters constraints are checked:
+
+  * ''fixed'' parameter: the value must be the one imposed;
+  * ''controlled'' parameter: the value must be one of the set of available values;
+  * ''free'' parameter: there is no checking.
+
+diagram
+
+In case of modification (see diagram), allowed customizations can be preserved:
+
+  * (1): for all parameters modified  (through the web interface), indicated in the ''config_changes'' file, values can be collected in the old list configuration file, according to new family properties:
+    * ''fixed'' parameter: the value is not collected,
+    * ''controlled'' parameter: the value is collected only if constraints are respected,
+    * ''free'' parameter: the value is collected;
+  * (2): a new list configuration file is made with the new family properties;
+  * (3): collected values are set in the new list configuration file.
+
+Notes:
+
+  * For each list problem (as family file error, error parameter constraint, error instantiation, etc.), the list is set in status ''error_config'' and listmasters are notified. Then they will have to perform any necessary action in order to put the list in use.
+  * For each list closure in family context, the list is set in status ''family_closed'' and owners are notified.
+  * For each overwritten list customization, owners are notified.
+
+=====  Modification =====
+
+To modify a family, you have to edit family files manually. The modification will be effective while the next instanciation. \\ **WARNING**: The family modification must be done just before an instantiation. Otherwise, alive lists would not respect new family properties and they would be set in status ''error_config'' immediately.
+
+=====  Closure =====
+
+Closes every list (installed under the indicated robot) of this family: list status is set to ''family_closed'', aliases are removed and subscribers are removed from DB (a dump is created in the list directory to allow restoration of the list).
+
+Here is a sample command to close a family:
+<code>
+   sympa.pl --close_family my_family --robot \samplerobot
+</code>
+
+
+=====  Adding a list to a list family =====
+
+Adds a list to the family without instantiating the whole family. The list is created as if it was created during an instantiation, under the indicated robot. The XML file describes the list and the root element is ''<list>''. List elements are described in section [[list-creation#list_creation_on_command_line_with_sympa.pl|List creation on command line with sympa.pl]].
+
+Here is a sample command to add a list to a family:
+<code>
+   sympa.pl --add_list my_family --robot samplerobot  --input_file /path/to/my_file.xml
+</code>
+
+=====  Removing a list from a list family =====
+
+Closes the list installed under the indicated robot: the list status is set to ''family_closed'', aliases are removed and subscribers are removed from DB (a dump is created in the list directory to allow restoring the list).
+
+Here is a sample command to close a list family (same as an orphan list):
+<code>
+   sympa.pl --close_list my_list@\samplerobot
+</code>
+
+
+===== Modifying a family list =====
+
+Modifies a family list without instantiating the whole family. The list (installed under the indicated robot) is modified as if it was modified during an instantiation. The XML file describes the list and the root element is ''<list>''. List elements are described in section [[list-creation#list_creation_on_command_line_with_sympa.pl|List creation on command line with sympa.pl]].
+
+Here is a sample command to modify a list to a family:
+<code>
+   sympa.pl --modify_list my_family --robot samplerobot --input_file /path/to/my_file.xml
+</code>
+
+===== Editing list parameters in a family context =====
+
+According to file ''edit_list.conf'', editing rights are controlled. See [[list-creation#list_editing|List editing]]. But in a family context, constraints parameters are added to editing right as it is summarized in this array:
+
+array
+
+Note: in order to preserve list customization for instantiation, every parameter modified (through the web interface) is indicated in the ''config_changes'' file.
+
+====== Automatic list creation ======
+
+You can benefit from the family concept to let Sympa automatically create lists for you. Let us assume that you want to open a list according to specified criteria (age, geographical location, ...) within your organization. Maybe that would result in too many lists, and many of them would never be used.
+
+Automatic list creation allows you to define those potential lists through family parameters, but they will not be created yet. The mailing list creation is trigerred when Sympa receives a message addressed to this list.
+
+To enable automatic list creation, you will have to:
+
+  * configure your MTA to queue messages for these lists in an appropriate spool;
+  * define a family associated to such lists;
+  * configure Sympa to enable the feature.
+
+
+
+=====  Configuring your MTA =====
+
+==== The familyqueue solution (with postfix) ====
+
+
+To do so, you have to configure your MTA for it to add a custom header field to messages. The easiest way is to customize your aliases manager, so that mails for automatic lists are not delivered to the normal ''queue'' program, but to the ''familyqueue'' dedicated one. For example, you can decide that the name of those lists will start with the ''auto-'' pattern, so you can process them separately from other lists you are hosting.
+
+''familyqueue'' expects 2 arguments: the list name and family name (whereas the ''queue'' program only expects the list address).
+
+Now let's start with a use case: we need to communicate to groups of co-workers, depending on their age and their occupation. We decide that, for example, if we need to write to all CTOs who are fifty years old, we will use the ''auto-cto.50@lists.domain.com'' mailing list. The occupation and age informations are stored in our LDAP directory (but of course we could use any Sympa data source: SQL, files...). We will create the ''age-occupation'' family.
+
+First of all we configure our MTA to deliver mail to '''auto-*''' to ''familyqueue'' for the ''age-occupation'' family.  We'll also need to tell the MTA to accept mail for addresses that do not yet exist since by default postfix will reject mail for unknown local users.
+<code>
+  /etc/postfix/main.cf
+      ...
+      transport_maps = regexp:/etc/postfix/transport_regexp
+      local_recipient_maps = pcre:/etc/postfix/local_recipient_regexp unix:passwd.byname $alias_maps
+
+  /etc/postfix/transport_regexp
+      /^.*-owner\@lists\.domain\.com$/      sympabounce:
+      /^auto-.*\@lists\.domain\.com$/       sympafamily:
+      /^.*\@lists\.domain\.com$/            sympa:
+
+  /etc/postfix/local_recipient_regexp
+      /^.*-owner\@lists\.domain\.com$/  1
+      /^auto-.*\@lists\.domain\.com$/  1
+
+  /etc/postfix/master.cf
+      sympa     unix  -       n       n       -       -       pipe
+        flags=R user=sympa argv=/home/sympa/bin/queue ${recipient}
+      sympabounce  unix  -       n       n       -       -       pipe
+        flags=R user=sympa argv=/home/sympa/bin/bouncequeue ${user}
+      sympafamily  unix  -       n       n       -       -       pipe
+        flags=R user=sympa argv=/home/sympa/bin/familyqueue ${user} age-occupation
+
+</code>
+
+A mail sent to ''auto-cto.50@lists.domain.com'' will be queued to the ''/home/sympa/spool/automatic'' spool, defined by the ''queueautomatic'' ''sympa.conf'' parameter (see [[conf-parameters/part2#queueautomatic|queueautomatic]]). The mail will first be processed by an instance of the ''sympa.pl'' process dedicated to automatic list creation, then the mail will be sent to the newly created mailing list.
+
+==== The sympa-milter solution (with sendmail) ====
+
+If you don't use postfix or don't want to dig in postfix alias management, you have an alternative solution for automatic listes management: sympa-milter.
+
+This program is a contribution by [[Jose-Marcio.Martins@ensmp.fr|Jose-Marcio Martins da Cruz]].
+
+What it does is checking all incoming mails and, if it recognizes a message to an automatic list, adds the relevant headers in it and places it in Sympa's automatic spool. It replaces familyqueue.
+
+For all the doc, we assume you're using sendmail.
+
+This is the procedure to make it work:
+
+=== Install sympa-milter ===
+
+You can download the latest version at the following address: [[http://j-chkmail.ensmp.fr/sympa-milter/]].
+
+Once you have the archive, decompress it: ''tar xzvf sympa-milter-0.6.tgz''.
+
+Then install the program:
+
+<code>
+# cd sympa-milter-0.6/
+# ./configure
+# make
+# make install
+</code>
+
+The default install directory is ''/usr/local/sympa-milter/'' (you can change this value with the ''--prefix'' configure option).
+
+The install process also adds a launcher into ''/etc/init.d/'', named ''sympa-milter''. You'll need to setup links to it under ''/etc/rc3.d''. If you're using Fedora like Linux distributions, you can use ''/sbin/chkconfig'' to setup these links.
+
+<code>
+/sbin/chkconfig sympa-milter on
+</code>
+
+You must then set up the configuration file, ''sympa-milter.conf''. You will find a sample configuration file inside ''/usr/local/sympa-milter/etc'' directory. This file contains two sections whose border are XML-like tags. Inside a section, a parameter is defined on a single line by the sequence:
+
+''parameters_name            parameter_value''
+
+  * the general section, between the ''<general>'' and ''</general>'' tags is used to define, well general parameters, related to the program execution. It contains the following items:
+
+    * log_level (positive integer value):	the amount of logs generated by sympa-milter;
+
+    * log_facility (string):			the syslog facility in which the program will log;
+
+    * log_severity (string: yes/no):		If you enable this, ''syslog'' will include a string like ''[ID 000000 local6.info]'' in each log line, allowing you to identify the log level and facility.
+
+    * socket (string):				the socket used by the application; must be the same as the one defined in your MTA;
+
+    * spool_dir (string): 			the absolute path to the''[[http://www.sympa.org/wiki/manual/organization#spools|automatic]]'' spool in which messages should be placed;
+
+    * pid_file (string):			the absolute path to the pid file (default = ''/usr/local/sympa-milter/var/sympa-milter.pid'');
+
+    * run_as_user (string)			the user the uid under which to execute sympa-milter (default = ''sympa'', but changeable by a ''configure'' script option); this must be the same as the one running sympa;
+
+    * run_as_group				the group the gid under which to execute sympa-milter (default = ''sympa'', but changeable by a ''configure'' script option); this must be the same as the one running sympa;
+
+  * the family definition section, between the ''<families>'' and ''</families>'' tags is used to define the regular expressions which will allow sympa-milter to catch list creation messages. This section can contain an unlimited number of identically built lines, following this syntax:
+
+<code>
+family		recipient_regular_expression
+</code>
+
+You should use "plussed aliases" (at least with sendmail) to identify user existence more easily.
+
+Here is an example of ''sympa-milter.conf'', filled-up with default values :
+
+<code>
+#
+# Section general
+#
+<general>
+log_level		10
+log_facility            local6
+log_severity            yes
+
+socket                  inet:2030@localhost
+
+spool_dir               /usr/local/sympa-milter/var
+
+pid_file                /usr/local/sympa-milter/var/sympa-milter.pid
+
+run_as_user             sympa
+run_as_group            sympa
+</general>
+#
+# Section families
+#
+<families>
+# Syntax :
+#     family		recipient regular expression
+#
+joe                  ^joe+.*@one.domain.com
+toto                 ^bob+toto@other.domain.com
+best                 ^best.*@another.domain.com
+</families>
+</code>
+
+<note>
+**Note:** It is probably better to make all your regular expression start with "^". This way, bouncing messages won't be caught by sympa-milter and normally processed.
+</note>
+
+You can use any regular expression to define the addresses used by your family.
+
+=== Set up your MTA ===
+
+What you must do to make all the thingy to work is:
+
+  * setting up your MTA to use sympa-milter:
+
+<code>O InputMailFilters=sympa-milter
+Xsympa-milter, S=inet:2030@localhost, T=C:2m;S:20s;R:20s;E:5m
+</code>
+
+  * defining aliases to prevent sendmail from howling that a user (corresponding to your automatic list) doesn't exist. If all your automatic lists start with "auto", for example you can write:
+
+<code>
+auto    : /dev/null
+</code>
+
+**or**
+
+<code>
+auto	: "some_file"
+</code>
+
+Reload your MTA config. All set!
+
+=====  Defining the list family =====
+
+We need to create the appropriate ''etc/families/age-occupation/config.tt2''. All the magic comes from the TT2 language capabilities. We define on-the-fly the LDAP source, thanks to TT2 macros.
+
+<code>
+  /home/sympa/etc/families/age-occupation/config.tt2
+      ...
+
+      [%
+      occupations = {
+          cto = { title=>"chief technical officer", abbr=>"CHIEF TECH OFF" },
+          coo = { title=>"chief operating officer", abbr=>"CHIEF OPER OFF" },
+          cio = { title=>"chief information officer", abbr=>"CHIEF INFO OFF" },
+      }
+      nemes = listname.split('-');
+      THROW autofamily "SYNTAX ERROR: listname must begin with 'auto-' " IF (nemes.size != 2 || nemes.0 != 'auto');
+      tokens = nemes.1.split('\.');
+      THROW autofamily "SYNTAX ERROR: wrong listname syntax" IF (tokens.size != 2 || ! occupations.${tokens.0} || tokens.1 < 20 || tokens.1 > 99 );
+      age = tokens.1 div 10;
+      %]
+
+      custom_subject [[% occupations.${tokens.0}.abbr %] OF [% tokens.1 %]]
+
+      subject Every [% tokens.1 %] years old [% occupations.${tokens.0}.title %]
+
+      include_ldap_query
+      attrs mail
+      filter (&(objectClass=inetOrgPerson)(employeeType=[% occupations.${tokens.0}.abbr %])(personAge=[% age %]*))
+      name ldap
+      port 389
+      host ldap.domain.com
+      passwd ldap_passwd
+      suffix dc=domain,dc=com
+      timeout 30
+      user cn=root,dc=domain,dc=com
+      scope sub
+      select all
+</code>
+
+The main variable you get is the name of the current mailing list via the ''listname'' variable as used in the example above.
+
+=====  Configuring Sympa =====
+
+Now we need to enable automatic list creation in Sympa. To do so, we have to:
+
+  * set the ''automatic_list_feature'' parameter to ''on'' and define who can create automatic lists via the ''automatic_list_creation'' (points to an automatic_list_creation scenario);
+  * set the ''queueautomatic'' ''sympa.conf'' parameter to the spool location where we want these messages to be stored (it has to be different from the ''/home/sympa/spool/msg'' spool).
+
+You can make Sympa delete automatic lists that were created with zero list members; to do so, you should set the ''automatic_list_removal'' parameter to ''if_empty''.
+
+<code>
+  /home/sympa/etc/sympa.conf
+      ...
+      automatic_list_feature  on
+      automatic_list_creation public
+      queueautomatic          /home/sympa/spool/automatic
+      automatic_list_removal    if_empty
+</code>
+
+While writing your own ''automatic_list_creation'' scenarios, be aware that:
+
+  * when the scenario is evaluated, the list is not yet created; therefore you can not use the list-related variables;
+  * you can only use the ''smtp'' and ''smime'' authentication methods in scenario rules (you cannot request the md5 challenge). Moreover, only the ''do_it'' and ''reject'' actions are available.
+
+Now you can send message to auto-cio.40 or auto-cto.50, and the lists will be created on the fly.
+
+You will receive an 'unknown list' error if either the syntax is incorrect or the number of subscriber is zero.

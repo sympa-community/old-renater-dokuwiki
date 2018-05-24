@@ -1,0 +1,12 @@
+<code>
+195.83.185.1 eleve1.cines.fr a-eleve1.cines.fr b-eleve1.cines.fr
+195.83.185.2 eleve2.cines.fr a-eleve2.cines.fr b-eleve2.cines.fr
+195.83.185.3 eleve3.cines.fr a-eleve3.cines.fr b-eleve3.cines.fr
+195.83.185.4 eleve4.cines.fr a-eleve4.cines.fr b-eleve4.cines.fr
+195.83.185.5 eleve5.cines.fr a-eleve5.cines.fr b-eleve5.cines.fr
+195.83.185.6 eleve6.cines.fr a-eleve6.cines.fr b-eleve6.cines.fr
+195.83.185.7 eleve7.cines.fr a-eleve7.cines.fr b-eleve7.cines.fr
+195.83.185.8 eleve8.cines.fr a-eleve8.cines.fr b-eleve8.cines.fr
+195.83.185.9 eleve9.cines.fr a-eleve9.cines.fr b-eleve9.cines.fr
+195.83.185.11 prof.cines.fr a-prof.cines.fr b-prof.cines.fr
+</code>

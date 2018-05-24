@@ -1,0 +1,200 @@
+====== Shared documents ======
+
+Shared documents are documents that different users can manipulate online via the web interface of Sympa, provided that they are authorized to do so. A shared document web space is associated with the list, and users can upload, download, delete, etc documents in that web space.
+
+//WWSympa//'s shared web features are fairly rudimentary. It is not our aim to provide a sophisticated tool for web publishing, such as those provided by products like //Rearsite//. It is nevertheless very useful to be able to define privileges on web documents in relation to list attributes such as //subscribers//, //list owners// or //list editors//.
+
+All file and directory names are lowercased by Sympa. It is consequently impossible to create two different documents whose names differ only in their case. The reason why Sympa does this is to allow correct URL links even when using an HTML document generator (typically Powerpoint) which uses random case for file names!
+
+In order to have better control over the documents and to enforce security in the shared document web space, each document is linked to a set of specific control information: its access rights.
+
+A list's shared documents are stored in the ''/home/sympa/expl/mylist/shared'' directory. This directory is either created via the ''Create shared'' web admin feature, or at list creation time, if the list ''[[parameters-privileges#shared_doc|shared_doc]]'' parameter is set. If you don't want the document repository to be created, you should remove the ''shared_doc'' parameter from the corresponding ''create_list_templates/xx/config.tt2'' files.
+
+This chapter describes how the shared documents are managed, especially as regards their access rights. We will see:
+
+  * the kind of operations which can be performed on shared documents;
+  * access rights management;
+  * access rights control specifications;
+  * actions on shared documents;
+  * template files.
+
+===== The three kinds of operations on a document =====
+
+Where shared documents are concerned, there are three kinds of operations which have the same constraints relating to access control:
+  * the read operation;
+  * the edit operation;
+  * the control operation.
+
+==== The read operation ====
+
+If applied to a directory, it opens it and lists its contents (only the sub-documents the user is authorized to "see").
+
+If applied to a file, it downloads it, and in the case of a viewable file (//text/plain//, //text/html//, or image), displays it.
+
+==== The edit operation ====
+
+It allows:
+  * subdirectory creation;
+  * file uploading;
+  * file unzipping;
+  * description of a document (title and basic information);
+  * online editing of a text file;
+  * document (file or directory) deletion. Directories can be deleted only if they are empty.
+
+These different edit actions are equivalent as regards access rights. Users who are authorized to edit a directory can create a subdirectory or upload a file to it, as well as describe or delete it. Users authorized to edit a file can edit it online, describe it, replace or remove it.
+
+==== The control operation ====
+
+The control operation is directly linked to the notion of access rights. If we want shared documents to be secure, we have to control the access to them. Not everybody must be authorized to perform every operation on them. Consequently, each document has specific access rights for reading and editing. Performing a control action on a document involves changing its Read/Edit rights.
+
+The control operation has more restrictive access rights than the other two operations. Only the owner of a document, the privileged owner of the list and the listmaster have control rights over a document. Another possible control action on a document is therefore specifying who owns it.
+
+===== The description file =====
+
+The information (title, owner, access rights...) related to each document must be stored, and so each shared document is linked to a special file called a description file, whose name includes the ''.desc'' prefix.
+
+The description file of a directory having the path ''mydirectory/mysubdirectory'' has the path ''mydirectory/mysubdirectory/.desc'' . The description file of a file having the path ''mydirectory/mysubdirectory/myfile.myextension'' has the path ''mydirectory/mysubdirectory/.desc.myfile.myextension'' .
+
+====  Structure of description files ====
+
+The structure of a document (file or directory) description file is given below. You should //never// have to edit a description file.
+
+<code>
+  title
+    <description of the file in a few words>
+
+  creation
+    email        <email of the owner of the document>
+    date_epoch   <date_epoch of the creation of the document>
+
+  access
+   read <access rights for read>
+   edit <access rights for edit>
+</code>
+
+The following example is for a document that subscribers can read, but that only the owner of the document and the owner of the list can edit.
+
+<code>
+  title
+    module C++ which uses the class List
+
+  creation
+    email foo@some.domain.com
+    date_epoch 998698638
+
+  access
+   read  private
+   edit  owner
+</code>
+
+===== The predefined authorization scenarios =====
+
+====  The public scenario ====
+
+The ''public'' scenario is the most permissive scenario. It enables anyone (including unknown users) to perform the corresponding action.
+
+====  The private scenario ====
+
+The ''private'' scenario is the basic scenario for a shared space. Every subscriber of the list is authorized to perform the corresponding action. The ''private'' scenario is the default read scenario for ''shared'' when this shared space is created. This can be modified by editing the list configuration file.
+
+====  The scenario owner ====
+
+The scenario ''owner'' is the most restrictive scenario for a shared space. Only the listmaster, list owners and the owner of the document (or those of a parent document) are allowed to perform the corresponding action. The ''owner'' scenario is the default scenario for editing.
+
+====  The scenario editor ====
+
+The scenario ''editor'' is for a moderated shared space for editing. Every suscriber of the list is allowed to edit a document. But this document will have to be installed or rejected by the editor of the list. Documents awaiting for moderation are visible by their author and the editor(s) of the list in the shared space. The editor has also an interface with all documents awaiting. When there is a new document, the editor is notified and when the document is installed, the author is notified too. In case of reject, the editor can notify the author or not.
+
+===== Access control =====
+
+Access control is an important operation performed every time a document is accessed within the shared space.
+
+The access control related to a document in the hierarchy involves an iterative operation on all its parent directories.
+
+====  Listmaster and privileged owners ====
+
+The listmaster and privileged list owners are special users as regards the shared document web space. They are allowed to perform every action on every document. This privilege enables control over the shared space to be maintained. It is impossible to prevent the listmaster and privileged owners from performing any action they please on any document in the shared space.
+
+==== Special case of the shared directory ====
+
+In order to allow access to a root directory to be more restrictive than that of its subdirectories, the ''shared'' directory (root directory) is a special case as regards access control. The access rights for read and edit are those specified in the list configuration file. Control of the root directory is specific. Only the users authorized to edit a list's configuration may change access rights on its ''shared'' directory.
+
+====  General case ====
+
+''mydirectory/mysubdirectory/myfile'' is an arbitrary document in the shared space, but not in the //root// directory. A user **X** wishes to perform one of the three operations (read, edit, control) on this document. The access control will proceed as follows:
+
+  * Read operation \\  To be authorized to perform a read action on ''mydirectory/mysubdirectory/myfile'', **X** must be authorized to read every document making up the path; in other words, he/she must be allowed to read ''myfile'' (the authorization scenario of the description file of ''myfile'' must return ''do_it'' for user **X**), and the same goes for ''mysubdirectory'' and ''mydirectory''). \\ In addition, given that the owner of a document or of its parent directories is allowed to perform **all actions on that document**, ''mydirectory/mysubdirectory/myfile'' may also have read operations performed on it by the owners of ''myfile'', ''mysubdirectory'', and ''mydirectory''. \\ This can be schematized as follows:
+<code>
+    	X can read <a/b/c>
+    	if
+    	(X can read <c>
+    	AND X can read <b>
+    	AND X can read <a>)
+    	OR
+    	(X owner of <c>
+    	OR X owner of <b>
+    	OR X owner of <a>)
+</code>
+
+  * Edit operation \\  The access algorithm for edit is identical to the algorithm for read:
+<code>
+    	X can edit <a/b/c>
+    	if
+    	(X can edit <c>
+    	AND X can edit <b>
+    	AND X can edit <a>)
+    	OR
+    	(X owner of <c>
+    	OR X owner of <b>
+    	OR X owner of <a>)
+</code>
+
+  * Control operation \\ The access control which precedes a control action (change rights or set the owner of a document) is much more restrictive. Only the owner of a document or the owners of a parent document may perform a control action:
+<code>
+    	X can control <a/b/c>
+    	if
+    	(X owner of <c>
+    	OR X owner of <b>
+    	OR X owner of <a>)
+</code>
+
+=====  Shared document actions =====
+
+The shared web feature has called for some new actions.
+
+  * action ''D_ADMIN'' \\ Creates the shared space, closes it or restore it. The ''d_admin'' action is accessible from a list's **admin** page.
+  * action ''D_READ'' \\ Reads the document after read access control. If the document is a folder, it lists all the subdocuments that can be read. If it is a file, it displays it if it is viewable, else downloads it to disk. If the document to be read contains a file named ''index'' or ''index.htm'', and if the user has no permissions other than read on all subdocuments contained, the read action will consist in displaying the index. The ''d_read'' action is accessible from a list's **info** page.
+  * action ''D_CREATE_DIR'' \\ Creates a new subdirectory in a directory that can be edited without moderation. The creator is the owner of the directory. The access rights are those of the parent directory.
+  * action ''D_DESCRIBE'' \\ Describes a document that can be edited.
+  * action ''D_DELETE'' \\  Deletes a document after edit access control. If applied to a folder, it has to be empty.
+  * action ''D_UPLOAD'' \\ Uploads a file into a directory that can be edited.
+  * action ''D_UNZIP'' \\ Unzips a file into a directory that can be edited without moderation. The whole file hierarchy contained in the ZIP file is installed into the directory.
+  * action ''D_OVERWRITE'' \\ Overwrites a file if it can be edited. The new owner of the file is the one who has done the overwriting operation.
+  * actions ''D_EDIT_FILE'' and ''D_SAVE_FILE'' \\ Edits a file and saves it after edit access control. The new owner of the file is the one who has done the saving operation.
+  * action ''D_CHANGE_ACCESS'' \\ Changes the access rights of a document (read or edit), provided that control of this document is authorized.
+  * action ''D_SET_OWNER'' \\ Changes the owner of a directory, provided that control of this document is authorized. The directory must be empty. The new owner can be anyone, but authentication is necessary before any action can be performed on the document.
+
+=====  Template files =====
+
+The following template files have been created for the shared document web space.
+
+====  d_read.tt2 ====
+
+The default page for reading a document. If for a file, displays it (if viewable) or downloads it. If for a directory, displays all readable subdocuments, each of which will feature buttons corresponding to the different actions this subdocument allows. If the directory is editable, displays buttons to describe it or upload a file into it. If the directory is editable without moderation, it displays buttons to create a new subdirectory or to upload a ZIP file in order to install a file hierarchy. If access to the document is editable, displays a button to edit the access to it.
+
+====  d_editfile.tt2 ====
+
+The page used to edit a file. If for a text file, allows it to be edited online. This page also enables another file to be substituted in its place.
+
+====  d_control.tt2 ====
+
+The page to edit the access rights and the owner of a document.
+
+=====  d_upload.tt2 =====
+
+The page to upload a file is only used when the name of the file already exists.
+
+
+=====  d_properties.tt2 =====
+
+This page is used to edit the description file and to rename it.

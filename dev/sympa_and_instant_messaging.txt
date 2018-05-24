@@ -1,0 +1,53 @@
+====== Sympa and instant messaging  ======
+
+In order to enhance services provided by Sympa list servers we decided to integrate (more or less) instant messaging within Sympa (as we did for a wiki).
+
+The gains of such a development would be :
+
+  * instant chat and even voice/video conferencing between list members (nice thing for discussion groups for example)
+  * list membership based chatroom access (aka one chatroom for each list,...) with specific rights for list owners ...
+  * single account (identification based on Sympa's users database)
+  * SSO achieved by re-using Sympa's session if possible ...
+
+From here we identified two main solutions, html based web chat or a system using a stand alone server.
+
+The most interesting one is a stand alone server based on XMPP since this protocol is powerful and provides a real instant messaging service. Moreover it also provides voice/video and file transfer support. The thing we are seeking for is a server that is pluggable enough to allow custom identification and chatroom creation/config or at least a server with database that could be populated from Sympa.
+
+The problem is about choosing between a powerful solution that would be a service itself, with a connector to Sympa, and a simpler solution but with higher integration potential and a reduced investment.
+
+===== Stand alone server =====
+
+We soon took a look at the XMPP protocol and all its server implementations. Noticeable ones are OpenFire ([[http://www.igniterealtime.org/projects/openfire/index.jsp]], Java), dJabberd ([[http://www.danga.com/djabberd]], Perl), Jabber2 ([[http://jabberd2.xiaoka.com]], C) and eJabber ([[http://www.ejabberd.im]], erlang).
+
+Advantages :
+  * An active community
+  * Many available clients for nearly every OS
+  * Open source
+  * Client sends notice on new messages, most of them provide voice support
+
+Disadvantages :
+  * Many different server implementations: its quite difficult to find one with either a standard programming language (no erlang user here ...), extension capabilities, good support and with a structure that would allow us to plug it in Sympa easily
+  * Users need to install a desktop IM client (pidgin, gtalk, etc) except if a good flash/java applet client is available ...
+
+We installed an OpenFire server and got it to work quite easily, but we quickly experienced problems when trying to adapt it to our needs. This server is complex and it takes time to figure out which code to modify to achieve things we want.
+
+Another idea was to populate the OpenFire database with data extracted from Sympa, but this was a failure again since we don't have a lot of informations about this database (password encryption, chatroom config) ...
+
+===== Web chat =====
+
+With the use of AJAX it is possible to provide a chat service that mostly looks like the previous one. We can find a lot of implementations around the Web.
+
+The one we tried is AJAXChat (PHP/Javascript, https://blueimp.net/ajax/). It took a couple of minutes to install it, user / chatroom / access restrictions datasource are easily populated with a simple script and the integration in Sympa could be high. It is also able to make use of the Sympa session to achieve SSO ... The drawbacks are that it requires a running Web browser and that (depending on the operating system) it can hardly popup in front of the user to tell him that he has new messages.
+
+Advantages :
+  * No client required (just a quite recent web browser), so it's easy even for novice users
+  * Very easy to plug in Sympa (just includes and scripts to populate users/chatrooms lists from the Sympa database)
+  * SSO may be possible by re-using the Sympa session
+  * Open source web chat are widely available
+  * Code is simple to extend, some implementations might provide voice support trough flash/java socket based extension, but there seems to be nothing for video. 
+
+
+Disadvantages :
+  * Can hardly "popup" to notice a new message or connect itself at system startup like most IM clients do
+  * the user must keep an opened browser window to have it working
+  * there is probably a limit to the maximum number of connected users to the chat because of the HTTP protocol.

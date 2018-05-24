@@ -1,0 +1,81 @@
+====== Attributs utilisateurs par liste ======
+
+Ce développement dans Sympa devrait répondre à plusieurs besoins :
+  - Inscription à des tutoriels JRES, en utilisant Sympa. Sympa doit être étendu pour proposer la saisie d'informations sur l'utilisateur lors de son abonnement (organisme, adresse, tel,...).
+  - Extension de la fonction de modération des abonnements. Le proprétaire d'une liste a parfois besoin d'un complément d'informations pour pouvoir valider l'abonnement d'une personne (ex: groupe de chercheurs, préparation de l'aggrégation,...)
+  - <del>Sondage des abonnés : collectage d'informations sur les membres d'une liste. Attention à ne pas créer un outil trop complexe...
+</del>
+
+===== Fonctionnement =====
+
+Les données sont collectées via un formulaire web de Sympa, au moment de l'abonnement <del>ou plus tard via la fonction d'édition des options d'abonné</del>. Si l'abonnement est modéré, les données doivent être attachées à la demande en attente ; le propriétaire de la liste aura accès à ces données lors du travail de modération des abonnements. 
+
+  Si les informations sont requises pour l'abonnement, l'abonnement via l'interface mail devra être blockée.
+
+La liste des attributs spécifiques à une liste est définie par le propriétaire de la liste, via l'interface web d'admin de Sympa. 
+
+<del>Les attributs seront éditables via la pgae "options d'abonné".\\
+</del>Les attributs seront affichés depuis la liste des abonnés, uniquement par les propriétaires.
+
+<del>Une fonction d'export de la liste des abonnés + les attributs sera proposée au format CSV.</del>
+
+===== Organisation des données =====
+
+La valeur des attributs d'un utilisateur sont stockés dans l'entrée de l'abonné, dans la table 'subscriber_table'. Les attributs sont regroupés dans un seul champ de la base, sous forme XML ou CSV ou ?. Il faudra utiliser un type adapté (potentiellement gros) pour ce champ de la base.
+
+  L'avantage d'utiliser XML tient dans sa souplesse à exprimer une structure de données. 
+  En revanche, il devient difficile d'effectuer une recherche dans la base de données, en utilisant un attribut comme critère.
+  XML est cependant un truc sophistiqué car de toute façon, la structure de donnée reste simple : c'est un rateau éventuellement assez large mais pas une structure d'arbre récursive.
+  CVS présente un intérêt : la facilité d'exportation.
+  dernier critère les module CPAN pour manipuler ce format : on a déjà un truc pour XML utilisé dans les famill es de listes.
+
+Lorsqu'un abonné disparait, les données le concernant disparaissent avec lui.
+
+Le format des demande d'abonnement (dans le spool 'subscribe') devra évoluer pour pouvoir stocker les attributs éventuels.
+
+===== Paramétrage =====
+
+Les éléments suivants devront être définis pour chaque attribut :
+  * identifiant : utilisé dans le (XM ou le CVS) notamment
+  * intitulé : l'intitulé de l'attribut qui apparait dans le formulaire
+  * type : type de l'attribut (chaine de caractères, texte, nombre, énumération)
+  * <del>compléments type : taille, intervale</del>
+  * commentaire : texte apparaissant dans le formulaire de saisie, pour aider à la saisie (exemple, format,...)
+  * ordre : peut être requis pour afficher les champs de formulaire dans l'ordre
+  * optionnel / requis lors de l'abonnement
+  * <del>visibilité (aux abonnés ?) : utilisation d'un scenario</del>
+  
+Ces paramètres seront ajoutés au format du fichier de config d'une liste, à raison d'un paragraphe par attribut.
+
+===== Modification du code =====
+
+==== List.pm ====
+
+Ajout du paramètre //custom_attribute// et du format du paragraphe dans le hash //%::pinfo//. La répercution sur le formulaire d'édition de la config et sur les primitives de chargement/sauvegarde de config sera automatique (ce formuliare est généré automatiquement à partir de la descroption de la structure des paramètres de config. Il faut cependant créer un nouveau chapitre pour cette partie (actuellement il y a 5 chapitres).
+
+Prise en compte des //custom attribute// dans les primitives de manipulation de la base : get_subscriber, get_first_user, update_user, add_user. Regarder comment on fait avec db_additional_subscriber_fields dans get_subscriber().
+
+Ajout du nouveau champ (custom_attributes ?) de la base dans probe_db(). Ajouter également ce champ dans les scripts de création de la base (src/etc/script/create_db.*). Il faudra déterminer quel type de champ utiliser...
+
+Etendre get_subscription_requests() pour remonter les attributs
+
+Etendre store_subscription_request() pour stocker les attributs
+
+==== wwsympa.fcgi ====
+
+Créer une nouvelle action //edit_attributes//, c'est à dire un nouveau template TT2, une nouvelle fonction do_edit_attributes() et définir le mapping (dans %comm), le format (dans %in_regexp). Cette action pourra traiter à la fois l'envoi du formulaire vide et le traitement des données.
+
+Orienter vers cette action depuis do_subscribe(), lorsque l'abonnement a réussi ou si l'abonnement est modéré. Pour passer d'une action à l'autre : <code>return 'edit_attributes'</code>
+
+Modifier do_suboptions() et do_set() pour prendre en compte les attributs personnalisés ; modifier également web_tt2/suboptions.tt2
+
+Etendre do_subindex() pour prendre en compte les éventuels attributs dans la requête en attente.
+
+Etendre la fonction d'export ( do_dump() ) disponible depuis la page //review//. Elle devra pouvoir exporter au format CSV.
+
+===== Suite... =====
+
+  - Opter pour XML ou CSV ?
+  - Définition des paramètres de chaque attribut
+  - Se mettre d'accord sur les intitulés de paramètres
+  - 

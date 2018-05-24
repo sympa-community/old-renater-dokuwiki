@@ -1,0 +1,66 @@
+====== Altemail is one of the authors priority ======
+
+
+This page is intended to describe the design of alternate email feature in Sympa. Please submit any comment in [[sympa-dev@renater.fr]] or edit this page.
+
+===== alternate email goals =====
+
+Many (most ?) users have multiple email addresses. With Sympa current version each user is identified with a unique email address so the same user with two different email addresses is seen as two different users. 
+
+Things that are not currently feasible with Sympa that should become possible :
+
+  * make it possible for one person using one of his alternate email addresse to send a message to a private list (and being recognized as subscriber of the list).
+  * consider alternate email addresses with equivalent privileges for every action, on the web and mail interface. This behavior needs to be customizeable for certain lists or certain sensible actions.
+  * add a user attributes layer in Sympa to gather user attributes, independently from the authentication process 
+  * collect alternate email addresses in a secure way so the feature can't be used to spoof someone else identity. 
+  * alert users when bounces are received for his main email address or for one alternate email address.
+  * provide a unified view of //my personal environment// on the web interface with some extra features
+    * unify subscroptions : edit //my subscriptions// to replace email with one my other emails. 
+    * set an option for all my subscriptions (set nomail for vacation)
+    * display "my lists" in way I can recognize defferent email used
+ * some users subscribe to mailing lists with email addresses like //user+topic@domain// to ease the sorting of messages in their mail folders. Sympa could consider addresses //user@domain// and //user+topic@domain// as equivalent.
+
+
+===== architecture =====
+
+Store alternate email in a cookie, as it is currently done by Sympa web interface, is a very bad idea. The first thing to do is to remove all the existing code related to alternate emails as it is proposed in version prior to 5.5
+
+We will introduce a new //altemail_table// table 
+
+| **email_altemail** | altemail_altemail | expire_date_altemail | source_altemail |
+
+  * email_altemail will be the key index, 
+  * altemail_altemail a verified alternative email, 
+  * expire_date_altemail the date where this line will be removed unless some event confirm it is used. 
+  * source_altemail : an indication of the way this information was collected. A source could be an LDAP directory, alt_subject in user certificate, email challenge named one_time_ticket in Sympa 5.5
+  * auth_altemail : may be this information may be deduced from the source_altemail ? The authentication mechanism to be applied in scenario when using this altemail. If the source is an emal challenge, the auth_altemail value is md5. 
+
+===== scenario and altemail =====
+
+It is probably useful to preserve the possibility to ignore altemail when evaluating a scenario but by default an altemail should have the same privileges as the original email. The way we imagine for it is to introduce a new variable in scenario conditions : 
+
+  * [user->main_email] which would be equivalent to the actual variable [sender] or [user->email]
+  * [user->email] which would mean one of the alternative email, including [user->main_email]
+
+The basic rule for a private list will look like : 
+
+  is_subscriber([user->email],[list]) ->smtp,md5,smime do_it
+
+A strict private list will use
+
+  is_subscriber([user->main_email],[list]) ->smtp,md5,smime do_it
+
+The interpretation algorithm when using [user->email] will be an iteration for each alternative email ending as soon as one of them make the condition true. Example : the following condition 
+
+  match([user->email],/cru\.fr/) 
+
+will be evaluated as true is one of alternative email is on domain //renater.fr// . because of this specification, the following rule will probably not very useful because it will deny service to anyone having at least an alternative email in domain google.com even if the message or web service is submited using some other mail.
+ 
+  !match([user->email],/google\.com/) smtp,md5,smime -> reject
+
+In such case you probably need to use [user->main_email] variable.
+
+===== User account management =====
+
+Currently, a user account in Sympa is removed whenever a user unsubscribes from the last list he was subscribed to. This algorithm should take to alternate email addresses into account.
+

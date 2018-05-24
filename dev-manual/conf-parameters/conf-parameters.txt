@@ -1,0 +1,911 @@
+====== sympa.conf parameters ======
+
+The ''/etc/sympa.conf'' configuration file contains numerous parameters which are read on start-up of Sympa. If you change this file, do not forget that you will need to restart Sympa afterwards.
+
+The ''/etc/sympa.conf'' file contains directives in the following format:
+
+//keyword value//
+
+Comments start with the ''#'' character at the beginning of a line. Empty lines are also considered as comments and are ignored. There should only be one directive per line, but their order in the file is of no importance.
+
+======  Site customization ======
+
+===== domain =====
+
+This keyword is **mandatory**. It is the domain name used in the ''From:'' header in replies to administrative requests. So the SMTP engine (qmail, sendmail, postfix or whatever) must recognize this domain as a local address. The old keyword ''host'' is still recognized but should not be used anymore.
+
+Example: <code>domain renater.fr</code>
+
+
+===== email =====
+
+(Default value: ''sympa'')
+
+Username (the part of the address preceding the ''@'' sign) used in the ''From:'' header in replies to administrative requests.
+
+Example: <code>email listserv</code>
+
+
+===== listmaster =====
+
+The list of the email addresses of the listmasters (users authorized to perform global server commands). Listmasters can be defined for each virtual host.
+
+Example: <code>listmaster postmaster@renater.fr,root@renater.fr</code>
+
+
+===== listmaster_email =====
+
+(Default value: ''listmaster'')
+
+Username (the part of the address preceding the @ sign) used in the listmaster email. This parameter is useful if you want to run more than one sympa on the same host (a sympa test for example).
+
+If you change the default value, you must modify the sympa aliases too.
+
+For example, if you put:
+
+<code>listmaster listmaster-test</code>
+
+you must modify the sympa aliases like this:
+
+<code>listmaster-test: | /home/sympa/bin/queue listmaster@my.domain.org</code>
+
+See [[mail-aliases#robot_aliases|Robot aliases]] for all aliases.
+
+
+===== wwsympa_url =====
+
+(Default value: ''<nowiki>http://host/wws</nowiki>'')
+
+This is the root URL of //WWSympa//.
+
+Example: <code>wwsympa_url https://my.server/sympa</code>
+
+
+===== soap_url =====
+
+This is the root URL of Sympa's SOAP server. Sympa's WSDL document refers to this URL in its service section.
+
+Example: <code>soap_url http://my.server/sympasoap</code>
+
+===== spam_protection =====
+
+(Default value: ''javascript'')
+
+There is a need to protect Sympa website against spambot which collect email addresses in public websites. Various methods are available within Sympa, and you can choose between the ''spam_protection'' and ''web_archive_spam_protection'' parameters. Possible values are:
+
+  * javascript: the address is hidden using a javascript. Users who enable Javascript can see nice mailto addresses where others have nothing.
+  * at: the "@" char is replaced by the string  "AT".
+  * none: no protection against spammers.
+
+===== web_archive_spam_protection =====
+
+(Default value: ''cookie'')
+
+The same as ''spam_protection'', but restricted to the web archive. An additional value is available: ''cookie'', which means that users must submit a small form in order to receive a cookie before browsing the web archive. This block all robots, including search engine robots.
+
+===== color_0, color_1, ..., color_15 =====
+
+They are the color definition parameters for the web interface. These parameters can be overwritten in each virtual host definition. Colors are used in the CSS files and unfortunately they are also in use in some web templates. The sympa admin interface shows all colors in use.
+
+===== Color parameters =====
+
+A few color parameters were used in the past for color definition of the web interface: 
+''dark_color'', ''light_color'', ''text_color'', ''bg_color'', ''error_color'', ''selected_color'', ''shaded_color''. 
+
+These parameters are not used in version 5.1 and higher anymore, but still available in ''style.css'', ''print.css'', ''print-preview.css'' and ''fullPage.css''.
+
+===== logo_html_definition =====
+
+This parameter allows you to insert in the upper left corner of the page a piece of HTML code, usually to insert a logo in the page. This is a very basic but easy customization. Example: <code>logo_html_definition <a href=''http://www.mycompany.com''><img style="float: left; margin-top: 7px; margin-left: 37px;" src=''http:/logos/mylogo.jpg'' alt="my company" /></a></code>
+
+===== css_path =====
+
+Pre-parsed CSS files (let's say static CSS files) can be installed using the Sympa server skin module. These CSS files are installed in a part of the web server that can be reached without using the Sympa web engine. In order to do this, edit the ''robot.conf'' file and set the ''css_path'' parameter. Then restart the server and use the skin module from the "Admin sympa" page to install preparsed CSS file. In order to replace dynamic CSS files by these static files, set the ''css_url'' parameter.
+
+**After an upgrade, ''sympa.pl'' automatically updates the static CSS files with the newly installed ''css.tt2''. Therefore, this is not a good place to store customized CSS files.**
+
+
+===== css_url =====
+
+By default, CSS files ''style.css'', ''print.css'', ''print-preview.css'' and ''fullPage.css'' are delivered by the Sympa web interface itself using a Sympa action named ''css''. URLs look like <nowiki>''http://foo.org/sympa/css/style.css''</nowiki>. CSS file are made parsing a ''web_tt2'' file named ''css.tt2''. This allows dynamic definition of colors, and in a near future a complete definition of the skin, user preference skins, etc.
+
+In order to make Sympa web interface faster, it is strongly recommended to install static CSS files somewhere in your website. This way, Sympa will deliver only one page instead of one page and four CSS files at each click. This can be done using the ''css_url'' parameter. The parameter must contain the URL of the directory where ''style.css'', ''print.css'', ''print-preview.css'' and ''fullPage.css'' are installed. You can make your own sophisticated new skin by editing these files. The server admin module includes a CSS administration page that can help you to install static CSS files.
+
+===== static_content_path =====
+
+Some content may be delivered by the HTTP server (Apache) without any need to be controlled or parsed by Sympa. It is stored in the directory chosen through the ''static_content_dir'' parameter. The current Sympa version stores subscribers' pictures in this directory. Later updates will add stylesheets, icons, ... The directory is created by ''sympa.pl'' when started. This parameter can be defined also in ''robot.conf''.
+
+===== static_content_url =====
+
+Content stored in the directory specified by parameter ''static_content_url'' must be served by the HTTP server under the URL specified by ''static_content_url''. Check Apache configuration in order to make this directory available. This parameter can be defined in ''robot.conf''.
+
+===== pictures_feature =====
+
+(Default value: ''off'') 
+
+Example: <code>pictures_feature on</code>
+
+Subscribers can upload their picture (from the 'Subscriber option' page) so that reviewing subscribers shows a gallery. This parameter defines the default for corresponding list parameter but it does NOT allow to disable the feature overall. If you want to disable the feature for your entire site, you need to customize the ''edit-list.conf'' file to deny editing of the corresponding list parameter.
+
+Pictures are stored in a directory specified by the ''static_content_path'' parameter.
+
+===== pictures_max_size =====
+
+The maximum size of the uploaded picture file (bytes).
+
+===== cookie =====
+
+This string is used to generate MD5 authentication keys. It allows generated authentication keys to differ from a site to another. It is also used for reversible encryption of user passwords stored in the database. The presence of this string is one reason why access to ''sympa.conf'' needs to be restricted to the ''sympa'' user.
+
+Note that changing this parameter will break all HTTP cookies stored in users' browsers, as well as all user passwords and lists X509 private keys. To prevent a catastrophe, ''sympa.pl'' refuses to start if the ''cookie'' parameter was changed.
+
+Example: <code>cookie gh869jku5</code>
+
+===== create_list =====
+
+(Default value: ''public_listmaster'')
+
+The ''create_list'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+Defines who can create lists (or request list creations). Sympa will use the corresponding authorization scenario.
+
+Example: <code>create_list intranet</code>
+
+===== automatic_list_feature =====
+
+(Default value: ''off"''
+
+Example: <code>automatic_list_feature on</code>
+
+If set to ''on'', Sympa will enable automatic list creation through family instantiation (see [[list-families#automatic_list_creation|Automatic list creation]]).
+
+===== automatic_list_creation =====
+
+(Default value: ''none'')
+
+The ''automatic_list_creation'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+If ''automatic_list_feature'' is activated, this parameter (corresponding to an authorization scenario) defines who is allowed to use the automatic list creation feature.
+
+===== automatic_list_removal =====
+
+(Default value: ''''
+
+Example: <code>automatic_list_feature if_empty</code>
+
+If set to ''if_empty'', then Sympa will remove automatically created mailing lists just after their creation, if they contain no list member (see [[list-families#automatic_list_creation|Automatic list creation]]).
+
+===== global_remind =====
+
+(Default value: ''listmaster'')
+
+The ''global_remind'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+Defines who can run a ''REMIND *'' command.
+
+======  Directories ======
+
+===== home =====
+
+(Default value: ''''/home/sympa/expl'''')
+
+The directory whose subdirectories correspond to the different lists.
+
+Example: home /home/sympa/expl
+
+===== etc =====
+
+(Default value: ''/home/sympa/etc'')
+
+This is the local directory for configuration files (such as ''edit_list.conf''. It contains 5 subdirectories:
+  * ''scenari'' for local authorization scenarios;
+  * ''mail_tt2'' for the site's local mail templates and default list templates;
+  * ''web_tt2'' for the site's local HTML templates;
+  * ''global_task_models'' for local global task models;
+  * ''list_task_models'' for local list task models.
+
+Example: <code>etc /home/sympa/etc</code>
+
+======  System related ======
+
+===== syslog =====
+
+(Default value: ''LOCAL1'')
+
+Name of the sub-system (facility) for logging messages.
+
+Example: <code>syslog LOCAL2</code>
+
+===== log_level =====
+
+(Default value: ''0'')
+
+This parameter sets the verbosity of Sympa processes (including) in log files. With level ''0'' only main operations are logged, in level ''3'' almost everything is logged.
+
+Example: <code>log_level 2</code>
+
+===== log_socket_type =====
+
+(Default value: ''unix'')
+
+Sympa communicates with ''syslogd'' using either UDP or UNIX sockets. Set ''log_socket_type'' to ''inet'' to use UDP, or ''unix'' for UNIX sockets.
+
+===== pidfile =====
+
+(Default value: ''/home/sympa/etc/sympa.pid'')
+
+The file where the ''sympa.pl'' daemon stores its process number. Warning: the ''sympa'' user must be able to write to this file, and to create it if it does not exist.
+
+Example: <code>pidfile /var/run/sympa.pid</code>
+
+===== pidfile_creation =====
+
+(Default value: ''/home/sympa/etc/sympa-creation.pid'')
+
+The file where the automatic list creation dedicated ''sympa.pl'' daemon stores its process number. Warning: the ''sympa'' user must be able to write to this file, and to create it if it does not exist.
+
+Example: <code>pidfile_creation /var/run/sympa-creation.pid</code>
+
+===== umask =====
+
+(Default value: ''027'')
+
+Default mask for file creation (see umask). Note that it will be interpreted as an octual value.
+
+Example: <code>umask 007</code>
+
+======  Sending related ======
+
+===== distribution_mode =====
+
+(Default value: ''single'')
+
+Use this parameter to determine whether your installation runs only one ''sympa.pl'' daemon that processes both messages to distribute and commands (single), or if ''sympa.pl'' will fork to run two separate processes, one dedicated to message distribution and one dedicated to commands and message pre-processing (fork). The second choice makes a better priority processing for message distribution and faster command response, but it requires a bit more computer resources.
+
+Example: <code>distribution_mode fork</code>
+
+===== maxsmtp =====
+
+(Default value: ''20'')
+
+Maximum number of SMTP delivery child processes spawned by Sympa. This is the main load control parameter.
+
+Example: <code>maxsmtp 500</code>
+
+===== log_smtp =====
+
+(Default value: ''off'')
+
+Set logging of each MTA call. Can be overwritten by ''-m'' sympa option.
+
+Example: <code>log_smtp on</code>
+
+===== use_blacklist =====
+
+(Default value: ''send,create_list"'')
+
+Sympa provides a blacklist feature available for list editors and owners. The ''use_blacklist'' parameter defines which operations use the blacklist. Search in blacklist is mainly useful for the ''send'' service (distribution of a message to the subscribers). You may use blacklist for other operations such as review, archive, etc., but be aware that those web services need fast response and blacklist may require some resources.
+
+If you do not want blacklist at all, define ''use_blacklist'' to ''none'' so that the user interface to manage blacklist will disappear from the web interface.
+
+===== max_size =====
+
+(Default value: ''5 Mb'')
+
+Maximum size allowed for messages distributed by Sympa. This may be customized per virtual host or per list by setting the ''max_size'' robot or list parameter.
+
+Example: <code>max_size 2097152</code>
+
+===== misaddressed_commands =====
+
+(Default value: ''reject'')
+
+When a robot command is sent to a list, by default Sympa rejects this message. This feature can be turned off setting this parameter to ignore.
+
+
+===== misaddressed_commands_regexp =====
+
+(Default value: ''(subscribe|unsubscribe|signoff)'')
+
+This is the Perl regular expression applied on messages subject and body to detect misaddressed commands, see [[conf-parameters#misaddressed_commands|misaddressed_commands parameter]].
+
+
+===== nrcpt =====
+
+(Default value: ''25'')
+
+Maximum number of recipients per ''sendmail'' call. This grouping factor makes it possible for the (''sendmail'') MTA to optimize the number of SMTP sessions for message distribution. If needed, you can limit the number of recipients for a particular domain. Check the ''nrcpt_by_domain'' configuration file (see [[organization#nrcptbydomain|nrcpt_by_domain]]).
+
+
+===== avg =====
+
+(Default value: ''10'')
+
+Maximum number of different Internet domains within addresses per ''sendmail'' call.
+
+
+===== sendmail =====
+
+(Default value: ''/usr/sbin/sendmail'')
+
+Absolute path to SMTP message transfer agent binary. Sympa expects this binary to be sendmail compatible (postfix, Qmail and Exim binaries all provide sendmail compatibility).
+
+Example: <code>sendmail /usr/sbin/sendmail</code>
+
+===== sendmail_args =====
+
+(Default value: ''-oi -odi -oem'')
+
+Arguments passed to the SMTP message transfer agent.
+
+===== sendmail_aliases =====
+
+(Default value: ''defined by makefile, sendmail_aliases | none'')
+
+Path of the alias file that contains all list related aliases. It is recommended to create a specific alias file so that Sympa never overwrites the standard alias file, but only a dedicated file. You must refer to this aliases file in your ''sendmail.mc'': set this parameter to ''none'' if you want to disable alias management in Sympa (e.g. if you use ''virtual_transport'' with Postfix).
+
+===== rfc2369_header_fields =====
+
+(Default value: ''help,subscribe,unsubscribe,post,owner,archive'')
+
+RFC2369 compliant header fields (List-xxx) to be added to distributed messages. These header fields should be implemented by MUA's, adding menus.
+
+===== remove_headers =====
+
+(Default value: ''Return-Receipt-To,Precedence,X-Sequence,Disposition-Notification-To'')
+
+This is the list of headers that Sympa should remove from outgoing messages. Use it, for example, to ensure some privacy for your users by discarding anonymous options. It is (for the moment) site-wide. It is applied before the Sympa ''rfc2369_header_fields'', and ''custom_header'' fields are added.
+
+Example: <code>remove_headers Resent-Date,Resent-From,Resent-To,Resent-Message-Id,Sender,Delivered-To"</code>
+
+===== anonymous_headers_fields =====
+
+(Default value: ''Sender,X-Sender,Received,Message-id,From,X-Envelope-To,Resent-From,Reply-To,Organization,Disposition-Notification-To,X-Envelope-From,X-X-Sender'')
+
+This parameter defines the list of SMTP header fields that should be removed when a mailing list is setup in anonymous mode (see [[parameters-sending#anonymous_sender|anonymous_sender]].
+
+
+===== list_check_smtp =====
+
+(Default value: ''NONE'')
+
+If this parameter is set with a SMTP server address, Sympa will check if alias with the same name as the list you are creating already exists on the SMTP server. It is robot specific, i.e. you can specify a different SMTP server for every virtual host you are running. This is needed if you are running Sympa on somehost.foo.org, but you handle all your mail on a separate mail relay.
+
+===== list_check_suffixes =====
+
+(Default value: ''request,owner,unsubscribe'')
+
+This parameter is a comma-separated list of admin suffixes you are using for Sympa aliases, i.e. ''mylist-request'', ''mylist-owner'', etc. This parameter is used with the ''list_check_smtp'' parameter. It is also used to check list names at list creation time.
+
+===== urlize_min_size =====
+
+(Default value: ''10240'')
+
+This parameter is related to the ''URLIZE'' subscriber delivery mode; it defines the minimum size (in bytes) for MIME attachments to be urlized.
+
+====== Quotas ======
+
+===== default_shared_quota =====
+
+The default disk quota (the unit is Kbytes) for lists' document repositories.
+
+===== default_archive_quota =====
+
+The default disk quota (the unit is Kbytes) for lists' web archive.
+
+====== Spool related ======
+
+===== spool =====
+
+(Default value: ''/home/sympa/spool'')
+
+The parent directory which contains all the other spools.
+
+===== queue =====
+
+The absolute path of the directory which contains the queue, used both by the ''queue'' program and the ''sympa.pl'' daemon. This parameter is mandatory.
+
+Example: <code>/home/sympa/spool/msg</code>
+
+===== queuedistribute =====
+
+(Default value: ''/home/sympa/spool/distribute'')
+
+This parameter is optional and retained solely for backward compatibility.
+
+===== queuemod =====
+
+(Default value: ''/home/sympa/spool/moderation'')
+
+This parameter is optional and retained solely for backward compatibility.
+
+===== queuedigest =====
+
+This parameter is optional and retained solely for backward compatibility.
+
+===== queueauth =====
+
+(Default value: ''/home/sympa/spool/auth'')
+
+This parameter is optional and retained solely for backward compatibility.
+
+===== queueoutgoing =====
+
+(Default value: ''/home/sympa/spool/outgoing'')
+
+This parameter is optional and retained solely for backward compatibility.
+
+===== queuetopic =====
+
+(Default value: ''/home/sympa/spool/topic'')
+
+This parameter is optional and retained solely for backward compatibility.
+
+===== queuebounce =====
+
+(Default value: ''/home/sympa/spool/bounce'')
+
+Spool to store bounces (non-delivery reports) received by the ''bouncequeue'' program via the ''mylist-owner'' (unless this suffix was customized) or ''bounce+*'' addresses (VERP) . This parameter is mandatory and must be an absolute path.
+
+===== queuetask =====
+
+(Default value: ''/home/sympa/spool/task'')
+
+Spool to store task files created by the task manager. This parameter is mandatory and must be an absolute path.
+
+===== queueautomatic =====
+
+(Default value: ''none'')
+
+The absolute path of the directory which contains the queue for automatic list creation, used by both the ''familyqueue'' program and the ''sympa.pl'' daemon. This parameter is mandatory when enabling ''automatic_list_creation''.
+
+Example: <code>/home/sympa/spool/msg</code>
+
+===== tmpdir =====
+
+(Default value: ''/home/sympa/spool/tmp'')
+
+Temporary directory used by OpenSSL and antiviruses.
+
+===== sleep =====
+
+(Default value: ''5'')
+
+Waiting period (in seconds) between each scan of the main queue. Never set this value to 0!
+
+===== clean_delay_queue =====
+
+(Default value: ''1'')
+
+Retention period (in days) for "bad" messages in spool (as specified by ''queue''). Sympa keeps messages rejected for various reasons (badly formatted, looping, etc.) in this directory, with a name prefixed with ''BAD''. This configuration variable controls the number of days these messages are kept.
+
+Example: <code>clean_delay_queue 3</code>
+
+===== clean_delay_queuemod =====
+
+(Default value: ''10'')
+
+Expiration delay (in days) in the moderation spool (as specified by ''queuemod''). Beyond this deadline, messages that have not been processed are deleted. For moderated lists, the contents of this spool can be consulted using a key along with the ''MODINDEX'' command.
+
+===== clean_delay_queueauth =====
+
+(Default value: ''3'')
+
+Expiration delay (in days) in the authentication queue. Beyond this deadline, messages not enabled are deleted.
+
+===== clean_delay_queuesubscribe =====
+
+(Default value: ''10'')
+
+Expiration delay (in days) in the subscription requests queue. Beyond this deadline, requests not validated are deleted.
+
+===== clean_delay_queuetopic =====
+
+(Default value: ''7'')
+
+Delay for keeping message topic files (in days) in the topic queue. Beyond this deadline, files are deleted.
+
+===== clean_delay_queueautomatic =====
+
+(Default value: ''10'')
+
+Retention period (in days) for "bad" messages in automatic spool (as specified by ''queueautomatic''). Sympa keeps messages rejected for various reasons (badly formatted, looping, etc.) in this directory, with a name prefixed with ''BAD''. This configuration variable controls the number of days these messages are kept.
+
+======  Internationalization related ======
+
+===== localedir =====
+
+(Default value: ''/home/sympa/locale'')
+
+The location of multilingual catalog files. Must correspond to ''~src/locale/Makefile''.
+
+===== supported_lang =====
+
+Example: <code>supported_lang fr,en_US,de,es</code>
+
+This parameter lists all supported languages (comma separated) for the user interface. The default value will include all message catalogs but it can be narrowed by the listmaster.
+
+===== lang =====
+
+(Default value: ''en_US'')
+
+This is the default language for Sympa. The message catalog (''.po'', compiled as a ''.mo'' file) located in the corresponding locale directory will be used.
+
+===== web_recode_to =====
+
+(OBSOLETE)
+
+All web pages are now encoded in utf-8.
+
+Note: if you recode web pages to utf-8, you should also add the following tag to your ''mhonarc-ressources.tt2'' file:
+
+<code>
+  <TextEncode>
+  utf-8; MHonArc::UTF8::to_utf8; MHonArc/UTF8.pm
+  </TextEncode>
+</code>
+
+===== filesystem_encoding =====
+
+(Default value: ''utf-8'')
+
+Example: <code>filesystem_encoding iso-8859-1</code>
+
+Sympa (and Perl) use utf-8 as its internal encoding and also for the encoding of web pages. Because you might use a different character encoding on your filesystem, you need to declare it, so that Sympa is able to properly decode strings.
+
+======  Bounce related ======
+
+===== verp_rate =====
+
+(Default value: ''0%'')
+
+See [[bounces#verp|VERP]] for more information on VERP in Sympa.
+
+When ''verp_rate'' is null, VERP is not used; if ''verp_rate'' is 100%, VERP is always in use.
+
+VERP requires plussed aliases to be supported and the ''bounce+*'' alias to be installed.
+
+===== welcome_return_path =====
+
+(Default value: ''owner'')
+
+If set to string unique, Sympa enables VERP for welcome messages and bounce processing will remove the subscription if a bounce is received for the welcome message. This prevents to add bad address in the subscriber list.
+
+===== remind_return_path =====
+
+(Default value: ''owner'')
+
+Like ''welcome_return_path'', but relates to the remind message.
+
+===== return_path_suffix =====
+
+(Default value: ''-owner'')
+
+This defines the suffix that is appended to the list name to build the return-path of messages sent to the lists. This is the address that will receive all non delivery reports (also called bounces).
+
+===== expire_bounce_task =====
+
+(Default value: ''daily'')
+
+This parameter tells what task will be used by ''task_manager.pl'' to perform bounce expiration. This task resets bouncing information for addresses not bouncing in the last 10 days after the latest message distribution.
+
+===== purge_orphan_bounces_task =====
+
+(Default value: ''Monthly'')
+
+This parameter tells what task will be used by ''task_manager.pl'' to perform bounce cleaning. This task deletes bounce archive for unsubscribed users.
+
+===== eval_bouncers_task =====
+
+(Default value: ''daily'')
+
+The task ''eval_bouncers'' evaluates all bouncing users for all lists, and fill the field ''bounce_score_suscriber'' in table ''suscriber_table'' with a score. This score allows the auto-management of bouncing users.
+
+===== process_bouncers_task =====
+
+(Default value: ''monthly'')
+
+The task ''process_bouncers'' executes configured actions on bouncing users, according to their score. The association between score and actions has to be done in List configuration. This parameter defines the frequency of execution for this task.
+
+===== minimum_bouncing_count =====
+
+(Default value: ''10'')
+
+This parameter is for the bounce-score evaluation: the bounce-score is a mark that allows the auto-management of bouncing users. This score is evaluated with, in particular, the number of message bounces received for the user. This parameter sets the minimum number of these messages to allow the bounce-score evaluation for a user.
+
+===== minimum_bouncing_period =====
+
+(Default value: ''10'')
+
+Determine the minimum bouncing period for a user to allow his bounce-score evaluation. Like previous parameter, if this value is too low, bounce-score will be 0.
+
+===== bounce_delay =====
+
+(Default value: ''0'')
+
+Another parameter for the bounce-score evaluation: this one represents the average time (in days) for a bounce to come back to the Sympa server after a post was send to a list. Usually bounces are delivered on the same day as the original message.
+
+===== default_bounce_level1_rate =====
+
+(Default value: ''45'')
+
+This is the default value for ''bouncerslevel1 rate'' entry (see [[parameters-bounces#bouncers_level1|bouncers_level1]]).
+
+
+===== default_bounce_level2_rate =====
+
+(Default value: ''75'')
+
+This is the default value for ''bouncerslevel2 rate'' entry ( see [[parameters-bounces#bouncers_level2|bouncers_level2]]).
+
+
+===== bounce_email_prefix =====
+
+(Default value: ''bounce'')
+
+The prefix string used to build variable envelope return path (VERP). In the context of VERP enabled, the local part of the address starts with a constant string specified by this parameter. The email is used to collect bounce. Plussed aliases are used in order to introduce the variable part of the email that encodes the subscriber address. This parameter is useful if you want to run more than one Sympa on the same host (a test Sympa for example).
+
+If you change the default value, you must modify the sympa aliases too.
+
+For example, if you set it as:
+
+<code>
+bounce_email_prefix bounce-test
+</code>
+
+you must modify the sympa aliases like this:
+
+<code>
+bounce-test+*: | /home/sympa/bin/queuebounce sympa@my.domain.org
+</code>
+
+See [[mail-aliases#robot_aliases|Robot aliases]] for all aliases.
+
+===== bounce_warn_rate =====
+
+(Default value: ''30'')
+
+Site default value for bounce. The list owner receives a warning whenever a message is distributed and the number of bounces exceeds this value.
+
+===== bounce_halt_rate =====
+
+(Default value: ''50'')
+
+FOR FUTURE USE
+
+Site default value for bounce. Messages will cease to be distributed if the number of bounces exceeds this value.
+
+===== default_remind_task =====
+
+(Default value: ''2month'')
+
+This parameter defines the default ''remind_task'' list parameter.
+
+======  Tuning ======
+
+===== cache_list_config =====
+
+Format: ''none | binary_file'' (Default value: ''none'')
+
+If this parameter is set to ''binary_file'', then Sympa processes will maintain a binary version of the list config structure on disk (''config.bin'' file). This file is bypassed whenever the ''config'' file changes on disk. Thanks to this method, the startup of Sympa processes is much faster because it saves the time of parsing all config files. The drawback of this method is that the list config cache can live for a long time (not recreated when the Sympa processes restart); the Sympa processes could still use authorization scenario rules that have changed on disk in the meanwhile.
+
+You should use list config cache if you are managing a big amount of lists (1000+).
+
+===== lock_method =====
+
+Format: ''flock | nfs'' (Default value: ''flock'')
+
+This parameter will tell Sympa how it should perform locks when required (updating DB, updating config file,...). The default method uses the standard ''flock'' function. Another option is to use NFS locking ; it requires that you install ''File::NFSLock'' perl module first.
+
+===== sympa_priority =====
+
+(Default value: ''1'')
+
+Priority applied to Sympa commands while running the spool.
+
+Available since release 2.3.1.
+
+===== request_priority =====
+
+(Default value: ''0'')
+
+Priority for processing of messages for ''mylist-request'', i.e. for owners of the list.
+
+Available since release 2.3.3.
+
+
+===== owner_priority =====
+
+(Default value: ''9'')
+
+Priority for processing messages for ''mylist-owner'' in the spool. This address will receive non-delivery reports (bounces) and should have a low priority.
+
+Available since release 2.3.3.
+
+===== default_list_priority =====
+
+(Default value: ''5'')
+
+Default priority for messages if not defined in the list configuration file.
+
+Available since release 2.3.1.
+
+====== Database related ======
+
+The following parameters are needed when using a RDBMS, but are otherwise not required.
+
+===== update_db_field_types =====
+
+Format: <code>update_db_field_types auto | disabled</code>
+
+(Default value: ''auto'')
+
+This parameter defines whether Sympa automatically updates database structure to match the expected datafield types. This feature is only available with MySQL.
+
+===== db_type =====
+
+Format: <code>db_type mysql | SQLite | Pg | Oracle | Sybase</code>
+
+Database management system used (e.g. MySQL, Pg, Oracle)
+
+This corresponds to the PERL DataBase Driver (DBD) name and is therefore case-sensitive.
+
+===== db_name =====
+
+(Default value: ''sympa'')
+
+Name of the database containing user information. If you are using SQLite, then this parameter is the DB file name.
+
+===== db_host =====
+
+Database host name.
+
+===== db_port =====
+
+Database port.
+
+===== db_user =====
+
+User with read access to the database.
+
+===== db_passwd =====
+
+Password for db_user.
+
+===== db_timeout =====
+
+This parameter is used for SQLite only.
+
+===== db_options =====
+
+If these options are defined, they will be appended to the database connect string.
+
+Example for MySQL: <code>db_options	mysql_read_default_file=/home/joe/my.cnf;mysql_socket=tmp/mysql.sock-test</code>
+
+Check the related DBD documentation to learn about the available options.
+
+===== db_env =====
+
+Gives a list of environment variables to set before database connection. This is a ';' separated list of variable assignments.
+
+Example for Oracle: <code>db_env	ORACLE_TERM=vt100;ORACLE_HOME=/var/hote/oracle/7.3.4</code>
+
+===== db_additional_subscriber_fields =====
+
+If your ''subscriber_table'' database table has more fields than required by Sympa (because other programs access this table), you can make Sympa recognize these fields. You will then be able to use them from within mail/web templates and authorization scenarios (as [subscriber->field]). These fields will also appear in the list members review page and will be editable by the list owner. This parameter is a comma-separated list.
+
+Example: <code>db_additional_subscriber_fields 	billing_delay,subscription_expiration</code>
+
+===== db_additional_user_fields =====
+
+If your ''user_table'' database table has more fields than required by Sympa (because other programs access this table), you can make Sympa recognize these fields. You will then be able to use them from within mail/web templates (as [user->field]). This parameter is a comma-separated list.
+
+Example: <code>db_additional_user_fields 	address,gender</code>
+
+===== purge_user_table_task =====
+
+This parameter refers to the name of the task (Example: ''monthly'') that will be regularly run by the ''task_manager.pl'' to remove entries in the ''user_table'' table that have no corresponding entries in the ''subscriber_table'' table.
+
+======  Loop prevention ======
+
+The following define your loop prevention policy for commands (see [[customizing#loop_detection|Loop detection]]).
+
+===== loop_command_max =====
+
+(Default value: ''200'')
+
+The maximum number of command reports sent to an email address. When it is reached, messages are stored with the ''BAD'' prefix, and reports are no longer sent.
+
+===== loop_command_sampling_delay =====
+
+(Default value: ''3600'')
+
+This parameter defines the delay in seconds before decrementing the counter of reports sent to an email address.
+
+===== loop_command_decrease_factor =====
+
+(Default value: ''0.5'')
+
+The decrementation factor (from 0 to 1), used to determine the new report counter after expiration of the delay.
+
+===== loop_prevention_regex =====
+
+(Default value: ''mailer-daemon|sympa|listserv|majordomo|smartlist|mailman'')
+
+This regular expression is applied to message sender addresses. If the sender address matches the regular expression, then the message is rejected. The goal of this parameter is to prevent loops between Sympa and other robots.
+
+======  S/MIME configuration ======
+
+Sympa can optionally check and use S/MIME signatures for security purposes. In this case, the three first following parameters must be set by the listmaster (see [[x509#configuration_in_sympa.conf|Configuration in sympa.conf]]. The two others are optional.
+
+===== openssl =====
+
+The path for the OpenSSL binary file.
+
+===== capath =====
+
+The directory path use by OpenSSL for trusted CA certificates.
+
+A directory of trusted certificates. The certificates should have names of the form ''hash.0'' or have symbolic links of this form to them (''hash'' is the hashed certificate subject name: see the ''-hash'' option of the OpenSSL x509 utility). This directory should be the same as the directory ''SSLCACertificatePath'' specified for the ''mod_ssl'' module for Apache.
+
+===== cafile =====
+
+This parameter sets the all-in-one file where you can assemble the Certificates of Certification Authorities (CA) whose clients you deal with. These are used for Client Authentication. Such a file is simply the concatenation of the various PEM-encoded Certificate files, in order of preference. This can be used alternatively and/or additionally to ''capath''.
+
+===== key_passwd =====
+
+The password for list private key encryption. If not defined, Sympa assumes that list private keys are not encrypted.
+
+===== chk_cert_expiration_task =====
+
+States the model version used to create the task, which regularly checks the certificate expiration dates and warns users whose certificate have expired or are going to. To know more about tasks, see [[customizing#tasks|Tasks]].
+
+===== crl_update_task =====
+
+Specifies the model version used to create the task which regularly updates the certificate revocation lists.
+
+====== Antivirus plug-in ======
+
+Sympa can optionally check incoming messages before delivering them, using an external antivirus solution. You must then set two parameters.
+
+===== antivirus_path =====
+
+The path to your favorite antivirus binary file (including the binary file).
+
+Example: <code>antivirus_path		/usr/local/bin/uvscan</code>
+
+===== antivirus_args =====
+
+The arguments used by the antivirus software to look for viruses. You must set them so as to get the virus name. You should use, if available, the ''unzip'' option and check all extensions.
+
+Example with uvscan: <code>antivirus_args		--summary --secure</code>
+
+Example with fsav: <code>antivirus_args		--dumb	--archive</code>
+
+Example with AVP:
+
+<code>
+  antivirus_path  /opt/AVP/kavscanner
+  antivirus_args  -Y -O- -MP -I0
+</code>
+
+Example with Sophos:
+
+  antivirus_path  /usr/local/bin/sweep
+  antivirus_args  -nc -nb -ss -archive
+
+Example with Clam:
+
+<code>
+  antivirus_path  /usr/local/bin/clamscan
+  antivirus_args  --stdout
+</code>
+
+
+===== antivirus_notify =====
+
+''sender | nobody''
+
+(Default value: ''sender'')
+
+This parameter defines whether Sympa should notify the email sender when a virus has been detected.

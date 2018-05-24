@@ -1,0 +1,243 @@
+====== Data source related ======
+
+
+
+
+
+===== user_data_source =====
+
+(Default value: ''include2'', if using an RDBMS)
+
+''user_data_source file | database | include | include2''
+
+**Starting with Sympa 5.3.x ''include'' is interpreted as ''include2''. Since Sympa 5.4.x ''include2'' is the only supported value for this parameter.**
+
+**Background** : //In the former days Sympa did not use a RDBMS and subscribers informations were stored in flat ''subscribers'' files. We then introduced the ability to include members defined in an external data source and also the optional use of a RDBMS to store subscribers. Therefore we created the 'user_data_source' parameter. We ended up merging the 'database' and 'include' features with 'include2'. The goal was then to give up the 'user_data_source' parameter and we have almost reached this goal. Starting with Sympa 5.3.x the 'include' mode is considered a synonym for 'include2' and more recently we have removed the 'file' and 'database' modes in the development version of Sympa. This means that in Sympa 5.4 the only supported mode will be 'include2'. Note that migration process has been automated.//
+
+Sympa allows the mailing list manager to choose how Sympa loads subscriber and administrative data. User information can be stored in a text file or relational database, or included from various external sources (list, flat file, result of LDAP or SQL query).
+
+  * ''user_data_source'' ''file'' \\ When this value is used, subscriber data are stored in a file whose name is defined by the ''subscribers'' parameter in ''sympa.conf''. This is maintained for backward compatibility.
+  * ''user_data_source'' ''database'' \\ This mode was introduced to allow data to be stored in a relational database. This can be used for instance to share subscriber data with an HTTP interface, or simply to ease the administration of very large mailing lists. It has been tested with MySQL, using a list of 200,000 subscribers. We strongly recommend the use of a database instead of text files. It will improve performance and solve possible conflicts between Sympa and //WWSympa//. Please refer to [[database#sympa_and_its_database|Sympa and its database]].
+  * ''user_data_source'' ''include'' \\ Here, subscribers are not defined //extensively// (enumeration of their email addresses) but //intensively// (definition of criteria subscribers must satisfy). Includes can be performed by extracting email addresses using an SQL or LDAP query, or by including other mailing lists. At least one include paragraph, defining a data source, is needed. Valid include paragraphs (see below) are ''include_file'', ''include_list'', ''include_remote_sympa_list'', ''include_sql_query'' and ''include_ldap_query''.
+  * ''user_data_source'' ''include2'' \\ This is a replacement for the include mode. In this mode, the members cache is no more maintained in a DB File but in the main database instead. The behavior of the cache is detailed in the database chapter (see [[:manual:managing-members#cache_management|Management of the include cache]]). This is the only mode that runs the database for administrative data in the database.
+
+
+
+===== ttl =====
+
+(Default value: ''3600'')
+
+''ttl'' ''delay_in_seconds''
+
+Sympa caches user data extracted using the ''include_xx'' configuration parameters. Their TTL (time-to-live) within Sympa can be controlled using this parameter. The default value is 3600.
+
+
+===== distribution_ttl =====
+
+''distribution_ttl'' ''delay_in_seconds''
+
+Before some actions it is useful to make sure that the user's list is up-to-date. To avoid to execute synchronization any time these actions are performed, this parameter defines the delay since the last synchronization after which the user's list will be updated before performing the action.
+
+The actions for which this parameter is checked are :
+  * list members review
+  * message distribution
+
+===== include_list =====
+
+''include_list'' ''listname''
+
+All subscribers of list ''listname'' become members of the current list. You may include as many lists as required, using one ''include_list'' ''listname'' line for each included list. Any list at all may be included; the ''user_data_source'' definition of the included list is irrelevant, and you may therefore include lists which are also defined by the inclusion of other lists. Be careful, however, not to include list ''A'' in list ''B'' and then list ''B'' in list ''A'', since this would result in an infinite loop.
+
+Example: <code>include_list local-list</code>
+
+Other example: <code>include_list other-local-list@other-local-robot</code>
+
+===== include_remote_sympa_list =====
+
+''include_remote_sympa_list''
+
+Sympa can contact another Sympa service using HTTPS to fetch a remote list in order to include each member of a remote list as a subscriber. You may include as many lists as required, using one ''include_remote_sympa_list'' paragraph for each included list. Be careful, however, not to give rise to an infinite loop making cross includes.
+
+For this operation, one Sympa site acts as a server while the other acts as a client. On the server side, the only setting needed is to give permission to the remote Sympa to review the list. This is controlled by the review authorization scenario.
+
+From the client side you must define the remote list dump URI.
+
+  * ''remote_host'' //remote_host_name//;
+  * ''port'' //port// (Default 443);
+  * ''path'' //absolute path// (in most cases, for a list name foo /sympa/dump/foo).
+
+Because HTTPS offert an easy and secure client authentication, HTTPS is the only protocol currently supported. An additional parameter is needed: the name of the certificate (and the private key) to be used:
+
+  * ''cert'' ''list'' \\ The certificate to be used is the list certificate (the certificate subject distinguished name email is the list address). The certificate and private key are located in the list directory.
+  * ''cert'' ''robot'' \\ The certificate used is then related to Sympa itself: the certificate subject distinguished name email looks like ''sympa@my.domain'' and files are located in the virtual host ''etc'' directory if a virtual host is used; otherwise, they are located in ''/home/sympa/etc''.
+
+
+===== include_sql_query =====
+
+''include_sql_query''
+
+It is used to start a paragraph defining the SQL query parameters:
+
+  * ''db_type'' //dbd_name// \\ The database type (mysql, SQLite, Pg, Oracle, Sybase, CSV, ...). This value identifies the Perl DataBase Driver (DBD) to be used, and is therefore case-sensitive.
+  * ''host'' //hostname// \\ The Database Server Sympa will try to connect to.
+  * ''db_port'' //port// \\ If not using the default RDBMS port, you can specify it.
+  * ''db_name'' //sympa_db_name// \\ The hostname of the database system.
+  * ''user'' //user_id// \\ The user id to be used when connecting to the database.
+  * ''passwd'' //some secret// \\ The user passwd for ''user''.
+  * ''sql_query'' //a query string// \\ The SQL query string. No fields other than email addresses should be returned by this query!
+  * ''connect_options'' //option1=x;option2=y// \\ This parameter is optional and specific to each RDBMS. \\ These options are appended to the connect string. \\ Example:
+<code>
+    include_sql_query
+          db_type mysql
+          host sqlserv.admin.univ-x.fr
+          user stduser
+          passwd mysecret
+          db_name studentbody
+          sql_query SELECT DISTINCT email FROM student
+          connect_options mysql_connect_timeout=5
+</code>
+Connexion timeout is set to 5 seconds.
+  * ''db_env'' //list_of_var_def// \\ This parameter is optional; it is needed for some RDBMS (Oracle). \\ Sets a list of environment variables to set before database connection. This is a ';' separated list of variable assignment. \\ Example for Oracle:
+<code>
+    db_env	ORACLE_TERM=vt100;ORACLE_HOME=/var/hote/oracle/7.3.4
+</code>
+  * ''name'' //short name// \\ This parameter is optional. It provides a human-readable name to this data source. It will be used within the REVIEW page to indicate from whicj datasource each list member comes (useful when having multiple data sources).
+  * ''f_dir'' ///var/csvdir// \\ This parameter is optional. It is only used when accessing a CSV data source.  When connecting to a CSV data source, this parameter indicates the directory where the CSV files are located.
+
+Example:
+
+<code>
+  include_sql_query
+        db_type oracle
+        host sqlserv.admin.univ-x.fr
+        user stduser
+        passwd mysecret
+        db_name studentbody
+        sql_query SELECT DISTINCT email FROM student
+</code>
+
+
+===== include_ldap_query =====
+
+''include_ldap_query''
+
+This paragraph defines parameters for a LDAP query returning a list of subscribers. This feature requires the ''Net::LDAP'' (perlldap) PERL module.
+
+  * ''host'' //ldap_directory_hostname// \\ Name of the LDAP directory host or a comma separated list of host:port. The second form is useful if you are using some replication LDAP host. \\ Example: <code>host ldap.renater.fr:389,backup-ldap.renater.fr:389</code>
+  * ''port'' //ldap_directory_port// (OBSOLETE) \\ Port on which the Directory accepts connections.
+  * ''user'' //ldap_user_name// \\ Username with read access to the LDAP directory.
+  * ''passwd'' //LDAP_user_password// \\ Password for ''user''.
+  * ''use_ssl'' //yes|no// \\ If set to ''yes'', the LDAPS protocol is used.
+  * ''ssl_version'' //sslv2|sslv3|tls// (Default value: ''sslv3'') \\ If using SSL, this parameter defines whether SSL or TLS is used.
+  * ''ssl_ciphers'' //ciphers used// (Default value: ''ALL'') \\ If using SSL, this parameter specifies which subset of cipher suites are permissible for this connection, using the standard OpenSSL string format. The default value of Net::LDAPS for ciphers is ''ALL'', which allows all ciphers, even those that do not encrypt!
+  * ''suffix'' //directory name// \\ Defines the naming space covered by the search (optional, depending on the LDAP server).
+  * ''timeout'' //delay_in_seconds// \\ Timeout when connecting the remote server.
+  * ''filter'' //search_filter// \\ Defines the LDAP search filter (RFC 2254 compliant).
+  * ''attrs'' //mail_attribute// (Default value: ''mail'') \\ The attribute containing the email address(es) in the object returned.
+  * ''select'' //first ''|'' all// (Default value: ''first'') \\ Defines whether to use only the first address, or all the addresses, in case multiple values are returned.
+  * ''scope'' //base ''|'' one ''|'' sub// (Default value: ''sub'') \\ By default, the search is performed on the whole tree below the specified base object. This may be changed by specifying a scope parameter with one of the following values:
+    * **base**: search only the base object,
+    * **one**: search the entries immediately below the base object,
+    * **sub**: search the whole tree below the base object.
+
+Example:
+<code>
+      include_ldap_query
+      host ldap.renater.fr
+      suffix dc=cru, dc=fr
+      timeout 10
+      filter (&(cn=aumont) (c=fr))
+      attrs mail
+      select first
+      scope one
+</code>
+
+===== include_ldap_2level_query =====
+
+''include_ldap_2level_query''
+
+This paragraph defines parameters for a two-level LDAP query returning a list of subscribers. Usually, the first-level query returns a list of DNs and the second-level queries convert the DNs into email addresses. This paragraph is used only if ''user_data_source'' is set to ''include''. This feature requires the ''Net::LDAP'' (perlldap) Perl module.
+
+  * ''host'' //ldap_directory_hostname// \\ Name of the LDAP directory host or a comma separated list of host:port. The second form is useful if you are using some replication LDAP host.
+Example: <code>host ldap.renater.fr:389,backup-ldap.renater.fr:389</code>
+  * ''port'' //ldap_directory_port// (OBSOLETE) \\ Port on which the Directory accepts connections (this parameter is ignored if host definition includes port specification).
+  * ''user'' //ldap_user_name// \\ Username with read access to the LDAP directory.
+  * ''passwd'' //LDAP_user_password// \\ Password for ''user''.
+  * ''use_ssl'' //yes|no// \\ If set to ''yes'', the LDAPS protocol is used.
+  * ''ssl_version'' //sslv2|sslv3|tls// (Default value: ''sslv3'') \\ If using SSL, this parameter defines whether SSL or TLS is used.
+  * ''ssl_ciphers'' //ciphers used// (Default value: ''ALL'') \\ If using SSL, this parameter specifies which subset of cipher suites are permissible for this connection, using the standard OpenSSL string format. The default value of Net::LDAPS for ciphers is ''ALL'', which allows all ciphers, even those that do not encrypt!
+  * ''suffix1'' //directory name// \\ Defines the naming space covered by the first-level search (optional, depending on the LDAP server).
+  * ''timeout1'' //delay_in_seconds// \\ Timeout for the first-level query when connecting to the remote server.
+  * ''filter1'' //search_filter// \\ Defines the LDAP search filter for the first-level query (RFC 2254 compliant).
+  * ''attrs1'' //attribute// \\ 
+The attribute containing the data in the object returned, that will be used for the second-level query. This data is referenced using the syntax ''[attrs1]''.
+  * ''select1'' //first ''|'' all ''|'' regex// (Default value: ''first'') \\ Defines whether to use only the first attribute value, all the values, or only those values matching a regular expression.
+  * ''regex1'' //regular_expression// (Default value: ) \\ The Perl regular expression to use if ''select1'' is set to ''regex''.
+  * ''scope1'' //base ''|'' one ''|'' sub// (Default value: ''sub'') \\ By default the first-level search is performed on the whole tree below the specified base object. This may be changed by specifying a scope parameter with one of the following values:
+    * **base**: search only the base object,
+    * **one**: search the entries immediately below the base object,
+    * **sub**: search the whole tree below the base object.
+  * ''suffix2'' //directory name// \\ Defines the naming space covered by the second-level search (optional, depending on the LDAP server). The ''[attrs1]'' syntax may be used to substitute data from the first-level query into this parameter.
+  * ''timeout2'' //delay_in_seconds// \\ Timeout for the second-level queries when connecting to the remote server.
+  * ''filter2'' //search_filter// \\ Defines the LDAP search filter for the second-level queries (RFC 2254 compliant). The ''[attrs1]'' syntax may be used to substitute data from the first-level query into this parameter.
+  * ''attrs2'' //mail_attribute// (Default value: ''mail'') \\ The attribute containing the email address(es) in the objects returned from the second-level queries.
+  * ''select2'' //first ''|'' all ''|'' regex// (Default value: ''first'') \\ Defines whether to use only the first address, all the addresses, or only those addresses matching a regular expression in the second-level queries.
+  * ''regex2'' //regular_expression// (Default value: ) \\ The Perl regular expression to use if ''select2'' is set to ''regex''.
+  * ''scope2'' //base ''|'' one ''|'' sub// (Default value: ''sub'') \\ By default the second-level search is performed on the whole tree below the specified base object. This may be changed by specifying a scope2 parameter with one of the following values:
+    * **base**: search only the base object,
+    * **one**: search the entries immediately below the base object,
+    * **sub**: search the whole tree below the base object.
+
+Example: 
+
+<code>
+(cn=testgroup,dc=cru,dc=fr should be a groupOfUniqueNames here)
+
+      include_ldap_2level_query
+      host ldap.univ.fr
+      port 389
+      suffix1 ou=Groups,dc=univ,dc=fr
+      scope1 one
+      filter1 (&(objectClass=groupOfUniqueNames) (| (cn=cri)(cn=ufrmi)))
+      attrs1 uniquemember
+      select1 all
+      suffix2 [attrs1]
+      scope2 base
+      filter2 (objectClass=n2pers)
+      attrs2 mail
+      select2 first
+</code>
+
+
+===== include_file =====
+
+''include_file'' ''path_to_file''
+
+The file should contain one email address per line with an optional user description, separated from the email address by spaces (lines beginning with a '#' are ignored).
+
+Sample included file:
+
+<code>
+  ## Data for Sympa member import
+  john.smith@sample.edu  John Smith - math department
+  sarah.hanrahan@sample.edu  Sarah Hanrahan - physics department
+</code>
+
+
+===== include_remote_file =====
+
+''include_remote_file''
+
+This parameter (organized as a paragraph) does the same as the ''include_file'' parameter, except that it gets a remote file. Using this method you should be able to include any //exotic// data source that is not supported by Sympa. The paragraph is made of the following entries:
+
+  * ''url'' //url_of_remote_file// \\ This is the URL of the remote file to include.
+  * ''user'' //user_name// \\ This entry is optional. It is only used if HTTP basic authentication is required to access the remote file.
+  * ''passwd'' //user_passwd// \\ This entry is optional. It is only used if HTTP basic authentication is required to access the remote file.
+
+Example:
+<code>
+  include_remote_file
+  url     http://www.myserver.edu/myfile
+  user    john_netid
+  passwd  john_passwd
+</code>

@@ -1,0 +1,15 @@
+====== Sympa, a Mailing List Management Software - Reference manual ======
+
+**Software version:** development trunk
+
+**Authors:** Serge Aumont, Olivier Salaün, David Verdin
+
+
+
+{{section>:manual:manuals_toc}}
+
+===== Table of Content =====
+
+----
+{{page>toc}}
+

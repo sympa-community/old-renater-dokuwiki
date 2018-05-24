@@ -1,0 +1,33 @@
+====== Interaction between Sympa and other applications ======
+
+======  Soap ======
+
+See [[soap|Sympa SOAP server]].
+
+======  RSS channel ======
+
+See [[rss|Sympa's RSS channel]].
+
+====== Sharing WWSympa's authentication with other applications ======
+
+See [[authentication#sharing_wwsympa_s_authentication_with_other_applications|Sharing WWSympa's authentication with other applications]].
+
+======  Sharing data with other applications ======
+
+You may extract subscribers, owners and editors for a list from any of:
+
+  * a text file;
+  * a relational database;
+  * a LDAP directory.
+
+See the [[parameters-data-sources#user_data_source|user_data_source]] list parameter.
+
+The three tables can have more fields than the one used by Sympa, by defining these additional fields, they will be available from within Sympa's authorization scenarios and templates (see [[conf-parameters#db_additional_subscriber_fields|db_additional_subscriber_fields]] and [[conf-parameters:part3#db_additional_user_fields|db_additional_user_fields]]).
+
+See [[list-definition#data_inclusion_file|Data inclusion file]].
+
+====== Subscriber count ======
+
+The number of subscribers of a list can be obtained from an external application by requesting function ''subscriber_count'' on the Web interface.
+
+Example: <code>http://my.server/wws/subscriber_count/mylist</code>

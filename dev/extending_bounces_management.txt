@@ -1,0 +1,31 @@
+====== Pour une meilleurs remontée des bounces ======
+
+===== L'objectif =====
+
+  - la remontée directe des bounces à l'auteur d'un message ou au propriétaire de la liste
+  - de différencier tous les bounces en relation un message diffusé 
+  - d'envoyer un rapport synthétique sur les bounces liés à un message diffusé
+
+===== Modifications techniques =====
+
+  - modification du return path de Sympa pour y ajouter le numéro de sequence des messages. Ceci concerne le cas VERP et le cas standard. Dans le cas standard, le return-path est liste-owner. Dans le cas VERP, le return-path est <bounce_email_prefix>+email-partie_locale==a==email_partie_domaine. Code : mail::mail_message()
+  - étendre le code d'analyse des bounces pour extraire le numéro de séquence du return-path s'il est présent. Prévoir la notification de l'auteur du message/owner lors de la réception du bounce. Ajouter le numéro de séquence aux appels db_log(). Code : bounced.pl
+  - ajout d'un champ dans la table SQL **logs_table**, ou utilisation du champ **msg_id** en préfixant (ex: **sequence:**) pour différencier des autres enregistrements.
+  - extention du processus d'évaluation des bounces pour permettre a) la notification de l'auteur d'un message, b) de déclencher l'envoi des notifications plus régulièrement. Question : la notification des bounces liée à des messages doit-elle compléter, remplacer cohabiter avec le système existant ?
+  - ajout de l'info sur le numéro de séquence dans présentation des bounces. Code : wwsympa.fcgi+templates associés 
+
+===== Paramétrage pour activer le nouveau fonctionnement =====
+
+   - paramètre (par liste) pour déclencher la notification directe lors d'un bounce. Définir à qui est envoyé la notification
+  - paramètre (sympa.conf) pour commander l'ajout du numéro de séquence dans les return-path
+  - changement du format des alias (notamment avec sendmail)
+
+===== Questions à régler =====
+
+  - Si l'auteur d'un message a accès à la page de compte-rendu des bounces, il faut évaluer le scénario ''review'' préalablement
+  - A quel moment doit-on alerté l'auteur d'un message ? Dès réception du 1er bounce ? N minutes après l'envoi du mail ?
+  - Les informations de bounces sont peu fiables : pas de réception mais pas de bounce OU envoi de bounce mais tentative d'envoi (postfix + mailbox full)
+
+===== Documentation =====
+
+La doc actuelle sur le format des return-path est pauvre. Ce sera l'occasion de l'étoffer.

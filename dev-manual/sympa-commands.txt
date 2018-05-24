@@ -1,0 +1,65 @@
+======  Using Sympa commands ======
+
+Users interact with Sympa, of course, when they send messages to one of the lists, but also indirectly through administrative requests (subscription, list of users, etc.).
+
+This section describes administrative requests, as well as interaction modes in the case of private and moderated lists. Administrative requests are messages whose body contains commands understood by Sympa, one per line. These commands can be indiscriminately placed in the ''Subject:'' or in the body of the message. The ''To:'' address is generally the ''Sympadomain'' alias, although it is also advisable to recognize the ''listservdomain'' address.
+
+Example:
+<code>
+  From: pda@prism.uvsq.fr
+  To: Sympa@renater.fr
+
+  LISTS
+  INFO Sympa-users
+  REVIEW Sympa-users
+  QUIT
+</code>
+
+Most user commands have three-letter abbreviations (e.g. ''REV'' instead of ''REVIEW'').
+
+======  User commands ======
+
+  * ''HELP'' \\ Provides instructions for the use of Sympa commands. The result is the content of the ''helpfile.tt2'' template file.
+  * ''INFO'' //listname// \\ Provides the parameters of the list specified (owner, subscription mode, etc.) and its description. The result is the content of ''~welcome[.mime]''.
+  * ''LISTS'' \\ Provides the names of lists managed by Sympa. This list is generated dynamically, using the ''visibility'' parameter (see [[parameters-definition#visibility|Visibility]]). The ''lists.tt2'' template defines the message returned by the ''LISTS'' command.
+  * ''REVIEW'' //listname// \\ Provides the addresses of subscribers if the run mode authorizes it. See the [[parameters-privileges#review|review parameter]] for the configuration file of each list, which controls read authorizations for the subscriber list. Since subscriber addresses can be abused by spammers, it is strongly recommended that you **only authorize owners to access the subscriber list**.
+  * ''WHICH'' \\ Returns the list of lists to which one is subscribed, as well as the configuration of his or her subscription to each of the lists (DIGEST, NOMAIL, SUMMARY, CONCEAL).
+  * ''STATS'' //listname// \\ Provides statistics for the specified list: number of messages received, number of messages sent, megabytes received, megabytes sent. This is the contents of the ''stats'' file. \\ Access to this command is controlled through the ''review'' parameter.
+  * ''INDEX'' //listname// \\ Provides index of archives for the list specified. Access rights to this function are the same as for the ''GET'' command.
+  * ''GET'' //listname// //archive// \\ To retrieve archives for list (see above). Access rights are the same as for the ''REVIEW'' command. See the [[parameters-privileges#review|review parameter]].
+  * ''LAST'' //listname// \\ To receive the last message distributed in a list (see above). Access rights are the same as for the ''GET'' command.
+  * ''SUBSCRIBE'' //listname firstname name// \\ Requests sign-up to the specified list. The //firstname// and //name// parameters are optional. If the list is configured with a restricted subscription (see the [[parameters-privileges#subscribe|subscribe parameter]]), this command is sent to the list owner for approval.
+  * ''INVITE'' //listname user@host name// \\ Invites someone to subscribe to the list specified. The //name// parameter is optional. The command is similar to ''ADD'', but the person specified is not added to the list but invited to subscribe to it in accordance with the [[parameters-privileges#subscribe|subscribe parameter]].
+  * ''SIGNOFF'' //listname// [ //user@host// ] \\ Requests unsubscription from the specified list. ''SIGNOFF *'' means unsubscription from all lists.
+  * ''SET'' //listname// ''DIGEST'' \\ Puts the subscriber in //digest// mode for the //listname// list. Instead of receiving email from the list in a normal manner, the subscriber will periodically receive it in a digest. This digest compiles a group of messages from the list, using multipart/digest mime format. The sending period for these digests is regulated by the list owner using the [[parameters-sending#digest|digest parameter]]. See the [[sympa-commands#set_mail|SET LISTNAME MAIL command]] and the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''SUMMARY'' \\ Puts the subscriber in ''summary'' mode for the //listname// list. Instead of receiving email from the list in a normal manner, the subscriber will periodically receive the list of messages. This mode is very close to the DIGEST reception mode, but the subscriber only receives the list of messages. This option is available only if the digest mode is set.
+  * ''SET'' //listname// ''NOMAIL'' \\ Puts subscriber in ''nomail'' mode for the //listname// list. This mode is used when a subscriber no longer wants to receive email from the list, but nevertheless wishes to retain the possibility of posting to the list. This mode therefore prevents the subscriber from unsubscribing and subscribing later on. See the [[sympa-commands#set_mail|SET LISTNAME MAIL command]] and the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''TXT'' \\ Puts subscriber in ''txt'' mode for the //listname// list. This mode is used when a subscriber wishes to receive emails sent in both format, txt/html and txt/plain only, in txt/plain format. See the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''HTML'' \\ Puts subscriber in ''html'' mode for the //listname// list. This mode is used when a subscriber wishes to receive emails sent in both format, txt/html and txt/plain only, in txt/html format. See the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''URLIZE'' \\ Puts subscriber in ''urlize'' mode for the //listname// list. This mode is used when a subscriber wishes not to receive attached files. The attached files are replaced by a URL leading to the file stored on the list site. See the [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''NOT_ME'' \\ Puts subscriber in ''not_me'' mode for the //listname// list. This mode is used when a subscriber wishes not to receive back the message that he/she has sent to the list. See [[list-definition#subscribers_file|reception parameter]].
+  * ''SET'' //listname// ''MAIL'' \\ Puts the subscriber in ''normal'' mode (default) for the //listname// list. This option is mainly used to cancel the ''nomail'', ''summary'' or ''digest'' modes. If the subscriber was in ''nomail'' mode, he or she will receive email from the list in a normal manner again. See the [[sympa-commands#set_nomail|SET LISTNAME NOMAIL command]] and the [[list-definition#subscribers_file|reception parameter]]. Moreover, this mode allows message topic subscription (see [[reception-mode#message_topics|Message topics]]).
+  * ''SET'' //listname// ''CONCEAL'' \\ Puts the subscriber in ''conceal'' mode for the //listname// list. The subscriber will then become invisible during ''REVIEW'' on this list. Only owners will see the whole subscriber list. See the [[sympa-commands#set_noconceal|SET LISTNAME NOCONCEAL command]] and the [[parameters-definition#visibility|Visibility parameter]].
+  * ''SET'' //listname// ''NOCONCEAL'' \\ Puts the subscriber in ''noconceal'' mode (default) for the //listname// list. The subscriber will then become visible during ''REVIEW'' of this list. The ''conceal'' mode is therefore cancelled. See the [[sympa-commands#set_conceal|SET LISTNAME CONCEAL command]] and the [[parameters-definition#visibility|Visibility parameter]].
+  * ''QUIT'' \\ Ends acceptance of commands. This can be useful when the message contains additional lines, as for example in the case where a signature is automatically added by the user's email program (MUA).
+  * ''CONFIRM'' //key// \\ If the ''send'' parameter of a list is set to ''privatekey'', ''publickey'' or ''privateorpublickey'', messages are only distributed in the list after an authentication phase by return mail, using a one-time password (numeric key). For this authentication, the sender of the message is requested to post the ''CONFIRM'' //key// command to Sympa.
+  * ''QUIET'' \\ This command is used for silent (mute) processing: no performance report is returned for commands prefixed with ''QUIET''.
+
+======  Owner commands ======
+
+Some administrative requests are only available to list owners. They are essential for all procedures in limited access mode, and to perform requests in place of users. These comands are:
+
+  * ''ADD'' //listname user@host firstname name// \\ Add command similar to ''SUBSCRIBE''. You can avoid user notification by using the ''QUIET'' prefix (i.e.: ''QUIET ADD'').
+  * ''DELETE'' //listname user@host// \\ Delete command similar to ''SIGNOFF''. You can avoid user notification by using the ''QUIET'' prefix (i.e.: ''QUIET DELETE'').
+  * ''REMIND'' //listname// \\ ''REMIND'' is used by list owners in order to send an individual service reminder message to each subscriber. This message is made by parsing the ''remind.tt2'' file.
+  * ''REMIND *'' \\ ''REMIND *'' is used by the listmaster to send to each subscriber of any list a single message with a summary of his/her subscriptions. In this case, the message sent is built by parsing the ''global_remind.tt2'' file. For each list, Sympa tests whether the list is configured as hidden to each subscriber (parameter lparam visibility). By default, the use of this command is restricted to listmasters. Processing may take a lot of time!
+
+These commands can be prefixed with ''QUIET'' to indicate processing without acknowledgment of receipt.
+
+====== Moderator commands ======
+
+If a list is moderated, Sympa only distributes messages enabled by one of its moderators (editors). Moderators have several methods for enabling message distribution, depending on the [[parameters-sending#send|send parameter]].
+
+  * ''DISTRIBUTE'' //listname// //key// \\ If the ''send'' parameter of a list is set to ''editorkey'' or ''editorkeyonly'', each message queued for moderation is stored in a spool (see [[conf-parameters#queuemod|queuemod]]), and linked to a key. The moderator must use this command to enable message distribution.
+  * ''REJECT'' //listname// //key// \\ The message with the //key// key will be deleted from the moderation spool of the //listname// list.
+  * ''MODINDEX'' //listname// \\ This command returns the list of messages queued for moderation for the //listname// list. The result is presented in the form of an index, which supplies, for each message, its sending date, its sender, its size, and its associated key, as well as all messages in the form of a digest.

@@ -1,0 +1,89 @@
+====== Sympa contributors' space ======
+
+This is the part of the wiki where people willing to contribute to Sympa can find the informations they need to start working on Sympa.
+
+Anybody subscribed to the sympa-dev mailing list can edit the pages in this space. <HTML><a href="mailto:sympa@renater.fr?subject=sub%20sympa-dev">Not subscribed yet? Click here!</a>.</HTML>
+
+===== Incubator =====
+
+If you have a neat feature in mind that would improve Sympa //and that you would be willing to develop//, here is the place to go!
+
+Here, your projects will be warm and comfortable until they are ready to fly. We will grant them their own wiki page and a branch where to learn flying on our subversion tree.
+
+If you have a good idea but no clue on how to implement it, please [[https://sourcesup.renater.fr/tracker/?atid=170&group_id=23&func=browse|fill in a feature request in the Sympa tracker]]. we'll handle it as soon as possible.
+
+==== the four (possible) steps to contribute to Sympa ====
+
+Here is a suggested way to contribute to start contributing to Sympa.
+
+This is just a suggestion. If you already have done all the planning / architecture of your Sympa feature, you can go directly to the last point and request a development branch.
+
+  - [[https://sourcesup.renater.fr/tracker/?atid=170&group_id=23&func=browse|Browse the feature requests]]. Somebody could have had the same idea as you and even given it a first shot of ideas / architecture/ patches. It can be a good source of inspiration.
+  - Write to the developpers. Not only the Sympa authors, but all the people having been involved in the Sympa development; they are very nice and skilled people. They could have a lot of advices to provide. The sympa-dev list is a good way to contact them. <HTML><a href="mailto:sympa@renater.fr?subject=sub%20sympa-dev">Click here to subscribe to sympa-dev</a>.</HTML> By discussing with other people, you can narrow what the right way to implement your feature is;
+  - create your nest in this incubator. You just have to edit this page The main interest of this page is to keep clear what your feature do and to write the documentation needed. as soon as your feature go live, the documentation will be intergrated to the Sympa manual. You should clearly separate the configuration part and the description of how to use your feature.
+  - When you feel you can start coding, <HTML><a href="mailto:sympa-authors@renater.fr?subject=Please%20gimme%20a%20branch">tell us</a>.</HTML> We will create a development branch for you on our subversion repository. this is probably the quickest way to see your feature added to the main Sympa distribution.
+
+==== Birds in the nest ====
+
+Here is a list of the current projects in the incubator.
+
+  * [[:contributors:incubator:sympa_performances|Sympa performances]]. András Bendzsák is working on the performances and memory usage of Sympa.
+
+You want to add your own project? just edit this page, copy the last line of the list above and modify it to set your project name. Save the page and then click the link you created. All done!
+
+===== Help =====
+
+==== Code design tips ====
+
+We filed a set of recommendations on [[dev:contributors:developers_howto|how to properly modify the Sympa code]]. It is important to be as fair as possible to these recommendations to keep the code maintainable.
+
+==== Subversion access ====
+
+Here are the basis on which we open the subversion repositories :
+
+  - For long developments, we can create a specific branch that you can use as you wish. Using the svn merge function, you can keep your working directory up-to-date and it will be simple to integrate it into the main development trunk once it is finished.
+  - For simple functionalities and bug fixes, you can submit bug fixes to the stabilization branch.
+
+
+==== How to comment when uploading in svn server (svn commit) ====
+
+When creating a new version, the NEWS file is performed automatically using svn changes informations.This is possible if the following rules are applied when editing svn ci comments.
+
+
+
+=== general organisation ===
+
+[tag][#ticket_number][Information about the person who submit a feature request or report a bug] Description text.
+
+Where [tag] is:
+
+  * [bug] for a bug fix
+  * [feature] for a new feature
+  * [change] for changes
+  * [svn] for svn management operation such as branch creation, merge, tag etc.
+  * [release] for operations related to the preparation of the new tar.gz.
+  * [dev] pure development changes, SHOULD not be used on stable branch or trunk . In that case do_log('trace', ...) is allowed
+
+Insert a "*" in order to specify a non reversible change \\
+Example : **[*change]**
+
+Inset a "-" in order to specify a minor change that should not be listing in the NEWS file\\
+Example : **[-bug]**
+
+=== Example ===
+
+<code>
+[*change][#3917][Reported by S. Kounachenriko, no-spammers-honest.ru] It is now possible to send viagra ads with Sympa.
+</code>
+
+would appear in NEWS as:
+
+<code>
+   Changes:
+
+*****       src/sympa.pl: [#3917][Reported by S. Kounachenriko, no-spammers-honest.ru] It is now possible to send viagra ads with Sympa.
+</code>
+
+=== Application ===
+
+Changes are controled by a script on the svn server((path : **/var/www/SourceSup/svn/sympa/hooks/pre-commit** ))

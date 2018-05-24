@@ -1,0 +1,186 @@
+====== Virtual host ======
+
+Sympa is designed to manage multiple distinct mailing list servers on a single host with a single Sympa installation. Sympa virtual hosts are like Apache virtual hosting. Sympa virtual host definition includes a specific email address for the robot itself and its lists and also a virtual HTTP server. Each robot provides access to a set of lists, each list is related to only one robot.
+
+Most configuration parameters can be redefined for each robot, except for general Sympa installation parameters (binary and spool location, SMTP engine, antivirus plugin, ...).
+
+The virtual host name as defined in Sympa documentation and configuration file refers to the Internet domain of the virtual host.
+
+Note that Sympa allows you to manage 2 lists with the same name (local part) among different virtual domains. It used to be a limitation until Sympa 5.2.
+
+======  How to create a virtual host ======
+
+You do not need to install several Sympa servers. A single ''sympa.pl'' daemon and one or more fastcgi servers can serve all virtual host. Just configure the server environment in order to accept the new domain definition.
+
+  * **The DNS** must be configured to define a new mail exchanger record (MX) to route message to your server. A new host (A record) or alias (CNAME) are mandatory to define the new web server.
+  * Configure your **MTA** (sendmail, postfix, exim, ...) to accept incoming messages for the new robot domain. Add mail aliases for the robot. Examples (with sendmail):
+<code>
+    sympa@your.virtual.domain:      "| /home/sympa/bin/queue sympa@your.virtual.domain"
+    listmaster@your.virtual.domain: "| /home/sympa/bin/queue listmaster@your.virtual.domain"
+    bounce+*@your.virtual.domain:          "| /home/sympa/bin/bouncequeue sympa@your.virtual.domain"
+</code>
+
+  * Define a **virtual host in your HTTPD server**. The fastcgi servers defined in the common section of you HTTPD server can be used by each virtual host. You do not need to run dedicated fascgi server for each virtual host. Examples:
+<code>
+    FastCgiServer /home/sympa/bin/wwsympa.fcgi -processes 3 -idle-timeout 120
+    .....
+    <VirtualHost 195.215.92.16>
+      ServerAdmin webmaster@your.virtual.domain
+      DocumentRoot /var/www/your.virtual.domain
+      ServerName your.virtual.domain
+      <Location /sympa>
+         SetHandler fastcgi-script
+      </Location>
+      ScriptAlias /sympa /home/sympa/bin/wwsympa.fcgi
+      Alias /static-sympa /home/sympa/your.virtual.domain/static_content
+    </VirtualHost>
+</code>
+
+  * Create a ''/home/sympa/etc/your.virtual.domain/robot.conf'' configuration file for the virtual host. Its format is a subset of ''sympa.conf'' and is described in the next section; a sample ''robot.conf'' is provided.
+  * Create a ''/home/sympa/expl/your.virtual.domain/'' directory that will contain the virtual host mailing lists directories. This directory should have the ''sympa'' user as its owner and must have read and write access for this user.
+<code>
+    # su sympa -c 'mkdir /home/sympa/expl/your.virtual.domain'
+    # chmod 750 /home/sympa/expl/your.virtual.domain
+</code>
+
+
+
+======  robot.conf ======
+
+A robot is named by its domain, let's say ''my.domain.org'', and defined by a directory ''/home/sympa/etc/my.domain.org''. This directory must contain at least a ''robot.conf'' file. This file has the same format as ''/etc/sympa.conf'' (have a look at ''robot.conf'' in the sample dir). Only the following parameters can be redefined for a particular robot:
+
+  * ''http_host'' \\ This hostname will be compared with the ''SERVER_NAME'' environment variable in ''wwsympa.fcgi'' to determine the current Virtual Host. You can add a path at the end of this parameter if you are running multiple virtual hosts on the same host. Examples:
+<code>
+    	http_host  myhost.mydom
+    	http_host  myhost.mydom/sympa
+</code>
+  * ''host'' \\ This is the equivalent of the ''host'' ''sympa.conf'' parameter. The default for this parameter is the name of the virtual host (i.e. the name of the subdirectory);
+  * ''wwsympa_url'' \\  The base URL of //WWSympa//;
+  * ''soap_url'' \\ The base URL of Sympa's SOAP server (if it is running; see [[soap|soap]]);
+  * ''cookie_domain'';
+  * ''email'' \\ This not an email but just the local part of the Sympa email adress robot responder.
+  * ''title'';
+  * ''default_home'';
+  * ''create_list'';
+  * ''lang'';
+  * ''supported_lang'';
+  * ''log_smtp'';
+  * ''listmaster'';
+  * ''max_size'';
+  * ''css_path'';
+  * ''css_url'';
+  * ''static_content_path'';
+  * ''static_content_url'';
+  * ''pictures_feature'';
+  * ''pictures_max_size'';
+  * ''logo_html_definition'';
+  * ''color_0'', ''color_1'' ... ''color_15'';
+  * deprecated color definition: ''dark_color'', ''light_color'', ''text_color'', ''bg_color'', ''error_color'', ''selected_color'', ''shaded_color''.
+
+These settings overwrite the equivalent global parameter defined in ''/etc/sympa.conf'' for the ''my.domain.org'' robot; the main ''listmaster'' still has privileges on Virtual Robots though. The ''http_host'' parameter is compared by //WWSympa// with the ''SERVER_NAME'' environment variable to recognize which robot is in use.
+
+
+
+=====  Virtual host customization =====
+
+**Warning:** Full virtual host support in Sympa is the result of a long evolution within our source code. Consequently, in some places, this support can still retain some flaws that we urge you to report in our tracking system so they are quickly evened.
+
+
+==== Adding a logo ====
+
+You can quickly introduce a logo in the upper left corner of all pages by configuring the ''[[:manual:conf-parameters:part1#logo_html_definition|logo_html_definition]]'' parameter in the ''robot.conf'' file.
+
+
+
+==== Static content parameters ====
+
+**Foreword:** A lot of refinement is possible in the management of static content. Due to historical evolution of the Sympa organization, several parameter are likely to be used to configure it. However, you don't have to use any of these parameters, as reasonable default values exist for each of them. Consequently, **all you need to do to use static content is define the following alias in your Apache configuration:**
+
+<code>
+Alias /static-sympa {path to your sympa installation directory}/static-content
+</code>
+
+And make sure none of these parameters is set, neither in ''sympa.conf'' nor in ''robot.conf'': ''[[:manual:conf-parameters:part1#static_content_url|static_content_url]]'', ''[[:manual:conf-parameters:part1#static_content_path|static_content_path]]'', ''[[:manual:conf-parameters:part1#css_url|css_url]]'', ''[[:manual:conf-parameters:part1#css_path|css_path]]'', ''[[:manual:conf-parameters:part1#pictures_url|pictures_url]]'', ''[[:manual:conf-parameters:part1#pictures_path|pictures_path]]''.
+
+Et voilà!
+
+However, if you want to customize your configuration, you can read the following sections.
+
+----
+
+Some features can be stored as static content for Sympa. For now, only CSS and pictures are managed this way. The way these static contents are stored and accessed through the web interface is managed by several parameters.
+
+  * ''[[:manual:conf-parameters:part1#static_content_url|static_content_url]]'', ''[[:manual:conf-parameters:part1#css_url|css_url]]'', ''[[:manual:conf-parameters:part1#pictures_url|pictures_url]]'' define URL to access resources through the web.
+
+  * ''[[:manual:conf-parameters:part1#static_content_path|static_content_path]]'', ''[[:manual:conf-parameters:part1#css_path|css_path]]'', ''[[:manual:conf-parameters:part1#pictures_path|pictures_path]]'' define paths where these resources will be accessed through the file system or stored when generated by Sympa.
+
+If you want the URL to lead to the ressources Sympa generates, you must create aliases in your Apache configuration establishing a correspondence between the ''*_url'' parameters and their ''*_path'' counterpart.
+
+The ''static_content_*'' parameters are used to build default values for the corresponding ''css_*'' and ''pictures_*'' parameters when those are not defined in the configuration. For example, if ''css_path'' isn't defined, its value is set to ''static_content_path/css''.
+
+As all those parameters can be defined in ''sympa.conf'' and ''robot.conf'', it can be confusing which value your parameters will finally be set to. Generally speaking, values set in ''robot.conf'' always have precedence over those set in ''sympa.conf''.
+
+The following tables show the values taken by the static content parameters regarding which values are set in the different configuration files available. We assume the name of the virtual host is ''vhost.com''.
+
+In these tables, columns headers show the values set in ''robot.conf'' while rows headers show the values set in ''sympa.conf''. You can then read in the cell the value actually used for the parameter.
+
+=== css_url ===
+
+^sympa.conf\robot.conf^nothing^static_content_url = "a"^css_url = "a"^
+^nothing|"static-sympa/css/vhost.com"|"a/css/vhost.com"|"a"|
+^static_content_url = "b"|"b/css/vhost.com"|"a/css/vhost.com"|"a"|
+^css_url = "b"|"b"|"a/css/vhost.com"|"a"|
+
+=== css_path ===
+
+^sympa.conf\robot.conf^nothing^static_content_path = "a"^css_path = "a"^
+^nothing|"{sympa install directory}/static-content/css/vhost.com"|"a/css/vhost.com"|"a"|
+^static_content_path = "b"|"b/css/vhost.com"|"a/css/vhost.com"|"a"|
+^css_path = "b"|"b"|"a/css/vhost.com"|"a"|
+
+=== pictures_url ===
+
+^sympa.conf\robot.conf^nothing^static_content_url = "a"^pictures_url = "a"^
+^nothing|"static-sympa/pictures/"|"a/pictures/"|"a"|
+^static_content_url = "b"|"b/pictures/"|"a/pictures/"|"a"|
+^pictures_url = "b"|"b"|"a/pictures/"|"a"|
+
+Note that if you don't set ''pictures_url'' in ''robot.conf'', static pictures URL will //not// be virtual host-specific by default.
+
+=== pictures_path ===
+
+^sympa.conf\robot.conf^nothing^static_content_path = "a"^pictures_path = "a"^
+^nothing|"{sympa install directory}/static-content/pictures/"|"a/pictures/"|"a"|
+^static_content_path = "b"|"b/pictures/"|"a/pictures/"|"a"|
+^pictures_path = "b"|"b"|"a/pictures/"|"a"|
+
+Note that if you don't set ''pictures_path'' in ''robot.conf'', static pictures folder will //not// be virtual host-specific by default.
+
+
+==== CSS customization ====
+
+In order to customize the web look and feel, you may edit the CSS definition. CSS are defined in a template named ''css.tt2''.
+
+Any virtual host can use static CSS file for making Sympa web interface faster. You can later edit this static definition and change web style. If you want to use static CSS, you can either set the path to these files using the ''[[:manual:conf-parameters:part1#css_path|css_path]]'' and ''[[:manual:conf-parameters:part1#css_url|css_url]]'' parameters or just follow the Sympa defaults.
+
+=== Using css_path and css_url parameters ===
+
+  * if you define ''[[:manual:conf-parameters:part1#css_path|css_path]]'' in robot.conf, the static CSS files will be created in the corresponding folder.
+  * if you define ''[[:manual:conf-parameters:part1#css_url|css_url]]'' in robot.conf, the style sheets used will be those found by following this URL. //Note that this implies to use the style sheets located in the folder whose path is contained by ''[[:manual:conf-parameters:part1#css_path|css_path]]'' **only if** you set the relevant alias in you Apache configuration.//
+  * if you define one of these parameters in the ''sympa.conf'' file, this value will be used as default for each virtual host for which it is not set in ''robot.conf''.
+
+=== Using defaults ===
+
+See [[:manual:virtual-hosts#static_content_parameters|the static content section]] to learn how defaults are handled for static CSS parameters.
+
+==== Customizing templates and authorization scenario ====
+
+In addition, if needed, you can customize each virtual host using its set of templates and authorization scenarios.
+
+The ''/home/sympa/etc/my.domain.org/web_tt2/'', ''/home/sympa/etc/my.domain.org/mail_tt2/'' and ''/home/sympa/etc/my.domain.org/scenari/'' directories are searched when loading templates or scenarios before searching into ''/home/sympa/etc'' and ''/home/sympa/bin/etc''. This allows to define different privileges and a different GUI for a Virtual Host.
+
+======  Managing multiple virtual hosts ======
+
+If you are managing more than 2 virtual hosts, then you might consider moving all the mailing lists in the default robot to a dedicated virtual host located in the ''/home/sympa/expl/my.domain.org/'' directory. The main benefit of this organisation is the ability to define default configuration elements (templates or authorization scenarios) for this robot without inheriting them within other virtual hosts.
+
+To create such a virtual host, you need to create the ''/home/sympa/expl/my.domain.org/'' and ''/home/sympa/etc/my.domain.org/'' directories; customize the ''host'', ''http_host'' and ''wwsympa_url'' parameters in the ''/home/sympa/etc/my.domain.org/robot.conf'', with the same values as the default robot (as defined in ''sympa.conf'' and ''wwsympa.conf'' files).

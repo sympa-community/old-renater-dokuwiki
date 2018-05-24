@@ -1,0 +1,152 @@
+====== Command related ======
+
+
+===== remind_task =====
+
+(Default value: no default value)
+
+This parameter states which model is used to create a ''remind'' task. A ''remind'' task regularly sends to the subscribers a message which reminds them of their subscription to the list.
+
+Example: <code>remind_task annual</code>
+
+
+===== expire_task =====
+
+(Default value: no default value)
+
+This parameter states which model is used to create an ''expire'' task. An ''expire'' task regularly checks the subscription (or subscription renewal) date of subscribers and asks them to renew their subscription. If they do not, they are deleted.
+
+Example: <code>expire_task annual</code>
+
+===== review =====
+
+(Default value: ''owner'')
+
+The ''review'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can use the ''REVIEW'' command (see [[sympa-commands#user_commands|User commands]]), administrative requests.
+
+Predefined authorization scenarios are:
+
+  * ''review'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.closed|view]]);
+  * ''review'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.intranet|view]]);
+  * ''review'' ''listmaster'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.listmaster|view]]);
+  * ''review'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.owner|view]]);
+  * ''review'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.private|view]]);
+  * ''review'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/review.public|view]]).
+
+====== List tuning ======
+
+===== max_size =====
+
+(Default value: ''max_size robot parameter'')
+
+''max_size'' //number-of-bytes//
+
+Maximum size of a message in 8-bit bytes. The default value is set in the ''/etc/sympa.conf'' file.
+
+===== loop_prevention_regex =====
+
+(Default value: ''loop_prevention_regex sympa.conf parameter'')
+
+''loop_prevention_regex'' //mailer-daemon|sympa|listserv|majordomo|smartlist|mailman//
+
+This regular expression is applied to message sender addresses. If the sender address matches the regular expression, then the message is rejected. The goal of this parameter is to prevent loops between Sympa and other robots.
+
+===== pictures_feature =====
+
+(Default value: ''pictures_feature robot parameter'')
+
+''pictures_feature'' //on | off//
+
+This enables the feature that allows list members to upload a picture that will be shown on the review page.
+
+===== cookie =====
+
+(Default value: ''cookie robot parameter'')
+
+''cookie'' //random-numbers-or-letters//
+
+This parameter is a confidential item for generating authentication keys for administrative commands (''ADD'', ''DELETE'', etc.). This parameter should remain concealed, even for owners. The cookie is applied to all list owners, and is only taken into account when the owner has the ''auth'' parameter (see [[parameters-definition#owner|owner]]).
+
+Example: <code>cookie secret22</code>
+
+
+===== custom_vars =====
+
+(Default value: empty)
+
+You can create an unlimited number of custom parameters to be used with authorization scenarios, web and mail templates.
+
+  * ''name'': the name of the custom parameter. Can be any character string;
+  * ''value'': the value given to this custom parameter. Can be any scalar value.
+
+Example:
+
+<code>
+custom_vars
+name    sisterList
+value   math-teachers
+</code>
+
+See [[customizing#custom_parameters|this parameter usability in Sympa]].
+
+===== custom_attribute =====
+
+(Default value: empty)
+
+This parameter allows the creation of custom user attributes. These attributes values are stored in a XML fragment. See the description of the [[customizing#custom_attribute|user custom attributes functionality]].
+
+This XML fragment has the form:
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8" ?>
+  <custom_attributes>
+    <custom_attribute id="accr">
+      <value> ultra-violet</value>
+    </custom_attribute>
+    <custom_attribute id="pt">
+      <value>0</value>
+    </custom_attribute>
+  </custom_attributes>
+</code>
+
+  * ''id'': the value of the ''id'' attribute in the ''custom_attribute'' element;
+  * ''name'': the label used for this attribute in the subscription form;
+  * ''comment'': a text displayed in the subscription form to give the users any additional informations that you would find relevant about this attribute (a description of the values to fill in, for example);
+  * ''type ( string | text | integer | enum )'': the type of data this attribute contains. The subscription form will control that the data filled by the user belong to this category. ''enum'' means that the value will be selected amongst a set allowed values you must define.
+  * ''enum_values'': if ''type'' has the value ''enum'', you must specify at least one allowed value. The web subscription form will contain a selection list with the values you specified.
+  * ''optional ( required | optional )'': use "required" if this attribute must be filled by the user, "optional" if it is not mandatory.
+
+
+=====  priority =====
+
+(Default value: ''default_list_priority robot parameter'')
+
+''priority'' //0-9//
+
+The priority with which Sympa will process messages for this list. This level of priority is applied while the message is going through the spool.
+
+0 is the highest priority. The following priorities can be used: ''0...9 z''. ''z'' is a special priority causing messages to remain spooled indefinitely (useful to hang up a list).
+
+Available since release 2.3.1.
+
+
+
+====== Spam protection ======
+
+===== spam_protection =====
+
+(Default value: ''javascript'')
+
+There is a need to protect the Sympa website against spambot which collect email addresses in public websites. Various methods are available into Sympa and you can choose from the ''spam_protection'' and ''web_archive_spam_protection'' parameters. Possible value are:
+
+  * ''javascript'': the address is hidden using a Javascript. Users who enable Javascript can see nice mailto addresses where others have nothing.
+  * ''at'': the '@' char is replaced by the string 'AT'.
+  * ''none'': no protection against spammers.
+
+===== web_archive_spam_protection =====
+
+(Default value: ''javascript'')
+
+The same as ''spam_protection'', but restricted to the web archive. An additional value is available: ''cookie'', which means that users must submit a small form in order to receive a cookie before browsing the archive. This blocks all robots, even those from search engines.

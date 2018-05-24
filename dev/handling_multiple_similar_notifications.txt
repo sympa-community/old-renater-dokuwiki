@@ -1,0 +1,48 @@
+====== Handling multiple similar notifications ======
+
+
+We are willing to address limitations of the way Sympa sends notifications to listmasters ; below is a summary of the problems and some tracks to make things better. Please participate to this discussion if you have brilliant ideas on this topic.
+
+Sympa processes sends notifications to listmasters whenever a problem occurs, which is a useful feature. However, in some situations, it may send too many notification emails for a given/related problem. A couple of such examples :
+
+  - an include datasource is not available while the task manager performs a sync_include, therefore the task fails, 
+    - the listmaster is notified, 
+    - the task is removed from the task spool, 
+    - 1 minute later the task is recreated and run again d) the listmaster receives many notifications of the same kind
+  - 1000 lists are belonging to the same list family and therefore a buggy list template generates 1000 buggy lists. The listmaster/owner receives a notification about the error_config status of these lists whenever the list is used.
+  - Sympa's DB is unavailable during the night ; the listmaster receives 1000 notification messages entitled "Can't connect to database" and a single one entitled "connection restored"
+  - wwsympa process crashes (fatal_err), a notification is sent to the listmaster before the process dies. But Apache restarts the process
+
+The following solutions may be considered :
+
+===== Keep track of the notification events =====
+
+A new DB table with notificationId+listId+receipient+date. If a notice was sent to a recepient, it should not be sent again during the next N minutes.
+Advantage :
+
+   * it globally addresses the issues abount notifications.
+
+Drawbacks :
+
+   * it requires a management of this new DB table ;    * difficulty to tune the behavior regarding the delay (N), it might
+     require a different parameter for each notification ;
+   * if the notification concerns multiple lists, it might be desirable
+     to send a notification per list.
+
+===== Keep track of list status =====
+
+Sympa could keep track of the status that lead to send the notification, thus allowing to send only 2 notifications.
+Drawback:
+
+   * status can be stored in the list config if it refers to a list but
+     where otherwise ;
+   * the management of these status means coupling them with
+     notifications ;
+   * it does not solve the problem of notifications about multiple lists
+
+===== Bulk notifications =====
+
+Instead of sending an immediate notification, prepare notification messages instead ; this way a listmaster would receive a bulk notification with a set of error messages in it.
+Drawback:
+
+   * how can we trigger to sending of the bulk notification?

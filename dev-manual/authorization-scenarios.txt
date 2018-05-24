@@ -1,0 +1,445 @@
+====== Authorization scenarios ======
+
+An authorization scenario is a small configuration language to describe who can perform an operation and which authentication method is requested for it. An authorization scenario is an ordered set of rules. The goal is to provide a simple and flexible way to configure authorization and required authentication method for each operation.
+
+The function to evaluate scenario is described in section [[:internals|internals]].
+
+===== Location of scenario file =====
+
+List parameters controlling the behavior of commands are linked to different authorization scenarios. For example: the ''send private'' parameter is related to the ''send.private'' scenario. There are four possible locations for an authorization scenario. When Sympa seeks to apply an authorization scenario, it first looks in the related list directory ''/home/sympa/expl/<list>/scenari''. If it does not find the file there, it scans the current robot configuration directory ''/home/sympa/etc/my.domain.org/scenari'', then the site's configuration directory ''/home/sympa/etc/scenari'', and finally ''/home/sympa/bin/etc/scenari'', which is the directory installed by the Makefile.
+
+When customizing scenario for your own site, robot or list, don't modify .../sympa/bin/scenari content or next Sympa update will overwrite it (you must never modify anything in .../sympa/bin/ unless your are patching Sympa). You can modify Sympa behavior if you create new scenario which name is the same as one of the scenario included in the distribution but with a location related to target site, robot or list. You can also add a new scenario ; it will automatically add an accepted value for the related parameter.
+
+<note warning>
+When modifying a existing scenario you need to restart Sympa or touch list config file before Sympa use it. 
+</note>
+
+
+====== Scenario structure ======
+
+Basically, a scenario file is composed of a title on the first line and a set of rules on the following lines.
+
+===== Scenario title =====
+
+The first line of a scenario file can contain its title. This is the text that will later appear in the drop-down menu of your administration web interface. This title can be just plain text:
+
+<code>Restricted to subscribers</code>
+
+It can also be set to be internationalized:
+
+<code>title.gettext Restricted to subscribers</code>
+
+That way, the character string following ''title.gettext'' can be handled by Sympa internationalization process.
+
+===== Rules overview =====
+
+Each authorization scenario rule contains:
+
+  * **a condition**: the condition is evaluated by Sympa. It can use variables such as ''sender'' for the sender's email, ''list'' for the list name, etc.
+  * **an authentication method**. The authentication method can be ''smtp'', ''md5'' or ''smime''. The rule is applied by Sympa if both the condition and authentication method match the runtime context.
+    * ''smtp'' is used if Sympa uses the SMTP ''From:'' header ,
+    * ''md5'' is used if a unique MD5 key as been returned by the requestor to validate the message,
+    * ''smime'' is used for signed messages (see [[x509#configuration_to_recognize_smime_signatures|configuration to recognize S/MIME signatures]]);
+
+  * **a returned atomic action** that will be executed by Sympa if the rule matches.
+
+Example:
+
+<code>
+  del.auth
+
+  title.us deletion performed only by list owners, need authentication
+  title.fr suppression r\'eserv\'ee au propri\'etaire avec authentification
+  title.es eliminacin reservada slo para el propietario, necesita autentificacin
+
+    is_owner([listname],[sender])  smtp       -> request_auth
+    is_listmaster([sender])        smtp       -> request_auth
+    true()                         md5,smime  -> do_it
+</code>
+
+
+
+===== Rules definition =====
+
+An authorization scenario consists of rules, evaluated in order beginning with the first.
+
+==== Conditions ====
+
+''custom_vars'' allows you to introduce [[customizing#custom_parameters|custom parameters]] in your scenario.
+
+''verify_netmask'' allows the user to configure their local network to only be accessible to those that are memebers of it. For more information refer to [[/faq/tips_and_howto|intranet restrictions]]
+
+''perl_regexp'' can contain the string [host] (interpreted at run time as the list or robot domain). The variable notation ''<nowiki>[msg_header-><smtp_key_word>]</nowiki>'' is interpreted as the SMTP header value only when evaluating the authorization scenario for sending messages. It can be used, for example, to require editor validation for multipart messages. ''<nowiki>[msg_part->type]</nowiki>'' and ''<nowiki>[msg_part->body]</nowiki>'' are the MIME part content-types and bodies; the body is available for MIME parts in text/xxx format only.
+
+Refer to [[customizing#tasks|Tasks]] for date format definition
+
+A bunch of authorization scenarios are provided with the Sympa distribution; they provide a large set of configuration that allows the creation of lists for most purposes. But you will probably create authorization scenarios for your own needs. In this case, do not forget to restart Sympa and //WWSympa//, because authorization scenarios are not reloaded dynamically.
+
+These standard authorization scenarios are located in the ''/home/sympa/bin/etc/scenari/'' directory. Default scenarios are named ''<command>.default''.
+
+You may also define and name your own authorization scenarios. Store them in the ''/home/sympa/etc/scenari'' directory. They will not be overwritten by newer Sympa releases. Scenarios can also be defined for a particular virtual host (using directory ''/home/sympa/etc/<robot>/scenari'') or for a list (''/home/sympa/expl/<robot>/<list>/scenari'' ). **Sympa will not dynamically detect that a list configuration should be reloaded after a scenario has been changed on disk.**
+
+Example: copy the previous scenario to ''scenari/subscribe.rennes1'':
+
+<code>
+  equal([sender], 'userxxx@univ-rennes1.fr') smtp,smime -> reject
+  match([sender], /univ-rennes1\.fr$/) smtp,smime -> do_it
+  true()                               smtp,smime -> owner
+</code>
+
+You may now refer to this authorization scenario in any list configuration file, for example:
+<code>
+  subscribe rennes1
+</code>
+
+==== Authentification methods ====
+
+Yous can specify three different authentication methods to base your rules on: ''smtp'', ''smime'' and ''md5''.
+
+**these methods take a different meaning if you consider them in a web or mail context**.\\
+
+Indeed if you consider, for example, the scenario ''send'': it will be evaluated when people try to send a message to a list.
+
+  * If the message is sent through the web interface, Sympa will verify the identity of the sender based on its web authentication informations (login/password, certificate, etc.)
+  * If it is sent by the mail client, the authentication is based on whatever authentication method the user's email client associated with the SMTP message (S/MIME signature, From field, etc.).
+
+//But the same scenario file will be used in both cases.// That means that the same authentication method will be used, whichever context we're in. It is consequently important to understand what interpretation to give to each authentication method according to the context.
+
+Here is a description of what is evaluated to authenticate the user depending of the context: web or mail.
+
+^  Method  ^  Mail context  ^  Web context  ^
+|  ''smtp''  |  the "From:" field of the message  |  //Nothing - unused in web context//  |
+|  ''smime''  |  the S/MIME X509 signature of the email  |  An X509 certificate installed in the user's browser  |
+|  ''md5''  |  the MD5 hash in the subject of the message  |  the authentication informations provided to Sympa (login/password)  |
+
+Note that ''md5'' will be used, in a mail context, when users answer to an authentication request, or when editors moderate a message by replying to a moderation request mail.
+
+In most cases, ''smtp'' will be used for mails, and ''md5'' for the web.
+
+==== Actions ====
+
+The difference between ''editor'' and ''editorkey'' is that, with ''editor'', the message is simply forwarded to moderators, who can then forward it to the list if they like. ''editorkey'' assigns a key to the message and sends it to moderators together with the message. So moderators can just send back the key to distribute the message. Please note that moderation from the web interface is only possible when using ''editorkey'', because otherwise there is no copy of the message saved on the server.
+
+The ''quiet'' can be part of the scenario action result. When using this option, no notification is sent to the message sender. For example, if a scenario rule is applied and result in  ''editorkey,quiet'' the sender of the message will not receive the automatic information message telling him that his message has been forwarded to the list editor. This is an important issue to prevent //backscatter// messages. backscatter messages are messages you receive as an automatic answer to a message you never sent. The following web page give you more details :
+  *[[http://www.spamresource.com/2007/02/backscatter-what-is-it-how-do-i-stop-it.html]]
+  *[[http://en.wikipedia.org/wiki/Backscatter]]
+Sympa version 5.5 and later of Sympa provide a better mechanism to prevent backscatter. See [[https://www.sympa.org/dev-manual/antispam]]
+
+
+==== Formal specification of the rules ====
+
+Rules are defined as follows:
+
+<code>
+  <rule> ::= <condition> <auth_list> -> <action>
+
+  <condition> ::= [!] <condition
+                  | true ()
+                  | equal (<var>, <var>)
+                  | match (<var>, /perl_regexp/)
+  		| search (<named_filter_file>)
+                  | is_subscriber (<listname>, <var>)
+                  | is_owner (<listname>, <var>)
+                  | is_editor (<listname>, <var>)
+                  | is_listmaster (<var>)
+                  | older (<date>, <date>)    # true if first date is anterior to the second date
+                  | newer (<date>, <date>)    # true if first date is posterior to the second date
+                  | CustomCondition::<package_name> (<var>*)
+                  | verify_netmask (<netmask>)
+
+  <var> ::= [email] | [sender] | [user-><user_key_word>] | [previous_email]
+                    | [env->remote_host] | [env->remote_addr] | [user_attributes-><user_attributes_keyword>]
+  	 	  | [subscriber-><subscriber_key_word>] | [list-><list_key_word>] | [env-><env_var>]
+  		  | [conf-><conf_key_word>] | [msg_header-><smtp_key_word>] | [msg_body]
+  	 	  | [msg_part->type] | [msg_part->body] | [msg_encrypted] | [is_bcc] | [current_date]
+  		  | [topic-auto] | [topic-sender,] | [topic-editor] | [topic] | [topic-needed]
+  		  | [custom_vars-><custom_var_name>] | <string>
+
+  [is_bcc] ::= set to 1 if the list is neither in To: nor Cc:
+
+  [sender] ::= email address of the current user (used on web or mail interface). Default value is 'nobody'
+
+  [previous_email] ::= old email when changing subscription email in preference page.
+
+  [msg_encrypted] ::= set to 'smime' if the message was S/MIME encrypted
+
+  [topic-auto] ::= topic of the message if it has been automatically tagged
+
+  [topic-sender] ::= topic of the message if it has been tagged by sender
+
+  [topic-editor] ::= topic of the message if it has been tagged by editor
+
+  [topic]  ::= topic of the message (this variable has a value if any of the previous [topic-*] variable has a value.
+
+  [topic-needed] ::= the message has not got any topic and message topic are required for the list
+
+  /perl_regexp/ ::= a perl regular expression. Don't forget to escape special characters (^, $, \{, \(, ...)
+  Check [[http://perldoc.perl.org/perlre.html]] for regular expression syntax.
+
+  <date> ::= '<date_element> [ +|- <date_element>]'
+
+  <date_element> ::= <epoch_date> | <var> | <date_expr>
+
+  <epoch_date> ::= <integer>
+
+  <date_expr> ::= <integer>y<integer>m<integer>d<integer>h<integer>min<integer>sec
+
+  <custom_var_name> ::= name of the custom parameter you want to use.
+
+  <listname> ::= [listname] | <listname_string>
+
+  <auth_list> ::= <auth>,<auth_list> | <auth>
+
+  <auth> ::= smtp|md5|smime
+
+  <action> ::=   do_it [,notify]
+               | do_it [,quiet]
+  	     | reject(reason=<reason_key>) [,quiet]
+  	     | reject(tt2=<tpl_name>) [,quiet]
+               | request_auth
+               | owner
+  	     | editor
+  	     | editorkey[,quiet]
+  	     | listmaster
+
+  <reason_key> ::= match a key in mail_tt2/authorization_reject.tt2 template corresponding to
+                   an information message about the reason of the reject of the user
+
+  notify ::= sends a notification to list owner
+
+  <tpl_name> ::= corresponding template (<tpl_name>.tt2) is send to the sender
+
+  <user_key_word> ::= email | gecos | lang | password | cookie_delay_user
+  	            | <additional_user_fields>
+
+  <user_attributes_key_word> ::= one of the user attributes provided by the SSO system via environment variables. The [user_attributes] structure is available only if user authenticated with a generic_sso.
+
+  <subscriber_key_word> ::= email | gecos | bounce | reception
+  	                  | visibility | date | update_date
+  			  | <additional_subscriber_fields>
+
+  <list_key_word> ::= name | host | lang | max_size | priority | reply_to |
+  		    status | subject | account | total
+
+  <conf_key_word> ::= domain | email | listmaster | default_list_priority |
+  		      sympa_priority | request_priority | lang | max_size
+
+  <named_filter_file> ::= filename ending with .ldap , .sql or .txt
+
+  <netmask> ::= ip address + CIDR value which constitute a netmask 
+
+  <package_name> ::= name of a perl package in /etc/custom_conditions/ (small letters)
+</code>
+
+(Refer to [[customizing#tasks|Tasks]] for date format definition)
+
+The function to evaluate scenario is described in section [[:internals|internals]].
+
+''custom_vars'' allows you to introduce [[customizing#custom_parameters|custom parameters]] in your scenario.
+
+''perl_regexp'' can contain the string [host] (interpreted at run time as the list or robot domain). The variable notation ''<nowiki>[msg_header-><smtp_key_word>]</nowiki>'' is interpreted as the SMTP header value only when evaluating the authorization scenario for sending messages. It can be used, for example, to require editor validation for multipart messages. ''<nowiki>[msg_part->type]</nowiki>'' and ''<nowiki>[msg_part->body]</nowiki>'' are the MIME part content-types and bodies; the body is available for MIME parts in text/xxx format only.
+
+The difference between ''editor'' and ''editorkey'' is that, with ''editor'', the message is simply forwarded to moderators, who can then forward it to the list if they like. ''editorkey'' assigns a key to the message and sends it to moderators together with the message. So moderators can just send back the key to distribute the message. Please note that moderation from the web interface is only possible when using ''editorkey'', because otherwise there is no copy of the message saved on the server.
+
+The ''quiet'' can be part of the scenario action result. When using this option, no notification is sent to the message sender. For example, if a scenario rule is applied and result in  ''editorkey,quiet'' the sender of teh message will not receive the automatic information message telling hilm that his message has been forwarded to the list editor. This is an important issue to prevent //backscatter// messages. backscatter messages are messages you receive as an automatic answer to a message you never sent. The following web page give you more details :
+  *[[http://www.spamresource.com/2007/02/backscatter-what-is-it-how-do-i-stop-it.html]]
+  *[[http://en.wikipedia.org/wiki/Backscatter]]
+In order to prevent backscatter, the [[;antispam|antispam]] mechanism of Sympa can apply this option even if it was not explicitly defined in the related scenario.
+
+A bunch of authorization scenarios is provided with the Sympa distribution; they provide a large set of configuration that allow to create lists for most usages. But you will probably create authorization scenarios for your own need. In this case, do not forget to restart Sympa and //WWSympa//, because authorization scenarios are not reloaded dynamically.
+
+These standard authorization scenarios are located in the ''/home/sympa/bin/etc/scenari/'' directory. Default scenarios are named ''<command>.default''.
+
+You may also define and name your own authorization scenarios. Store them in the ''/home/sympa/etc/scenari'' directory. They will not be overwritten by newer Sympa releases. Scenarios can also be defined for a particular virtual host (using directory ''/home/sympa/etc/<robot>/scenari'') or for a list (''/home/sympa/expl/<robot>/<list>/scenari'' ). **Sympa will not dynamically detect that a list configuration should be reloaded after a scenario has been changed on disk.**
+
+Example: copy the previous scenario to ''scenari/subscribe.rennes1'':
+
+<code>
+  equal([sender], 'userxxx@univ-rennes1.fr') smtp,smime -> reject
+  match([sender], /univ-rennes1\.fr$/) smtp,smime -> do_it
+  true()                               smtp,smime -> owner
+</code>
+
+You may now refer to this authorization scenario in any list configuration file, for example:
+<code>
+  subscribe rennes1
+</code>
+
+
+====== Named Filters ======
+
+At the moment, Named Filters are only used in authorization scenarios. They enable to select a category of people who will be authorized or not to realize some actions.
+
+As a consequence, you can grant privileges in a list to people belonging to an LDAP directory, an SQL database or a flat text file, thanks to an authorization scenario.
+
+Note that only a subset of variables available in the scenario context are available here (including [sender] and [listname]).
+
+
+=====  LDAP Named Filters Definition =====
+
+People are selected through an LDAP filter defined in a configuration file. This file must have the extension '.ldap'. It is stored in ''/home/sympa/etc/search_filters/''.
+
+You must give a few information in order to create a LDAP Named Filter:
+
+  * ''host'' \\ A list of host:port LDAP directories (replicates) entries.
+  * ''suffix'' \\ Defines the naming space covered by the search (optional, depending on the LDAP server).
+  * ''filter'' \\ Defines the LDAP search filter (RFC 2254 compliant). But you must absolutely take into account the first part of the filter which is: ''(mail_attribute = [sender])'', as shown in the example. You will have to replace ''mail_attribute'' by the name of the attribute for the email. Sympa checks whether the user belongs to the category of people defined in the filter.
+  * ''scope'' \\ By default, the search is performed on the whole tree below the specified base object. This may be changed by specifying a scope:
+    * ''base'': search only the base object.
+    * ''one'': search the entries immediately below the base object.
+    * ''sub'': search the whole tree below the base object. This is the default option.
+  * ''bind_dn'' \\ If anonymous bind is not allowed on the LDAP server, a DN and password can be used.
+  * ''bind_password'' \\ This password is used, combined with the ''bind_dn'' above.
+
+''example.ldap'': we want to select the teachers of mathematics in the University of Rennes 1 in France:
+<code>
+  	host		ldap.univ-rennes1.fr:389,ldap2.univ-rennes1.fr:390
+  	suffix		dc=univ-rennes1.fr,dc=fr
+  	filter		(&(canonic_mail = [sender])(EmployeeType = prof)(subject = math))
+  	scope		sub
+</code>
+
+
+=====  SQL Named Filters Definition =====
+
+People are selected through an SQL filter defined in a configuration file. This file must have the extension '.sql'. It is stored in ''/home/sympa/etc/search_filters/''.
+
+To create an SQL Named Filter, you have to configure SQL host, database and options, the same way you did it for the main Sympa database in ''sympa.conf''. Of course, you can use different database and options. Sympa will open a new Database connection to execute your statement.
+
+Please refer to section [[conf-parameters/part3#database_related|Database related]] for a detailed explanation of each parameter.
+
+Here, all database parameters have to be grouped in one ''sql_named_filter_query'' paragraph.
+
+  * ''db_type'' \\ Format: ''db_type mysql|SQLite|Pg|Oracle|Sybase''; Database management system used. Mandatory and case sensitive.
+  * ''db_host'' \\ Database host name. Mandatory.
+  * ''db_name'' \\ Name of database to query. Mandatory.
+  * ''statement'' \\ Mandatory. The SQL statement to execute to verify authorization. This statement must returns 0 to refuse the action, or anything else to grant privileges. The ''SELECT COUNT(*)...'' statement is the perfect query for this parameter. The keyword in the SQL query will be replaced by the sender's email.
+  * Optional parameters \\  Please refer to main ''sympa.conf'' section for description.
+    * ''db_user''
+    * ''db_password''
+    * ''db_options''
+    * ''db_env''
+    * ''db_port''
+    * ''db_timeout''
+
+''example.sql'': we want to select the teachers of mathematics in the University of Rennes 1 in France:
+<code>
+         sql_named_filter_query
+         db_type         mysql
+         db_name         people
+         db_host         dbserver.rennes1.fr
+         db_user         sympa
+         db_passwd       pw_sympa_mysqluser
+         statement       SELECT count(*) as c FROM users WHERE mail=[sender] AND EmployeeType='PROFESSOR' AND department='mathematics'
+</code>
+
+===== TXT Named Filters Definition =====
+
+You can have flat files (with the '.txt' file extension) that contains a static set of email addresses. The file is built as shown in the example below, each line includes an email address, the string ''*'' can be used once to mach any email address.
+
+''/home/sympa/etc/search_filters/example.txt''
+<code>
+## This is a comment
+email1@domx.fr
+email2@domy.com
+## You can use * as a regular expression
+*@univ-x.edu
+</code>
+
+This feature is used by the blacklist implicit scenario rule (see [[conf-parameters:part2#use_blacklist|Blacklist]]).
+
+=====  Search condition =====
+
+The search condition is used in authorization scenarios.
+
+The syntax of this rule is:
+<code>
+  	search(example.ldap)      smtp,smime,md5    -> do_it
+  	search(blacklist.txt)     smtp,smime,md5    -> do_it
+</code>
+
+The variable used by ''search'' is the name of the LDAP configuration file or a txt matching enumeration.
+
+Note that Sympa processes maintain a cache of processed search conditions to limit access to the LDAP directory or SQL server; each entry has a lifetime of one hour in the cache.
+
+The method of authentication does not change.
+
+
+======  Scenario inclusion ======
+
+Scenarios can also contain includes:
+<code>
+        include commonreject
+        match([sender], /cru\.fr$/)          smtp,smime -> do_it
+  	true()                               smtp,smime -> owner
+</code>
+
+In this case, Sympa applies recursively the scenario named ''include.commonreject'' before introducing the other rules. This possibility was introduced in order to facilitate the administration of common rules.
+
+======  Scenario implicit inclusion ======
+
+You can define a set of common scenario rules, used by all lists. ''include.<action>.header'' is automatically added to evaluated scenarios. Note that you will need to restart Sympa processes to force reloading of list config files.
+
+======  Blacklist implicit rule ======
+
+For each service listed in parameter ''use_blacklist'' (see [[.conf-parameters:part2#use_blacklist|use_blacklist]]), the following implicit scenario rule is added at the beginning of the scenario:
+<code>
+  search(blacklist.txt)  smtp,md5,pgp,smime -> reject,quiet
+</code>
+
+The goal is to block messages or other service requests from unwanted users. The blacklist can be defined for the robot or for the list. At the list level, the blacklist is to be managed by list owner or list editor via the web interface.
+
+======  Custom Perl package conditions ======
+
+You can use a Perl package of your own to evaluate a custom condition. It can be useful if you have very complex tasks to carry out to evaluate your condition (web services queries...). In this case, you should write a Perl module, place it in the ''CustomCondition'' namespace, with one verify function that has to return ''1'' to grant access, ''undef'' to warn of an error, or anything else to refuse the authorization.
+
+This Perl module:
+
+  * must be placed in a subdirectoy ''custom_conditions'' of the ''etc'' directory of your Sympa installation, or of a robot;
+  * its filename must be lowercase;
+  * must be placed in the ''CustomCondition'' namespace;
+  * must contain one ''verify'' static fonction;
+  * will receive all condition arguments as parameters.
+
+For example, lets write the smallest custom condition that always returns ''1''.
+
+<code>
+    /home/sympa/etc/custom_conditions/yes.pm :
+
+        #!/usr/bin/perl
+
+        package CustomCondition::yes;
+
+        use strict;
+        use Log; # optional : we log parameters
+
+        sub verify {
+          my @args = @_;
+          foreach my $arg (@args) {
+            do_log ('debug3', 'arg: ', $arg);
+          }
+          # I always say 'yes'
+          return 1;
+        }
+        ## Packages must return true.
+        1;
+</code>
+
+We can use this custom condition that way:
+
+<code>
+  CustomCondition::yes(,,)      smtp,smime,md5    -> do_it
+  true()                               smtp,smime -> reject
+</code>
+
+Note that the '',,'' are optional, but it is the way you can pass information to your package. Our ''yes.pm'' will print the values in the logs.
+
+Remember that the package name has to be lowercase, but the ''CustomCondition'' namespace is case sensitive. If your package returns ''undef'', the sender will receive an 'internal error' mail. If it returns anything else but ''1'', the sender will receive a 'forbidden' error.
+
+======  Hiding scenario files ======
+
+Because Sympa is distributed with many default scenario files, you may want to hide some of them to list owners (to make list administration menus shorter and readable). To hide a scenario file, you should create an empty file with the '':ignore'' suffix. Depending on where this file has been created, it will make it be ignored at either a global, robot or list level.
+
+Example: <code>/home/sympa/etc/my.domain.org/scenari/send.intranetorprivate:ignore</code>
+
+The ''intranetorprivate'' ''send'' scenario will be hidden (on the web admin interface), at the my.domain.org robot level only.

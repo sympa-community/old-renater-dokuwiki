@@ -1,0 +1,734 @@
+<html>
+<ul id="monmenu">
+<li class="sub hover"><a href="presentation">Presentation</a>
+<ul>  <li><a href="presentation#presentation">Presentation</a></li>
+  <li><a href="presentation#license">License</a></li>
+  <li><a href="presentation#advanced_features">Advanced features</a></li>
+  <li><a href="presentation#project_directions">Project directions</a></li>
+  <li><a href="presentation#history">History</a></li>
+  <li><a href="presentation#mailing_lists_and_support">Mailing lists and support</a></li>
+</ul>
+<li class="sub hover"><a href="organization">Organization</a>
+<ul>  <li><a href="organization#organization">Organization</a></li>
+  <li><a href="organization#programs">Programs</a></li>
+  <li><a href="organization#configuration_files">Configuration files</a></li>
+  <li><a href="organization#spools">Spools</a></li>
+  <li class="fly"><a href="organization#roles_and_privileges">Roles and privileges</a>
+<ul>
+<li><a href="organization#(super)_listmasters">(Super) listmasters</a></li>
+<li><a href="organization#(robot)_listmasters">(Robot) listmasters</a></li>
+<li><a href="organization#privileged_list_owners">Privileged list owners</a></li>
+<li><a href="organization#(basic)_list_owners">(Basic) list owners</a></li>
+<li><a href="organization#moderators_(also_called_editors)">Moderators (also called Editors)</a></li>
+<li><a href="organization#subscribers_(or_list_members)">Subscribers (or list members)</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="installing-sympa">Installing Sympa </a>
+<ul>  <li><a href="installing-sympa#installing_sympa">Installing Sympa</a></li>
+  <li><a href="installing-sympa#obtaining_sympa,_related_links">Obtaining Sympa, related links</a></li>
+  <li class="fly"><a href="installing-sympa#prerequisites">Prerequisites</a>
+<ul>
+<li><a href="installing-sympa#system_requirements">System requirements</a></li>
+<li><a href="installing-sympa#installing_perl_and_cpan_modules">Installing Perl and CPAN modules</a></li>
+<li><a href="installing-sympa#required_cpan_modules">Required CPAN modules</a></li>
+<li><a href="installing-sympa#creating_a_unix_user">Creating a UNIX user</a></li>
+<li><a href="installing-sympa#creating_the_database">Creating the database</a></li>
+
+</ul></li>
+  <li class="fly"><a href="installing-sympa#compilation_and_installation">Compilation and installation</a>
+<ul>
+<li><a href="installing-sympa#choosing_directory_locations">Choosing directory locations</a></li>
+
+</ul></li>
+  <li><a href="installing-sympa#robot_aliases">Robot aliases</a></li>
+  <li><a href="installing-sympa#web_setup">Web setup</a></li>
+  <li><a href="installing-sympa#logs">Logs</a></li>
+</ul>
+<li class="sub hover"><a href="running-sympa">Running Sympa </a>
+<ul>  <li><a href="running-sympa#sympa.pl">sympa.pl</a></li>
+  <li><a href="running-sympa#init_script">INIT script</a></li>
+  <li><a href="running-sympa#stopping_sympa_and_signals">Stopping Sympa and signals</a></li>
+</ul>
+<li class="sub hover"><a href="upgrading">Upgrading Sympa</a>
+<ul>  <li><a href="upgrading#upgrading_sympa">Upgrading Sympa</a></li>
+  <li><a href="upgrading#incompatible_changes">Incompatible changes</a></li>
+  <li><a href="upgrading#cpan_modules_update">CPAN modules update</a></li>
+  <li><a href="upgrading#database_structure_update">Database structure update</a></li>
+  <li><a href="upgrading#preserving_your_customizations">Preserving your customizations</a></li>
+  <li><a href="upgrading#running_two_sympa_versions_on_a_single_server">Running two Sympa versions on a single server</a></li>
+  <li><a href="upgrading#moving_to_another_server">Moving to another server</a></li>
+</ul>
+<li class="sub hover"><a href="mail-aliases">Mail aliases</a>
+<ul>  <li><a href="mail-aliases#mail_aliases">Mail aliases</a></li>
+  <li><a href="mail-aliases#smrsh">SMRSH</a></li>
+  <li><a href="mail-aliases#robot_aliases">Robot aliases</a></li>
+  <li><a href="mail-aliases#list_aliases">List aliases</a></li>
+  <li><a href="mail-aliases#alias_manager">Alias manager</a></li>
+  <li><a href="mail-aliases#virtual_domains">Virtual domains</a></li>
+</ul>
+<li class="sub hover"><a href="conf-parameters/index">sympa.conf parameters index</a>
+<ul>  <li><a href="conf-parameters/index#sympa.conf_parameters">sympa.conf parameters</a></li>
+</ul>
+<li class="sub hover"><a href="conf-parameters/part1">sympa.conf parameters part1</a>
+<ul>  <li><a href="conf-parameters/part1#sympa.conf_parameters">sympa.conf parameters</a></li>
+  <li class="fly"><a href="conf-parameters/part1#site_customization">Site customization</a>
+<ul>
+<li><a href="conf-parameters/part1#domain">domain</a></li>
+<li><a href="conf-parameters/part1#email">email</a></li>
+<li><a href="conf-parameters/part1#listmaster">listmaster</a></li>
+<li><a href="conf-parameters/part1#listmaster_email">listmaster_email</a></li>
+<li><a href="conf-parameters/part1#wwsympa_url">wwsympa_url</a></li>
+<li><a href="conf-parameters/part1#soap_url">soap_url</a></li>
+<li><a href="conf-parameters/part1#spam_protection">spam_protection</a></li>
+<li><a href="conf-parameters/part1#web_archive_spam_protection">web_archive_spam_protection</a></li>
+<li><a href="conf-parameters/part1#color_0,_color_1,_...,_color_15">color_0, color_1, ..., color_15</a></li>
+<li><a href="conf-parameters/part1#obsolete_color_parameters">Obsolete color parameters</a></li>
+<li><a href="conf-parameters/part1#logo_html_definition">logo_html_definition</a></li>
+<li><a href="conf-parameters/part1#main_menu_custom_button">main_menu_custom_button</a></li>
+<li><a href="conf-parameters/part1#css_path">css_path</a></li>
+<li><a href="conf-parameters/part1#css_url">css_url</a></li>
+<li><a href="conf-parameters/part1#static_content_path">static_content_path</a></li>
+<li><a href="conf-parameters/part1#static_content_url">static_content_url</a></li>
+<li><a href="conf-parameters/part1#pictures_feature">pictures_feature</a></li>
+<li><a href="conf-parameters/part1#pictures_max_size">pictures_max_size</a></li>
+<li><a href="conf-parameters/part1#cookie">cookie</a></li>
+<li><a href="conf-parameters/part1#create_list">create_list</a></li>
+<li><a href="conf-parameters/part1#automatic_list_feature">automatic_list_feature</a></li>
+<li><a href="conf-parameters/part1#automatic_list_creation">automatic_list_creation</a></li>
+<li><a href="conf-parameters/part1#automatic_list_removal">automatic_list_removal</a></li>
+<li><a href="conf-parameters/part1#global_remind">global_remind</a></li>
+<li><a href="conf-parameters/part1#allow_subscribe_if_pending">allow_subscribe_if_pending</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="conf-parameters/part2">sympa.conf parameters part2</a>
+<ul>  <li><a href="conf-parameters/part2#sympa.conf_parameters">sympa.conf parameters</a></li>
+  <li class="fly"><a href="conf-parameters/part2#directories">Directories</a>
+<ul>
+<li><a href="conf-parameters/part2#home">home</a></li>
+<li><a href="conf-parameters/part2#etc">etc</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part2#system_related">System related</a>
+<ul>
+<li><a href="conf-parameters/part2#syslog">syslog</a></li>
+<li><a href="conf-parameters/part2#log_level">log_level</a></li>
+<li><a href="conf-parameters/part2#log_module">log_module</a></li>
+<li><a href="conf-parameters/part2#log_condition">log_condition</a></li>
+<li><a href="conf-parameters/part2#log_socket_type">log_socket_type</a></li>
+<li><a href="conf-parameters/part2#pidfile">pidfile</a></li>
+<li><a href="conf-parameters/part2#pidfile_creation">pidfile_creation</a></li>
+<li><a href="conf-parameters/part2#umask">umask</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part2#antispam_related">Antispam related</a>
+<ul>
+<li><a href="conf-parameters/part2#antispam_feature">antispam_feature</a></li>
+<li><a href="conf-parameters/part2#antispam_tag_header_name">antispam_tag_header_name</a></li>
+<li><a href="conf-parameters/part2#antispam_tag_header_spam_regexp">antispam_tag_header_spam_regexp</a></li>
+<li><a href="conf-parameters/part2#antispam_tag_header_ham_regexp">antispam_tag_header_ham_regexp</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part2#sending_related">Sending related</a>
+<ul>
+<li><a href="conf-parameters/part2#distribution_mode">distribution_mode</a></li>
+<li><a href="conf-parameters/part2#maxsmtp">maxsmtp</a></li>
+<li><a href="conf-parameters/part2#log_smtp">log_smtp</a></li>
+<li><a href="conf-parameters/part2#use_blacklist">use_blacklist</a></li>
+<li><a href="conf-parameters/part2#max_size">max_size</a></li>
+<li><a href="conf-parameters/part2#misaddressed_commands">misaddressed_commands</a></li>
+<li><a href="conf-parameters/part2#misaddressed_commands_regexp">misaddressed_commands_regexp</a></li>
+<li><a href="conf-parameters/part2#nrcpt">nrcpt</a></li>
+<li><a href="conf-parameters/part2#avg">avg</a></li>
+<li><a href="conf-parameters/part2#alias_manager">alias_manager</a></li>
+<li><a href="conf-parameters/part2#sendmail">sendmail</a></li>
+<li><a href="conf-parameters/part2#sendmail_args">sendmail_args</a></li>
+<li><a href="conf-parameters/part2#sendmail_aliases">sendmail_aliases</a></li>
+<li><a href="conf-parameters/part2#rfc2369_header_fields">rfc2369_header_fields</a></li>
+<li><a href="conf-parameters/part2#remove_headers">remove_headers</a></li>
+<li><a href="conf-parameters/part2#remove_outgoing_headers">remove_outgoing_headers</a></li>
+<li><a href="conf-parameters/part2#ignore_x_no_archive_header_feature">ignore_x_no_archive_header_feature</a></li>
+<li><a href="conf-parameters/part2#anonymous_headers_fields">anonymous_headers_fields</a></li>
+<li><a href="conf-parameters/part2#list_check_smtp">list_check_smtp</a></li>
+<li><a href="conf-parameters/part2#list_check_suffixes">list_check_suffixes</a></li>
+<li><a href="conf-parameters/part2#urlize_min_size">urlize_min_size</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part2#quotas">Quotas</a>
+<ul>
+<li><a href="conf-parameters/part2#default_shared_quota">default_shared_quota</a></li>
+<li><a href="conf-parameters/part2#default_archive_quota">default_archive_quota</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part2#spool_related">Spool related</a>
+<ul>
+<li><a href="conf-parameters/part2#spool">spool</a></li>
+<li><a href="conf-parameters/part2#queue">queue</a></li>
+<li><a href="conf-parameters/part2#queuedistribute">queuedistribute</a></li>
+<li><a href="conf-parameters/part2#queuemod">queuemod</a></li>
+<li><a href="conf-parameters/part2#queuedigest">queuedigest</a></li>
+<li><a href="conf-parameters/part2#queueauth">queueauth</a></li>
+<li><a href="conf-parameters/part2#queueoutgoing">queueoutgoing</a></li>
+<li><a href="conf-parameters/part2#queuetopic">queuetopic</a></li>
+<li><a href="conf-parameters/part2#queuebounce">queuebounce</a></li>
+<li><a href="conf-parameters/part2#queuetask">queuetask</a></li>
+<li><a href="conf-parameters/part2#queueautomatic">queueautomatic</a></li>
+<li><a href="conf-parameters/part2#tmpdir">tmpdir</a></li>
+<li><a href="conf-parameters/part2#sleep">sleep</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queue">clean_delay_queue</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queueoutgoing">clean_delay_queueoutgoing</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queuebounce">clean_delay_queuebounce</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queueother">clean_delay_queueother</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queuemod">clean_delay_queuemod</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queueauth">clean_delay_queueauth</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queuesubscribe">clean_delay_queuesubscribe</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queuetopic">clean_delay_queuetopic</a></li>
+<li><a href="conf-parameters/part2#clean_delay_queueautomatic">clean_delay_queueautomatic</a></li>
+<li><a href="conf-parameters/part2#clean_delay_tmpdir">clean_delay_tmpdir</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="conf-parameters/part3">sympa.conf parameters part3</a>
+<ul>  <li><a href="conf-parameters/part3#sympa.conf_parameters">sympa.conf parameters</a></li>
+  <li class="fly"><a href="conf-parameters/part3#internationalization_related">Internationalization related</a>
+<ul>
+<li><a href="conf-parameters/part3#localedir">localedir</a></li>
+<li><a href="conf-parameters/part3#supported_lang">supported_lang</a></li>
+<li><a href="conf-parameters/part3#lang">lang</a></li>
+<li><a href="conf-parameters/part3#web_recode_to">web_recode_to</a></li>
+<li><a href="conf-parameters/part3#filesystem_encoding">filesystem_encoding</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part3#bounce_related">Bounce related</a>
+<ul>
+<li><a href="conf-parameters/part3#verp_rate">verp_rate</a></li>
+<li><a href="conf-parameters/part3#welcome_return_path">welcome_return_path</a></li>
+<li><a href="conf-parameters/part3#remind_return_path">remind_return_path</a></li>
+<li><a href="conf-parameters/part3#return_path_suffix">return_path_suffix</a></li>
+<li><a href="conf-parameters/part3#expire_bounce_task">expire_bounce_task</a></li>
+<li><a href="conf-parameters/part3#purge_orphan_bounces_task">purge_orphan_bounces_task</a></li>
+<li><a href="conf-parameters/part3#eval_bouncers_task">eval_bouncers_task</a></li>
+<li><a href="conf-parameters/part3#process_bouncers_task">process_bouncers_task</a></li>
+<li><a href="conf-parameters/part3#minimum_bouncing_count">minimum_bouncing_count</a></li>
+<li><a href="conf-parameters/part3#minimum_bouncing_period">minimum_bouncing_period</a></li>
+<li><a href="conf-parameters/part3#bounce_delay">bounce_delay</a></li>
+<li><a href="conf-parameters/part3#default_bounce_level1_rate">default_bounce_level1_rate</a></li>
+<li><a href="conf-parameters/part3#default_bounce_level2_rate">default_bounce_level2_rate</a></li>
+<li><a href="conf-parameters/part3#bounce_email_prefix">bounce_email_prefix</a></li>
+<li><a href="conf-parameters/part3#bounce_warn_rate">bounce_warn_rate</a></li>
+<li><a href="conf-parameters/part3#bounce_halt_rate">bounce_halt_rate</a></li>
+<li><a href="conf-parameters/part3#default_remind_task">default_remind_task</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part3#tuning">Tuning</a>
+<ul>
+<li><a href="conf-parameters/part3#cache_list_config">cache_list_config</a></li>
+<li><a href="conf-parameters/part3#lock_method">lock_method</a></li>
+<li><a href="conf-parameters/part3#sympa_priority">sympa_priority</a></li>
+<li><a href="conf-parameters/part3#request_priority">request_priority</a></li>
+<li><a href="conf-parameters/part3#owner_priority">owner_priority</a></li>
+<li><a href="conf-parameters/part3#default_list_priority">default_list_priority</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part3#database_related">Database related</a>
+<ul>
+<li><a href="conf-parameters/part3#update_db_field_types">update_db_field_types</a></li>
+<li><a href="conf-parameters/part3#db_type">db_type</a></li>
+<li><a href="conf-parameters/part3#db_name">db_name</a></li>
+<li><a href="conf-parameters/part3#db_host">db_host</a></li>
+<li><a href="conf-parameters/part3#db_port">db_port</a></li>
+<li><a href="conf-parameters/part3#db_user">db_user</a></li>
+<li><a href="conf-parameters/part3#db_passwd">db_passwd</a></li>
+<li><a href="conf-parameters/part3#db_timeout">db_timeout</a></li>
+<li><a href="conf-parameters/part3#db_options">db_options</a></li>
+<li><a href="conf-parameters/part3#db_env">db_env</a></li>
+<li><a href="conf-parameters/part3#db_additional_subscriber_fields">db_additional_subscriber_fields</a></li>
+<li><a href="conf-parameters/part3#db_additional_user_fields">db_additional_user_fields</a></li>
+<li><a href="conf-parameters/part3#purge_user_table_task">purge_user_table_task</a></li>
+<li><a href="conf-parameters/part3#purge_logs_table_task">purge_logs_table_task</a></li>
+<li><a href="conf-parameters/part3#logs_expiration_period">logs_expiration_period</a></li>
+<li><a href="conf-parameters/part3#purge_session_table_task">purge_session_table_task</a></li>
+<li><a href="conf-parameters/part3#session_table_ttl">session_table_ttl</a></li>
+<li><a href="conf-parameters/part3#purge_chalenge_table_task">purge_chalenge_table_task</a></li>
+<li><a href="conf-parameters/part3#chalenge_table_ttl">chalenge_table_ttl</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part3#loop_prevention">Loop prevention</a>
+<ul>
+<li><a href="conf-parameters/part3#loop_command_max">loop_command_max</a></li>
+<li><a href="conf-parameters/part3#loop_command_sampling_delay">loop_command_sampling_delay</a></li>
+<li><a href="conf-parameters/part3#loop_command_decrease_factor">loop_command_decrease_factor</a></li>
+<li><a href="conf-parameters/part3#loop_prevention_regex">loop_prevention_regex</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part3#s/mime_configuration">S/MIME configuration</a>
+<ul>
+<li><a href="conf-parameters/part3#openssl">openssl</a></li>
+<li><a href="conf-parameters/part3#capath">capath</a></li>
+<li><a href="conf-parameters/part3#cafile">cafile</a></li>
+<li><a href="conf-parameters/part3#key_passwd">key_passwd</a></li>
+
+</ul></li>
+  <li class="fly"><a href="conf-parameters/part3#antivirus_plug-in">Antivirus plug-in</a>
+<ul>
+<li><a href="conf-parameters/part3#antivirus_path">antivirus_path</a></li>
+<li><a href="conf-parameters/part3#antivirus_args">antivirus_args</a></li>
+<li><a href="conf-parameters/part3#antivirus_notify">antivirus_notify</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="database">Sympa and its database</a>
+<ul>  <li><a href="database#sympa_and_its_database">Sympa and its database</a></li>
+  <li><a href="database#prerequisites">Prerequisites</a></li>
+  <li><a href="database#installing_perl_modules">Installing PERL modules</a></li>
+  <li class="fly"><a href="database#creating_a_sympa_database">Creating a Sympa DataBase</a>
+<ul>
+<li><a href="database#database_structure">Database structure</a></li>
+<li><a href="database#database_automatic_creation_and_update">Database automatic creation and update</a></li>
+<li><a href="database#database_manual_creation">Database manual creation</a></li>
+
+</ul></li>
+  <li><a href="database#setting_database_privileges">Setting database privileges</a></li>
+  <li class="fly"><a href="database#importing_subscriber_data">Importing subscriber data</a>
+<ul>
+<li><a href="database#importing_data_from_a_text_file">Importing data from a text file</a></li>
+<li><a href="database#importing_data_from_subscribers_files">Importing data from subscribers files</a></li>
+
+</ul></li>
+  <li><a href="database#management_of_the_include_cache">Management of the include cache</a></li>
+  <li><a href="database#extending_database_table_format">Extending database table format</a></li>
+  <li><a href="database#sympa_logs_in_the_database">Sympa logs in the database</a></li>
+  <li><a href="database#sympa_configuration">Sympa configuration</a></li>
+</ul>
+<li class="sub hover"><a href="web-interface">WWSympa, Sympa's web interface</a>
+<ul>  <li><a href="web-interface#wwsympa,_sympa's_web_interface">WWSympa, Sympa's web interface</a></li>
+  <li><a href="web-interface#organization">Organization</a></li>
+  <li class="fly"><a href="web-interface#web_server_setup">Web server setup</a>
+<ul>
+<li><a href="web-interface#wwsympa.fcgi_access_permissions">wwsympa.fcgi access permissions</a></li>
+<li><a href="web-interface#installing_wwsympa.fcgi_in_your_apache_server">Installing wwsympa.fcgi in your Apache server</a></li>
+<li><a href="web-interface#installing_wwsympa.fcgi_in_nginx">Installing wwsympa.fcgi in nginx</a></li>
+<li><a href="web-interface#installing_wwsympa.fcgi_in_lighttpd">Installing wwsympa.fcgi in lighttpd</a></li>
+<li><a href="web-interface#using_fastcgi">Using FastCGI</a></li>
+
+</ul></li>
+  <li class="fly"><a href="web-interface#wwsympa.conf_parameters">wwsympa.conf parameters</a>
+<ul>
+<li><a href="web-interface#arc_path">arc_path</a></li>
+<li><a href="web-interface#archive_default_index_thrd_-_mail">archive_default_index thrd - mail</a></li>
+<li><a href="web-interface#archived_pidfile">archived_pidfile</a></li>
+<li><a href="web-interface#bounce_path">bounce_path</a></li>
+<li><a href="web-interface#bounced_pidfile">bounced_pidfile</a></li>
+<li><a href="web-interface#cookie_expire">cookie_expire</a></li>
+<li><a href="web-interface#cookie_domain">cookie_domain</a></li>
+<li><a href="web-interface#custom_archiver">custom_archiver</a></li>
+<li><a href="web-interface#default_home">default_home</a></li>
+<li><a href="web-interface#icons_url">icons_url</a></li>
+<li><a href="web-interface#log_facility">log_facility</a></li>
+<li><a href="web-interface#mhonarc">mhonarc</a></li>
+<li><a href="web-interface#htmlarea_url">htmlarea_url</a></li>
+<li><a href="web-interface#password_case_sensitive_|_insensitive">password_case sensitive | insensitive</a></li>
+<li><a href="web-interface#title">title</a></li>
+<li><a href="web-interface#use_fast_cgi_0|1">use_fast_cgi 0|1</a></li>
+
+</ul></li>
+  <li><a href="web-interface#database_configuration">Database configuration</a></li>
+  <li><a href="web-interface#logging_in_as_listmaster">Logging in as listmaster</a></li>
+</ul>
+<li class="sub hover"><a href="web-archives">Web archives</a>
+<ul>  <li class="fly"><a href="web-archives#web_archive">Web archive</a>
+<ul>
+<li><a href="web-archives#features">Features</a></li>
+<li><a href="web-archives#mhonarc_tool">MHonArc tool</a></li>
+<li><a href="web-archives#archives_structure">Archives structure</a></li>
+<li><a href="web-archives#configuration_parameters">Configuration parameters</a></li>
+<li><a href="web-archives#archived.pl_daemon">Archived.pl daemon</a></li>
+<li><a href="web-archives#rebuilding_web_archive">Rebuilding web archive</a></li>
+<li><a href="web-archives#importing_archives">Importing archives</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="internationalization">Sympa Internationalization</a>
+<ul>  <li><a href="internationalization#sympa_internationalization">Sympa Internationalization</a></li>
+  <li><a href="internationalization#catalogs_and_templates">Catalogs and templates</a></li>
+  <li><a href="internationalization#translating_sympa_into_your_language">Translating Sympa into your language</a></li>
+  <li><a href="internationalization#defining_language-specific_templates">Defining language-specific templates</a></li>
+  <li><a href="internationalization#translating_topics_titles">Translating topics titles</a></li>
+  <li><a href="internationalization#handling_of_charsets">Handling of charsets</a></li>
+</ul>
+<li class="sub hover"><a href="rss">Sympa RSS channel</a>
+<ul>  <li><a href="rss#sympa_rss_channel">Sympa RSS channel</a></li>
+  <li><a href="rss#latest_lists">latest_lists</a></li>
+  <li><a href="rss#active_lists">active_lists</a></li>
+  <li><a href="rss#latest_arc">latest_arc</a></li>
+  <li><a href="rss#latest_d_read">latest_d_read</a></li>
+</ul>
+<li class="sub hover"><a href="soap">Sympa SOAP server</a>
+<ul>  <li><a href="soap#sympa_soap_server">Sympa SOAP server</a></li>
+  <li><a href="soap#introduction">Introduction</a></li>
+  <li><a href="soap#supported_functions">Supported functions</a></li>
+  <li class="fly"><a href="soap#web_server_setup">Web server setup</a>
+<ul>
+<li><a href="soap#until_version_5.3">Until version 5.3</a></li>
+<li><a href="soap#version_5.4_and_higher">Version 5.4 and higher</a></li>
+
+</ul></li>
+  <li><a href="soap#sympa_setup">Sympa setup</a></li>
+  <li><a href="soap#trust_remote_applications">Trust remote applications</a></li>
+  <li><a href="soap#the_wsdl_service_description">The WSDL service description</a></li>
+  <li class="fly"><a href="soap#client-side_programming">Client-side programming</a>
+<ul>
+<li><a href="soap#writing_a_java_client_with_axis">Writing a Java client with Axis</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="authentication">Authentication</a>
+<ul>  <li><a href="authentication#authentication">Authentication</a></li>
+  <li><a href="authentication#s/mime_and_https_authentication">S/MIME and HTTPS authentication</a></li>
+  <li><a href="authentication#authentication_with_email_address,_uid_or_alternate_email_address">Authentication with email address, uid or alternate email address</a></li>
+  <li><a href="authentication#generic_sso_authentication">Generic SSO authentication</a></li>
+  <li><a href="authentication#cas-based_authentication">CAS-based authentication</a></li>
+  <li class="fly"><a href="authentication#auth.conf">auth.conf</a>
+<ul>
+<li><a href="authentication#user_table_paragraph">user_table paragraph</a></li>
+<li><a href="authentication#ldap_paragraph">ldap paragraph</a></li>
+<li><a href="authentication#generic_sso_paragraph">generic_sso paragraph</a></li>
+<li><a href="authentication#cas_paragraph">cas paragraph</a></li>
+
+</ul></li>
+  <li><a href="authentication#sharing_wwsympa's_authentication_with_other_applications">Sharing WWSympa's authentication with other applications</a></li>
+  <li><a href="authentication#provide_a_sympa_login_form_in_another_application">Provide a Sympa login form in another application</a></li>
+</ul>
+<li class="sub hover"><a href="authorization-scenarios">Authorization scenarios</a>
+<ul>  <li class="fly"><a href="authorization-scenarios#authorization_scenarios">Authorization scenarios</a>
+<ul>
+<li><a href="authorization-scenarios#location_of_scenario_file">Location of scenario file</a></li>
+
+</ul></li>
+  <li class="fly"><a href="authorization-scenarios#scenario_structure">Scenario structure</a>
+<ul>
+<li><a href="authorization-scenarios#scenario_title">Scenario title</a></li>
+<li><a href="authorization-scenarios#rules_overview">Rules overview</a></li>
+<li><a href="authorization-scenarios#rules_definition">Rules definition</a></li>
+
+</ul></li>
+  <li class="fly"><a href="authorization-scenarios#named_filters">Named Filters</a>
+<ul>
+<li><a href="authorization-scenarios#ldap_named_filters_definition">LDAP Named Filters Definition</a></li>
+<li><a href="authorization-scenarios#sql_named_filters_definition">SQL Named Filters Definition</a></li>
+<li><a href="authorization-scenarios#txt_named_filters_definition">TXT Named Filters Definition</a></li>
+<li><a href="authorization-scenarios#search_condition">Search condition</a></li>
+
+</ul></li>
+  <li><a href="authorization-scenarios#scenario_inclusion">Scenario inclusion</a></li>
+  <li><a href="authorization-scenarios#scenario_implicit_inclusion">Scenario implicit inclusion</a></li>
+  <li><a href="authorization-scenarios#blacklist_implicit_rule">Blacklist implicit rule</a></li>
+  <li><a href="authorization-scenarios#custom_perl_package_conditions">Custom Perl package conditions</a></li>
+  <li><a href="authorization-scenarios#hiding_scenario_files">Hiding scenario files</a></li>
+</ul>
+<li class="sub hover"><a href="virtual-hosts">virtual host</a>
+<ul>  <li><a href="virtual-hosts#virtual_host">Virtual host</a></li>
+  <li><a href="virtual-hosts#how_to_create_a_virtual_host">How to create a virtual host</a></li>
+  <li class="fly"><a href="virtual-hosts#robot.conf">robot.conf</a>
+<ul>
+<li><a href="virtual-hosts#virtual_host_customization">Virtual host customization</a></li>
+
+</ul></li>
+  <li><a href="virtual-hosts#managing_multiple_virtual_hosts">Managing multiple virtual hosts</a></li>
+</ul>
+<li class="sub hover"><a href="other-applications-integration">Interaction between Sympa and other applications</a>
+<ul>  <li><a href="other-applications-integration#interaction_between_sympa_and_other_applications">Interaction between Sympa and other applications</a></li>
+  <li><a href="other-applications-integration#soap">Soap</a></li>
+  <li><a href="other-applications-integration#rss_channel">RSS channel</a></li>
+  <li><a href="other-applications-integration#sharing_wwsympa's_authentication_with_other_applications">Sharing WWSympa's authentication with other applications</a></li>
+  <li><a href="other-applications-integration#sharing_data_with_other_applications">Sharing data with other applications</a></li>
+  <li><a href="other-applications-integration#subscriber_count">Subscriber count</a></li>
+</ul>
+<li class="sub hover"><a href="message-handling">Message handling</a>
+<ul>  <li><a href="message-handling#message_workflow">Message workflow</a></li>
+  <li><a href="message-handling#does_sympa_alter_messages?">Does Sympa alter messages?</a></li>
+  <li><a href="message-handling#loop_prevention">Loop prevention</a></li>
+</ul>
+<li class="sub hover"><a href="customizing">Customizing Sympa</a>
+<ul>  <li><a href="customizing#customizing_sympa/wwsympa">Customizing Sympa/WWSympa</a></li>
+  <li><a href="customizing#template_file_format">Template file format</a></li>
+  <li class="fly"><a href="customizing#mail_template_files">Mail template files</a>
+<ul>
+<li><a href="customizing#helpfile.tt2">helpfile.tt2</a></li>
+<li><a href="customizing#lists.tt2">lists.tt2</a></li>
+<li><a href="customizing#global_remind.tt2">global_remind.tt2</a></li>
+<li><a href="customizing#your_infected_msg.tt2">your_infected_msg.tt2</a></li>
+
+</ul></li>
+  <li class="fly"><a href="customizing#web_template_files">Web template files</a>
+<ul>
+<li><a href="customizing#sympa_colors_customization_guide">Sympa colors customization guide</a></li>
+
+</ul></li>
+  <li class="fly"><a href="customizing#css_files">CSS files</a>
+<ul>
+<li><a href="customizing#css_path_and_css_url_parameters">css_path and css_url parameters</a></li>
+<li><a href="customizing#what_stylesheet_will_be_used_?">What stylesheet will be used ?</a></li>
+<li><a href="customizing#using_wwsympa_css_generation_process">Using wwsympa CSS generation process</a></li>
+<li><a href="customizing#use_custom_stylesheets_only">Use custom stylesheets only</a></li>
+
+</ul></li>
+  <li class="fly"><a href="customizing#internationalization">Internationalization</a>
+<ul>
+<li><a href="customizing#sympa_internationalization">Sympa internationalization</a></li>
+<li><a href="customizing#list_internationalization">List internationalization</a></li>
+<li><a href="customizing#user_internationalization">User internationalization</a></li>
+
+</ul></li>
+  <li><a href="customizing#topics">Topics</a></li>
+  <li><a href="customizing#authorization_scenarios">Authorization scenarios</a></li>
+  <li><a href="customizing#custom_parameters">Custom parameters</a></li>
+  <li class="fly"><a href="customizing#custom_user_attributes">Custom user attributes</a>
+<ul>
+<li><a href="customizing#custom_attributes_definition">Custom attributes definition</a></li>
+<li><a href="customizing#how_are_the_custom_attributes_values_obtained_from_users?">How are the custom attributes values obtained from users?</a></li>
+<li><a href="customizing#how_is_it_stored?">How is it stored?</a></li>
+<li><a href="customizing#so,_what_can_you_do_with_that_feature?">So, what can you do with that feature?</a></li>
+
+</ul></li>
+  <li><a href="customizing#loop_detection">Loop detection</a></li>
+  <li><a href="customizing#tasks">Tasks</a></li>
+</ul>
+<li class="sub hover"><a href="list-definition">Mailing list definition</a>
+<ul>  <li><a href="list-definition#mailing_list_definition">Mailing list definition</a></li>
+  <li><a href="list-definition#mail_aliases">Mail aliases</a></li>
+  <li><a href="list-definition#list_configuration_file">List configuration file</a></li>
+  <li><a href="list-definition#examples_of_configuration_files">Examples of configuration files</a></li>
+  <li><a href="list-definition#subscribers_file">Subscribers file</a></li>
+  <li><a href="list-definition#info_file">Info file</a></li>
+  <li><a href="list-definition#homepage_file">Homepage file</a></li>
+  <li><a href="list-definition#data_inclusion_file">Data inclusion file</a></li>
+  <li class="fly"><a href="list-definition#list_template_files">List template files</a>
+<ul>
+<li><a href="list-definition#welcome.tt2">welcome.tt2</a></li>
+<li><a href="list-definition#bye.tt2">bye.tt2</a></li>
+<li><a href="list-definition#removed.tt2">removed.tt2</a></li>
+<li><a href="list-definition#reject.tt2">reject.tt2</a></li>
+<li><a href="list-definition#invite.tt2">invite.tt2</a></li>
+<li><a href="list-definition#remind.tt2">remind.tt2</a></li>
+<li><a href="list-definition#summary.tt2">summary.tt2</a></li>
+<li><a href="list-definition#list_aliases.tt2">list_aliases.tt2</a></li>
+
+</ul></li>
+  <li><a href="list-definition#stats_file">Stats file</a></li>
+  <li class="fly"><a href="list-definition#list_model_files">List model files</a>
+<ul>
+<li><a href="list-definition#remind.annual.task">remind.annual.task</a></li>
+<li><a href="list-definition#expire.annual.task">expire.annual.task</a></li>
+
+</ul></li>
+  <li class="fly"><a href="list-definition#message_header_and_footer">Message header and footer</a>
+<ul>
+<li><a href="list-definition#archive_directory">Archive directory</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="list-creation">List creation, edition and removal</a>
+<ul>  <li><a href="list-creation#list_creation,_editing_and_removal">List creation, editing and removal</a></li>
+  <li class="fly"><a href="list-creation#list_creation">List creation</a>
+<ul>
+<li><a href="list-creation#data_for_list_creation">Data for list creation</a></li>
+<li><a href="list-creation#xml_file_format">XML file format</a></li>
+
+</ul></li>
+  <li><a href="list-creation#list_families">List families</a></li>
+  <li><a href="list-creation#list_creation_on_command_line_with_sympa.pl">List creation on command line with sympa.pl</a></li>
+  <li class="fly"><a href="list-creation#creating_and_editing_mailing_lists_using_the_web">Creating and editing mailing lists using the Web</a>
+<ul>
+<li><a href="list-creation#list_creation_on_the_web_interface">List creation on the web interface</a></li>
+<li><a href="list-creation#who_can_create_lists_on_the_web_interface">Who can create lists on the web interface</a></li>
+<li><a href="list-creation#typical_list_profile_and_web_interface">Typical list profile and web interface</a></li>
+<li><a href="list-creation#list_editing">List editing</a></li>
+
+</ul></li>
+  <li><a href="list-creation#removing_a_list">Removing a list</a></li>
+</ul>
+<li class="sub hover"><a href="list-families">Lists Families</a>
+<ul>  <li><a href="list-families#list_families">List families</a></li>
+  <li><a href="list-families#family_concept">Family concept</a></li>
+  <li class="fly"><a href="list-families#using_family">Using family</a>
+<ul>
+<li><a href="list-families#definition">Definition</a></li>
+<li><a href="list-families#instantiation">Instantiation</a></li>
+<li><a href="list-families#modification">Modification</a></li>
+<li><a href="list-families#closure">Closure</a></li>
+<li><a href="list-families#adding_a_list_to_a_list_family">Adding a list to a list family</a></li>
+<li><a href="list-families#removing_a_list_from_a_list_family">Removing a list from a list family</a></li>
+<li><a href="list-families#modifying_a_family_list">Modifying a family list</a></li>
+<li><a href="list-families#editing_list_parameters_in_a_family_context">Editing list parameters in a family context</a></li>
+
+</ul></li>
+  <li class="fly"><a href="list-families#automatic_list_creation">Automatic list creation</a>
+<ul>
+<li><a href="list-families#configuring_your_mta">Configuring your MTA</a></li>
+<li><a href="list-families#defining_the_list_family">Defining the list family</a></li>
+<li><a href="list-families#configuring_sympa">Configuring Sympa</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="list-parameters">List configuration parameters</a>
+<ul>  <li><a href="list-parameters#list_configuration_parameters">List configuration parameters</a></li>
+</ul>
+<li class="sub hover"><a href="parameters-definition">List definition</a>
+<ul>  <li class="fly"><a href="parameters-definition#list_parameters:_definition">List parameters: definition</a>
+<ul>
+<li><a href="parameters-definition#subject">subject</a></li>
+<li><a href="parameters-definition#visibility">visibility</a></li>
+<li><a href="parameters-definition#owner">owner</a></li>
+<li><a href="parameters-definition#owner_include">owner_include</a></li>
+<li><a href="parameters-definition#editor">editor</a></li>
+<li><a href="parameters-definition#editor_include">editor_include</a></li>
+<li><a href="parameters-definition#topics">topics</a></li>
+<li><a href="parameters-definition#host">host</a></li>
+<li><a href="parameters-definition#lang">lang</a></li>
+<li><a href="parameters-definition#family_name">family_name</a></li>
+<li><a href="parameters-definition#latest_instantiation">latest_instantiation</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="parameters-sending">Sending/receiving setup</a>
+<ul></ul>
+<li class="sub hover"><a href="parameters-privileges">Privileges</a>
+<ul></ul>
+<li class="sub hover"><a href="parameters-archives">Archives</a>
+<ul>  <li class="fly"><a href="parameters-archives#archive_related">Archive related</a>
+<ul>
+<li><a href="parameters-archives#archive_(obsolete)">archive (OBSOLETE)</a></li>
+<li><a href="parameters-archives#web_archive">web_archive</a></li>
+<li><a href="parameters-archives#archive_crypted_msg">archive_crypted_msg</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="parameters-bounces">Bounce management</a>
+<ul>  <li class="fly"><a href="parameters-bounces#bounce_related">Bounce related</a>
+<ul>
+<li><a href="parameters-bounces#bounce">bounce</a></li>
+<li><a href="parameters-bounces#bouncers_level1">bouncers_level1</a></li>
+<li><a href="parameters-bounces#bouncers_level2">bouncers_level2</a></li>
+<li><a href="parameters-bounces#welcome_return_path">welcome_return_path</a></li>
+<li><a href="parameters-bounces#remind_return_path">remind_return_path</a></li>
+<li><a href="parameters-bounces#verp_rate">verp_rate</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="parameters-data-sources">Data sources setup</a>
+<ul>  <li class="fly"><a href="parameters-data-sources#data_source_related">Data source related</a>
+<ul>
+<li><a href="parameters-data-sources#user_data_source">user_data_source</a></li>
+<li><a href="parameters-data-sources#ttl">ttl</a></li>
+<li><a href="parameters-data-sources#distribution_ttl">distribution_ttl</a></li>
+<li><a href="parameters-data-sources#include_list">include_list</a></li>
+<li><a href="parameters-data-sources#include_remote_sympa_list">include_remote_sympa_list</a></li>
+<li><a href="parameters-data-sources#include_sql_query">include_sql_query</a></li>
+<li><a href="parameters-data-sources#include_ldap_query">include_ldap_query</a></li>
+<li><a href="parameters-data-sources#include_ldap_2level_query">include_ldap_2level_query</a></li>
+<li><a href="parameters-data-sources#include_file">include_file</a></li>
+<li><a href="parameters-data-sources#include_remote_file">include_remote_file</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="parameters-others">Others</a>
+<ul>  <li class="fly"><a href="parameters-others#command_related">Command related</a>
+<ul>
+<li><a href="parameters-others#remind_task">remind_task</a></li>
+<li><a href="parameters-others#expire_task">expire_task</a></li>
+<li><a href="parameters-others#review">review</a></li>
+
+</ul></li>
+  <li class="fly"><a href="parameters-others#list_tuning">List tuning</a>
+<ul>
+<li><a href="parameters-others#max_size">max_size</a></li>
+<li><a href="parameters-others#loop_prevention_regex">loop_prevention_regex</a></li>
+<li><a href="parameters-others#pictures_feature">pictures_feature</a></li>
+<li><a href="parameters-others#cookie">cookie</a></li>
+<li><a href="parameters-others#custom_vars">custom_vars</a></li>
+<li><a href="parameters-others#custom_attribute">custom_attribute</a></li>
+<li><a href="parameters-others#priority">priority</a></li>
+
+</ul></li>
+  <li class="fly"><a href="parameters-others#spam_protection">Spam protection</a>
+<ul>
+<li><a href="parameters-others#spam_protection">spam_protection</a></li>
+<li><a href="parameters-others#web_archive_spam_protection">web_archive_spam_protection</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="reception-mode">Reception mode</a>
+<ul>  <li class="fly"><a href="reception-mode#message_topics">Message topics</a>
+<ul>
+<li><a href="reception-mode#message_topic_definition_in_a_list">Message topic definition in a list</a></li>
+<li><a href="reception-mode#subscribing_to_message_topics_for_list_subscribers">Subscribing to message topics for list subscribers</a></li>
+<li><a href="reception-mode#message_tagging">Message tagging</a></li>
+
+</ul></li>
+  <li><a href="reception-mode#multipart/alternative">Multipart/alternative</a></li>
+</ul>
+<li class="sub hover"><a href="shared-documents">Shared documents</a>
+<ul>  <li class="fly"><a href="shared-documents#shared_documents">Shared documents</a>
+<ul>
+<li><a href="shared-documents#the_three_kinds_of_operations_on_a_document">The three kinds of operations on a document</a></li>
+<li><a href="shared-documents#the_description_file">The description file</a></li>
+<li><a href="shared-documents#the_predefined_authorization_scenarios">The predefined authorization scenarios</a></li>
+<li><a href="shared-documents#access_control">Access control</a></li>
+<li><a href="shared-documents#shared_document_actions">Shared document actions</a></li>
+<li><a href="shared-documents#template_files">Template files</a></li>
+<li><a href="shared-documents#d_upload.tt2">d_upload.tt2</a></li>
+<li><a href="shared-documents#d_properties.tt2">d_properties.tt2</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="bounces">Bounce management</a>
+<ul>  <li><a href="bounces#bounce_management">Bounce management</a></li>
+  <li><a href="bounces#verp">VERP</a></li>
+  <li><a href="bounces#arf">ARF</a></li>
+</ul>
+<li class="sub hover"><a href="antivirus">Antivirus</a>
+<ul>  <li><a href="antivirus#antivirus">Antivirus</a></li>
+</ul>
+<li class="sub hover"><a href="antispam">How does Sympa deal with spams</a>
+<ul>  <li class="fly"><a href="antispam#how_does_sympa_deal_with_spams_?">How does Sympa deal with spams ?</a>
+<ul>
+<li><a href="antispam#a_spam_filter_is_needed">A spam filter is needed</a></li>
+<li><a href="antispam#nrcpt_by_domain.conf">nrcpt_by_domain.conf</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="ldap">Using Sympa with LDAP</a>
+<ul>  <li><a href="ldap#using_sympa_with_ldap">Using Sympa with LDAP</a></li>
+</ul>
+<li class="sub hover"><a href="x509">Sympa with S/MIME and HTTPS</a>
+<ul>  <li><a href="x509#sympa_with_s/mime_and_https">Sympa with S/MIME and HTTPS</a></li>
+  <li><a href="x509#signed_message_distribution">Signed message distribution</a></li>
+  <li><a href="x509#use_of_s/mime_signatures_by_sympa_itself">Use of S/MIME signatures by Sympa itself</a></li>
+  <li><a href="x509#use_of_s/mime_encryption">Use of S/MIME encryption</a></li>
+  <li class="fly"><a href="x509#s/sympa_configuration">S/Sympa configuration</a>
+<ul>
+<li><a href="x509#installation">Installation</a></li>
+<li><a href="x509#managing_user_certificates">Managing user certificates</a></li>
+<li><a href="x509#configuration_in_sympa.conf">Configuration in sympa.conf</a></li>
+<li><a href="x509#configuration_to_recognize_s/mime_signatures">Configuration to recognize S/MIME signatures</a></li>
+<li><a href="x509#distributing_encrypted_messages">distributing encrypted messages</a></li>
+
+</ul></li>
+  <li class="fly"><a href="x509#managing_certificates_with_tasks">Managing certificates with tasks</a>
+<ul>
+<li><a href="x509#chk_cert_expiration.daily.task_model">chk_cert_expiration.daily.task model</a></li>
+<li><a href="x509#crl_update.daily.task_model">crl_update.daily.task model</a></li>
+
+</ul></li>
+</ul>
+<li class="sub hover"><a href="sympa-commands">Using Sympa commands</a>
+<ul>  <li><a href="sympa-commands#using_sympa_commands">Using Sympa commands</a></li>
+  <li><a href="sympa-commands#user_commands">User commands</a></li>
+  <li><a href="sympa-commands#owner_commands">Owner commands</a></li>
+  <li><a href="sympa-commands#moderator_commands">Moderator commands</a></li>
+</ul>
+<li class="sub hover"><a href="about">About this document ...</a>
+<ul></ul>
+</html>

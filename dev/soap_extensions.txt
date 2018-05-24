@@ -1,0 +1,71 @@
+This page is a working document for the SOAP extensions. Access is restricted to John Harris Stevenson <jstevenson@idrc.ca>, Olivier Salaün and Serge Aumont.
+
+----
+
+
+The goal is the be able to create new lists using Sympa SOAP interface. There are a few important issues for that feature :
+  - Authentication of a remote application.
+  - In some case, trust a remote application for requesting a service as a proxy for a remote user
+  - In other cases, authorize the remote application to run particular operation.
+  - Extend the SOAP server available features ; provide "list creation" at first. 
+
+
+The job is started.
+
+A New configuration file (for robot or site ) is created and named //trusted_applications.conf// . It is a multi pragraph structured file (same a list config file). Each paragraph describe a remote application with its name, md5 digest of password and a list or variables for which the remote application is a trusted proxy. Example : 
+
+  trusted_application
+  name testperl
+  md5password ZR23443242342342343242423234234234234234243423
+  proxy_for_variables user_email,remote_host
+
+This mean that the application named //testperl// is allowed to set user_email and remote_host environement variables. Thoses vars can be used in any scenario authorization config. In addition the variable //[trusted_application_name]// is set. 
+
+The wsdl soap services description is updated in order to include a new service named //authenticateRemoteAppAndRun//. This method allow to access any service beginning with the trusted application authentication so authorization can be extended.
+
+Here is the information you need. This is the HTML documentation in the dev CVS  branch. (take care that this URL may change if we introduce some new chapter in the documentation) :
+
+http://sourcesup.renater.fr/cgi/viewcvs.cgi/*checkout*/sympa/doc/html/node12.html#soap
+
+Here are some additional information that make very easy what you need . I have configured http://demo.sympa.org/sympa sympa demo service in order to acception list creation via soap from you, so you can test it now.
+
+How did I configure my server Sympa for that ?
+
+I have created a file named trusted_applications.conf located in the demo.sympa.org robot etc dir which content is :
+
+trusted_application
+  name bellanet
+  md5password acbd18db4c.......4fccc4a4d8
+  proxy_for_variables USER_EMAIL
+
+The semantic is that the soap server accept that the remote soap client named bellanet set the USER_EMAIL variable (this variable is used as  [sender] in scenario). The remote application is authenticated via a password which is "....".
+
+The I created a new scenario for list creation to allow anyone from bellanet.org to create list without control/validation by the listmaster (only via the web interface).  Here is the scenario :
+
+  is_listmaster([sender])   md5,smime -> do_it
+  !equal ([remote_application_name],'bellanet') -> listmaster,notify
+  match ([sender],/bellanet\.org/) -> do_it
+  true()                    smtp,md5,smime -> listmaster,notify
+
+
+The result is that anyone (from anywhere) can spoof the email of anyone if doing it via the soap interface with user/password bellanet/foo.
+
+How can you test it just now ?
+
+  Here is the  different steps :
+
+-1- In order to do it please install the sample soap client application which is attached to this mail (the client I send to you is a new version of the sample provided with sympa distribution. I think you don't need to install completly the new sympa version in order to use this very simple soap client ; but because you will not install it using  sympa makefile, you have to edit it and patch the following line to reflect you installation :
+use lib '/home/sympa/bin';
+
+-2- run the client 
+  /home/sympa/bin/sympa_soap_client.pl --soap_url=http://demo.sympa.org/soap --service=createList \
+  --trusted_application=bellanet  --trusted_application_password=xxx --proxy_vars="USER_EMAIL=anyone@bellanet.org" \
+  --service_parameters=foolist,subject,discussion_list,info,topic \
+
+
+Then you can check in http://demo.sympa.org/sympa/info/foolist that the list is created and it's status is open (not pending).
+
+Some more spec of the soap client ?
+
+Please edit the client I attach in this mail and the documentation.
+

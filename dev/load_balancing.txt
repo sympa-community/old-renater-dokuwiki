@@ -1,0 +1,20 @@
+====== Allowing load balancing with Sympa ======
+
+Currently Sympa is designed to be deployed on a single server, with many configurations/data stored on disk, and therefore not easily shareable with other servers. 
+
+===== The NFS option =====
+
+==== Limitations of using NFS ====
+
+===== The database option =====
+
+==== Locking versus transactions ====
+
+==== Storing the list configuration files in the database ====
+
+==== Storing the spools in the database ====
+
+===== The SOAP option =====
+
+==== Limitations of the SOAP approach ====
+

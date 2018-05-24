@@ -1,0 +1,72 @@
+====== Archive related ======
+
+Sympa show archive both by email and web interface. In versions prior to 5.2, archives were duplicated. Mail archives were stored in the ''/home/sympa/expl/mylist/archives/'' directory.
+
+Web archives are accessed through the web interface (with access control), they are stored in a directory defined in "wwsympa.conf" ([[web-interface#arc_path|parameter arc_path]]. Version 5.2 and later use only this archive repository.
+
+
+
+===== archive (OBSOLETE) =====
+
+If the "config" file contains an "archive" paragraph, Sympa will manage an archive for this list.
+
+Example:
+
+<code>
+  archive
+  period week
+  access private
+</code>
+
+If the ''archive'' parameter is specified, archives are accessible to users through the ''GET'' [[sympa-commands#user_commands|command]], and the index of the list archives is provided in reply to the ''INDEX'' command (the last message of a list can be consulted using the ''LAST'' command).
+
+''period day | week | month | quarter | year''
+
+This parameter specifies how archiving is organized: by ''day'', ''week'', ''month'', ''quarter'' or ''year''. Generation of automatic list archives requires the creation of an archive directory at the root of the list directory (''/home/sympa/expl/mylist/archives/''), used to store these documents.
+
+''access private | public | owner | closed''
+
+This parameter specifies who is authorized to use the ''GET'', ''LAST'' and ''INDEX'' [[sympa-commands#user_commands|commands]].
+
+===== web_archive =====
+
+If the ''config'' file contains a ''web_archive'' paragraph, Sympa will copy all messages distributed via the list to the ''queueoutgoing'' spool. It is intended to be used with //WWSympa//'s HTML archive tools. This paragraph must contain at least the access parameter to control who can browse the web archive.
+
+Example:
+
+<code>
+  web_archive
+  access private
+  quota 10000
+</code>
+
+====  web_archive.access ====
+
+The ''access_web_archive'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+Predefined authorization scenarios are:
+
+  * ''access'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.closed|view]]);
+  * ''access'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.intranet|view]]);
+  * ''access'' ''listmaster'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.listmaster|view]]);
+  * ''access'' ''owner'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.owner|view]]);
+  * ''access'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.private|view]]);
+  * ''access'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/access_web_archive.public|view]]).
+
+==== web_archive.quota ====
+
+''quota'' //number-of-Kbytes//
+
+This parameter specifies the disk quota for the list's web archive, in kilobytes. This parameter's default is the ''default_archive_quota'' ''sympa.conf'' parameter. If quota is exceeded, messages are no more archived and list owners are notified. When the archive reaches 95%, list owners are warnt.
+
+==== web_archive.max_month ====
+
+"max_month" parameter specify the maximum number of archives packet created. Old month are removed when new month is created. 
+
+===== archive_crypted_msg =====
+
+(Default value: ''cleartext'')
+
+''archive_crypted_msg cleartext | decrypted''
+
+This parameter defines Sympa's behavior when archiving S/MIME encrypted messages. If set to ''cleartext'', the original encrypted form of the message will be archived; if set to ''decrypted'', a decrypted message will be archived. Note that this applies to both mail and web archives, and also to digests.

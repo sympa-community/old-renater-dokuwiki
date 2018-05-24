@@ -1,0 +1,425 @@
+====== sympa.conf parameters ======
+
+======  Internationalization related ======
+
+===== localedir =====
+
+(Default value: ''/home/sympa/locale'')
+
+The location of multilingual catalog files. Must correspond to ''~src/locale/Makefile''.
+
+===== supported_lang =====
+
+Example: <code>supported_lang fr,en_US,de,es</code>
+
+This parameter lists all supported languages (comma separated) for the user interface. The default value will include all message catalogs but it can be narrowed by the listmaster.
+
+===== lang =====
+
+(Default value: ''en_US'')
+
+This is the default language for Sympa. The message catalog (''.po'', compiled as a ''.mo'' file) located in the corresponding locale directory will be used.
+
+===== web_recode_to =====
+
+(OBSOLETE)
+
+All web pages now use UTF-8 charset
+
+===== filesystem_encoding =====
+
+OBSOLETE
+
+Now all files (including configuration files, templates, authorization scenarios,...) must use UTF-8 charset.
+
+======  Bounce related ======
+
+
+===== verp_rate =====
+
+(Default value: ''0%'')
+
+See [[manual:bounces#verp|VERP]] for more information on VERP in Sympa.
+
+When ''verp_rate'' is null, VERP is not used; if ''verp_rate'' is 100%, VERP is always in use.
+
+VERP requires plussed aliases to be supported and the ''bounce+*'' alias to be installed.
+
+===== welcome_return_path =====
+
+(Default value: ''owner'')
+
+If set to string unique, Sympa enables VERP for welcome messages and bounce processing will remove the subscription if a bounce is received for the welcome message. This prevents to add bad address in the subscriber list.
+
+===== remind_return_path =====
+
+(Default value: ''owner'')
+
+Like ''welcome_return_path'', but relates to the remind message.
+
+===== return_path_suffix =====
+
+(Default value: ''-owner'')
+
+This defines the suffix that is appended to the list name to build the return-path of messages sent to the lists. This is the address that will receive all non delivery reports (also called bounces).
+
+===== expire_bounce_task =====
+
+(Default value: ''daily'')
+
+This parameter tells what task will be used by ''task_manager.pl'' to perform bounce expiration. This task resets bouncing information for addresses not bouncing in the last 10 days after the latest message distribution.
+
+===== purge_orphan_bounces_task =====
+
+(Default value: ''Monthly'')
+
+This parameter tells what task will be used by ''task_manager.pl'' to perform bounce cleaning. This task deletes bounce archive for unsubscribed users.
+
+===== eval_bouncers_task =====
+
+(Default value: ''daily'')
+
+The task ''eval_bouncers'' evaluates all bouncing users for all lists, and fill the field ''bounce_score_suscriber'' in table ''suscriber_table'' with a score. This score allows the auto-management of bouncing users.
+
+===== process_bouncers_task =====
+
+(Default value: ''monthly'')
+
+The task ''process_bouncers'' executes configured actions on bouncing users, according to their score. The association between score and actions has to be done in List configuration. This parameter defines the frequency of execution for this task.
+
+===== minimum_bouncing_count =====
+
+(Default value: ''10'')
+
+This parameter is for the bounce-score evaluation: the bounce-score is a mark that allows the auto-management of bouncing users. This score is evaluated with, in particular, the number of message bounces received for the user. This parameter sets the minimum number of these messages to allow the bounce-score evaluation for a user.
+
+===== minimum_bouncing_period =====
+
+(Default value: ''10'')
+
+Determine the minimum bouncing period for a user to allow his bounce-score evaluation. Like previous parameter, if this value is too low, bounce-score will be 0.
+
+===== bounce_delay =====
+
+(Default value: ''0'')
+
+Another parameter for the bounce-score evaluation: this one represents the average time (in days) for a bounce to come back to the Sympa server after a post was send to a list. Usually bounces are delivered on the same day as the original message.
+
+
+===== default_bounce_level1_rate =====
+
+(Default value: ''45'')
+
+This is the default value for ''bouncerslevel1 rate'' entry (see [[manual:parameters-bounces#bouncers_level1|bouncers_level1]]).
+
+
+===== default_bounce_level2_rate =====
+
+(Default value: ''75'')
+
+This is the default value for ''bouncerslevel2 rate'' entry ( see [[manual:parameters-bounces#bouncers_level2|bouncers_level2]]).
+
+
+===== bounce_email_prefix =====
+
+(Default value: ''bounce'')
+
+The prefix string used to build variable envelope return path (VERP). In the context of VERP enabled, the local part of the address starts with a constant string specified by this parameter. The email is used to collect bounce. Plussed aliases are used in order to introduce the variable part of the email that encodes the subscriber address. This parameter is useful if you want to run more than one Sympa on the same host (a test Sympa for example).
+
+If you change the default value, you must modify the sympa aliases too.
+
+For example, if you set it as:
+
+<code>
+bounce_email_prefix bounce-test
+</code>
+
+you must modify the sympa aliases like this:
+
+<code>
+bounce-test+*: | /home/sympa/bin/queuebounce sympa@my.domain.org
+</code>
+
+See [[manual:mail-aliases#robot_aliases|Robot aliases]] for all aliases.
+
+===== bounce_warn_rate =====
+
+(Default value: ''30'')
+
+Site default value for bounce. The list owner receives a warning whenever a message is distributed and the number of bounces exceeds this value.
+
+===== bounce_halt_rate =====
+
+(Default value: ''50'')
+
+FOR FUTURE USE
+
+Site default value for bounce. Messages will cease to be distributed if the number of bounces exceeds this value.
+
+===== default_remind_task =====
+
+(Default value: ''2month'')
+
+This parameter defines the default ''remind_task'' list parameter.
+
+======  Tuning ======
+
+
+===== cache_list_config =====
+
+Format: ''none | binary_file'' (Default value: ''none'')
+
+If this parameter is set to ''binary_file'', then Sympa processes will maintain a binary version of the list config structure on disk (''config.bin'' file). This file is bypassed whenever the ''config'' file changes on disk. Thanks to this method, the startup of Sympa processes is much faster because it saves the time of parsing all config files. The drawback of this method is that the list config cache can live for a long time (not recreated when the Sympa processes restart); the Sympa processes could still use authorization scenario rules or default for list parameters (set in sympa.conf) that have changed on disk in the meantime. You can work this problem out by frequently running a <html><span style="font-family: courier">sympa.pl --reload_list_config</span></html> using the crontab. In the long term, Sympa should update ''config.bin'' files via the task_manager.
+
+You should use list config cache if you are managing a big amount of lists (1000+).
+
+===== lock_method =====
+
+Format: ''flock | nfs'' (Default value: ''flock'')
+
+This parameter will tell Sympa how it should perform locks when required (updating DB, updating config file,...). The default method uses the standard ''flock'' function. Another option is to use NFS locking ; it requires that you install ''File::NFSLock'' perl module first.
+
+===== sympa_priority =====
+
+(Default value: ''1'')
+
+Priority applied to Sympa commands while running the spool.
+
+Available since release 2.3.1.
+
+===== request_priority =====
+
+(Default value: ''0'')
+
+Priority for processing of messages for ''mylist-request'', i.e. for owners of the list.
+
+Available since release 2.3.3.
+
+
+===== owner_priority =====
+
+(Default value: ''9'')
+
+Priority for processing messages for ''mylist-owner'' in the spool. This address will receive non-delivery reports (bounces) and should have a low priority.
+
+Available since release 2.3.3.
+
+===== default_list_priority =====
+
+(Default value: ''5'')
+
+Default priority for messages if not defined in the list configuration file.
+
+Available since release 2.3.1.
+
+====== Database related ======
+
+The following parameters are needed when using a RDBMS, but are otherwise not required.
+
+===== update_db_field_types =====
+
+Format: <code>update_db_field_types auto | disabled</code>
+
+(Default value: ''auto'')
+
+This parameter defines whether Sympa automatically updates database structure to match the expected datafield types. This feature is only available with MySQL. Note howevere that since version 5.3b.5, Sympa will not alter DB fileds that have a bigger size (if ''update_db_fields_types'' is set to ''auto'').
+
+===== db_type =====
+
+Format: <code>db_type mysql | SQLite | Pg | Oracle | Sybase</code>
+
+Database management system used (e.g. MySQL, Pg, Oracle)
+
+This corresponds to the PERL DataBase Driver (DBD) name and is therefore case-sensitive.
+
+===== db_name =====
+
+(Default value: ''sympa'')
+
+Name of the database containing user information. If you are using SQLite, then this parameter is the DB file name.
+
+===== db_host =====
+
+Database host name.
+
+===== db_port =====
+
+Database port.
+
+===== db_user =====
+
+User with read access to the database.
+
+===== db_passwd =====
+
+Password for db_user.
+
+===== db_timeout =====
+
+This parameter is used for SQLite only.
+
+===== db_options =====
+
+If these options are defined, they will be appended to the database connect string.
+
+Example for MySQL: <code>db_options	mysql_read_default_file=/home/joe/my.cnf;mysql_socket=tmp/mysql.sock-test</code>
+
+Check the related DBD documentation to learn about the available options.
+
+===== db_env =====
+
+Gives a list of environment variables to set before database connection. This is a ';' separated list of variable assignments.
+
+Example for Oracle: <code>db_env	ORACLE_TERM=vt100;ORACLE_HOME=/var/hote/oracle/7.3.4</code>
+
+===== db_additional_subscriber_fields =====
+
+If your ''subscriber_table'' database table has more fields than required by Sympa (because other programs access this table), you can make Sympa recognize these fields. You will then be able to use them from within mail/web templates and authorization scenarios (as [subscriber->field]). These fields will also appear in the list members review page and will be editable by the list owner. This parameter is a comma-separated list.
+
+Example: <code>db_additional_subscriber_fields 	billing_delay,subscription_expiration</code>
+
+===== db_additional_user_fields =====
+
+If your ''user_table'' database table has more fields than required by Sympa (because other programs access this table), you can make Sympa recognize these fields. You will then be able to use them from within mail/web templates (as [user->field]). This parameter is a comma-separated list.
+
+Example: <code>db_additional_user_fields 	address,gender</code>
+
+
+===== purge_user_table_task =====
+
+This parameter refers to the name of the task (Example: ''monthly'') that will be regularly run by the ''task_manager.pl'' to remove entries in the ''user_table'' table that have no corresponding entries in the ''subscriber_table'' table.
+
+===== purge_logs_table_task =====
+
+(Default value: ''daily'')
+
+This parameter refers to the name of the task (Example: ''monthly'') that will be regularly run by the ''task_manager.pl'' to remove entries in the ''logs_table'' table.
+
+===== logs_expiration_period =====
+
+(Default value: ''3'')
+
+Datas in ''logs_table'' table are removed when they are older than ''logs_expiration_period''. The parameter value is interpreted as a number of month. (FIXME it should be replaced by stand duration expression).  
+
+===== purge_session_table_task =====
+
+(Default value: ''daily'')
+
+This parameter refers to the name of the task (Example: ''monthly'') that will be regularly run by the ''task_manager.pl'' to remove entries in the ''session_table'' table.
+
+===== session_table_ttl =====
+
+(Default value: ''3d'')
+
+Session duration is controled by ''sympa_session'' cookie validity attribute, but it is needed for security reason to control this delay on the server side. The default time to leave for sessions. Session with unactivity period longer than this parameters are removed. If this parameter is very long then the session_table may become very large, mainly because most crawler robots do not manage cookies.
+
+Duration values format are easy to read, the format is a string without spaces including y for years, m for months d for days, h for hours min for minutes and sec for secondes.
+
+===== purge_chalenge_table_task =====
+
+(Default value: ''daily'')
+
+This parameter refers to the name of the task (Example: ''monthly'') that will be regularly run by the ''task_manager.pl'' to remove entries in the ''chalenge_table'' table. (This table is  used to store information about email authentication chalenges).
+
+===== chalenge_table_ttl =====
+
+(Default value: ''5d'') 
+
+Chalenge sent by email are store until they are used, but Sympa may remove chalenges that are //too old// both for security reasons and to keep table in a reasonable size. This parameter is used to specify what does mean //a too old chalenge//.
+
+======  Loop prevention ======
+
+The following define your loop prevention policy for commands (see [[manual:customizing#loop_detection|Loop detection]]).
+
+===== loop_command_max =====
+
+(Default value: ''200'')
+
+The maximum number of command reports sent to an email address. When it is reached, messages are stored with the ''BAD'' prefix, and reports are no longer sent.
+
+===== loop_command_sampling_delay =====
+
+(Default value: ''3600'')
+
+This parameter defines the delay in seconds before decrementing the counter of reports sent to an email address.
+
+===== loop_command_decrease_factor =====
+
+(Default value: ''0.5'')
+
+The decrementation factor (from 0 to 1), used to determine the new report counter after expiration of the delay.
+
+===== loop_prevention_regex =====
+
+(Default value: ''mailer-daemon|sympa|listserv|majordomo|smartlist|mailman'')
+
+This regular expression is applied to message sender addresses. If the sender address matches the regular expression, then the message is rejected. The goal of this parameter is to prevent loops between Sympa and other robots.
+
+======  S/MIME configuration ======
+
+Sympa can optionally check and use S/MIME signatures for security purposes. In this case, the three first following parameters must be set by the listmaster (see [[manual:x509#configuration_in_sympa.conf|Configuration in sympa.conf]]. The two others are optional.
+
+===== openssl =====
+
+The path for the OpenSSL binary file.
+
+===== capath =====
+
+The directory path use by OpenSSL for trusted CA certificates.
+
+A directory of trusted certificates. The certificates should have names of the form ''hash.0'' or have symbolic links of this form to them (''hash'' is the hashed certificate subject name: see the ''-hash'' option of the OpenSSL x509 utility). This directory should be the same as the directory ''SSLCACertificatePath'' specified for the ''mod_ssl'' module for Apache.
+
+===== cafile =====
+
+This parameter sets the all-in-one file where you can assemble the Certificates of Certification Authorities (CA) whose clients you deal with. These are used for Client Authentication. Such a file is simply the concatenation of the various PEM-encoded Certificate files, in order of preference. This can be used alternatively and/or additionally to ''capath''.
+
+===== key_passwd =====
+
+The password for list private key encryption. If not defined, Sympa assumes that list private keys are not encrypted.
+
+====== Antivirus plug-in ======
+
+Sympa can optionally check incoming messages before delivering them, using an external antivirus solution. You must then set two parameters.
+
+===== antivirus_path =====
+
+The path to your favorite antivirus binary file (including the binary file).
+
+Example: <code>antivirus_path		/usr/local/bin/uvscan</code>
+
+
+===== antivirus_args =====
+
+The arguments used by the antivirus software to look for viruses. You must set them so as to get the virus name. You should use, if available, the ''unzip'' option and check all extensions.
+
+Example with uvscan: <code>antivirus_args		--summary --secure</code>
+
+Example with fsav: <code>antivirus_args		--dumb	--archive</code>
+
+Example with AVP:
+
+<code>
+  antivirus_path  /opt/AVP/kavscanner
+  antivirus_args  -Y -O- -MP -I0
+</code>
+
+Example with Sophos:
+
+  antivirus_path  /usr/local/bin/sweep
+  antivirus_args  -nc -nb -ss -archive
+
+Example with Clamav:
+
+<code>
+  antivirus_path  /usr/local/bin/clamdscan
+  antivirus_args  --stdout
+</code>
+
+
+===== antivirus_notify =====
+
+''sender | nobody''
+
+(Default value: ''sender'')
+
+This parameter defines whether Sympa should notify the email sender when a virus has been detected.

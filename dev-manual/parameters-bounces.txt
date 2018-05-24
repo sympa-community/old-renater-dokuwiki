@@ -1,0 +1,59 @@
+====== Bounce related ======
+
+===== bounce =====
+
+This paragraph defines bounce management parameters:
+
+  * ''warn_rate'' \\ (Default value: ''bounce_warn_rate robot parameter'') \\ The list owner receives a warning whenever a message is distributed and the number (percentage) of bounces exceeds this value.
+  * ''halt_rate'' \\ (Default value: ''bounce_halt_rate robot parameter'') \\ "NOT USED YET" \\ If bounce rate reaches the ''halt_rate'', messages for the list will be halted, i.e. they are retained for subsequent moderation. Once the number of bounces exceeds this value, messages for the list are no longer distributed.
+  * ''expire_bounce_task'' \\ (Default value: ''daily'') \\ Name of the task template used to remove old bounces. Useful to remove bounces for a subscriber email if some messages are distributed without receiving new bounces. In this case, the subscriber email seems to be OK again. Active if ''task_manager.pl'' is running.
+
+Example:
+
+<code>
+  ## Owners are warnt with 10% bouncing addresses
+  ## message distribution is halted with 20% bouncing rate
+  bounce
+  warn_rate	10
+  halt_rate	20
+</code>
+
+===== bouncers_level1 =====
+
+  * ''rate'' \\ (Default value: ''default_bounce_level1_rate'' sympa.conf parameter)\\ Each bouncing user has a score (from 0 to 100). This parameter defines the lower score for a user to be a level 1 bouncing user. For example, with default values, users with a score between 45 and 75 are level 1 bouncers.
+  * ''action remove_bouncers | notify_bouncers | none'' \\ (Default value: ''notify_bouncers'') \\ This parameter defines which task is automaticaly applied on level 1 bouncing users: for example, automatically notify all level 1 bouncers.
+  * ''notification none | owner | listmaster'' \\ (Default value: ''owner'') \\ When an automatic task is performed on level 1 bouncers, a notification email can be sent to listowners or listmasters. This email contains the adresses of the users concerned and the name of the action perform.
+
+===== bouncers_level2 =====
+
+  * ''rate'' \\ (Default value: ''default_bounce_level2_rate'' sympa.conf parameter) \\ Each bouncing user has a score (from 0 to 100). This parameter defines the lower score for a user to be a level 2 bouncing user. For example, with default values, users with a score between 75 and 100 are level 2 bouncers.
+  * ''action remove_bouncers | notify_bouncers | none'' \\ (Default value: ''remove_bouncers'') \\ This parameter defines which task is automatically applied on level 2 bouncing users: for example, automatically notify all level 2 bouncers.
+  * ''notification none | owner | listmaster'' \\ (Default value: ''owner'') \\ When an automatic task is performed on level 2 bouncers, a notification email can be sent to listowners or listmasters. This email contains the adresses of the users concerned and the name of the action performed.
+
+Example:
+
+<code>
+      ## All bouncing adresses with a score between 75 and 100
+      ## will be unsubscribed, and listmaster will receive an email
+      Bouncers level 2
+      rate:75 Points
+      action: remove\_bouncers
+      Notification: Listmaster
+</code>
+
+===== welcome_return_path =====
+
+''welcome_return_path unique | owner'' \\ (Default value: ''welcome_return_path robot parameter'') \\ If set to ''unique'', the welcome message is sent using a unique return path in order to remove the subscriber immediately in case of bounce. See the [[conf-parameters/part3#welcome_return_path|welcome_return_path sympa.conf parameter]].
+
+
+===== remind_return_path =====
+
+''remind_return_path unique | owner'' \\ (Default value: ''remind_return_path robot parameter'') \\ Same as ''welcome_return_path'', but applied to remind messages. See the [[conf-parameters/part3#remind_return_path|remind_return_path sympa.conf parameter]].
+
+===== verp_rate =====
+
+(Default value: ''verp_rate host parameter'') \\ See [[bounces#verp|VERP]] for more information on VERP in Sympa.
+
+When ''verp_rate'' is null, VERP is not used; if ''verp_rate'' is 100% VERP is always in use.
+
+VERP requires plussed aliases to be supported and the bounce+* alias to be installed.

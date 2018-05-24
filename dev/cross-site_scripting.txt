@@ -1,0 +1,391 @@
+<note warning>
+Les attaques de type [[http://fr.wikipedia.org/wiki/Cross_site_scripting|cross site scripting]] consistent en l'utilisation d'une application web pour déposer du code qui, affiché par d'autres utilisateurs du site, déclenche l'exécution de scripts plus ou moins hostiles.
+
+Pour protéger les utilisateurs de Sympa des attaques de type "cross-site scripting", David Verdin (CRU) a fait quelques recherches sur les attaques de ce type. Il synthétise dans cette page les informations glanées sur les sites :
+
+  * http://ha.ckers.org/xss.html
+  * http://www.commentcamarche.net/attaques/cross-site-scripting.php3
+  * http://www.cgisecurity.com/articles/xss-faq.shtml
+  * http://www.cert.org/tech_tips/cgi_metacharacters.html
+
+**Ces informations n'ont pas la prétention d'être exhaustives**, mais nous vous les livrons car nous pensons qu'elles peuvent aider les développeurs d'applications web qui souhaitent protéger leurs applications contre ce type d'attaques.
+</note>
+
+====== Problématique ======
+
+===== Cross-site quoi ? =====
+
+Si vous n'avez jamais entendu parler de cross-site scripting (XSS), lisez quelques articles de fond avant passer à la suite.
+Le principe du cross-site scripting est présenté dans plusieurs pages. Une bonne présentation synthétique se trouve dans [[http://fr.wikipedia.org/wiki/Cross_site_scripting|wikipédia]]. Le site [[http://www.cgisecurity.com/articles/xss-faq.shtml|www.cgisecurity.com]] propose une FAQ claire.
+
+En résumé, on peut dire que, dans notre contexte, un XSS est un appel à un script interprété côté client, dissimulé dans une chaîne de caractère. Le gros du boulot est de contrer la dissismulation.
+
+===== Objectif et limites du présent texte. =====
+
+Les recherche menées ici ont eu pour contexte le développement de [[http://www.sympa.org|Sympa]]. Notre objectif était principalement d'empêcher les attaques de première et troisième catégories. Notre choix a été d'empêcher de saisir tout information suspecte. Par conséquent, on ne cherche pas à transformer une chaîne potentiellement dangereuse en chaîne innoffensive. Par ailleurs, dans de nombreux cas, nous n'accepterons tout simplement pas que l'on enregistre du HTML. Les conséquences de ces choix sont :
+
+  - Dans la plupart des cas, un filtrage grossier suffira à nous protéger : on ne cherche pas à séparer le  "bon" HTML du "mauvais".
+  - Nous ne nous sommes intéressés qu'à l'identification des chaînes dangereuses, pas à leur neutralisation (on se contente de les ignorer); Nous ne nous intéressons aux possibilités d'encodage (à fins de dissimulation) des chaînes que dans la mesure où cet encodage pourrait nous empêcher de les répérer, pas de les transformer sous une forme empêchant leur interprétation.
+
+On trouve facilement des exemples de XSS et de la manière dont ils agissent. En revanche, certainement en raison de la grande variabilité des failles exploitées, on a du mal à trouver des expressions rationnelles permettant de les détecter. L'objectif de cette recherche est de trouver une telle expression.
+
+Enfin, prenez note que ce document est un document de travail, pas une solution miracle. Nous espérons cependant qu'il vous aidera à protéger vos applications.
+
+====== Préambule : les navigateurs ======
+
+Lorsque vous testez la vulnérabilité de votre application au XSS, considérez que la plupart des attaques un peu raffinées exploitent un comportement particulier d'un navigateur spécifique. Tous ne présentent pas les mêmes failles.
+
+====== Chaînes dangereuses ======
+
+On peut synthétiser quelques informations sur les chaînes de caractères pouvant être sources de cross-site scripting (XSS dans la suite).
+
+Les XSS ont la structure suivante :
+
+  * Un contexte encapsulant la chaîne, servant souvent à permettre d'écrire la chaîne sous une forme innoffensive. Dans ces cas, c'est la combinaison contexte - chaîne qui est dangereuse;
+  * La chaîne de caractère elle-même.
+
+Sauf exceptions (présentées [[#exceptions|plus bas]]), la chaîne peut être décomposée ainsi :
+
+  * "<" un chevron ouvrant de balise ;
+  * une chaîne de caractère contenant un nom de balise HTML, pas forcément W3C ;
+  * un ou plusieurs séparateurs ;
+  * une chaînes de caractère introduisant le script ;
+  * le script lui-même.
+
+===== Contexte =====
+
+C'est comme un médicament : il faut un principe actif et un excipient. Le principe actif est la molécule qui va agir, mais elle est inutile si elle n'est pas mélangée à l'excipient chargé de l'amener à bon port.
+
+Le rôle du contexte est de faire passer les barrières au code hostile.
+
+Exemple : une bonne vieille balise XML qui contient une section CDATA avec des balises et un script encodés en HTML. tout ça analysé par le navigateur donnera une script interprété. Mais si on se contente d'une recherche sur une chaîne genre "<SCRIPT*", on n'obtiendra jamais de résultat.
+
+L'exemple ci-dessous a l'air de marcher sous IE 6 et 7. Pas sur Firefox ;)
+<code><XML ID=I><X><C><![CDATA[<IMG SRC="javas]]><![CDATA[cript:alert('XSS');">]]>
+</C></X></xml><SPAN DATASRC=#I DATAFLD=C DATAFORMATAS=HTML></SPAN></code>
+
+Ça peut aussi tout simplement être des espaces vides, ou la fermeture d'une autre balise (</title> par exemple).
+
+===== Chevron ouvrant =====
+
+Les chevrons, notamment, peuvent être encodés (couramment en HTML "&lt;") pour ne pas être repérés par les expressions régulières. L'auteur [[http://ha.ckers.org/xss.html|du florilège]] propose la liste suivante d'encodages différents pour le chevron ouvrant, en combinant HTML et javascript (en UTF-8). Il précise que "la plupart ne donneront rien, mais certains peuvent être correctement interprétées suivant certaines circonstances."
+
+  * <
+  * %3C
+  * &lt
+  * &lt;
+  * &LT
+  * &LT;
+  * &#60
+  * &#060
+  * &#0060
+  * &#00060
+  * &#000060
+  * &#0000060
+  * &#60;
+  * &#060;
+  * &#0060;
+  * &#00060;
+  * &#000060;
+  * &#0000060;
+  * &#x3c
+  * &#x03c
+  * &#x003c
+  * &#x0003c
+  * &#x00003c
+  * &#x000003c
+  * &#x3c;
+  * &#x03c;
+  * &#x003c;
+  * &#x0003c;
+  * &#x00003c;
+  * &#x000003c;
+  * &#X3c
+  * &#X03c
+  * &#X003c
+  * &#X0003c
+  * &#X00003c
+  * &#X000003c
+  * &#X3c;
+  * &#X03c;
+  * &#X003c;
+  * &#X0003c;
+  * &#X00003c;
+  * &#X000003c;
+  * &#x3C
+  * &#x03C
+  * &#x003C
+  * &#x0003C
+  * &#x00003C
+  * &#x000003C
+  * &#x3C;
+  * &#x03C;
+  * &#x003C;
+  * &#x0003C;
+  * &#x00003C;
+  * &#x000003C;
+  * &#X3C
+  * &#X03C
+  * &#X003C
+  * &#X0003C
+  * &#X00003C
+  * &#X000003C
+  * &#X3C;
+  * &#X03C;
+  * &#X003C;
+  * &#X0003C;
+  * &#X00003C;
+  * &#X000003C;
+  * \x3c
+  * \x3C
+  * \u003c
+  * \u003C
+
+
+
+
+===== Les balises  =====
+
+La liste suivante contient les balises pouvant introduire un attribut contenant un script.
+
+  * SCRIPT
+  * IMG
+  * BODY
+  * IFRAME
+  * FRAMESET, FRAME
+  * INPUT
+  * LAYER
+  * BGSOUND
+  * BR
+  * LINK (rel="stylesheet", ref="<script>")
+  * STYLE
+  * TABLE
+  * TD
+  * META
+  * DIV
+  * BASE
+  * OBJECT
+  * EMBED
+  * APPLET
+  * NIMPORTEQUOI : dans certains cas, le nom de la balise n'a pas d'importance. Il ne sert qu'à introduire la suite (en général dans un attribut "style").
+
+On peut aussi bien tous les interdire si on veut, ou bien en interdire la majorité et ne traiter les cas particuliers que pour ceux qu'on veut laisser utilisables.
+
+En règle générale, il ne faut plutôt rechercher une balise ouvrante et en rester là. //Il est en effet possible, dans certains cas, de ne pas fermer une balise, et son code sera tout de même interprété !//
+
+===== Les séparateurs =====
+
+Ce qu'il y a après la chaîne "chevron ouvrant+balise" (telle que "<SCRIPT", par exemple) peut fortement varier. La balise peut être fermée et c'est son contenu qui est dangereux, ou bien elle est encore ouverte et on doit chercher le script dans ses attributs. Il existe même des méthodes permettant de faire croire que la balise est ouverte alors qu'on va la fermer juste après.
+
+Voici un florilège de "trucs qu'on peut trouver apès une balise" :
+
+  * '>' une chevron fermant. Après une balise script, par exemple;
+  * ' ' un espace. pourra être suivi d'un attribut src ou de n'importe quel autre attribut, ou bien d'un espace, etc...
+  * une tabulation
+  * divers caractères encodés : "&#x09;" (tabulation) "&#x0A;" (saut de ligne) "&#x0D;" (retour chariot). Ces caractères permettent par exemple d'écrire le XXS avec un caractère par ligne.
+  * le caractère nul (\0) permet, s'il est in jecté par des outils comme [[http://www.portswigger.net/proxy/|"Burp proxy"]] (quoi que ça puisse être) permettent de masquer passer les filtres. Bêtement écrits (dans un champ texte), ils semblent casser le code javascript.
+  * '"""' : trois guillemets. Permet de décaler un ouverture/fermeture de script
+  * "\BLABLA" : une chaîne qui n'a pas de sens précédée d'un caractère qui n'est ni une lettre ni un chiffre. Certains navigateurs vont considérer qu'un caractère qui n'est ni une lettre ni un chiffre est équivalent à un espace dans un nom de balise HTML.
+  * n'importe quel caractère de valeur décimale entre 1 et 32 peut être placé avant le javascript
+  * tous ces caractères peuvent se trouver entre le déclencheur d'événement (onload par exemple) et le javascript : 
+    * !#$%&()*~+-_.,:;?@[/|\]^`
+
+===== Les chaînes introduisant les scripts =====
+
+Ce ne sont pas des balises ni des séparateurs. Ce sont des noms d'attributs ou bien des couples "nom/valeur" qui permettent l'activation de comportements favorables à l'interprétation d'un script. Certains ne sont valables que dans des contextes très précis, d'autres sont beaucoup plus versatiles. Je présente les attributs ci-dessous (avec, entre parenthèses, le contexte dans lequel l'attirbut était présenté dans le site web où j'ai trouvé l'exemple)
+
+  * src pour toute balise, ou presque
+  * style pour toute balise, ou presque (peut contenir une chaîne "xss:expression(<script à réaliser>)"
+  * onload (dans une balise BODY)
+  * dynsrc, lowsrc (dans une balise IMG)
+  * size (dans une balise BR)
+  * href (quand on fait référence à un style)
+  * background (pour TABLE et TD)
+  * url pour une balise META. Permet de se passer des mots script et javascript. Tout est encodé en 64 bits...
+  * les attributs "background", "style=background-image:"
+
+**En règle générale, tout ce qui permet d'introduire une source externe est potentiellement suspect**. Toute référence à une image (par une balise, un attribut ou un élément de style) ou une feuille de style, etc. permet d'introduire un XSS.
+
+===== Camouflage =====
+
+L'ensemble des chaînes de caractère pré-décrites peuvent être camouflées de diverses manières pour passer les filtres. Voici certains des moyens employés à cet effet :
+
+  * caractère nul : "\0". Ça fait deux caractères et c'est ignoré par les navigateurs
+  * commentaires : <!----!> Un moyende scinder en deux des chaînes suspectes.
+  * encodage : comme le chevron ouvrant, d'autres caractères peuvent être encodés en UTF-8, ASCII-US, etc. pour ne pas être repérés
+  * espaces, tabulations, sauts de lignes : peuvent être utilisés pour splitter une chaîne de caractère suspecte.
+  * //l'absence// de guillemets. À préciser, mais leur usage est, dans certains cas facultatifs.
+
+===== Le script lui-même =====
+
+Ce peut-être soit une chaîne de caractère contenant le texte du script, soit un pointeur vers la source du script, généralement un fichier ".js", mais ce peut être également un faux fichier image, ou un fichier ".htc".
+
+Ce dernier (HTML component) est un mécanimse d'internet explorer pour externaliser une parti de la page web. C'est un document HTML qui contient des scripts et des éléments propres à la syntaxe HTC. Voir http://msdn2.microsoft.com/en-us/library/ms531018.aspx .
+
+===== Exceptions =====
+
+Il existe également des formes d'introduviot de scripts qui n'ont rien à voir avec des balises (donc beaucoup plus pénibles à introduire dans une expression régulière).
+
+Le plus pénible est l'actionscript :
+<code>
+a="get";
+b="URL(\"";
+c="javascript:";
+d="alert('XSS');\")";
+eval(a+b+c+d);
+</code>
+
+L'auteur [[http://ha.ckers.org/xss.html|du florilège]] évoque également SSI et PHP, mais ces failles imposent de pouvoir lancer des scripts locaux à partir de l'interface. Comme il le dit (à peu près) lui-même : "si on peut faire ça sur votre serveur, vous avez des problèmes autrement plus graves que le XSS".
+
+
+===== Conclusion =====
+
+On trouvera toujours un tordu pour contourner notre belle protection. :(
+Les ennemis visibles sont, a priori, les balises IMG, STYLE et SCRIPT. Ce sont les plus évidentes. On élimine certainement 90% des problèmes si on les dégage, en tenant compte des variations de présentations qu'ils peuvent avoir.
+
+IMG pose problème parce qu'on peut en avoir besoin pour des raisons tout à fait légitimes.
+
+====== Les endroits à filtrer ======
+
+  * Les zone de saisie de texte libre (profil, liste). tout ce qui est accessible au moins aux propriétaires. On fait confiance aux listmasters, hein ?
+  * Les documents partagés qui seront présentés avec un ''content-type="text/plain|text/html|text-shtml'' FIXME
+  * Certaines URL
+  * Le gecos des e-mails.
+  * Les paramètres de l'interface SOAP
+  * Les archives.
+
+
+====== Où faire intervenir le filtrage dans le code ? ======
+
+
+===== Pour l'interface web et les URL =====
+
+Il existe une fonction bas niveau de contrôle des paramètres saisis : la fonction ''get_parameters()''. Tous les paramètres utilisés par wwsympa.fcgi y passent. On filtre là, on est tranquilles.
+
+Tout n'est pas à filtrer drastiquement. La liste des éléments où le HTML est légitime est :
+
+  * le shared : lors de la création d'un fichier par l'interface web, ou lors d'un upload de fichier (fonction ''do_d_upload()'')
+  * la homepage (dans customizing)
+  * l'édition des templates
+  * les avis divergent sur le fichier "info"
+  * PAS les archives. On peut éventuellement dissimuler du XSS dans le corps d'un message ensuite affiché par les archives. Il faut voir ce que MHonArc propose.
+
+Tous des éléments de formulaire HTML permettant de saisir ces paramètres ont le bon goût d'avoir le même nom. Si ce sont les seuls, on n'a qu'à ajouter ce nom (''content'') à la liste des paramètres où le HTML est autorisé.
+
+Dans ''get_parameters'', on va exploiter un hash contenant les noms des paramètres autorisés à contenir du HTML. Tous les autre paramè_tres seront filtrés. Si on trouve du HTML, on rejettera l'action en cours.
+
+===== Pour le mail =====
+
+Seul le gecos est dangereux par mail.
+On doit tester la valeur de ''$i'' (et tant qu'à y être renommer cette variable) dans la fonction ''parse()'' de ''Commands.pm''.
+
+===== Pour le serveur SOAP =====
+
+On doit tester les paramètres passés aux fonctions ''subscribe'', ''add'' et ''createList'' de ''SympaTransport.pm''.
+Si possible, essayer de trouver (ou créer) un accès centralisé aux paramètres passés au serveur SOAP.
+
+====== Les regexp ======
+
+Ben c'est pas gagné...
+
+On prévoit d'ajouter, dans le hash %regexp de tools.pm, deux regexp :
+
+  - ''html-free'' : permet de repérer toute chaîne de caractère contenant du HTML ;
+  - ''xss-free'' : ne permet de repérer que les chaînes contenant du HTML pouvant introduire du code dangereux.
+
+Autant on peut brutalement interdire le HTML (en repérant en gros les chaînes commençant par un chevron ouvrant) autant ça va être coton de repérer le XSS avec une simple regexp puisqu'on ne repère pas forcément un XSS grâce à la chaîne HTML.
+
+
+
+
+===== html_free =====
+
+Une première approche est d'empécher purement et simplement de saisir le caractère "<", sous quelque forme que ce soit.
+99,9 % des XSS exploitent une balise HTML. La seule chose dont on est sûr c'est qu'une telle balise DOIT commencer par une caractères chevron ouvrant : "<".
+
+On peut raffiner en recherchant des chaînes du genre "<blabla". C'est-à-dire que "<" soit suivi de quelque chose qui pourrait être une balise. Ce qui nous place dans 99 % des cas d'utilisation du chevron. En effet, même si on l'emploie pour taper "2<3", on peut détecter une balise HTML avec cette méthode.
+
+Cela dit : qu'est-ce qu'une telle chaîne pourrait bien venir foutre dans un paramètre de Sympa, hein ?
+
+On va donc faire ainsi.
+
+Regexp proposée : on repère le caractère "<" sous ses diverses formes :
+<code>$html_free = '(<|%3c|(&+('."$dividers".')*(l('."$dividers".')*t|#+x*0*(60|3c)+)+\;*)|x*0*(60|3c))';
+Avec :
+$dividers = '\s|&+#+x*0*(09|0a|0d)+\;*';
+</code>
+On ignore les espaces ainsi que leurs expressions en HTML.
+
+FIXME : Il manque le caractère nul.
+
+
+
+
+===== xss_free =====
+
+Beaaaaaauuuuuucoup plus compliqué : On ne peut pas interdire toutes les chaînes de caractère contenant "<". Il faut donc trouver les mauvaises.
+
+OR, il existe au moins un exemple de XSS de la forme :
+<code><IMG src="path/monImage.jpeg"/></code>
+Il suffit que le fichier monImage.jpeg ne contienne pas une image mais un script. Dans certains cas, il sera interprété. :-(
+
+Quelle solution nous reste-t-il ?
+
+Risquer les exceptions de ce genre, pour le moment, et filtrer les balises ci dessous :
+
+  * ''<script/>''
+  * ''<img/>''
+  * ''<style/>''
+  * ''<meta/>''
+  * ''<body/>''
+  * ''<*frame*/>''
+  * ''<bgsound/>''
+  * ''<input/>''
+  * ''<link/>''
+  * ''<layer/>''
+  * ''<base/>''
+  * ''<object/>''
+  * ''<embed/>''
+  * ''<applet/>''
+
+Et, dans le contexte de n'importe quoui qui contienne un "<" :
+
+  * ''style=''
+  * ''dynsrc=''
+  * ''lowsrc=''
+  * ''onload='' et tous les déclencheurs : ''on*=''
+  * ''datasrc=''
+  * ''javascript:'' par acquis de conscience. ;-)
+
+Ça devrait être un bon début...
+
+Ça donne ces regexp :
+
+<code>
+m$xss_free = "($infSign)+($dividers)*((($tags)|.*($attributes))+|($encodedChars)+)";
+
+Avec :
+
+my $tags = 'script|\w*frame\w*|style|input|layer|bgsound|link|meta|base|object|embed|applet';
+my $attributes = 'style=|dynsrc=|lowsrc=|on\w*=|javascript:';
+my $dividers = '\s|&+#+x*0*(9|a|d|10|13)+\;*';
+my $encodedChars = '(&+('."$dividers".')*#+x*0*[0-9a-f]+\;*|%+x*0*[0-9a-f]+\;*)';
+my $infSign = '(<|%3c|(&+('."$dividers".')*(l('."$dividers".')*t|#+x*0*(60|3c)+)+\;*)|&+('."$dividers".')*x*0*(60|3c))';
+
+</code>
+
+====== Où en sommes-nous ? ======
+
+Avant de partir pouponner, j'ai eu le temps d'intégrer le filtrage XSS pour le web uniquement.
+J'ai donc mis à jour tools.pm et wwsympa.fcgi pour qu'il en tiennent compte. Ça a l'air de marcher.
+
+Il reste encore à faire :
+
+  * intégrer le contrôle au niveau SOAP
+  * intégrer le contrôle au niveau mail
+  * vérifier le comportement de MHonArc
+  * Vérifier les templates et paramètres autorisés au HTML
+
+Voili voilou. Cela dit, le gros du boulot (mise au point de la regexp) est bien posé.
+Reste à tester...
+

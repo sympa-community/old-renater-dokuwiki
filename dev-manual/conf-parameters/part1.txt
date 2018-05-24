@@ -1,0 +1,230 @@
+====== sympa.conf parameters ======
+
+The ''/etc/sympa.conf'' configuration file contains numerous parameters which are read on start-up of Sympa. If you change this file, do not forget that you will need to restart Sympa afterwards.
+
+The ''/etc/sympa.conf'' file contains directives in the following format:
+
+//keyword value//
+
+Comments start with the ''#'' character at the beginning of a line. Empty lines are also considered as comments and are ignored. There should only be one directive per line, but their order in the file is of no importance.
+
+======  Site customization ======
+
+===== domain =====
+
+This keyword is **mandatory**. It is the domain name used in the ''From:'' header in replies to administrative requests. So the SMTP engine (qmail, sendmail, postfix or whatever) must recognize this domain as a local address. The old keyword ''host'' is still recognized but should not be used anymore.
+
+Example: <code>domain renater.fr</code>
+
+
+===== email =====
+
+(Default value: ''sympa'')
+
+Username (the part of the address preceding the ''@'' sign) used in the ''From:'' header in replies to administrative requests.
+
+Example: <code>email listserv</code>
+
+
+===== listmaster =====
+
+The list of the email addresses of the listmasters (users authorized to perform global server commands). Listmasters can be defined for each virtual host.
+
+Example: <code>listmaster postmaster@renater.fr,root@renater.fr</code>
+
+
+===== listmaster_email =====
+
+(Default value: ''listmaster'')
+
+Username (the part of the address preceding the @ sign) used in the listmaster email. This parameter is useful if you want to run more than one sympa on the same host (a sympa test for example).
+
+If you change the default value, you must modify the sympa aliases too.
+
+For example, if you put:
+
+<code>listmaster listmaster-test</code>
+
+you must modify the sympa aliases like this:
+
+<code>listmaster-test: | /home/sympa/bin/queue listmaster@my.domain.org</code>
+
+See [[manual:mail-aliases#robot_aliases|Robot aliases]] for all aliases.
+
+
+
+===== wwsympa_url =====
+
+(Default value: ''<nowiki>http://your.host/sympa</nowiki>'')
+
+This is the root URL of the Sympa web interface. This parameter is used to construct URLs while sending notification emails to users.
+
+Example: <code>wwsympa_url https://my.server/sympa</code>
+
+
+===== soap_url =====
+
+This is the root URL of Sympa's SOAP server. Sympa's WSDL document refers to this URL in its service section.
+
+Example: <code>soap_url http://my.server/sympasoap</code>
+
+===== spam_protection =====
+
+(Default value: ''javascript'')
+
+There is a need to protect Sympa website against spambot which collect email addresses in public websites. Various methods are available within Sympa, and you can choose between the ''spam_protection'' and ''web_archive_spam_protection'' parameters. Possible values are:
+
+  * javascript: the address is hidden using a javascript. Users who enable Javascript can see nice mailto addresses where others have nothing.
+  * at: the "@" char is replaced by the string  "AT".
+  * none: no protection against spammers.
+
+===== web_archive_spam_protection =====
+
+(Default value: ''cookie'')
+
+The same as ''spam_protection'', but restricted to the web archive. An additional value is available: ''cookie'', which means that users must submit a small form in order to receive a cookie before browsing the web archive. This block all robots, including search engine robots.
+
+
+===== color_0, color_1, ..., color_15 =====
+
+They are the color definition parameters for the web interface. These parameters can be overwritten in each virtual host definition. Colors are used in the CSS files and unfortunately they are also in use in some web templates. The sympa admin interface shows all colors in use.
+
+To know the exact role of each color_x parameter please consult [[manual:customizing#sympa_colors_customization_guide|the color customization guide]].
+
+In order to choose colors you may use the online color editor included in the skin administration page (from sympa admin button).
+
+===== Obsolete color parameters =====
+
+A few color parameters were used in the past for color definition of the web interface: 
+''dark_color'', ''light_color'', ''text_color'', ''bg_color'', ''error_color'', ''selected_color'', ''shaded_color''. 
+
+These parameters are not used in version 5.1 and higher anymore, but still available in ''style.css'', ''print.css'', ''print-preview.css'' and ''fullPage.css''.
+
+__Note:__ light_color is still used for the header color of the New lists presentation array.
+
+===== logo_html_definition =====
+
+This parameter allows you to insert in the upper left corner of the page a piece of HTML code, usually to insert a logo in the page. This is a very basic but easy customization. Example: <code>logo_html_definition <a href=''http://www.mycompany.com''><img style="float: left; margin-top: 7px; margin-left: 37px;" src=''http:/logos/mylogo.jpg'' alt="my company" /></a></code>
+
+
+===== main_menu_custom_button =====
+
+You may modify the main menu content by editing the menu.tt2 file but you can also edit the following robot parameters in order to add up to 3 button. each button is defined by a title (the text in the button), an URL and optionnaly a target.
+
+  * main_menu_custom_button_1_title
+  * main_menu_custom_button_1_url
+  * main_menu_custom_button_1_target
+
+Replace digit 1 by 2 or 3 for the second and third custom button. 
+
+example :
+<code>
+  main_menu_custom_button_1_title faq
+
+  main_menu_custom_button_1_url http://www.renater.fr/faq/universalistes/index
+
+  main_menu_custom_button_1_target help
+</code>
+
+===== css_path =====
+
+Pre-parsed CSS files (let's say static CSS files) can be installed using the Sympa server skin module. These CSS files are installed in a part of the web server that can be reached without using the Sympa web engine. In order to do this, edit the ''robot.conf'' file and set the ''css_path'' parameter. Then restart the server and use the skin module from the "Admin sympa" page to install preparsed CSS file. In order to replace dynamic CSS files by these static files, set the ''css_url'' parameter.
+The server admin module includes a CSS administration page. By pushing the "Install static css" button in this page, you create the CSS files in the folder whose path is contained by the ''css_url'' parameter.
+
+**After an upgrade, ''sympa.pl'' automatically updates the static CSS files with the newly installed ''css.tt2''. Therefore, this is not a good place to store customized CSS files.**
+
+
+===== css_url =====
+
+By default, CSS files ''style.css'', ''print.css'', ''print-preview.css'' and ''fullPage.css'' are delivered by the Sympa web interface itself using a Sympa action named ''css''. URLs look like <nowiki>''http://foo.org/sympa/css/style.css''</nowiki>. CSS files are built by parsing a template named ''css.tt2''. This allows dynamic definition of colors, and in a near future a complete definition of the skin, user preference skins, etc.
+
+In order to make Sympa web interface faster, it is strongly recommended to install static CSS files somewhere in your website. This way, Sympa will deliver only one page instead of one page and four CSS files at each click. This can be done using the ''css_url'' parameter. The parameter must contain the URL of the directory where ''style.css'', ''print.css'', ''print-preview.css'' and ''fullPage.css'' are installed. You can make your own sophisticated new skin by editing these files.
+
+If you want to use the Sympa color parameters inside a static CSS file, you must do two things :
+
+  - define an alias in your Apache configuration that associates the content of the folder whose path is stored in the [[conf-parameters:part1#css_path|css_path]] parameter to the URL specified in [[conf-parameters:part1#css_url|css_url]];
+  - use the Skins administration page after you changed colors in your configuration file to generate the static CSS files.
+
+
+===== static_content_path =====
+
+(Default value : ''{Sympa install directory}/static-content'')
+
+Some content may be delivered by the HTTP server (Apache) without any need to be controlled or parsed by Sympa. It is stored in the directory chosen through the ''static_content_dir'' parameter. The current Sympa version stores subscribers' pictures in this directory. Later updates will add stylesheets, icons, ... The directory is created by ''sympa.pl'' when started. This parameter can be defined also in ''robot.conf''.
+
+===== static_content_url =====
+
+(Default value : ''/static-sympa'')
+
+Content stored in the directory specified by parameter ''static_content_url'' must be served by the HTTP server under the URL specified by ''static_content_url''. Check Apache configuration in order to make this directory available. This parameter can be defined in ''robot.conf''.
+
+===== pictures_feature =====
+
+(Default value: ''off'') 
+
+Example: <code>pictures_feature on</code>
+
+Subscribers can upload their picture (from the 'Subscriber option' page) so that reviewing subscribers shows a gallery. This parameter defines the default for corresponding list parameter but it does NOT allow to disable the feature overall. If you want to disable the feature for your entire site, you need to customize the ''edit-list.conf'' file to deny editing of the corresponding list parameter.
+
+Pictures are stored in a directory specified by the ''static_content_path'' parameter.
+
+===== pictures_max_size =====
+
+The maximum size of the uploaded picture file (bytes).
+
+===== cookie =====
+
+This string is used to generate MD5 authentication keys. It allows generated authentication keys to differ from a site to another. It is also used for reversible encryption of user passwords stored in the database. The presence of this string is one reason why access to ''sympa.conf'' needs to be restricted to the ''sympa'' user.
+
+Note that changing this parameter will break all HTTP cookies stored in users' browsers, as well as all user passwords and lists X509 private keys. To prevent a catastrophe, ''sympa.pl'' refuses to start if the ''cookie'' parameter was changed.
+
+Example: <code>cookie gh869jku5</code>
+
+===== create_list =====
+
+(Default value: ''public_listmaster'')
+
+The ''create_list'' parameter is defined by an authorization scenario (see [[manual:authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+Defines who can create lists (or request list creations). Sympa will use the corresponding authorization scenario.
+
+Example: <code>create_list intranet</code>
+
+===== automatic_list_feature =====
+
+(Default value: ''off"''
+
+Example: <code>automatic_list_feature on</code>
+
+If set to ''on'', Sympa will enable automatic list creation through family instantiation (see [[manual:list-families#automatic_list_creation|Automatic list creation]]).
+
+===== automatic_list_creation =====
+
+(Default value: ''none'')
+
+The ''automatic_list_creation'' parameter is defined by an authorization scenario (see [[manual:authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+If ''automatic_list_feature'' is activated, this parameter (corresponding to an authorization scenario) defines who is allowed to use the automatic list creation feature.
+
+===== automatic_list_removal =====
+
+(Default value: ''''
+
+Example: <code>automatic_list_feature if_empty</code>
+
+If set to ''if_empty'', then Sympa will remove automatically created mailing lists just after their creation, if they contain no list member (see [[manual:list-families#automatic_list_creation|Automatic list creation]]).
+
+
+===== global_remind =====
+
+(Default value: ''listmaster'')
+
+The ''global_remind'' parameter refers to an authorization scenario (see [[manual:authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+Defines who can run a ''REMIND *'' command.
+
+===== allow_subscribe_if_pending =====
+
+(Default value: ''on'')
+
+If set to "off", it is forbidden to add subscribers (through wwsympa) to a list whose status is different from "open".

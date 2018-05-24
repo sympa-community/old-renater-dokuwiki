@@ -1,0 +1,64 @@
+====== Checkpoint recovery ======
+<note important>
+this is now done in version 6.0
+</note>
+
+Currently Sympa is not able to interrupt the distribution process of a message. The drawbacks of the current behavior:
+  * It may take a while before a **sympa.pl** process reacts to a received TERM signal.
+  * If **sympa.pl** had died, when restarting **sympa.pl** the last processed message is processed again and some list members might receive duplicate messages.
+  * In current version a new message arriving with a high priority will be spooled until the current distribution process is terminated even if it relates to a huge list with a low priority level.
+ 
+The new organization must also allow the distribution process to be performed by a set process may be on different host
+
+===== New proposed organization =====
+
+Distribution will be separated into two processes (now optionnal but will be mandatory)
+sympa.pl will prepare message for distribution in more sophisticated way then now. It will describe the distribution processes in spool distribute in a way segmented by packets. So distribute processes will be able to stop and restart distribution or evaluate priority after each packet. RCPT list will be prepared in files group by subscription option (and bounce status).  
+
+Each message in the distribute/ spool would be represented by 3 kind of files:
+  * The message itself. Example: my-list@my.dom.1192613090.972
+  * The list of recipient email addresses, called packet. Example: my-list@my.dom.1192613090.972.recipients.mail.xxx, my-list@my.dom.1192613090.972.recipients.notice.xxx
+  * For each packet the status of the distribution. Example: my-list@my.dom.1192613090.972.recipients.mail.xxx.status
+
+== What should be the packet size ? ==
+One idea is to use the same size as the grouping factor from the current version. We must evaluate the risk of large spools. May be we need a parameter for it with a default that must be good for most server.  
+
+The list of recipients is a text file with one email address per line. It is constructed when the decision of sending the message is taken. This file is then used by either the smtp_to() subroutine or a dedicated distribution process. 
+
+The status file only contains the email address of the last processed recipient. The file is overwritten after each call to sendmail. If sympa.pl crashes or stopped, the next sympa.pl will be able to go on the mail distribution where it stopped.
+
+==== Open questions ====
+
+Should the list of recipients contain only email addresses or other information, useful to parse a footer for example?\\
+The case of other reception formats (digest, summary,...) should be addressed the same way.
+
+===== Related extensions =====
+
+==== Managing list priorities at a lower level ====
+
+Checkpoint recovery allows to interrupt message distribution to stop sympa.pl process. It could as well allow to interrupt message distribution to process messages for lists with higher priority.
+
+Currently priority is handled by sympa.pl while going through the msg/ and distribute/ spools ; it checks the lists priority to determine which message should be processed first.
+
+A new organization could do the priority processing at a lower level :
+  * priority is no more used while processing the msg/ spool
+  * each priority is mapped to a subdirectory of the distribute/ spool (0-9,z). The sympa.pl instance processing the distribute/ spool would be able to interrupt the processing of a message if another message is found in another spool of greater priority
+
+The drawback of this new organization is that changing a list priority will not get applied to messages already spooled, unless the messages are moved from one spool to another.
+
+
+==== Scheduling message distribution at a fixed hour ====
+
+We’ve had feature requests for this: defining an hour/day of distribution for messages for a given list. Messages received before the scheduled distribution time would be stored for later processing.
+
+The feature could be implemented so that scheduled messages file names would include the computed delivery date. The file format could look like this : my-list@my.dom.1192613090.972:**at1083638**.
+
+Another option to implement the feature would be to use the task_manager, but it seems to be a less flexible solution.
+
+==== Allow distributed sympa.pl processes ====
+
+Currently 2 sympa.pl processes can run on the same server, each going through a different spool (msg/ and distribute/). We can imagine a cluster of sympa.pl processes, running on the same server, or ideally running on different servers.
+
+This concurrent access to a single spool requires some locking, and because processes could reside on different servers, the locking could be done through the Sympa DB.
+
+If this feature aims at solving the distribution problem for big lists (with many thousand members), then there should be a way for different processes to share the processing of a single message. The list of recipients should therefore be split into N files, where N should be customizable.

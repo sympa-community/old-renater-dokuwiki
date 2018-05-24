@@ -1,0 +1,303 @@
+====== Le stage à William ======
+ ===== Affichage de données Statistiques pour SYMPA =====
+
+===Présentation :=== 
+Le but de ce projet est de pouvoir permettre aux utilisateurs de SYMPA de pouvoir accéder depuis l'interface web à des donnés statistiques concernant les listes de SYMPA.
+
+===Contexte :===
+
+Certains robots gèrent plusieurs centaines de listes de diffusion, et plusieurs milliers de messages et d'abonnés. Un gros manque de Sympa jusq'ici était de pouvoir disposer régulièrement d'informations sur ces listes, nécessaires selon le type d'utilisateur. Quelles listes sont collaboratives, et quelles listes sont des newsletters. Quels abonnés sont des habitués, quelles sont les listes les plus consultées.
+Ce besoin est apparu du à la popularité de plus en plus importante de Sympa.
+===Etude des besoins :===
+Cet Affichage de statistique devra etre différent selon les types d'utilisateurs de SYMPA.
+Cette étude va donc se faire selon les cas d'utilisation suivants: 
+  * Statistiques pour une personne "publique".
+  * Statistiques pour le propriétaire d'une liste (owner).
+  * Statistiques pour le Listmaster niveau Robot (ou RobotMaster).
+  * Statistiques pour le Super Listmaster
+
+De plus, etant donné le coté hierarchique des utilisateurs, (listmaster, owner, public user...)
+Ces statisques prendront en compte cette hiérarchisation : plus l'utilisateur possède des droits, plus il a accès à des données statistiques :
+
+  - confidentielles.
+  - sur une grande échelle
+
+**l'utilisateur public:**
+
+  * voir le nombre de messages postés selon une unité de temps (que l'on définira plus tard)
+
+
+**Le Owner:**
+  *  accéder à l'évolution du nombre d'abonnés pour une liste donnée :le nombre de personnes qui s'abonnent et se désabonnent, affiché sous forme de "turnover" (ex : +10 subscribes, ou -10 subscribes par semaine).
+  * avoir acces aux causes des désabonnements : soit du aux erreurs, du aux sources de données (inclusions automatiques), soit manuelles ou supprimés par un modérateur. 
+
+  * le nombre d'abonnés qui postent
+  * le nombre total de messages postés par utilisateur.
+  * la taille des messages
+  * la nature des messages (html, fichier attaché)
+  * le nombre de messages rejetés par le modérateur
+
+  * le nombre d'utilisateur qui visitent les archives
+  * si il s'agit de robots ou d'utilisateurs réels
+  * la taille occupée par les archives de la liste par rapport au quota alloué
+  * la taille occupée par les documents partagés, par rapport au quota alloué
+
+
+**Le Listmaster (robotmaster)**
+  * Il doit pouvoir avoir un classement des listes, celles ou il y a le plus d'activités, de messages postés, aisi que celles qui prennent le plus de place.
+
+**Le super listmaster**
+  * accéder au volume général généré par les listes (par exemple : le produit du nombre d'abonnés avec la taille du message) 
+  * le nombre de "hits" (cliks qui générent une requete) sur l'interface web 
+  * le nombre de login
+  * le nombre de créations/fermetures/suppression de listes 
+  * les pics d'activités par h de la journée, depuis la date de création de la liste.
+
+=== Fonctionnement : ===
+
+les donnés seront stockées dans la base de données de Sympa.
+Des informations précises seront stockées : la date (à la seconde pres), l'IP de client, la nature de l'opération, le mail de l'utilisateur, la liste concernée, le résultat de l'opération (si cette action a fonctionné, ou sinon les raisons de son dysfonctionnement), et un parametre (ex : taille du message posté, NULL si il n'y en a pas...).
+Il existe deja, en base de données une table logs_table qui stocke a chaque action faites, soit par l'interface web, l'interface mail, l'interface SOAP, ou autre, des informations relatives à chaque action.
+Dans un premier temps, il ets donc nécéssaire d'étudier le contenu de cette base afin de voir quelles informations vont nous etres utiles, et voir quelle informations on va avoir besoin en plus, et celles que l'on pourra supprimer.
+
+voici donc les attributs de la logs_table actuelle :
+
+   * //id_logs//: l'identifiant du log (clé primaire)
+   * //action_logs//: nom de la fonction appelée
+   * //client_logs//: adresse IP du client
+   * //daemon_logs//: démon Sympa qui a engendré l'action
+   * //date_logs//: date à laquelle l'action a été executée
+   * //error_type_logs//: nom de l'erreur, si l'action a donné lieu à une erreur.
+   * //list_logs//: nom de la liste d'ou l'action a été executée
+   * //msg_id_logs//: identifiant du message qui a déclenché l'action.
+   * //parameters_logs//: Liste des paramètres séparés par des virgules. Le montant et le type de paramètres peuvent varier d'une action à l'autre.
+   * //robot_logs//: nom du robot du cadre dans laquelle l'action a été executée.
+   * //status_logs//: résultat de l'action, si il y a eu erreur ou non
+   * //error_type_logs// description de l'erreur, NULL sinon
+   * //target_email_logs//: mail "cible", si il y en a
+   * //user_email_logs//: mail de l'utilisateur
+
+
+nous allons stocker ces données avec la granularité la plus afin de pouvoir disposer de l'information la plus pertinente dont on aura besoin.
+
+Voici donc, toutes les actions faite par l'utilisateur, qui engendreront un stockage dans notre future base de données : 
+nous prenons en compte la nature de l'opération, les attributs qui vont etre stockés, la(les) fonction(s) qui entrent en jeu ainsi que le contexte (l'interface utilisée).
+
+  
+
+^ Opération     ^ Attributs   ^ Fonction    ^ Contexte   ^ 
+| Envoi message    | user_ip, date, liste_concernee, user_mail, msg_id, parametre=taille du message+nature (normal ou html), robot, daemon  | do_send_mail(), DoSendMessage()| wwsympa.fcgi, sympa.pl |
+| Un abonnement    | user_ip, date, liste_concernee, user_mail, robot, daemon | do_subscribe(), subscribe(), DoCommand() | wwsympa.fcgi, sympasoap.pm, sympa.pl |
+| un désabonnement  | user_ip, date, liste_concernee, user_mail,  parametre=cause du désabonnement, robot, daemon  | do_signoff(), signoff(), DoCommand() | wwsympa.fcgi, sympasoap.pm, sympa.pl|
+| un ajout | user_ip, date, liste_concernee, user_mail, parametre=mail de l'utilisateur ajouté, robot, daemon |do_add(), add()  |wwsympa.fcgi, sympasoap.pm |
+| une suppression | user_ip, liste_concernee, user_mail, parametre=mail de l'admin qui a supprimé l'abonné, robot, daemon |do_del(), del() | wwsympa.fcgi, sympasoap.pm|
+| une suppression automatique (bouce) | user_ip, liste_concernee, user_mail, robot, daemon | | bounced.pl|
+| partage d'un fichier| user_ip, date, user_mail, liste_concernee, parametre=taille du document, robot, daemon| do_d_upload()/do_d_create_dir | wwsympa.fcgi|
+| suppression d'un fichier | user_ip, date,  user_mail, liste_concernee, parametre=taille du document, robot, daemon | do_d_delete()| wwsympa.fcgi|
+| rejet d'un message | user_ip, date, user_email, msg_id,  liste_concernee, parametre=taille du message, robot, daemon | do_reject() | wwsympa.fcgi |
+| Visite des archives (attention, il est nécessaire de différentier les actions faites par un simple utilisateur et un robot) | user_ip, date, user_mail, parametre=nbre d'opérations effectuées("clicks"), robot, daemon | do_arc()| wwsympa.fcgi |
+| Suppression d'un message dans les archives | user_ip, date, user_mail, msg_id, parametre=taille du message supprimé, robot, daemon |do_remove_arc(), remove |wwsympa.fcgi, archived.pl |
+| Quelqu'un se connecte | user_ip, date, robot, daemon| do_login(), login() | wwsympa.fcgi, sympasoap.pm|
+| Qulequ'un se déconnecte | user_ip, date, robot, daemon |do_logout() | wwsympa.fcgi |
+| Création d'une liste | user_ip, date, liste_concernee, robot, daemon| do_create_list(), admin::create_list_old(), createlist()| wwsympa.fcgi, sympa.pl, sympasoap.pm|
+| Fermeture d'une liste | user_ip, date, liste_concernee, robot, daemon | do_close_list(), $list->close(), closelist()| wwsympa.fcgi, sympa.pl, sympasoap.pm|
+| Suppression d'une liste | user_ip, date, liste_concernee, robot, daemon | do_purge_list(), $list->purge| wwsympa.fcgi, sympa.pl|
+| restauration d'une liste | user_ip, date, liste_concernee, robot, daemon | do_restore_list() | wwsympa.fcgi |
+| "hit" (requetes envoyées par l'interface web) ,attention on ne prendra pas en compte les actions effectuées par le robot| user_ip, date, robot, daemon | | wwsympa.fcgi|
+
+
+
+Apres une étude précise, voici la nouvelle table qui serait amenée à être traitée:
+to respect the database convention, all the attributes must have a suffix of the same name of the table.
+
+  * id_stat : log's identifier, primary key
+  * date_stat : date when the action was executed (in seconds), int UTC format
+  * email_stat : e-mail address of the user
+  * operation_stat : name of the operation executed (send_msg, subscription, etc...)
+  * list_stat : name of the mailing-list in which context the action was executed
+  * daemon_stat : name of the daemon which ran the action
+  * user_ip_stat : IP address of the client machine from which the message was sent
+  * robot_stat : name of the robot in which context the action was executed
+  * parameter_stat : an additional parameter (e.q. message size, shared doc size, etc...)
+  * read_stat : boolean, if the tuple is read or not by the task_manager, used for the future. By default this parameter is 0.
+
+data catalogue
+^ Field ^ Type ^ Encoding ^ Null ^ Default ^
+| id_stat | bigint(20)| |no | |
+| date_stat | int(11)| | no| |
+| user_mail_stat |varchar(100) | latin1_swedish_ci |yes | NULL|
+| operation_stat | varchar(50 )| latin1_swedish_ci  |no | |
+| list_stat | varchar(150)| latin1_swedish_ci |yes | NULL |
+|daemon_stat | varchar(10) | latin_swedish_c1 | yes | NULL |
+| user_ip_stat | varchar(100)| latin1_swedish_ci |yes | NULL |
+| robot_stat | varchar(80) | latin1_swedish_ci | no | |
+| parameter_stat | varchar(50)| latin1_swedish_ci |yes |NULL |
+| read_stat | tinyint | | no | 0 |
+
+
+The main problem of the previous logs_table was the storage of too many data. Indeed, for most of the functions of wwsympa.fcgi, or sympa.pl for example, data was stocked for each different error.
+Let's take an example : the function do_add, function in wwsympa.fcgi, for adding a new subscriber in a list.
+if the field "Add a user:" is empty, it will generate a error message stored in logs_table to warn the subscriber cannot be added because there is no email.
+
+To make our statistics about the uses of Sympa, we need to log very precisely data. We just need to log the success operations to use these logs and make statistics.
+
+Compared to the previous logs_table, some attributes will disapear : 
+error_type_logs : as explained previously, we just need the sucessful actions. As a consequence, this attribute will be useless for our new table.
+target_email_logs : i don't really see the interest of this attribute, that's why i decided to remove it.
+
+Apres étude de logs_table, on a constaté que celle ci stockait trop de données, et dont la plupart de celles ci étaient des logs du à des erreurs, ce qui ne nous intéresse pas pour nos statistiques. Par exemple pour la fonction do_send_mail du démon wwsympa.fcgi, a chaque erreur (exemple : pas de sujet, pas de corps de message, etc), des données sont stockées dans logs_table.
+
+On a donc envisagé la création d'une nouvelle table dans la base de donnée, qui va fonctionner de la même manière que logs_table.
+
+La table logs_table a quand même pu être utile dans la mesure ou elle nous donnait une bonne idée de la structure de notre nouvelle table.
+
+=== In which function we need to log data? ===
+
+
+
+== wwsympa.fcgi ==
+
+  * do_send_mail() : send a mail to a list
+  * do_subscribe() : subscribe to a list
+  * do_signoff() : unsubscribe to a list
+  * do_add() : add a user to a list
+  * do_del() : delete a user to a list
+  * do_d_upload() : upload a document in a list
+  * do_d_create_dir : création d'un nouveau dossier ou fichier
+  * do_d_delete() : delete a document in a list
+  * do_reject() : reject a message in a list
+  * do_arc() : go to the archive
+  * do_remove_arc() : delete a message in archive
+  * do_login() : to login in sympa web interface, with the mail and password
+  * do_logout() : logout of the sympa web interface
+  * do_create_list() : create a new list
+  * do_close_list() : close a list, but not delete it
+  * do_purge_list() : delete definitively a closed list
+  * do_restore_list() : restore a closed list
+
+== sympa.pl ==
+  * DoSendMessage() : send a message pushed in the spool by another process
+  * DoCommand() : Handles a command sent to the list manager. (used for subscription or unsubscription)
+  * admin::create_list_old() : function called in sympa.pl to create a list
+  * $list->close() : function called in sympa.pl to close a list
+  * $list->purge() : function called in sympa.pl to purge a list.
+
+== sympasoap.pm ==
+  * subscribe() : subscribe to a list using the SOAP interface
+  * signoff() : unsubscribe to a list using the SOAP interface
+  * add() : add a subscriber to a list using the SOAP interface
+  * del() : delete a user to a list using the SOAP interface
+  * login() : login to sympa using the SOAP interface
+  * createlist() : create a list using the SOAP interface
+  * closelist() : close a list using the SOAP interface
+
+== archived.pl == 
+  * remove() : remove a message from archive 
+
+
+Pour permettre un stockage des données avec la meilleure granularité possible, il a été nécessaire de factoriser le stockage de données dans les couches les plus basses.
+
+Un petit point : 
+pour ce qui est de l'interface web, tous les endroits ou on a besoin de logger de l'info dans la table stat_table sont ok;
+il y a juste quelques problèmes au niveau des parametres concernant la taille des documents partagés, ces donnés ne veulent pas ses stocker dans las table stat_log.
+pour l'envoi d'un message, que ce soit via le web ou l'interface mail, cela passe automatiquement par le démon sympa.pl, j'ai donc appelé la fonction db_stat_log dans sympa.pl uniquement, pour éviter la redondance de données.
+Cependant, j'ai eu des soucis concernant le stockage des donnés pour l'envoi de messages. Lorsque qu'un message est modéré par le listmaster avant d'etre distribué aux subscribers, ce n'est pas la meme fonction qui est appelée quand un message est envoyé sans etre modéré.
+
+
+Au final, voici un résumé des modules ou la fonction db_stat_log est appelée afin de stocker des informations, avec pour chaque module, une description détaillée des fonction qui entrent en jeu.
+
+== wwsympa.fcgi ==
+  * login d'un utilisateur - //do_login//
+  * logout d'un utilisateur - //do_logout//
+  * rejet d'un message - //do_reject//
+  * visite des archives - //do_arc//
+  * upload_fichier - //do_d_upload//
+  * suppression d'un fichier - //do_d_delete//
+  * création d'un fichier/dissier - //do_d_create//
+  * rejeter une liste en attente de création - //do_install_pending_list//
+
+== Bulk.pm ==
+  * envoi d'un message - //store//
+
+== List.pm ==
+  * fermer une liste - //close//
+  * supprimer une liste - //purge//
+  * ajout d'un abonné - //add_user//
+  * suppression d'un abonné - //delete_user//
+
+== admin.pm ==
+  * crée une liste - //create_list_old//
+
+== archived.pl ==
+  * supprimer un message archivé - //remove//
+
+== Log.pm ==
+  * stocker les donnée dans la base - //db_stat_log//
+
+
+
+=== Traitement des données : ===
+
+le principe est que l'on va agréger nos données de stat_table dans une nouvelle table stat_counter_table, cette table présentera les informations dont on a besoin de maniere plus globale.
+
+Pour ce faire, on utilisera le module task_manager.pl qui a chaque date précise s'occupera de traiter notre table stat_table.
+
+elle utilisera notamment deux fonctions précises : 
+
+la première fonction mettra a jour la table stat_table.
+elle parcourera toute la table et récuperera entre deux dates précises (passées en parametre) le nombre de fois ou une certaine action (passée en parametre égalmement) est appelée. Elle s'occupera donc de marquer les n-uplets lus via l'attribut read_stat (passage de 0 à 1), incrémentera un compteur et stockera les données lues dans la table stat_counter_table.
+
+
+
+
+== la table stat_counter_table : ==
+^ Field ^ Type ^ Encoding ^ Null ^ Default ^
+| id_counter | bigint(20)| | no | |
+| beginning_date_counter | int(11)| | no | |
+| ending_date_counter | int(11) | | yes | null |
+| data_counter | varchar(50) | | no | |
+| robot_counter | varchar(80) | | no | |
+| list_counter | varchar(150) | | | |
+| variation_counter | int | | yes | null |
+| total_counter | int | | yes | null |
+
+la date de début de l'action, la date de fin de l'action, la variation, et le nombre absolu.
+
+En effet, on veut pouvoir dans cette table distinguer les evenement dans l'absolu et les evenement en terme de variation.
+Si par exemple on veut avoir dans l'absolu a une date donnée le nombre d'abonnés.
+
+La fonction aggregate_data qui se trouve dans Log.pm, fonctionne en 3 parties : 
+La première consiste à récupérer les données qui se trouvent dans stat_table entre les date de début et les dates de fin (passées en paramètre).
+Deuxièmement, on va pour chaque occurence du résultat obtenu, la stocker dans une variable de transition qui se présente sous la forme d'un tableau de hashage. Pour chaque clé, correspondant à une donnée à stocker (par exemple : les envois de messages), on va compter selon le contexte voulu (nombre de messages envoyés pour chaque liste, nombre de créations de liste pour chaque robot, etc.). Une fois toutes les occurences traitées, on renvoie notre tableau de hashage.
+Troisièmement, on va selon la donnée, la stocker dans la table stat_counter_table, avec les valeurs correspondantes. Une fois toute la table de hashage traitée, il nous reste plus qu'a marquer a 1 les occurences lues.
+
+Afin de pouvoir compter le nombre de messages envoyés par utilisateur, il a été nécessaire d'ajouter un champ supplémantaire à la table subscriber_table. Cette table stocke les données de chaque utilisateur inscrit à une liste. L'identifiant de cette tablme est le triplet (robot_subscriber, list_subscriber, user_subscriber). Il a donc été tres facile d'insérer un nouveau champ permettant de compter le nombre de messages envoyés dans cette table.
+
+L'aggrégation de données va se faire par tranche horaire. Pour une heure de début et une heure de fin, on va récupérer toutes les données de stat_table qui se situent entre ces deux dates.
+Le fonctionnement de l'aggrégation va sa faire via le démon task_manager.pl. Ce démon exécute des taches planifiées pour Sympa. L'une de ces tâches est de purger la table logs_table. Toute les 24h, cette table est remise à zéro, grace à la fonction purge_logs_table qui se trouve dans task_manager.pl.
+On va utiliser cette fonction pour aggréger quotidiennement les données de la table stat_table vers la table stat_counter_table.
+
+Entre la date de la derniere donnée aggrégée et la date de la prochaine tâche "purge_logs_table" a éxécuter, on va découper en tranches d'heures plaines cette période de temps, pour aggréger les données (fonction aggregate_data) heure par heure, pour une journée complète.
+
+
+=== mise en place du module ===
+
+afficher des statistiques nécessite l'emploi de représentation graphiques.
+Il ets donc nécessaire de pouvoir choisir une libraire qui va répondre à nos besoins, et faire des comparaisons entres les librairies existantes pour déterminer quelle sera la meilleure. Ces choix vont s'appuyer sur les besoins actuels, mais aussi en prévision des besoins futurs.
+
+Premièrement, la plupart de ces statistiques se font selon une unité de temps. On veut donc pouvoir afficher en grande partie des graphiques en barres et en courbes.
+Par exemple, pour savoir l'envoi de messages selon une unité de temps (par heure), un affichage en barres se présente comme la meilleure solution : c'est à la fois lisible et précis.
+
+Les graphiques en barre ainsi que les graphiques en courbes se présentent comme le meilleur moyen pour présenter nos statistiques de manière claire. En prenant une certaine échelle de temps comme abcisse et une valeur en ordonnée, ces graphiques vont permettre d'afficher une grande partie des informations qu'on a voulu agréger (l'envoi de messages, les abonnements, désabonnements, visites des archives, pics d'activités par heure de la journée, etc).
+
+Un autre graphique intéressant est l'affichage en "camembert", en effet, pour présenter la taille par exemple des archives ou des documents partagés par rapport au quota alloué.
+
+Pour l'instant nous avons trouvé deux bibliothèques javascript qui permettent l'affichqe que graphiques sur une interface web : 
+Raphael et jqPlot.
+La première permet de produire des applications internet à partir d'éléments vectoriels (VML et SVG). Ces capacités d'utilisation sont plus larges que le simple affichage de graphiques statistiques, mais il propose une extension nommée gRaphael réservée à l'usage de graphiques statistiques..
+jqPlot est une extension du framework JQuery permettant l'affichage exclusif de modules graphiques (courbes, diagrammes, camembers, etc.). c'est un plug-in très complet et permet une grande personnalisation des différentes formes graphiques.
+
+Ces deux logiciels sont sous licence libre.
+
+
+Les modèles graphiques de jqPlot étant complètements paramétrables, cette libraire va pouvoir dans une certaine mesure parfaitement répondre à nos besoins. De plus,  par rapport à gRaphael qui dispose d'un cruel manque d'informations et de documuentations à son sujet, jqPlot propose une documentation complète de ses fonctions. L'utilisation de jqPlot s'avère donc la plus intéressante.

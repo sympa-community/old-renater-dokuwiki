@@ -1,0 +1,746 @@
+====== Formations Sympa ======
+
+===== Idées prochaine formation =====
+
+  * Panneaux fléchés "Formation Sympa"
+  * Mettre le biclé ssh sur le modèle, donner PK aux stagiaires, virer mdps => DONE
+  * sed s/sympa.pl/sympa_msg.pl/
+  * rm message database packet size test
+
+
+===== Notes =====
+
+==== SSH ====
+
+Clé privée TP :
+<code>
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpQIBAAKCAQEAw+/gEnhRxE74TB529yVzAvUfRYfCg3t6XF46ZTD/AE8cE1zx
+gJK7eSMErMsAtcEnwehdhtmdxJky7OuuD1V22+HKESpxcAOX32RI7egkH6Pvdkck
+4xte7A3P9ViQMgLd7KTHmWdnNjvPUBsLblROJEH49N/OiWSeZ7n0tUgm/YN6goiW
+I4AGqJb932Lrv28Fh3EeFEl/9wB7vUHBze3D+k1+9nlFPn02bYEo7OzY/Nlw/VJC
+O8d8/awLS5EK5UEKJmxpUOYjsLChjvDkSK/oRBjAjha3VGo3ez0SeJ5N86N0+gsA
+ExREXD/N/iTWxq2229aQGxbOaGvjP5OhsCs2ywIDAQABAoIBAB7C3SnpK+UnBMJm
+kgTRI1JWi3dODhK4Ywh3XrGeVJqG0QCVOfEWmEo3XjeGk3D1hzlhMrXGGofQCXe6
+tJQBtexlcWTqhe6xEbnns69uH6W8Bg9KshbZqDhlHr4FDnZbjt3lLNT/r+uKzkxk
+QpIquC3nEZ/YN0PIwTnFrw566mwoXlpSgSXfmWZt3QeVeVVdATQkn6xB4Ij6RUXz
+xCwTxgkLXGRAlrNBop6fl1gROu4gYMfx+8w7n2O9E1nZC4G7vx264Q6XIKPwwiBx
+UKZw7c5jE5eKMy5kW1rkpzR613jrE8xeZUYPpc/76AgZ6+oZkvlJiGJyTHnHmx8L
+aQmfe4ECgYEA+4PpUF5YhnGSejPa9XZisIX0BKdO7l1cWSuj9yyLVTi6/1a3MYzA
+gBD2GiMSTnxVAOSWfiBTSKMVPnFAJ+FTjFlKPvmaCHNH6a1w1rUGKZTemiIbL9IR
+13CatqSowyyQ0FtYSjCD4sw/E5yFQDkx6f0Qw35gHXgLibzu3IaSJIsCgYEAx25E
+OLK/qnZIhwSRRQM/rBXe1hNxh5oE6mgwSZOtLBRqeqhRUVQG9c0siS+zs7IsCcc0
+WHEohq0IbeJXuF/7GuNAsxmQJmjkGegh5rgGS7oHROK4NVzJV0b4ZQF3GS1enJKA
+aP3V4HCJE0GA1bmPerEg3yYjknU2s5AqZ1XsPsECgYEAqbG5Y+ETxzmvQ0XjUEOc
+mE74cX9UcNyKpxsbmHP0Wf5ZpFckaIj3hDBtavsIqe2XCHAx3U0AA/0MI0ITsBSF
+4yaHQm/zbgohldbQT/x4+OsZOVMTlrMcGIg/ykTUHELgPcOzkPKkuQtm71tmSAuO
+0rlMaynDvX42Aqt3WVBuH7sCgYEAty8bzxCxaTx45jxVy5RuWf1E0FLPx4S72yyU
+niDdwk2GeOA+wXtzYThzHhgI8phIRzsJY+udFAfAZF6xwJO5LTts5JYoiH90di95
+ZFnIvqpDnwy5s5pk/pwb8XtlEGVSMHOJK+dtG1mDL4LNeoOVvVcSIKcBqbes5UcZ
+DA4qkIECgYEAoIqckMo9f0Vd35tPjZRoYUAFOoCpm2B94qHpSvtD3pxOlFpF1vVH
+VYC+Uxup4mxRfidQA5w9jpCnbiCFDtXKkeeus6dQsSgaH5o4gevv7AKxw0ydjFnp
+XHKqDSKcLjjBlDba1GoS5w6boHMjK4BZEzvUDDGo9xdVdKGoA6PBXDo=
+-----END RSA PRIVATE KEY-----
+</code>
+
+Clé publique TP :
+
+<code>
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDD7+ASeFHETvhMHnb3JXMC9R9Fh8KDe3pcXjplMP8ATxwTXPGAkrt5IwSsywC1wSfB6F2G2Z3EmTLs664PVXbb4coRKnFwA5ffZEjt6CQfo+92RyTjG17sDc/1WJAyAt3spMeZZ2c2O89QGwtuVE4kQfj0386JZJ5nufS1SCb9g3qCiJYjgAaolv3fYuu/bwWHcR4USX/3AHu9QcHN7cP6TX72eUU+fTZtgSjs7Nj82XD9UkI7x3z9rAtLkQrlQQombGlQ5iOwsKGO8ORIr+hEGMCOFrdUajd7PRJ4nk3zo3T6CwATFERcP83+JNbGrbbb1pAbFs5oa+M/k6GwKzbL stagiaire
+</code>
+
+==== Script de génération de la zone DNS ====
+
+<code perl>
+#!/usr/bin/perl
+ 
+my %trainees = (
+    'stage1' => '195.83.185.1',
+    'stage2' => '195.83.185.2',
+    'stage3' => '195.83.185.3',
+    'stage4' => '195.83.185.4',
+    'stage5' => '195.83.185.5',
+    'stage6' => '195.83.185.6',
+    'stage7' => '195.83.185.7',
+    'stage8' => '195.83.185.8',
+    'stage9' => '195.83.185.9',
+    'prof' => '195.83.185.11',
+);
+ 
+my $trainee_suffix = '.renater.fr';
+ 
+foreach my $t (keys %trainees) {
+	foreach my $subdom ('','a-','b-') {
+		my $domain = $subdom.$t.$trainee_suffix;
+		print $domain.'. IN A '.$trainees{$t}.".\n";
+		print $domain.'. IN MX 20 '.$domain."\n";
+		print $domain.'. IN TXT "v=spf1 ip4:'.$trainees{$t}.' ?all"'."\n";
+		print 'lists._domainkey.'.$domain.'. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"'."\n";
+		print '_adsp._domainkey.'.$domain.'. IN TXT "dkim=unknown"'."\n";
+		print "\n";
+	}
+ 
+}
+ 
+0;
+</code>
+
+
+
+<code>
+cd /tmp;
+wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm;
+sudo rpm -Uvh epel-release-6*.rpm;
+rm -f epel-release-6*.rpm;
+yum -y -q install mysql-server sendmail-cf php php-cli php-common php-mbstring php-mysql php-pdo php-soap php-gd php-mcrypt zip unzip;
+/etc/init.d/mysqld start;
+mysql -u root -e "GRANT ALL ON *.* TO 'admin'@'localhost' IDENTIFIED BY 'admin' WITH GRANT OPTION;";
+cd /var/www/html;
+wget "http://www.sympa.org/_media/playground/pma.zip";
+unzip pma.zip;
+rm -f pma.zip;
+mv phpMyAdmin-4.0.2-all-languages phpmyadmin;
+chown -R apache:apache phpmyadmin;
+cd phpmyadmin;
+wget "http://www.sympa.org/_media/doc/formation/config.inc.txt";
+mv config.inc.txt config.inc.php;
+chown -R apache:apache config.inc.php;
+/etc/init.d/httpd start;
+</code>
+
+==== Logiciels requis ====
+
+  * Serveur X,
+  * Firefox,
+  * Thunderbird,
+  * geany (ou à défaut emacs),
+  * sendmail (supprimer postfix si présent),
+  * mysql (server, client, devel),
+  * apache,
+  * mod_fcgid,
+  * mod_ssl,
+  * libxml2,
+  * libxml2-devel,
+  * gcc,
+  * make,
+  * perl,
+  * cpan,
+  * sudo,
+  * gettext,
+  * gettext-devel,
+  * openldap-clients,
+  * openldap-devel,
+  * openssl,
+  * openssl-devel,
+  * perl-Archive-Zip,
+  * perl-CGI,
+  * perl-DB_FILE,
+  * perl-DBD-MySQL,
+  * perl-DBI,
+  * perl-Digest-Perl-MD5,
+  * perl-Email-Simple,
+  * perl-Encode,
+  * perl-FCGI,
+  * perl-File-Copy-Recursive,
+  * perl-HTML-Format,
+  * perl-HTML-StripScripts-Parser,
+  * perl-HTML-Tree,
+  * perl-IO-stringy,
+  * perl-LDAP,
+  * perl-libintl-perl,
+  * perl-libwww-perl,
+  * mhonarc,
+  * perl-MIME-Base64,
+  * perl-MIME-Charset,
+  * perl-MIME-EncWords,
+  * perl-MIME-Lite-HTML,
+  * perl-MIME-tools,
+  * perl-Proc-ProcessTable, 
+  * perl-Template-Toolkit,
+  * perl-Term-ProgressBar,
+  * perl-Unicode-LineBreak,
+  * perl-Time-HiRes,
+  * perl-URI-Escape,
+  * perl-XML-LibXML,
+  * perl-Crypt-CipherSaber,
+  * perl-Net-Netmask,
+  * perl-SOAP-Lite,
+  * perl-Mail-DKIM,
+  * perl-Crypt-OpenSSL-Bignum,
+  * perl-IO-Socket-INET6
+  *
+  * perl-Unicode-CaseFold si perl entre 5.008 et 5.016 non compris 
+
+==== User/passwd ====
+
+  * user: stagiaire
+  * passwd : tYR@VYw9!xb
+
+MySQL root:
+  * tSF89:3l
+
+Blowfish phpMyAdmin:
+  * loc456+4
+
+==== Maj Sympa sur toute les machines ====
+
+  for i in $(seq 1 10); do ssh formation$i 'cd && wget http://www.sympa.org/distribution/sympa-6.2.8.tar.gz && tar zxvf sympa-6.2.8.tar.gz && cd sympa-6.2.8 && ./configure --prefix=/usr/local/sympa --with-confdir=/etc/sympa --with-aliases_file=/etc/mail/sympa_aliases --sysconfdir=/usr/local/sympa/etc --with-spooldir=/var/spool/sympa && make && service sympa stop && make install && /usr/local/sympa/bin/sympa.pl --upgrade && service sympa start && service httpd restart'; done
+
+
+==== Maj Prof ====
+
+=== A faire tourner pour mettre la machine à niveau ===
+
+<code bash>
+yum -y install perl-Digest-MD5-File
+yum -y install perl-Encode*
+yum -y install perl-libintl
+yum -y install perl-libwww-perl
+yum -y install perl-Unicode-LineBreak
+cpan -i URI::Escape
+cpan -i Class::Inspector
+cpan -i SOAP::Lite
+cpan -i Class::Singleton
+cpan -i DateTime::Format::Mail
+cpan -i File::NFSLock
+cpan -i MHonArc::UTF8
+cpan -i Net::CIDR
+cpan -i Unicode::CaseFold
+wget -O /etc/yum.repos.d/security_shibboleth.repo http://download.opensuse.org/repositories/security://shibboleth/CentOS_CentOS-6/security:shibboleth.repo
+wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-shibboleth-security http://download.opensuse.org/repositories/security://shibboleth/CentOS_CentOS-6/repodata/repomd.xml.key
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-shibboleth-security
+yum -y install log4shib xerces-c xml-security-c xmltooling opensaml shibboleth
+wget https://federation.renater.fr/renater/metadata-federation-renater.crt -O /etc/shibboleth/metadata-federation-renater.crt
+export LD_LIBRARY_PATH=/opt/shibboleth/lib64:$LD_LIBRARY_PATH
+/usr/sbin/shibd -tc /etc/shibboleth/shibboleth2.xml
+mkdir /var/www/secure
+chown apache. /var/www/secure
+</code>
+
+=== Fichiers à mettre / remplacer ===
+
+== /etc/httpd/conf/httpd.conf ==
+
+Mettre la directive ''UseCanonicalName'' à ''On''.
+
+
+== /etc/httpd/conf.d/shib.conf ==
+
+<code apache>
+# https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig
+
+# RPM installations on platforms with a conf.d directory will
+# result in this file being copied into that directory for you
+# and preserved across upgrades.
+
+# For non-RPM installs, you should copy the relevant contents of
+# this file to a configuration location you control.
+
+#
+# Load the Shibboleth module.
+#
+LoadModule mod_shib /usr/lib64/shibboleth/mod_shib_22.so
+
+#
+# Ensures handler will be accessible.
+#
+<Location /Shibboleth.sso>
+  Satisfy Any
+  Allow from all
+</Location>
+
+#
+# Used for example style sheet in error templates.
+#
+<IfModule mod_alias.c>
+  <Location /shibboleth-sp>
+    Satisfy Any
+    Allow from all
+  </Location>
+  Alias /shibboleth-sp/main.css /usr/share/shibboleth/main.css
+</IfModule>
+
+#
+# Configure the module for content.
+#
+# You MUST enable AuthType shibboleth for the module to process
+# any requests, and there MUST be a require command as well. To
+# enable Shibboleth but not specify any session/access requirements
+# use "require shibboleth".
+#
+
+Alias /secure /var/www/secure/shibenv.php
+
+<Location /secure>
+  AuthType shibboleth
+  ShibCompatWith24 On
+  ShibRequestSetting requireSession 1
+  require shib-session
+</Location>
+</code>
+
+
+== /etc/shibboleth/attribute-map.xml ==
+
+<code xml>
+<Attributes xmlns="urn:mace:shibboleth:2.0:attribute-map" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!--
+    The mappings are a mix of SAML 1.1 and SAML 2.0 attribute names agreed to within the Shibboleth
+    community. The non-OID URNs are SAML 1.1 names and most of the OIDs are SAML 2.0 names, with a
+    few exceptions for newer attributes where the name is the same for both versions. You will
+    usually want to uncomment or map the names for both SAML versions as a unit.
+    -->
+    
+    <!-- First some useful eduPerson attributes that many sites might use. -->
+    
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonPrincipalName" id="eppn">
+        <AttributeDecoder xsi:type="ScopedAttributeDecoder"/>
+    </Attribute>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.6" id="eppn">
+        <AttributeDecoder xsi:type="ScopedAttributeDecoder"/>
+    </Attribute>
+    
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonScopedAffiliation" id="affiliation">
+        <AttributeDecoder xsi:type="ScopedAttributeDecoder" caseSensitive="false"/>
+    </Attribute>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.9" id="affiliation">
+        <AttributeDecoder xsi:type="ScopedAttributeDecoder" caseSensitive="false"/>
+    </Attribute>
+    
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonAffiliation" id="unscoped-affiliation">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+    </Attribute>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.1" id="unscoped-affiliation">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+    </Attribute>
+    
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonEntitlement" id="entitlement"/>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.7" id="entitlement"/>
+
+    <!-- A persistent id attribute that supports personalized anonymous access. -->
+    
+    <!-- First, the deprecated/incorrect version, decoded as a scoped string: -->
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonTargetedID" id="targeted-id">
+        <AttributeDecoder xsi:type="ScopedAttributeDecoder"/>
+        <!-- <AttributeDecoder xsi:type="NameIDFromScopedAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/> -->
+    </Attribute>
+    
+    <!-- Second, an alternate decoder that will decode the incorrect form into the newer form. -->
+    <!--
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonTargetedID" id="persistent-id">
+        <AttributeDecoder xsi:type="NameIDFromScopedAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/>
+    </Attribute>
+    -->
+    
+    <!-- Third, the new version (note the OID-style name): -->
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.10" id="persistent-id">
+        <AttributeDecoder xsi:type="NameIDAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/>
+    </Attribute>
+
+    <!-- Fourth, the SAML 2.0 NameID Format: -->
+    <Attribute name="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" id="persistent-id">
+        <AttributeDecoder xsi:type="NameIDAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/>
+    </Attribute>
+    
+    <!-- Some more eduPerson attributes, uncomment these to use them... -->
+    <!--
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonPrimaryAffiliation" id="primary-affiliation">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+    </Attribute>
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonNickname" id="nickname"/>
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonPrimaryOrgUnitDN" id="primary-orgunit-dn"/>
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonOrgUnitDN" id="orgunit-dn"/>
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonOrgDN" id="org-dn"/>
+
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.5" id="primary-affiliation">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+    </Attribute>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.2" id="nickname"/>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.8" id="primary-orgunit-dn"/>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.4" id="orgunit-dn"/>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.3" id="org-dn"/>
+
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.11" id="assurance"/>
+    
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.5.1.1" id="member"/>
+    
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.6.1.1" id="eduCourseOffering"/>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.6.1.2" id="eduCourseMember"/>
+    -->
+
+    <!-- Examples of LDAP-based attributes, uncomment to use these... -->
+    <!--
+    <Attribute name="urn:mace:dir:attribute-def:cn" id="cn"/>
+    <Attribute name="urn:mace:dir:attribute-def:sn" id="sn"/>
+    <Attribute name="urn:mace:dir:attribute-def:givenName" id="givenName"/>
+    <Attribute name="urn:mace:dir:attribute-def:displayName" id="displayName"/>
+    -->
+    <Attribute name="urn:mace:dir:attribute-def:mail" id="mail"/>
+    <!--
+    <Attribute name="urn:mace:dir:attribute-def:telephoneNumber" id="telephoneNumber"/>
+    <Attribute name="urn:mace:dir:attribute-def:title" id="title"/>
+    <Attribute name="urn:mace:dir:attribute-def:initials" id="initials"/>
+    <Attribute name="urn:mace:dir:attribute-def:description" id="description"/>
+    <Attribute name="urn:mace:dir:attribute-def:carLicense" id="carLicense"/>
+    <Attribute name="urn:mace:dir:attribute-def:departmentNumber" id="departmentNumber"/>
+    <Attribute name="urn:mace:dir:attribute-def:employeeNumber" id="employeeNumber"/>
+    <Attribute name="urn:mace:dir:attribute-def:employeeType" id="employeeType"/>
+    <Attribute name="urn:mace:dir:attribute-def:preferredLanguage" id="preferredLanguage"/>
+    <Attribute name="urn:mace:dir:attribute-def:manager" id="manager"/>
+    <Attribute name="urn:mace:dir:attribute-def:seeAlso" id="seeAlso"/>
+    <Attribute name="urn:mace:dir:attribute-def:facsimileTelephoneNumber" id="facsimileTelephoneNumber"/>
+    <Attribute name="urn:mace:dir:attribute-def:street" id="street"/>
+    <Attribute name="urn:mace:dir:attribute-def:postOfficeBox" id="postOfficeBox"/>
+    <Attribute name="urn:mace:dir:attribute-def:postalCode" id="postalCode"/>
+    <Attribute name="urn:mace:dir:attribute-def:st" id="st"/>
+    <Attribute name="urn:mace:dir:attribute-def:l" id="l"/>
+    <Attribute name="urn:mace:dir:attribute-def:o" id="o"/>
+    <Attribute name="urn:mace:dir:attribute-def:ou" id="ou"/>
+    <Attribute name="urn:mace:dir:attribute-def:businessCategory" id="businessCategory"/>
+    <Attribute name="urn:mace:dir:attribute-def:physicalDeliveryOfficeName" id="physicalDeliveryOfficeName"/>
+
+    <Attribute name="urn:oid:2.5.4.3" id="cn"/>
+    <Attribute name="urn:oid:2.5.4.4" id="sn"/>
+    <Attribute name="urn:oid:2.5.4.42" id="givenName"/>
+    <Attribute name="urn:oid:2.16.840.1.113730.3.1.241" id="displayName"/>
+    -->
+    <Attribute name="urn:oid:0.9.2342.19200300.100.1.3" id="mail"/>
+    <!--
+    <Attribute name="urn:oid:2.5.4.20" id="telephoneNumber"/>
+    <Attribute name="urn:oid:2.5.4.12" id="title"/>
+    <Attribute name="urn:oid:2.5.4.43" id="initials"/>
+    <Attribute name="urn:oid:2.5.4.13" id="description"/>
+    <Attribute name="urn:oid:2.16.840.1.113730.3.1.1" id="carLicense"/>
+    <Attribute name="urn:oid:2.16.840.1.113730.3.1.2" id="departmentNumber"/>
+    <Attribute name="urn:oid:2.16.840.1.113730.3.1.3" id="employeeNumber"/>
+    <Attribute name="urn:oid:2.16.840.1.113730.3.1.4" id="employeeType"/>
+    <Attribute name="urn:oid:2.16.840.1.113730.3.1.39" id="preferredLanguage"/>
+    <Attribute name="urn:oid:0.9.2342.19200300.100.1.10" id="manager"/>
+    <Attribute name="urn:oid:2.5.4.34" id="seeAlso"/>
+    <Attribute name="urn:oid:2.5.4.23" id="facsimileTelephoneNumber"/>
+    <Attribute name="urn:oid:2.5.4.9" id="street"/>
+    <Attribute name="urn:oid:2.5.4.18" id="postOfficeBox"/>
+    <Attribute name="urn:oid:2.5.4.17" id="postalCode"/>
+    <Attribute name="urn:oid:2.5.4.8" id="st"/>
+    <Attribute name="urn:oid:2.5.4.7" id="l"/>
+    <Attribute name="urn:oid:2.5.4.10" id="o"/>
+    <Attribute name="urn:oid:2.5.4.11" id="ou"/>
+    <Attribute name="urn:oid:2.5.4.15" id="businessCategory"/>
+    <Attribute name="urn:oid:2.5.4.19" id="physicalDeliveryOfficeName"/>
+    -->
+
+</Attributes>
+</code>
+
+
+== /etc/shibboleth/shibboleth2.xml ==
+
+<code xml>
+<SPConfig xmlns="urn:mace:shibboleth:2.0:native:sp:config"
+    xmlns:conf="urn:mace:shibboleth:2.0:native:sp:config"
+    xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+    xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"    
+    xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+    clockSkew="180">
+
+    <!--
+    By default, in-memory StorageService, ReplayCache, ArtifactMap, and SessionCache
+    are used. See example-shibboleth2.xml for samples of explicitly configuring them.
+    -->
+
+    <!--
+    To customize behavior for specific resources on Apache, and to link vhosts or
+    resources to ApplicationOverride settings below, use web server options/commands.
+    See https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPConfigurationElements for help.
+    
+    For examples with the RequestMap XML syntax instead, see the example-shibboleth2.xml
+    file, and the https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPRequestMapHowTo topic.
+    -->
+
+    <!-- The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined. -->
+    <ApplicationDefaults entityID="default" REMOTE_USER="mail eppn persistent-id targeted-id">
+
+        <!--
+        Controls session lifetimes, address checks, cookie handling, and the protocol handlers.
+        You MUST supply an effectively unique handlerURL value for each of your applications.
+        The value defaults to /Shibboleth.sso, and should be a relative path, with the SP computing
+        a relative value based on the virtual host. Using handlerSSL="true", the default, will force
+        the protocol to be https. You should also set cookieProps to "https" for SSL-only sites.
+        Note that while we default checkAddress to "false", this has a negative impact on the
+        security of your site. Stealing sessions via cookie theft is much easier with this disabled.
+        -->
+        <Sessions lifetime="28800" timeout="3600" relayState="ss:mem"
+                  checkAddress="false" handlerSSL="false" cookieProps="http">
+
+            <!--
+            Configures SSO for a default IdP. To allow for >1 IdP, remove
+            entityID property and adjust discoveryURL to point to discovery service.
+            (Set discoveryProtocol to "WAYF" for legacy Shibboleth WAYF support.)
+            You can also override entityID on /Login query string, or in RequestMap/htaccess.
+            -->
+            <SSO discoveryProtocol="SAMLDS" discoveryURL="https://discovery.renater.fr/test">
+              SAML2 SAML1
+            </SSO>
+
+            <!-- SAML and local-only logout. -->
+            <Logout>SAML2 Local</Logout>
+            
+            <!-- Extension service that generates "approximate" metadata based on SP configuration. -->
+            <Handler type="MetadataGenerator" Location="/Metadata" signing="false"/>
+
+            <!-- Status reporting service. -->
+            <Handler type="Status" Location="/Status" acl="127.0.0.1 ::1"/>
+
+            <!-- Session diagnostic service. -->
+            <Handler type="Session" Location="/Session" showAttributeValues="false"/>
+
+            <!-- JSON feed of discovery information. -->
+            <Handler type="DiscoveryFeed" Location="/DiscoFeed"/>
+        </Sessions>
+
+        <!--
+        Allows overriding of error template information/filenames. You can
+        also add attributes with values that can be plugged into the templates.
+        -->
+        <Errors supportContact="administrator@a-nouveau-domaine.fr"
+            helpLocation="/about.html"
+            metadata="metadataError_fr.html"
+            access="accessError_fr.html"
+            ssl="sslError_fr.html"
+            logoLocation="/shibboleth-sp/logo.jpg"
+            styleSheet="/shibboleth-sp/main.css"/>
+        
+        <MetadataProvider type="Chaining">
+            <!-- Nouvelles Meta-données de la fédération de test Éducation-Recherche -->
+            <MetadataProvider type="XML" uri="https://services-federation.renater.fr/metadata/renater-test-metadata.xml"
+                backingFilePath="renater-test-metadata.xml" reloadInterval="3600">
+                <MetadataFilter type="RequireValidUntil" maxValidityInterval="604800"/>
+                <MetadataFilter type="Signature" certificate="metadata-federation-renater.crt"/>
+            </MetadataProvider>
+            <!-- Meta-donnees du SAC -->
+            <MetadataProvider type="XML" uri="https://cru.renater.fr/idp/profile/Metadata/SAML"
+                backingFilePath="/etc/shibboleth/sac-metadata.xml" reloadInterval="7200">
+            </MetadataProvider>
+        </MetadataProvider>
+        
+        <!-- Map to extract attributes from SAML assertions. -->
+        <AttributeExtractor type="XML" validate="true" reloadChanges="false" path="attribute-map.xml"/>
+        
+        <!-- Use a SAML query if no attributes are supplied during SSO. -->
+        <AttributeResolver type="Query" subjectMatch="true"/>
+
+        <!-- Default filtering policy for recognized attributes, lets other data pass. -->
+        <AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
+
+        <!-- Simple file-based resolver for using a single keypair. -->
+        <CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>
+
+        <!--
+        The default settings can be overridden by creating ApplicationOverride elements (see
+        the https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApplicationOverride topic).
+        Resource requests are mapped by web server commands, or the RequestMapper, to an
+        applicationId setting.
+        
+        Example of a second application (for a second vhost) that has a different entityID.
+        Resources on the vhost would map to an applicationId of "admin":
+        -->
+        <!--
+        <ApplicationOverride id="admin" entityID="https://admin.example.org/shibboleth"/>
+        -->
+        
+        <!-- SYMPA DE a-nouveau-domaine.fr -->
+        <ApplicationOverride id="app-groupware" entityID="http://a-nouveau-domaine.renater.fr/sympa"/>
+    </ApplicationDefaults>
+    
+    <!-- Policies that determine how to process and authenticate runtime messages. -->
+    <SecurityPolicyProvider type="XML" validate="true" path="security-policy.xml"/>
+
+    <!-- Low-level configuration about protocols and bindings available for use. -->
+    <ProtocolProvider type="XML" validate="true" reloadChanges="false" path="protocols.xml"/>
+
+</SPConfig>
+</code>
+
+
+== /etc/httpd/conf.d/groupware.conf ==
+
+<code apache>
+<Location />
+	ShibRequestSetting applicationId app-groupware
+</Location>
+
+<Location /sympa/sso_login/federation_cru>
+	AuthType shibboleth
+	ShibRequestSetting requireSession 1
+	require shibboleth
+</Location>
+</code>
+
+
+== /var/www/secure/shibenv.php ==
+
+<code php>
+<?php session_start(); ?>
+<html>
+	<head>
+		<title>Shibboleth Attributes - <?php echo $_SERVER["SERVER_NAME"]; ?></title>
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Expires" content="-1">
+		
+		<script type="text/JavaScript">
+			function decodeAttributeResponse() {
+				var textarea = document.getElementById("attributeResponseArea");
+				var base64str = textarea.value;
+				var decodedMessage = decode64(base64str);
+				textarea.value = tidyXml(decodedMessage);
+				textarea.rows = 15;
+				document.getElementById("decodeButtonBlock").style.display='none';
+			}
+			
+			function tidyXml(xmlMessage) {
+				//put newline before closing tags of values inside xml blocks
+				xmlMessage = xmlMessage.replace(/([^>])</g,"$1\n<");
+				//put newline after every tag
+				xmlMessage = xmlMessage.replace(/>/g,">\n");
+				var xmlMessageArray = xmlMessage.split("\n");
+				xmlMessage="";
+				var nestedLevel=0;
+				for (var n=0; n < xmlMessageArray.length; n++) {
+					if ( xmlMessageArray[n].search(/<\//) > -1 ) {
+						nestedLevel--;
+					}
+					for (i=0; i<nestedLevel; i++) {
+						xmlMessage+="  ";
+					}
+					xmlMessage+=xmlMessageArray[n]+"\n";
+					if ( xmlMessageArray[n].search(/\/>/) > -1 ) {
+						//level status the same
+					}
+					else if ( ( xmlMessageArray[n].search(/<\//) < 0 ) && (xmlMessageArray[n].search(/</) > -1) ) {
+						//only increment if this was a tag, not if it is a value
+						nestedLevel++;
+					}
+				}
+				return xmlMessage;
+			}
+			
+			var base64Key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+			function decode64(encodedString) {
+				var decodedMessage = "";
+				var char1, char2, char3;
+				var enc1, enc2, enc3, enc4;
+				var i = 0;
+				
+				//remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+				encodedString = encodedString.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+				do {
+					enc1 = base64Key.indexOf(encodedString.charAt(i++));
+					enc2 = base64Key.indexOf(encodedString.charAt(i++));
+					enc3 = base64Key.indexOf(encodedString.charAt(i++));
+					enc4 = base64Key.indexOf(encodedString.charAt(i++));
+					
+					char1 = (enc1 << 2) | (enc2 >> 4);
+					char2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+					char3 = ((enc3 & 3) << 6) | enc4;
+					
+					decodedMessage = decodedMessage + String.fromCharCode(char1);
+					if (enc3 != 64) {
+						decodedMessage = decodedMessage + String.fromCharCode(char2);
+					}
+					if (enc4 != 64) {
+						decodedMessage = decodedMessage + String.fromCharCode(char3);
+					}
+				} while (i < encodedString.length);
+				return decodedMessage;
+			}
+		</script>
+	</head>
+	
+	<body>
+		<b>-all SHIB headers-</b> (<code>HTTP_SHIB_ATTRIBUTES</code> is not shown in this list)
+		
+		<table>
+<?php foreach($_SERVER as $key => $value) if(strpos('_'.$key, 'SHIB') > 1 && $key != 'HTTP_SHIB_ATTRIBUTES') echo '<tr><td>'.$key.'</td><td>'.$value.'</td></tr>'; ?>
+			<tr><td>(REMOTE_USER)</td><td><?php echo $_SERVER['REMOTE_USER'] ?></td></tr>
+			<tr><td>(HTTP_REMOTE_USER)</td><td><?php echo $_SERVER['HTTP_REMOTE_USER'] ?></td></tr>
+		</table>
+		<br />
+		
+		attribute response from the IdP (<code>HTTP_SHIB_ATTRIBUTES</code>):<br/>
+		<textarea id="attributeResponseArea" onclick="select()" rows="1" cols="130"><?php echo $_SERVER['HTTP_SHIB_ATTRIBUTES']; ?></textarea><br/>
+		<span id="decodeButtonBlock"><input type="button" id="decodeButton" value="decode base64 encoded attribute response using JavaScript" onClick="decodeAttributeResponse();"><br/></span>
+		<br />
+		
+		<small>
+			notes:<br />
+			The AAP throws away invalid values (eg an unscopedAffiliation of value "myBoss@&lt;yourdomain&gt;" or a value with an invalid scope which scope is checked)<br/>
+			The raw attribute response (<code>HTTP_SHIB_ATTRIBUTES</code>) is NOT filtered by the AAP and should therefore be disabled for most applications (<code>exportAssertion=false</code>).<br/>
+		</small>
+		<br />
+		
+		<hr />
+		<br />
+		
+		<b>$_REQUEST</b>
+		<table>
+<?php foreach($_REQUEST as $key => $value) echo '<tr><td>'.$key.'</td><td>'.$value.'</td></tr>'; ?>
+		</table>
+		<br />
+		
+		<hr />
+		<br />
+		
+		<b>$_SERVER</b>
+		<table>
+<?php foreach($_SERVER as $key => $value) echo '<tr><td>'.$key.'</td><td>'.$value.'</td></tr>'; ?>
+		</table>
+		<br />
+		
+		<hr />
+		<br />
+		
+		<b>$_SESSION</b>
+		<table>
+<?php foreach($_SESSION as $key => $value) echo '<tr><td>'.$key.'</td><td>'.$value.'</td></tr>'; ?>
+		</table>
+		<br />
+		
+		<hr />
+		<br />
+	</body>
+</html>
+</code>
+
+
+=== A faire tourner à l'instanciation ===
+
+<code bash>
+sed -i -e "s/nouveau-domaine/$HOSTNAME/g" /etc/shibboleth/shibboleth2.xml
+/etc/init.d/httpd restart
+/etc/init.d/shibd restart
+</code>
+
+== Ajouter à la fin de /usr/local/bin/DeployNewVM (avant le "exit 0") ==
+
+<code bash>
+[ -x /usr/local/bin/CustomizeVM ] && /usr/local/bin/CustomizeVM
+</code>
+
+
+== Créer le fichier /usr/local/bin/CustomizeVM ==
+
+<code bash>
+#!/bin/bash
+#
+# Script de customisation de la VM pour les formations Sympa
+#
+
+sed -i -e "s/nouveau-domaine/$HOSTNAME/g" /etc/shibboleth/shibboleth2.xml
+/etc/init.d/httpd restart
+/etc/init.d/shibd restart
+
+exit 0
+</code>
+
+Faire un ''chmod +x /usr/local/bin/CustomizeVM''

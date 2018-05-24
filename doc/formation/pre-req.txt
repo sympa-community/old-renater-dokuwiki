@@ -1,0 +1,111 @@
+====== Pré-requis pour la formation Sympa ======
+
+  yum -y groupinstall "X Window System"
+
+  yum -y install cpan emacs firefox ftp gcc geany gettext gettext-devel gpg gzip httpd less libxml2 libxml2-devel links make mhonarc mod_fcgid mod_ssl mysql mysql-devel mysql-server ncftp openldap-clients openldap-devel openssl openssl-devel perl perl-Archive-Zip perl-CGI perl-Crypt-CipherSaber perl-Crypt-OpenSSL-Bignum perl-DBD-MySQL perl-DB_FILE perl-DBI perl-Digest-Perl-MD5 perl-Email-Simple perl-Encode perl-FCGI perl-File-Copy-Recursive perl-HTML-Format perl-HTML-StripScripts-Parser perl-HTML-Tree perl-IO-Socket-INET6 perl-IO-stringy perl-LDAP perl-libintl perl-libwww-perl perl-Mail-DKIM perl-MIME-Base64 perl-MIME-Charset perl-MIME-EncWords perl-MIME-Lite-HTML perl-MIME-tools perl-Net-Netmask perl-Proc-ProcessTable perl-SOAP-Lite perl-Template-Toolkit perl-Term-ProgressBar perl-Time-HiRes perl-Unicode-LineBreak perl-URI-Escape perl-XML-LibXML php phpmyadmin sendmail sendmail-cf sudo syslog-ng tar tcsh thunderbird unzip vi wget zip
+  
+  cpan -i Unicode::CaseFold
+  cpan -i File::Temp
+  cpan -i CGI
+
+Enregistrements DNS :
+
+Soit on exécute le script perl {{:doc:formation:creation_dns_formation.pl.txt|}}
+
+Soit ajouter des enregistrements du type :
+
+Si L'IP est, disons 123.123.123.123, je voudrais les enregistrements suivants :
+<code>
+formation-sympa.renater.fr. IN A 123.123.123.123
+formation-sympa.renater.fr. IN MX 20 123.123.123.123
+lists._domainkey.formation-sympa.renater.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.formation-sympa.renater.fr. IN TXT "dkim=unknown"
+formation-sympa.renater.fr. IN TXT "v=spf1 ip4:123.123.123.123 ?all"
+
+a-formation-sympa.renater.fr. IN A 123.123.123.123
+a-formation-sympa.renater.fr. IN MX 20 123.123.123.123
+lists._domainkey.a-formation-sympa.renater.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.a-formation-sympa.renater.fr. IN TXT "dkim=unknown"
+a-formation-sympa.renater.fr. IN TXT "v=spf1 ip4:123.123.123.123 ?all"
+
+b-formation-sympa.renater.fr. IN A 123.123.123.123
+b-formation-sympa.renater.fr. IN MX 20 123.123.123.123
+lists._domainkey.b-formation-sympa.renater.fr. IN TXT "v=DKIM1; g=*; k=rsa; t=y; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCT+9IgktwWEqmN9L0AfqgIlAc/IqxAdyBBsbteMIjnXOo4nSxLi0rnMeDtpvka48O50IBfF8XfnhKgGfGtTun+NhUahhyU44/GjAI7zWV7cp9kKbcR/oKYCVf5yvCSsj9xNbp+jNmJ+nBVdcwlL64SY41qEkEyhT8S0J5U4ogP6wIDAQAB"
+_adsp._domainkey.b-formation-sympa.renater.fr. IN TXT "dkim=unknown"
+b-formation-sympa.renater.fr. IN TXT "v=spf1 ip4:123.123.123.123 ?all"
+</code>
+
+Configurer MySQL (cf. [[http://www.commentcamarche.net/forum/affich-2755583-galere-a-n-en-plus-finir-avec-l-acces-a-mysql#p29106407]]):
+
+  /etc/init.d/mysqld stop
+  mysqld_safe --skip-grant-tables --skip-networking &
+  mysql mysql
+  update user set password=password('root') where user="root" and host="localhost";
+  exit
+  mysqladmin shutdown
+  /etc/init.d/mysqld start
+  mysql -u root -p
+
+
+Configurer PHPMyAdmin et PHP (cf. [[http://www.commentcamarche.net/faq/12341-phpmyadmin-1045-access-denied-for-user-root-localhost]]).
+
+Ajouter l'utilisateur dans la base MySQL :
+
+  mysql -u root -p
+  SET PASSWORD FOR root@localhost=PASSWORD('root');
+  GRANT ALL PRIVILEGES ON *.* TO root@localhost  IDENTIFIED BY 'root' WITH GRANT OPTION;
+  
+  
+Éditer la config web de PHPMyAdmin:
+  geany /etc/httpd/conf.d/phpmyadmin.conf
+
+Changer :
+  Allow from 127.0.0.1
+Par :
+  Allow from all
+
+Relancer Apache
+  /etc/init.d/httpd restart
+
+Config PHPMyAdmin:
+  geany /usr/share/phpmyadmin/config.inc.php&
+  
+Remplacer la ligne :
+  $cfg['blowfish_secret'] = ''; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
+Par :
+  $cfg['blowfish_secret'] = '=u3L%hO3mU=n_~-y3^G9_Z^ozdXSb9TI1eG)h+'; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
+
+Note: Un secret peut être généré à partir de la page : [[http://www.question-defense.com/tools/phpmyadmin-blowfish-secret-generator]]
+
+  Modifier les lignes suivantes :
+  
+  SET PASSWORD FOR root@localhost=PASSWORD(' monmotdepasse ');
+  ; Default host for mysql_connect() (doesn't apply in safe mode).
+  mysqli.default_host ='localhost'
+  
+  ; Default user for mysql_connect() (doesn't apply in safe mode).
+  mysqli.default_user ='root'
+   
+  ; Default password for mysqli_connect() (doesn't apply in safe mode).
+  ; Note that this is generally a *bad* idea to store passwords in this file.
+  ; *Any* user with PHP access can run 'echo get_cfg_var("mysqli.default_pw")
+  ; and reveal this password! And of course, any users with read access to this
+  ; file will be able to reveal the password as well.
+  mysqli.default_pw ='root'
+
+Redémarrer Paache :
+
+  /etc/init.d/httpd restart
+
+Se connecter à PHPMyAdmin, créer la base et l'utilisateur "sympa" avec la bse qui porte son nom. Mot de passe "apmys".
+
+Les requêtes :
+
+  CREATE USER 'sympa'@'localhost' IDENTIFIED BY 'apmys';
+  GRANT USAGE ON * . * TO 'sympa'@'localhost' IDENTIFIED BY 'apmys' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
+  CREATE DATABASE IF NOT EXISTS `sympa` ;
+  GRANT ALL PRIVILEGES ON `sympa` . * TO 'sympa'@'localhost';
+
+Lancer la config de Sympa :
+
+  /home/sympa/bin/sympa_wizard.pl

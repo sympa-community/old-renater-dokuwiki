@@ -1,0 +1,44 @@
+====== Basic stats collect in Sympa ======
+
+We should gather conitnuously informations regarding a server activity.
+
+===== What to store ? =====
+
+==== Relevant informations ====
+
+  * number of messages
+  * number of subscribers
+  * number of users
+  * number of lists
+  * number of subscriptions
+
+===== Granularity =====
+
+==== Time granularity ====
+
+What is the minimum period relevant for information aggregation? We guess it would be the day.
+We must store these data in the lowest granularity chosen.
+
+==== Information granularity ====
+
+What is the level to which aggregate? List? Robot? User?
+
+===== How to store? =====
+
+==== Data storage ====
+
+We can store information in the database or in a file.
+
+==== Tools ====
+
+We must re-use the code of the db logs. Maybe we could directly aggregate the data collected in the db logs.
+
+===== What to do with the data? =====
+
+==== Export ====
+
+As people will want to use statistics ASAP, we must be able, at least, to export them in CSV.
+
+==== Tools ====
+
+This functionality should be usable by other tools, such as Cacti.

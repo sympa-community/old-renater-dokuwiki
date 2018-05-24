@@ -1,0 +1,706 @@
+====== Sympa SOAP server ======
+
+======  Introduction ======
+
+[[http://www.w3.org/2002/ws/|SOAP]] is a protocol (generally over HTTP) that can be used to provide **web services**. Sympa SOAP server allows to access a Sympa service from within another program, written in any programming language and on any computer. SOAP encapsulates procedure calls, input parameters and resulting data in an XML data structure. The Sympa SOAP server's API is published in a **WSDL** document, retrieved through Sympa's web interface.
+
+The SOAP server provides a limited set of high level functions, see [[#supported_functions]]. Other functions might be implemented in the future. One of the important implementation constraint is to provide services for proxy application with a correct authorization evaluation process where authentication may differ from classic web methods. The following cases can be used to access the service:
+
+  * The client sends credentials and then requests a service providing a cookie with id ''sympa-user''.
+  * The client authenticates the end user providing the ''sympa-user'' HTTP cookie. This can be used in order to share an authenticated session between Sympa and other applications running on the same server as //WWSympa//. The SOAP method used is ''getUserEmailByCookieRequest''.
+  * The client provides user email and password and requests a service in a single SOAP access using the ''authenticateAndRun'' SOAP service.
+  * The client is trusted by Sympa as a proxy application and is authorized to set some variables that will be used by Sympa during the authorization scenario evaluation. Trusted applications have own password there, and the variables they can set are listed in a configuration file named ''trusted_applications.conf''. See [[soap#trust_remote_applications|Trust remote applications]].
+
+In any case, scenario authorization is used with the same rules as mail interface or usual web interface.
+
+The SOAP server uses the [[http://www.soaplite.com/|SOAP::Lite]] Perl library. The server is running as a daemon (thanks to FastCGI), receiving the client SOAP requests via a web server (Apache for example).
+
+
+====== Supported functions ======
+
+Note that all functions accessible through the SOAP interface apply the appropriate access control rules, given the user's privileges.
+
+The following functions are currently available through the Sympa SOAP server :
+  * login : user email and passwords are checked against Sympa user DB, or another backend. 
+  * casLogin : this function will verify CAS proxy tickets against the CAS server
+  * authenticateAndRun : usefull for SOAP clients that can't set an HTTP cookie ; they can provide both the Sympa session cookie and the requested command in a single call
+  * authenticateRemoteAppAndRun : equivalent of the previous command used in a trusted context (see [[#trust_remote_applications]])
+  * lists : provides a list of available lists (authorization scenarios are applied)
+  * complexLists : same as the previous feature, but provides a complex structure for each list
+  * info : provides description informations about a given list
+  * which : gets the list of subscription of a given user
+  * complexWhich : same as previous command, but provides a complex structure for each list
+  * amI : tells if a given user is member of a given list
+  * review : lists the members of a given list
+  * subscribe : subscribes the current user to a given list
+  * signoff : current user is removed from a given list
+  * add : used to add a given user to a given list (admin feature)
+  * del : removes a given user from a given list (admin feature)
+  * createList : creates a new mailing list (requires appropriate privileges)
+  * closeList : closes a given mailing list (admin feature)
+
+Note that when a list parameter is required for a functioin, you can either provide the list name or the list address. However the domain part of the address will be ignored.
+
+Check [[#the_wsdl_service_description]] for detailed API informations.
+
+
+
+
+======  Web server setup ======
+
+<note> **Starting Sympa 5.4**, the sympa_soap_server is wrapped in small C script, sympa_soap_server-wrapper.fcgi, in order to avoid to use the -unsecure and no longer maintained - setuid perl mode.</note>
+
+You **need to install FastCGI** for the SOAP server to work properly, because it will run as a daemon.
+
+===== Until version 5.3 =====
+
+Here is a sample piece of your Apache ''httpd.conf'' with a SOAP server configured:
+
+<code>
+  	FastCgiServer /home/sympa/bin/sympa_soap_server.fcgi -processes 1
+  	ScriptAlias /sympasoap /home/sympa/bin/sympa_soap_server.fcgi
+
+  	<Location /sympasoap>
+     	  SetHandler fastcgi-script
+  	</Location>
+</code>
+
+===== Version 5.4 and higher =====
+
+Here is a sample piece of your Apache ''httpd.conf'' with a SOAP server configured and using the C wrapper:
+
+<code>
+  	FastCgiServer /home/sympa/bin/sympa_soap_server-wrapper.fcgi -processes 1
+  	ScriptAlias /sympasoap /home/sympa/bin/sympa_soap_server-wrapper.fcgi
+
+  	<Location /sympasoap>
+     	  SetHandler fastcgi-script
+  	</Location>
+</code>
+
+======  Sympa setup ======
+
+The only mandatory parameter you need to set in the ''sympa.conf''/''robot.conf'' files is the ''soap_url'', that defines the URL of the SOAP service corresponding to the ScriptAlias you have previously set up in the Apache configuration.
+
+This parameter is used to publish the SOAP service URL in the WSDL file (defining the API), but also for the SOAP server to deduce what Virtual Host is concerned by the current SOAP request (a single SOAP server will serve all Sympa virtual hosts).
+
+
+====== Trust remote applications ======
+
+The SOAP service ''authenticateRemoteAppAndRun'' is used in order to allow some remote applications such as a web portal to request the Sympa service as a proxy for the end user. In such cases, Sympa will not authenticate the end user itself, but instead it will trust a particular application to act as a proxy.
+
+This configuration file ''trusted_applications.conf'' can be created in the robot ''etc/'' subdirectory or in the ''/home/sympa/etc'' directory depending on the scope you want for it (the source package include a sample of file ''trusted_applications.conf'' in the ''soap'' directory). This file is made of paragraphs separated by empty lines and stating with keyword ''trusted_application''. A sample ''trusted_applications.conf'' file is provided with Sympa sources. Each paragraph defines a remote trusted application with keyword/value pairs:
+
+  * ''name'': the name of the application. Used with password for authentication; the ''remote_application_name'' variable is set for use in authorization scenarios;
+  * ''md5password'': the MD5 digest of the application password. You can compute the digest as follows: ''sympa.pl -md5_digest=<the password>''.
+  * ''proxy_for_variables'': a comma separated list of variables that can be set by the remote application and that will be used by the Sympa SOAP server when evaluating an authorization scenario. If you list ''USER_EMAIL'' in this parameter, then the remote application can act as a user. Any other variable such as ''remote_host'' can be listed.
+
+You can test your SOAP service using the ''sympa_soap_client.pl'' sample script as follows:
+
+<code>
+  /home/sympa/bin/sympa_soap_client.pl --soap_url=http://my.server/sympasoap --service=createList --trusted_application=myTestApp --trusted_application_password=myTestAppPwd --proxy_vars=''USER_EMAIL=userProxy@my.server'' --service_parameters=listA,listSubject,discussion_list,description,myTopic
+
+  /home/sympa/bin/sympa_soap_client.pl --soap_url=http://myserver/sympasoap --service=add --trusted_application=myTestApp --trusted_application_password=myTestAppPwd  --proxy_vars=''USER_EMAIL=userProxy@my.server'' --service_parameters=listA,someone@some;domain,name
+</code>
+
+Below is a sample Perl code that does a SOAP procedure call (for a SUBSCRIBE sympa command) using the trusted_application feature :
+
+<code>
+my $soap = new SOAP::Lite();
+$soap->uri('urn:sympasoap');
+$soap->proxy('http://myserver/sympasoap');
+
+my $response = $soap->authenticateRemoteAppAndRun('myTestApp', 'myTestAppPwd', 'USER_EMAIL=userProxy@my.server', 'subscribe', ['myList@dom']);
+</code>
+
+[[dereckson@espace-win.org|S. Santoro]] wrote its own [[:contribs#php_soap_library|PHP Trusted Application library for Sympa]].
+
+======  The WSDL service description ======
+
+Here is what the WSDL file looks like before it is parsed by //WWSympa//:
+
+<code>
+  <?xml version=''1.0''?>
+  <definitions name=''Sympa''
+  	xmlns:xsd=''http://www.w3.org/2001/XMLSchema''
+  	xmlns:soap=''http://schemas.xmlsoap.org/wsdl/soap/''
+  	targetNamespace="[% conf.wwsympa_url %]/wsdl"
+  	xmlns:tns="[% conf.wwsympa_url %]/wsdl"
+  	xmlns=''http://schemas.xmlsoap.org/wsdl/''
+  	xmlns:xsdl="[% conf.soap_url %]/wsdl">
+
+  <!-- types part -->
+
+  <types>
+  <schema targetNamespace="[% conf.wwsympa_url %]/wsdl"
+  	xmlns:SOAP-ENC=''http://schemas.xmlsoap.org/soap/encoding/''
+  	xmlns:wsdl=''http://schemas.xmlsoap.org/wsdl/''
+  	xmlns=''http://www.w3.org/2001/XMLSchema''>
+
+  	<complexType name=''ArrayOfLists''>
+  		<complexContent>
+  			<restriction base=''SOAP-ENC:Array''>
+  				<attribute ref=''SOAP-ENC:arrayType'' wsdl:arrayType=''tns:listType[]''/>
+  			</restriction>
+  		</complexContent>
+  	</complexType>
+
+  	<complexType name=''ArrayOfString''>
+  		<complexContent>
+  			<restriction base=''SOAP-ENC:Array''>
+  				<attribute ref=''SOAP-ENC:arrayType'' wsdl:arrayType=''string[]''/>
+  			</restriction>
+  		</complexContent>
+  	</complexType>
+
+  	<complexType name=''listType''>
+             <all>
+  		<element name=''listAddress'' minOccurs=''1'' type=''string''/>
+  		<element name=''homepage'' minOccurs=''0'' type=''string''/>
+  		<element name=''isSubscriber'' minOccurs=''0'' type=''boolean''/>
+  		<element name=''isOwner'' minOccurs=''0'' type=''boolean''/>
+  		<element name=''isEditor'' minOccurs=''0'' type=''boolean''/>
+  		<element name=''subject'' minOccurs=''0'' type=''string''/>
+             </all>
+  	</complexType>
+  </schema>
+  </types>
+
+  <!-- message part -->
+
+  <message name=''infoRequest''>
+          <part name=''listName'' type=''xsd:string''/>
+  </message>
+
+  <message name=''infoResponse''>
+  	<part name=''return'' type=''tns:listType''/>
+  </message>
+
+  <message name=''complexWhichRequest''>
+  </message>
+
+  <message name=''complexWhichResponse''>
+  	<part name=''return'' type=''tns:ArrayOfLists''/>
+  </message>
+
+  <message name=''whichRequest''>
+  </message>
+
+  <message name=''whichResponse''>
+  	<part name=''return'' type=''tns:ArrayOfString''/>
+  </message>
+
+  <message name=''amIRequest''>
+  	<part name=''list'' type=''xsd:string''/>
+  	<part name=''function'' type=''xsd:string''/>
+  	<part name=''user'' type=''xsd:string''/>
+  </message>
+
+  <message name=''amIResponse''>
+  	<part name=''return'' type=''xsd:boolean''/>
+  </message>
+
+  <message name=''reviewRequest''>
+  	<part name=''list'' type=''xsd:string''/>
+  </message>
+
+  <message name=''reviewResponse''>
+  	<part name=''return'' type=''tns:ArrayOfString''/>
+  </message>
+
+  <message name=''signoffRequest''>
+  	<part name=''list'' type=''xsd:string''/>
+  	<part name=''email'' type=''xsd:string'' xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''signoffResponse''>
+  	<part name=''return'' type=''xsd:boolean''/>
+  </message>
+
+  <message name=''subscribeRequest''>
+  	<part name=''list'' type=''xsd:string''/>
+  	<part name=''gecos'' type=''xsd:string'' xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''addRequest''>
+  	<part name=''list'' type=''xsd:string''/>
+  	<part name=''email'' type=''xsd:string''/>
+  	<part name=''gecos'' type=''xsd:string''  xsd:minOccurs=''0''/>
+  	<part name=''quiet'' type=''xsd:boolean''  xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''addResponse''>
+  	<part name=''return'' type=''xsd:boolean''/>
+  </message>
+
+  <message name=''delRequest''>
+  	<part name=''list'' type=''xsd:string''/>
+  	<part name=''email'' type=''xsd:string''/>
+  	<part name=''quiet'' type=''xsd:boolean''  xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''delResponse''>
+  	<part name=''return'' type=''xsd:boolean''/>
+  </message>
+
+  <message name=''createListRequest''>
+  	<part name=''list'' type=''xsd:string''/>
+  	<part name=''subject'' type=''xsd:string''/>
+  	<part name=''template'' type=''xsd:string''/>
+  	<part name=''description'' type=''xsd:string''/>
+  	<part name=''topics'' type=''xsd:string''/>
+  </message>
+
+  <message name=''createListResponse''>
+  	<part name=''return'' type=''xsd:boolean''/>
+  </message>
+
+  <message name=''closeListRequest''>
+  	<part name=''list'' type=''xsd:string''/>
+  </message>
+
+  <message name=''closeListResponse''>
+  	<part name=''return'' type=''xsd:boolean''/>
+  </message>
+
+  <message name=''subscribeResponse''>
+  	<part name=''return'' type=''xsd:boolean''/>
+  </message>
+
+  <message name=''loginRequest''>
+  	<part name=''email'' type=''xsd:string''/>
+  	<part name=''password'' type=''xsd:string''/>
+  </message>
+
+  <message name=''loginResponse''>
+  	<part name=''return'' type=''xsd:string''/>
+  </message>
+
+  <message name=''getUserEmailByCookieRequest''>
+  	<part name=''cookie'' type=''xsd:string''/>
+  </message>
+
+  <message name=''getUserEmailByCookieResponse''>
+  	<part name=''return'' type=''xsd:string''/>
+  </message>
+
+  <message name=''authenticateAndRunRequest''>
+  	<part name=''email'' type=''xsd:string''/>
+  	<part name=''cookie'' type=''xsd:string''/>
+  	<part name=''service'' type=''xsd:string''/>
+  	<part name=''parameters'' type=''tns:ArrayOfString'' xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''authenticateAndRunResponse''>
+  	<part name=''return'' type=''tns:ArrayOfString'' xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''authenticateRemoteAppAndRunRequest''>
+  	<part name=''appname'' type=''xsd:string''/>
+  	<part name=''apppassword'' type=''xsd:string''/>
+  	<part name=''vars'' type=''xsd:string''/>
+  	<part name=''service'' type=''xsd:string''/>
+  	<part name=''parameters'' type=''tns:ArrayOfString'' xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''authenticateRemoteAppAndRunResponse''>
+  	<part name=''return'' type=''tns:ArrayOfString'' xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''casLoginRequest''>
+  	<part name=''proxyTicket'' type=''xsd:string''/>
+  </message>
+
+  <message name=''casLoginResponse''>
+  	<part name=''return'' type=''xsd:string''/>
+  </message>
+
+  <message name=''listsRequest''>
+  	<part name=''topic'' type=''xsd:string'' xsd:minOccurs=''0''/>
+  	<part name=''subtopic'' type=''xsd:string'' xsd:minOccurs=''0''/>
+  </message>
+
+  <message name=''listsResponse''>
+  	<part name=''listInfo'' type=''xsd:string''/>
+  </message>
+
+  <message name=''complexListsRequest''>
+  </message>
+
+  <message name=''complexListsResponse''>
+  	<part name=''return'' type=''tns:ArrayOfLists''/>
+  </message>
+
+  <message name=''checkCookieRequest''>
+  </message>
+
+  <message name=''checkCookieResponse''>
+  	<part name=''email'' type=''xsd:string''/>
+  </message>
+
+  <!-- portType part -->
+
+  <portType name=''SympaPort''>
+  	<operation name=''info''>
+  		<input message=''tns:infoRequest'' />
+  		<output message=''tns:infoResponse'' />
+  	</operation>
+  	<operation name=''complexWhich''>
+  		<input message=''tns:complexWhichRequest'' />
+  		<output message=''tns:complexWhichResponse'' />
+  	</operation>
+  	<operation name=''which''>
+  		<input message=''tns:whichRequest'' />
+  		<output message=''tns:whichResponse'' />
+  	</operation>
+  	<operation name=''amI''>
+  		<input message=''tns:amIRequest'' />
+  		<output message=''tns:amIResponse'' />
+  	</operation>
+  	<operation name=''add''>
+  		<input message=''tns:addRequest'' />
+  		<output message=''tns:addResponse'' />
+  	</operation>
+  	<operation name=''del''>
+  		<input message=''tns:delRequest'' />
+  		<output message=''tns:delResponse'' />
+  	</operation>
+  	<operation name=''createList''>
+  		<input message=''tns:createListRequest'' />
+  		<output message=''tns:createListResponse'' />
+  	</operation>
+  	<operation name=''closeList''>
+  		<input message=''tns:closeListRequest'' />
+  		<output message=''tns:closeListResponse'' />
+  	</operation>
+  	<operation name=''review''>
+  		<input message=''tns:reviewRequest'' />
+  		<output message=''tns:reviewResponse'' />
+  	</operation>
+  	<operation name=''subscribe''>
+  		<input message=''tns:subscribeRequest'' />
+  		<output message=''tns:subscribeResponse'' />
+  	</operation>
+  	<operation name=''signoff''>
+  		<input message=''tns:signoffRequest'' />
+  		<output message=''tns:signoffResponse'' />
+  	</operation>
+  	<operation name=''login''>
+  		<input message=''tns:loginRequest'' />
+  		<output message=''tns:loginResponse'' />
+  	</operation>
+  	<operation name=''casLogin''>
+  		<input message=''tns:casLoginRequest'' />
+  		<output message=''tns:casLoginResponse'' />
+  	</operation>
+  	<operation name=''getUserEmailByCookie''>
+  		<input message=''tns:getUserEmailByCookieRequest'' />
+  		<output message=''tns:getUserEmailByCookieResponse'' />
+  	</operation>
+  	<operation name=''authenticateAndRun''>
+  		<input message=''tns:authenticateAndRunRequest'' />
+  		<output message=''tns:authenticateAndRunResponse'' />
+  	</operation>
+  	<operation name=''authenticateRemoteAppAndRun''>
+  		<input message=''tns:authenticateRemoteAppAndRunRequest'' />
+  		<output message=''tns:authenticateRemoteAppAndRunResponse'' />
+  	</operation>
+  	<operation name=''lists''>
+  		<input message=''tns:listsRequest'' />
+  		<output message=''tns:listsResponse'' />
+  	</operation>
+  	<operation name=''complexLists''>
+  		<input message=''tns:complexListsRequest'' />
+  		<output message=''tns:complexListsResponse'' />
+  	</operation>
+  	<operation name=''checkCookie''>
+  		<input message=''tns:checkCookieRequest'' />
+  		<output message=''tns:checkCookieResponse'' />
+  	</operation>
+  </portType>
+
+  <!-- Binding part -->
+
+  <binding name=''SOAP'' type=''tns:SympaPort''>
+  <soap:binding style=''rpc'' transport=''http://schemas.xmlsoap.org/soap/http''/>
+  	<operation name=''info''>
+  		<soap:operation soapAction=''urn:sympasoap#info''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''complexWhich''>
+  		<soap:operation soapAction=''urn:sympasoap#complexWhich''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''which''>
+  		<soap:operation soapAction=''urn:sympasoap#which''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''amI''>
+  		<soap:operation soapAction=''urn:sympasoap#amI''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''createList''>
+  		<soap:operation soapAction=''urn:sympasoap#createList''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''review''>
+  		<soap:operation soapAction=''urn:sympasoap#review''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''subscribe''>
+  		<soap:operation soapAction=''urn:sympasoap#subscribe''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''signoff''>
+  		<soap:operation soapAction=''urn:sympasoap#signoff''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''login''>
+  		<soap:operation soapAction=''urn:sympasoap#login''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''casLogin''>
+  		<soap:operation soapAction=''urn:sympasoap#casLogin''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''getUserEmailByCookie''>
+  		<soap:operation soapAction=''urn:sympasoap#getUserEmailByCookie''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''authenticateAndRun''>
+  		<soap:operation soapAction=''urn:sympasoap#authenticateAndRun''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''authenticateRemoteAppAndRun''>
+  		<soap:operation soapAction=''urn:sympasoap#authenticateRemoteAppAndRun''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''lists''>
+  		<soap:operation soapAction=''urn:sympasoap#lists''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''complexLists''>
+  		<soap:operation soapAction=''urn:sympasoap#complexLists''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  	<operation name=''checkCookie''>
+  		<soap:operation soapAction=''urn:sympasoap#checkCookie''/>
+  			<input>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</input>
+  			<output>
+  				<soap:body use=''encoded''
+  					namespace=''urn:sympasoap''
+  					encodingStyle=''http://schemas.xmlsoap.org/soap/encoding/''/>
+  			</output>
+  	</operation>
+  </binding>
+
+  <!-- service part -->
+
+  <service name=''SympaSOAP''>
+  	<port name=''SympaPort'' binding=''tns:SOAP''>
+  		<soap:address location="[% conf.soap_url %]"/>
+  	</port>
+  </service>
+
+  </definitions>
+</code>
+
+
+======  Client-side programming ======
+
+Sympa is distributed with 2 sample clients written in Perl and in PHP. The Sympa SOAP server has also been successfully tested with a UPortal Channel as a Java client (using Axis). The sample PHP SOAP client has been installed on our demo server: [[http://demo.sympa.org/sampleClient.php]].
+
+Depending on your programming language and the SOAP library you are using, you will either directly contact the SOAP service (as with the Perl <nowiki>SOAP::Lite library</nowiki>), or first load the WSDL description of the service (as with PHP nusoap or Java Axis). Axis is able to create a stub from the WSDL document.
+
+The WSDL document describing the service should be fetch through //WWSympa//'s dedicated URL: <nowiki>http://your.server/sympa/wsdl</nowiki>.
+
+Note: the ''login()'' function maintains a login session using HTTP cookies. If you are not able to maintain this session by analyzing and sending appropriate cookies under SOAP, then you should use the ''authenticateAndRun()'' function that does not require cookies to authenticate.
+
+
+=====  Writing a Java client with Axis =====
+
+First, download jakarta-axis ([[http://ws.apache.org/axis]]).
+
+You must add the libraries provided with jakarta axis (v >1.1) to you CLASSPATH. These libraries are:
+
+  * axis.jar;
+  * saaj.jar;
+  * commons-discovery.jar;
+  * commons-logging.jar;
+  * xercesImpl.jar;
+  * jaxrpc.jar;
+  * xml-apis.jar;
+  * jaas.jar;
+  * wsdl4j.jar;
+  * soap.jar.
+
+Next, you have to generate client Java class files from the sympa WSDL URL. Use the following command: <code>java org.apache.axis.wsdl.WSDL2Java -av WSDL_URL</code>
+
+For example: <code>java org.apache.axis.wsdl.WSDL2Java -av  http://demo.sympa.org/sympa/wsdl</code>
+
+Exemple of screen output during generation of Java files:
+
+<code>
+  Parsing XML file:  http://demo.sympa.org/sympa/wsdl
+  Generating org/sympa/demo/sympa/msdl/ListType.java
+  Generating org/sympa/demo/sympa/msdl/SympaPort.java
+  Generating org/sympa/demo/sympa/msdl/SOAPStub.java
+  Generating org/sympa/demo/sympa/msdl/SympaSOAP.java
+  Generating org/sympa/demo/sympa/msdl/SympaSOAPLocator.java
+</code>
+
+If you need more information or more generated classes (to have the server-side classes or junit testcase classes for example), you can get a list of switches: <code>java org.apache.axis.wsdl.WSDL2Java -h</code>
+
+The reference page is: [[http://ws.apache.org/axis/java/reference.html]].
+
+Take care of Test classes generated by axis, there are not useable as are. You have to stay connected between each test. To use junit testcases, before each SOAP operation tested, you must call the authenticated connexion to Sympa instance.
+
+Here is a simple Java code that invokes the generated stub to perform a ''casLogin()'' and a ''which()'' on the remote Sympa SOAP server:
+
+<code>
+  SympaSOAP loc = new SympaSOAPLocator();
+  ((SympaSOAPLocator)loc).setMaintainSession(true);
+  SympaPort tmp = loc.getSympaPort();
+  String _value = tmp.casLogin(_ticket);
+  String _cookie = tmp.checkCookie();
+  String[] _abonnements = tmp.which();
+</code>

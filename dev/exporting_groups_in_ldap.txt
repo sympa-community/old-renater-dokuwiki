@@ -1,0 +1,127 @@
+====== Publishing Sympa mailing lists to in a LDAP directory ======
+
+===== People involved in this development project =====
+
+  * Sympa developers 
+  * Michael Gettes, Internet2 
+  * Susan Neitsch, TAMU University
+  * Sylvain Amrani, French Gendarmerie
+  * José María Palacio Carabias, GMV
+  * Israel Cardenas, Borja Pacheco Ortega, Junta de Andalucia
+
+===== Why? =====
+
+Currently Sympa provides many ways to import data from the outside, mainly to include list members or list administrators. External data sources can be SQL databases, LDAP directories, flat files, other mailing lists. 
+
+Now lets consider that Sympa is not just a data consumer but also a data producer. The main reason why Sympa is worth being a data producer is because of its ability to manage groups of people. Sympa uses this groups definition for its own needs (sending message to groups, sharing documents among groups) but since these groups are defined in Sympa their might be of interest for other applications (wiki, web conferencing system, survey tool,...). 
+
+This has already being addressed by Sympa through some extensions ; its SOAP interface being the most notable example. Using the Sympa SOAP API a third party software can query the Sympa server to either find out if a user is member of a group or to get all the members of a given group.
+
+However using the Sympa SOAP interface means that the third party software needs to be customized to speak SOAP.
+
+On the other hand most software natively implement LDAP connectors to query group definition. Therefore it would be useful to adapt Sympa so that it can export its groups data into an LDAP directory. Then third party application could just use their LDAP connectors.
+
+===== Different options =====
+
+There are different technical solutions to provide Sympa group definition through an LDAP interface :
+  - Add LDAP provisioning code in Sympa. This use case is described in this document.
+  - Use a third party SQL=>LDAP synchronisation process. [[https://sourcesup.renater.fr/projects/db2ldap/|DB2LDAP]] software could be used.
+  - Add another daemon to Sympa, being an LDAP server. The [[http://search.cpan.org/~aar/Net-LDAP-Server-0.42/|Net::LDAP::Server]] perl library could be used for that.
+
+===== LDAP structure of a Sympa mailing list =====
+
+The LDAP structure should be adapted to allow LDAP clients to perform 3 kinds of searches :
+  - get all members of a given group
+  - get all groups a given user (=email address) is member of
+  - check wether a given user belongs to a given group
+
+The LDAP structure should also allow to store the following information :
+  * Sympa virtual hosts
+  * list description
+  * members/owners/moderators stored separately
+
+==== The LDAP structure ====
+ 
+Below is the representation of such a DIT :
+<code>
+ou=sympaGroups
+  ou=members
+    cn=sample-list@test.edu (of type groupOfNames)
+    cn=another-list@test.edu
+    ...
+  ou=owners
+    ...
+  ou=moderators
+    ...
+
+ou=People
+  cn=john.smith@test.edu (of type inetOrgPerson)
+
+</code>
+
+This organization has the benefit of using a standard groupOfNames LDAP object that most applications should be familiar with. On the other hand, for an LDAP client to fetch the members of a given group, it requires 2 consecutive search operations.
+
+
+==== Questions ====
+
+
+Should we use GroupOfNames objects or GroupOfUniqueNames?\\
+Apart from the list address, subject, members, owners and moderators, what other list information should be published in the LDAP directory?\\
+Should we store member informations such as name and reception mode?
+
+===== The synchronization process =====
+
+The mailing list data in the LDAP directory need to be in sync with Sympa's own database. 
+
+Therefore we could have a dedicated process that will periodically update the LDAP structure. However a better option would be to add the synchronization code in every places of the Sympa code where list members are updated. This solution would have 3 advantages :
+  - make the LDAP data always in sync with Sympa's own data,
+  - synchronous update prevents the burden of comparing both LDAP and SYmpa list members,
+  - better integration of the feature in Sympa.
+
+We should setup an appropriate error handling. An add operations that fails should retry in some period of time.
+
+===== Configuration parameters =====
+
+The minimum required informations are those that Sympa needs to connect to the LDAP directory :
+  * host, port, suffix, timeout
+  * user, password
+  * use_ssl, ssl_version, ssl_ciphers
+
+We already have generic code to connect to an LDAP directory given these informations.
+
+
+==== Questions ====
+
+Should the export_ldap parameters should be stored in sympa.conf, or in a dedicated configuration file?\\
+Should the export_ldap configuration should be a per virtual host config?\\
+Should the export ldap process actived for all lists or controled by a list parameter ?\\
+Exporting list members to an LDAP directory moves the data out of Sympa's control. Sympa can no longer enforce the authorization scenario rules to protect list members email addresses. This fact should be well explained in the Sympa documentation.
+
+We need to define if the LDAP branch where Sympa stores list data has a hard-coded structure or if it should be customizeable?
+
+===== Events that should trigger an LDAP update =====
+
+  * Member add, removal, update
+  * adding, updating, removing an **include** data source in Sympa
+  * creating, renaming, removing a list
+
+FIXME : add a ttl for a full synchro ?
+
+===== Code design =====
+
+The best approach is to change the lower layers of Sympa code because it lessen the changes and garantee that any Sympa processes will keep the LDAP in sync.
+
+The following pieces of code should be changed :
+  * src/Conf.pm : adding the new "export_ldap" parameter
+  * src/LDAPSource.pm : adding new subroutines to create/update LDAP entries.
+  * src/List.pm :
+    * save_config() : when list config changes, also update the LDAP structure (eg: list subject). The list creation case should be treated here
+    * delete_user() : remove the corresponding user
+    * update_user() : update user entry (could be an email adress change)
+    * update_admin_user() : the same for an owner / moderator
+    * add_user() : add the user in LDAP
+    * add_admin_user : the same for an owner / moderator
+    * rename_list_db() : changes the list name
+    * sync_include() : synchronize LDAP members with include data sources
+    * sync_include_admin() : the same for an owner / moderator
+    * close() : closing a list means removing the corresponding entries in LDAP

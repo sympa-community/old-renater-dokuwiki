@@ -1,0 +1,22 @@
+
+
+======  List configuration parameters ======
+
+
+The configuration file is made of paragraphs separated by blank lines and introduced by a keyword.
+
+Even though there is a very large number of possible parameters, the minimal list definition is very short. The only parameters required are ''owner'' (or ''owner_include'') and ''subject''. All other parameters have a default value.
+
+<note warning>
+Configuration parameters must be separated by blank lines and BLANK LINES ONLY!
+</note>
+
+Using the web interface the following categories are used to organize the large number of parameters :
+
+    * [[parameters-definition|List definition]];
+    * [[parameters-sending|Sending/receiving setup]];
+    * [[parameters-privileges|Privileges]];
+    * [[parameters-archives|Archives]];
+    * [[parameters-bounces|Bounce management]];
+    * [[parameters-data-sources|Data sources setup]];
+    * [[parameters-others|Others]].

@@ -1,0 +1,1296 @@
+====== Bonus ======
+
+Sans supplément, on vous offre ces informations pour ceux d'entre vous qui veulent approfondir ce qui nous semblait trop éloigné du cœur de Sympa pour être couvert en formation. 
+
+Comme dans le reste du support de TP, le nom du poste pris en exemple est **nouveau.domaine.fr**, un petit script permet d'entrer votre nom de machine et de remplacer toutes les occurrences de **nouveau.domaine.fr** dans cette page, vous pourrez à tout moment corriger ou refaire l'opération en tapant simplement votre nom de poste dans le champs ci dessous.
+
+Commençons par connaitre le nom du poste sur lequel vous travaillez :
+  hostname -f
+
+Mettez le nom du poste ainsi obtenu dans le champ suivant :\\
+<html>
+	<script type="text/javascript">
+		function sympaform_snr(search, replace, dontrecord) {
+			var body = document.getElementsByTagName('body')[0];
+			var replacetext = (typeof(replace) != 'string') ? replace.value : replace;
+			if(!replacetext || replacetext == search) return;
+			body.innerHTML = body.innerHTML.replace(new RegExp(search, 'g'), replacetext);
+			
+			if(dontrecord) return;
+			
+			var snr = '';
+			var cookies = document.cookie.split(';');
+			for(var i=0; i<cookies.length; i++) if(cookies[i].match(/^sympaform_snr=/)) snr = cookies[i].substr(14)
+			snr += (snr ? '#' : '') + search + ':' + replacetext;
+			
+			var d = new Date();
+			d.setTime(d.getTime() + (15 * 24 * 60 * 60 * 1000));
+			document.cookie = 'sympaform_snr=' + snr + '; expires=' + d.toGMTString();
+		}
+		
+		addInitEvent(function() {
+			var cookies = document.cookie.split(';');
+			for(var i=0; i<cookies.length; i++) if(cookies[i].match(/^sympaform_snr=/)) {
+				var snrl = cookies[i].substr(14).split('#');
+				for(i=0; i<snrl.length; i++) if(snrl[i]) {
+					var snr = snrl[i].split(':');
+					sympaform_snr(snr[0], snr[1], true);
+				}
+			}
+		});
+	</script>
+	
+	Nom de votre machine : <input type="text" id="sympaform_domain" /> <input type="button" onclick="sympaform_snr('nouveau.domaine.fr', document.getElementById('sympaform_domain'))" value="Appliquer" />
+	<br />
+	<br />
+	Votre editeur : <input type="text" id="sympaform_editor" /> <input type="button" onclick="sympaform_snr('emacs', document.getElementById('sympaform_editor'))" value="Appliquer" />
+</html>
+
+===== - Installation et configuration de Sympa depuis les sources (avec Sendmail) =====
+
+==== - Configuration MySQL ====
+
+<note tip>Pour accéder à la BD dans la suite du TP, vous avez un PHPMyAdmin installé : [[http://nouveau.domaine.fr/phpmyadmin]]</note>
+
+Se connecter à MySQL
+  mysql -u root -p
+
+Positionner les privilèges pour l'utilisateur admin de phpMyAdmin (Attention : vous pouvez choisir un autre mot de passe !)
+  GRANT ALL PRIVILEGES ON *.* TO 'admin'@'nouveau.domaine.fr' IDENTIFIED BY 'le_password' WITH GRANT OPTION ;
+
+Créer la base de données sympa
+  CREATE DATABASE sympa ;
+
+Positionner les privilèges sur la base de données sympa
+  GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON `sympa`.* TO 'sympa'@'localhost' IDENTIFIED BY 'sympa' ;
+
+Appliquer les privilèges
+  FLUSH PRIVILEGES ;
+
+Se déconnecter
+  exit ;
+
+==== - Installation de sympa ====
+
+Se positionner dans le répertoire cible de l'installation
+  cd /usr/local
+
+Récupérer la dernière version de sympa
+  wget http://www.sympa.org/distribution/sympa-6.2b.9.tar.gz
+
+Décompresser le fichier récupérer
+  tar -xvzf sympa-6.2b.9.tar.gz
+
+Supprimer l'archive
+  rm sympa-6.2b.9.tar.gz
+
+Vérifier dans le fichier des utilisateurs /etc/passwd que le homedir du user sympa soit bien /home/sympa
+  grep sympa /etc/passwd
+
+Si le user sympa n'existe pas, le créer
+  groupadd sympa
+  useradd -m -g sympa -d /home/sympa sympa
+
+Se postionner dans le répertoire contenant les sources
+  cd sympa-6.2b.9
+
+Configurer la compilation
+  ./configure --prefix=/usr/local/sympa --with-confdir=/etc/sympa --with-aliases_file=/etc/mail/sympa_aliases --sysconfdir=/usr/local/sympa/etc --with-spooldir=/var/spool/sympa
+
+Nettoyer les compilations antérieures
+  make clean all
+
+Compiler sympa
+  make
+
+Installer sympa
+  make install
+
+Se positionner dans le répertoire contenant les binaires
+  cd /usr/local/sympa/bin/
+
+Vérifier les modules CPAN installés sur la machine et installation des modules manquants. Vérifier que le module pour MySQL est bien installé : DBD::MySQL.
+  ./sympa_wizard.pl --check
+
+Exemple de sortie de sympa_wizard.pl --check
+<code>
+##############################################################################
+# This process will help you install all Perl (CPAN) modules required by Sympa
+# software.
+# Sympa requires from 50 to 65 additional Perl modules to run properly. 
+# The whole installation process should take around 15 minutes.
+# You'll first have to configure the CPAN shell itself and select your
+# favourite CPAN server.
+# Note that you might prefer to install the required Perl modules using your
+# favourite DEB/RPM mechanism.
+# Feel free to interrupt the process if needed ; you can restart it safely
+# afterward.
+##############################################################################
+Press the Enter key to continue...
+
+
+
+Which RDBMS will you use for core database:
+1: MySQL/MariaDB
+2: PostgreSQL
+3: SQLite
+4: Oracle
+5: Sybase
+-> Select RDBMS [1-5] 1
+
+Checking for PERL version:
+
+Your version of perl is OK (5.010001  >= 5.008)
+
+Checking for REQUIRED modules:
+
+perl module             from CPAN               STATUS
+-----------             ---------               ------
+Archive::Zip            Archive-Zip             OK (1.30   >= 1.05)
+CGI                     CGI                     OK (3.64   >= 3.51)
+Class::Singleton        Class-Singleton         was not found on this system.
+Setting FTP Passive mode
+-> Usage of this module: used to construct various singleton classes.
+
+-> Install module Class::Singleton ? [y] 
+
+
+[ ... ]
+
+
+  ARODLAND/Unicode-CaseFold-1.00.tar.gz
+  ./Build install  -- OK
+XML::LibXML             XML-LibXML              OK (1.70   >= 1.0)
+
+Checking for OPTIONAL modules:
+
+perl module             from CPAN               STATUS
+-----------             ---------               ------
+AuthCAS                 AuthCAS                 was not found on this system.
+-> Usage of this module: CAS Single Sign-On client libraries. Required if you
+   configure Sympa to delegate web authentication to a CAS server.
+
+-> Install module AuthCAS ? [n] 
+Crypt::CipherSaber      Crypt-CipherSaber       OK (1.00   >= 0.50)
+Crypt::OpenSSL::X509    Crypt-OpenSSL-X509      was not found on this system.
+-> Usage of this module: required to extract user certificates for SSL
+   clients and S/MIME messages.
+
+-> Install module Crypt::OpenSSL::X509 ? [n] 
+Crypt::SMIME            Crypt-SMIME             was not found on this system.
+-> Usage of this module: required to sign, verify, encrypt and decrypt S/MIME
+   messages.
+
+-> Install module Crypt::SMIME ? [n] 
+DBD::ODBC               DBD-ODBC                was not found on this system.
+-> Usage of this module: ODBC database driver, required if you connect to a
+   database via ODBC.
+
+-> Install module DBD::ODBC ? [n] 
+DBD::Oracle             DBD-Oracle              was not found on this system.
+-> Usage of this module: Oracle database driver, required if you connect to a
+   Oracle database.
+
+-> Install module DBD::Oracle ? [n] 
+DBD::Pg                 DBD-Pg                  was not found on this system.
+-> Usage of this module: PostgreSQL database driver, required if you connect
+   to a PostgreSQL database.
+
+-> Prerequisites: postgresql-devel and postgresql-server. PostgreSQL server
+   should be running for make test to succeed
+
+-> Install module DBD::Pg ? [n] 
+DBD::SQLite             DBD-SQLite              was not found on this system.
+-> Usage of this module: SQLite database driver, required if you connect to a
+   SQLite database.
+
+-> Prerequisites: sqlite-devel. No need to install a server, the SQLite
+   server code being provided with the client code.
+
+-> Install module DBD::SQLite ? [n] 
+DBD::Sybase             DBD-Sybase              was not found on this system.
+-> Usage of this module: Sybase database driver, required if you connect to a
+   Sybase database.
+
+-> Install module DBD::Sybase ? [n] 
+Data::Password          Data-Password           was not found on this system.
+-> Usage of this module: Used for configureable hardening of passwords via
+   the password_validation sympa.conf directive.
+
+-> Install module Data::Password ? [n] 
+Encode::Locale          Encode-Locale           OK (1.03   >= 1.02)
+FCGI                    FCGI                    OK (0.71   >= 0.67)
+IO::Socket::SSL         IO-Socket-SSL           OK (1.31   >= 0.90)
+
+Mail::DKIM::Verifier    Mail-DKIM               version is too old (0.37 < 0.39)
+>>>>>>> You must update "Mail-DKIM" to version "0.39" <<<<<<.
+-> Usage of this module: required in order to use DKIM features (both for
+   signature verification and signature insertion)
+
+-> Install module Mail::DKIM::Verifier ? [n] Net::LDAP               perl-ldap               OK (0.40   >= 0.34)
+Net::SMTP               libnet                  OK (2.31   >= 1.0)
+SOAP::Lite              SOAP-Lite               OK (1.11   >= 0.712)
+******* NOTE *******
+You can retrieve all theses modules from any CPAN server
+(for example ftp://ftp.pasteur.fr/pub/computing/CPAN/CPAN.html)
+</code>
+
+Si à la fin de ce processus l'installation de SOAP::Lite échoue :
+  cd ~/.cpan/build/SOAP-Lite-[...]
+  make
+  make install
+
+Editer la configuration de sympa
+  cd /usr/local/sympa/bin
+  ./sympa_wizard.pl
+
+Exemple de sortie de ./sympa_wizard.pl
+<code>
+** Personnalisation du serveur **
+
+* Nom de l'hôte du robot principal
+domain [nouveau.domaine.fr] : 
+
+* Partie locale de l'adresse email de Sympa
+  ... L'adresse effective sera de la forme [EMAIL]@[HOST]
+email [sympa] : 
+
+* Gecos pour les mails de service envoyés par Sympa lui-même
+  ... Ce paramètre est utilisé pour afficher le nom contenu par l'entête
+  "From:"
+gecos [SYMPA] : 
+
+* Liste des adresses email des listmasters séparées par des virgules (sans
+  espaces)
+  ... Sympa associera des privilèges de listmaster à ces adresses (via les
+  interfaces web et mail). Certains rapports d'erreur leur seront également
+  envoyés.
+listmaster [your_email_address@nouveau.domaine.fr] : /!\ Entrez ici une véritable adresse email à laquelle vous avez accès /!\
+
+* URL de la page web principale
+wwsympa_url [http://nouveau.domaine.fr/sympa] : 
+
+* Conserver les messages distribués dans les archives
+  ... Ce paramètre peut être redéfini au niveau de chaque liste
+process_archive [off] : on
+
+* Répertoire stockant les contenus statiques (CSS, photos des membres,
+  documentation) retournés directement par le serveur web
+static_content_path [/usr/local/sympa/static_content] : 
+
+* URL liée par la config web au répertoire static_content_path défini plus
+  haut
+static_content_url [/static-sympa] : 
+
+* Qui a le droit de créer une liste
+  ... Ce paramètre prend pour valeur un nom de scénario. Consultez la
+  documentation de Sympa sur les scénarios si vous voulez en créer un.
+create_list [public_listmaster] : 
+
+
+** Répertoires **
+
+* Répertoire contenant les sous-répertoires de chaque liste.
+home [/usr/local/sympa/list_data] : 
+
+
+** Configuration liée au système **
+
+* Facilité syslog employée pour Sympa
+  ... N'oubliez pas d'éditer edit_list.conf
+syslog [LOCAL1] : 
+
+* Mode de communication avec syslog (unix | inet)
+log_socket_type [unix] : 
+
+
+** Configuration liée à l'envoi de messages **
+
+* Chemin vers le MTA (sendmail, postfix, exim ou qmail)
+  ... Devrait pointer vers un exécutable compatible sendmail (par ex : un
+  binaire nommé "sendmail" est distribué par postfix)
+sendmail [/usr/sbin/sendmail] : 
+
+* listes des opérations pour lesquelles une liste noire est employée, séparées
+  par des virgules
+  ... Donner la valeur 'none' à ce paramètre dissimulera la fonctionnalité de
+  liste noire
+use_blacklist [send,create_list] : 
+
+* Taille maximum des messages (en octets). Peut être redéfini pour chaque
+  liste.
+max_size [5242880] : 
+
+* Quota par défaut des répertoires de documents partagés
+default_shared_quota [] : 
+
+
+** Configuration de l'internationalisation **
+
+* Langues supportées
+  ... Ceci est la liste des langages qui sera proposée à vos utilisateurs pour
+  la GUI de Sympa. Ne sélectionnez pas un langage si vous n'avez pas la locale
+  d'installée
+supported_lang [ca,cs,de,el,es,et,en-US,fr,fi,hu,it,ja,ko,nl,nb,oc,pl,pt-BR,ru,sv,tr,vi,zh-CN,zh-TW] : 
+
+* Langue par défault (une des langues supportées)
+  ... Ceci est la langue par défaut utilisée par Sympa
+lang [en-US] : fr
+
+* Si "on", active le support des anciennes tables de caractères
+  ... Voir aussi la page man de charset.conf(5)
+legacy_character_support_feature [off] : 
+
+* Taux d'erreurs avant de prévenir le propriétaire
+bounce_warn_rate [30] : 
+
+
+** Personnalisation **
+
+* Utilisation de la version binaire de la liste de configuration de la
+  structure sur le disque (non | fichier_binaire)
+  ... Mettre ce paramètre à "binary_file" si vous gérez une grande quantité de
+  listes (1 000+); ça devrait accélérer le démarrage de l'interface web
+cache_list_config [none] : binary_file
+
+
+** Base de données **
+
+* Type de la base de données (mysql|Pg|Oracle|Sybase|SQLite)
+  ... Attention à la case
+db_type [mysql] : 
+
+* Nom de la base de données
+  ... Avec SQLite, le nom de la BDD correspond au fichier de la BDD
+db_name [sympa] : 
+
+* Nom du serveur de la base de données
+db_host [localhost] : 
+
+* utilisateur pour la connexion à la base de données
+db_user [user_name] : sympa
+
+* Mot de passe pour la connexion à la base de données.
+  ... Que vous utilisiez un mot de passe ou non, vous devez protéger le
+  serveur SQL (qui n'est pas un service internet ?)
+db_passwd [user_password] : sympa
+
+
+** Configuration S/MIME **
+
+* Repertoire contenant les AC de confiance
+capath [] : 
+
+* Fichier contenant les AC de confiance
+cafile [/usr/local/sympa/default/ca-bundle.crt] : 
+
+* Mot de passe utilisé pour chiffrer les clés privées des listes
+key_passwd [] : 
+
+
+** Plugin antivirus **
+
+* Chemin vers le moteur antivirus.
+  ... Antivirus supportés: McAfee/uvscan, Fsecure/fsav, Sophos, AVP and Trend
+  Micro/VirusWall
+antivirus_path [] : 
+
+* Arguments de la ligne de commande de l'antivirus.
+antivirus_args [] : 
+
+
+** Filtrage du spam fondé sur des tags. **
+
+* Si l'anti-spam (comme spamassassin ou j-chkmail) place une entête smtp pour
+  identifier les indésirables, nom de cet entête (exemple: X-Spam-Status)
+antispam_tag_header_name [X-Spam-Status] : 
+
+* Expression rationelle appliquée sur cet entête pour identifier le message
+  comme indésirable (exemple: Yes)
+antispam_tag_header_spam_regexp [^\s*Yes] : 
+
+* Expression rationelle appliquée sur cet entête pour identifier le message
+  comme ACCEPTABLE (exemple: No)
+antispam_tag_header_ham_regexp [^\s*No] : 
+
+* Les messages sont supposés être filtrés par un moteur antispam qui ajoute un
+  ou plusieurs entêtes aux messages. Ce paramètre est utilisé pour
+  sélectionner un scenario particulier dans le but de décider du status du
+  spam : ham, spam ou unsure. Ce paramètre remplace antispam_tag_header_name,
+  antispam_tag_header_spam_regexp et antispam_tag_header_ham_regexp.
+spam_status [x-spam-status] : 
+
+
+** Paramètres de l'interface web **
+
+* Répertoire de stockage des archives HTML
+  ... Il est conseillé de ne pas employer une partition critique.
+arc_path [/usr/local/sympa/arc] : 
+
+* Ordre d'affichage par défaut des archives web: par discussion (threaded) ou
+  ordre chronologique (chronological)
+archive_default_index [thrd] : 
+
+* Active un archiveur différent de MHonArc. La valeur de ce paramètre est le
+  chemin absolu du script à utiliser.
+custom_archiver [] : 
+
+* Type de page d'accueil ( "lists"(listes) | "home"(page d'accueil) )
+default_home [home] : 
+
+* Facilité syslog pour wwsympa, archived et bounced.
+  ... La valeur par défaut est celle préalablement définie pour la facilité
+  des logs de sympa.pl
+log_facility [LOCAL1] : 
+
+* Chemin absolu vers le plugin mail2html de MHonArc.
+  ... Requis pour l'archivage HTML des messages
+mhonarc [/usr/bin/mhonarc] : 
+
+* Titre de la page d'accueil
+title [Mailing lists service] : Listes de diffusion Sympa
+
+* Si ce paramètre est à "on", les utilisateurs auront accès à un éditeur riche
+  en javascript (WYSIWYG) pour poster des messages HTML
+use_html_editor [0] : 
+
+* Est-ce-que le module fast_cgi d'Apache (ou Roxen) est installé ( 0 | 1 )
+  ... Ce module fournit une interface beaucoup plus rapide
+use_fast_cgi [1] : 
+
+* Domaine web d'un hôte virtuel
+http_host [host.domain.tld] : nouveau.domaine.fr
+
+* Les techniques de validation de mots de passe fournis par les utilisateurs.
+  Les options correspondent à celles disponibles dans le module Perl
+  Data::Password
+  (http://search.cpan.org/~razinf/Data-Password-1.07/Password.pm#VARIABLES)
+password_validation [] : 
+/etc/sympa/sympa.conf a été mis à jour.
+Les versions précédentes ont été sauvegardées sous /etc/sympa/sympa.conf.02 avril 2015 15:13:41.
+</code>
+
+Editer et vérifier le contenu du fichier de configuration
+  emacs /etc/sympa/sympa.conf 
+
+Activer sympa au démarrage de la machine : 
+  chkconfig --level 3 sympa on
+
+Démarrer Sympa
+  service sympa start
+
+==== - Configuration du MTA ===
+
+=== - Postfix ===
+
+Nous allons configurer Postfix.
+
+  cd /etc/postfix
+  emacs main.cf
+
+Ajoutez les lignes suivantes :
+Ajout du domaine nouveau.domaine.fr dans la liste des domaines dont Postfix acceptera de traiter les mails.
+
+  relay_domains = $mydestination,nouveau.domaine.fr
+  
+Définition des expressions régulières pour le transport.
+
+  transport_maps = regexp:/etc/postfix/transport_regexp
+
+Gestion de la concurrence
+
+  sympa_destination_recipient_limit = 1
+  
+  sympabounce_destination_recipient_limit = 1
+  
+On définit le fichier de gestion des alias.
+
+  alias_maps = hash:/etc/aliases,hash:/etc/mail/sympa_aliases,hash:/etc/sympa/aliases.sympa.postfix
+  
+  alias_database = hash:/etc/aliases,hash:/etc/mail/sympa_aliases,hash:/etc/sympa/aliases.sympa.postfix
+
+Enregistrez et fermez.
+
+Ensuite :
+
+  geany /etc/sympa/aliases.sympa.postfix
+
+Ce fichier contiendra les alias fonctionnels du serveur Sympa. Collez le contenu suivant dans le fichier :
+
+<code>
+# Robot aliases for Sympa.
+sympa:              "| /usr/libexec/sympa/queue sympa@form-sympa-prof.renater.fr"
+listmaster:         "| /usr/libexec/sympa/queue listmaster@form-sympa-prof.renater.fr"
+bounce:             "| /usr/libexec/sympa/bouncequeue sympa@form-sympa-prof.renater.fr"
+abuse-feedback-report: "| /usr/libexec/sympa/bouncequeue sympa@form-sympa-prof.renater.fr"
+sympa-request:      postmaster
+sympa-owner:        postmaster
+</code>
+
+Enregistrez et fermez.
+
+Le fichier /etc/mail/sympa_aliases contiendra lui les alias des listes.
+
+    sympa     unix  -       n       n       -       -       pipe
+      flags=R user=sympa argv=/home/sympa/bin/queue ${recipient}
+     
+    sympabounce  unix  -       n       n       -       -       pipe
+      flags=R user=sympa argv=/home/sympa/bin/bouncequeue ${recipient}
+
+Définissez le transport :
+
+  emacs /etc/postfix/transport_regexp
+
+Copiez ce texte dans le fichier :
+
+<code>
+/^.*-owner\@form-sympa-prof\.renater\.fr$/ sympabounce:
+/^.*\@form-sympa-prof\.renater\.fr$/       sympa:
+</code>
+
+Vous trouverez une configuration Postfix plus avancée [[https://tribut.de/blog/sympa-and-postfix/|ici]].
+
+=== - Sendmail ===
+
+
+Editer le fichier de configuration
+  cd /etc/mail
+  emacs sendmail.mc 
+
+Modifier la ligne suivante pour ajouter un fichier d'alias spécifique à Sympa :
+
+  define(`ALIAS_FILE', `/etc/aliases')dnl
+  
+Ajouter le chemin vers les fichiers d'alias de Sympa :
+
+  define(`ALIAS_FILE', `/etc/aliases,/etc/mail/sympa_aliases')dnl
+
+Vouv allez trouver la ligne :
+
+  DAEMON_OPTIONS(`Port=smtp,Addr=127.0.0.1, Name=MTA')dnl
+
+N'Y TOUCHEZ PAS ! MAIS **AJOUTEZ LA LIGNE SUIVANTE** : 
+
+  DAEMON_OPTIONS(`Port=smtp,Addr=<adresse.ip.de.la.machine>, Name=MTA')dnl
+
+Note: vous pouvez obtenir l'adresse IP de la machine en tapant ''ifconfig''.
+
+Compiler pour regnérer le fichier de configuration compilé sendmail.cf
+  make
+
+smrsh est un script de protection de sendmail. Dans les alias, on peut choisir de passer le corps d'un message à un script exécuté par le shell du serveur. smrsh empêche l'exécution de tels scripts à moins qu'ils aient été préalablement déclarés. C'est l'objet de la création des liens symboliques ci-dessous. Configurer smrsh, donc :
+  cd /etc/smrsh
+  ln -s /usr/local/sympa/bin/queue
+  ln -s /usr/local/sympa/bin/bouncequeue
+  ln -s /usr/local/sympa/bin/familyqueue
+
+Définir les alias de sympa
+  chmod u+w /etc/aliases
+  emacs /etc/aliases 
+
+Ajouter les lignes suivantes en fin de fichier  pour permettre la réorientation des messages vers les exécutables de Sympa chargés de les traiter
+  
+  # Alias généraux Sympa
+  sympa: "| /usr/local/sympa/bin/queue sympa@nouveau.domaine.fr"
+  listmaster: "| /usr/local/sympa/bin/queue listmaster@nouveau.domaine.fr"
+  bounce+*: "| /usr/local/sympa/bin/bouncequeue sympa@nouveau.domaine.fr"
+  abuse-feedback-report: "| /usr/local/sympa/bin/bouncequeue sympa@nouveau.domaine.fr"
+  sympa-request: postmaster
+  sympa-owner: postmaster
+
+Créer le fichier sympa_aliases s'il n'existe pas
+  touch /etc/mail/sympa_aliases
+
+Positionner les droits suivants
+  chmod 640 /etc/mail/sympa_aliases
+
+Positionner le propriétaire du fichier
+  chown sympa:root /etc/mail/sympa_aliases
+
+Remettre à jour la base d'alias
+  newaliases
+
+Exemple de sortie :
+  /etc/aliases: 82 aliases, longest 66 bytes, 1110 bytes total
+  /etc/mail/sympa_aliases: 0 aliases, longest 0 bytes, 0 bytes total
+
+Compiler
+  cd /etc/mail
+  make
+
+Ouvrir le fichier définissant les domaines locaux à la machine :
+  emacs local-host-names
+
+Ajouter la ligne concernant le nouveau domaine de messagerie :
+  nouveau.domaine.fr
+
+Redémarrer sendmail :
+  service sendmail restart
+
+Vérifiez que la configuration est correcte en simulant un envoi de mail :
+
+  sendmail -bv listmaster@nouveau.domaine.fr
+
+Vous devez obtenir la sortie suivante :
+  "| /usr/local/sympa/bin/queue listmaster@nouveau.domaine.fr"... deliverable: mailer prog, user "| /usr/local/sympa/bin/queue listmaster@nouveau.domaine.fr"
+
+Une erreur à la commande précédente signifie que vous avez un problème de configuration. Vérifiez que vous n'avez pas sauté une étape.
+
+==== - Configuration de syslog  ====
+
+Editer le fichier de configuration :
+  emacs /etc/syslog-ng/syslog-ng.conf 
+
+Vérifier que si les lignes concernant sympa existe et si elles n'existent pas ajouter :
+  destination d_sympa { file("/var/log/sympa"); };
+  filter f_sympa { facility(local1); };
+  log { source(s_sys); filter(f_sympa); destination(d_sympa); };
+
+Redémarrer Syslog :
+  service syslog-ng restart
+
+==== - Configuration web ====
+
+Créer et éditer le fichier de configuration apache de l'hote
+  emacs /etc/httpd/conf.d/nouveau.domaine.fr.conf
+
+Avec comme contenu
+  <IfModule mod_fcgid.c>
+  	IPCCommTimeout 120
+  	MaxProcessCount 5
+  </IfModule>
+  
+  ScriptAlias /soap /usr/local/sympa/bin/sympa_soap_server-wrapper.fcgi
+  ScriptAlias /sympa /usr/local/sympa/bin/wwsympa-wrapper.fcgi
+  Alias /static-sympa /usr/local/sympa/static_content
+
+
+Redémarrer Apache
+  service httpd restart
+
+Envoyer la commande « help » à Sympa par mail. Pour cela, envoyer un mail à [[sympa@nouveau.domaine.fr]] avec, dans le sujet, le texte "help". Si réponse, le mail fonctionne.
+
+Aller sur l'interface web, vérifier que ça marche : [[http://nouveau.domaine.fr/sympa]]
+
+
+===== Installation du SP Shibboleth =====
+
+Se positionner dans le répertoire de configuration par défaut d'Apache :
+
+  cd /etc/httpd/conf/
+
+Editer le fichier de configuration :
+
+  emacs httpd.conf
+
+Mettre la valeur du paramètre UseCanonicalName à oui (Utiliser pour permettre le routage des requêtes via la fonctionnalité RequestMap de Shibboleth) :
+
+  UseCanonicalName On
+
+<note tip>Dans le cadre du TP, nous sommes sur des machines virtuelles qui sont nativement synchronisées à un serveur de temps via leur hyperviseur. Cela dit, si ce n'est pas le cas, il faut que votre machine soit synchronisée avec un serveur de temps pour éviter une dérive qui pourrait invalider les assertions SAML traitées par Shibboleth. Dans ce cas :
+
+Vérifier l’existence d'un serveur de temps sur la machine :
+
+  service ntpd status
+
+S'il est arrêté, le démarrer :
+
+  service ntpd start
+
+Sinon l'installer :
+
+  yum install ntp
+
+Vérifier que le serveur de temps soit bien lancé au démarrage de la machine :
+
+  chkconfig --list
+
+Si il n'est pas configuré, le configurer :
+
+  chkconfig --level 2 ntpd on ; chkconfig --level 3 ntpd on ; chkconfig --level 4 ntpd on ; chkconfig --level 5 ntpd on
+
+</note>
+
+Configurer le dépôt pour Centos 6 : 
+
+  wget -O /etc/yum.repos.d/security_shibboleth.repo http://download.opensuse.org/repositories/security://shibboleth/CentOS_CentOS-6/security:shibboleth.repo
+
+  wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-shibboleth-security http://download.opensuse.org/repositories/security://shibboleth/CentOS_CentOS-6/repodata/repomd.xml.key
+
+  rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-shibboleth-security
+
+Installer les paquets suivants :
+
+  yum install log4shib xerces-c xml-security-c xmltooling opensaml shibboleth
+
+Se positionner dans le réperoire de Shibboleth :
+
+  cd /etc/shibboleth/
+
+Vérifier le contenu du fichier de configuration apache de shibboleth (Normalement, rien à modifier sauf l'ajout de la page shibenv.php pour tester la connexion Shibboleth) :
+
+  emacs /etc/httpd/conf.d/shib.conf 
+
+<code>
+# https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPApacheConfig
+
+# RPM installations on platforms with a conf.d directory will
+# result in this file being copied into that directory for you
+# and preserved across upgrades.
+
+# For non-RPM installs, you should copy the relevant contents of
+# this file to a configuration location you control.
+
+#
+# Load the Shibboleth module.
+#
+LoadModule mod_shib /usr/lib64/shibboleth/mod_shib_22.so
+
+#
+# Ensures handler will be accessible.
+#
+<Location /Shibboleth.sso>
+  Satisfy Any
+  Allow from all
+</Location>
+
+#
+# Used for example style sheet in error templates.
+#
+<IfModule mod_alias.c>
+  <Location /shibboleth-sp>
+    Satisfy Any
+    Allow from all
+  </Location>
+  Alias /shibboleth-sp/main.css /usr/share/shibboleth/main.css
+</IfModule>
+
+#
+# Configure the module for content.
+#
+# You MUST enable AuthType shibboleth for the module to process
+# any requests, and there MUST be a require command as well. To
+# enable Shibboleth but not specify any session/access requirements
+# use "require shibboleth".
+#
+Alias /secure /var/www/secure/shibenv.php
+<Location /secure>
+  AuthType shibboleth
+  ShibCompatWith24 On
+  ShibRequestSetting requireSession 1
+  require shib-session
+</Location>
+
+</code>
+Editer le fichier de configuration contenant la translation des noms d'attributs contenus dans les assertions SAML envoyées par les IDPs dans les en-tête HTTP exploitable par sympa :
+
+  emacs attribute-map.xml
+
+Décommenter les **deux** lignes concernant le mail
+
+Récupérer le fichier contenant les méta-données de la fédération éducation-recherche :
+
+  wget https://federation.renater.fr/renater/metadata-federation-renater.crt -O /etc/shibboleth/metadata-federation-renater.crt
+
+Editer le fichier de configuration Shibboleth :
+
+  emacs shibboleth2.xml
+
+Personnaliser la configuration :
+
+<code xml>
+[...]
+
+    <!-- The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined. -->
+	<ApplicationDefaults entityID="default" REMOTE_USER="mail eppn persistent-id targeted-id">
+
+        <!--
+        Controls session lifetimes, address checks, cookie handling, and the protocol handlers.
+        You MUST supply an effectively unique handlerURL value for each of your applications.
+        The value defaults to /Shibboleth.sso, and should be a relative path, with the SP computing
+        a relative value based on the virtual host. Using handlerSSL="true", the default, will force
+        the protocol to be https. You should also set cookieProps to "https" for SSL-only sites.
+        Note that while we default checkAddress to "false", this has a negative impact on the
+        security of your site. Stealing sessions via cookie theft is much easier with this disabled.
+        -->
+        <Sessions lifetime="28800" timeout="3600" checkAddress="false" relayState="ss:mem" handlerSSL="false">
+
+			<SSO discoveryProtocol="SAMLDS" discoveryURL="https://discovery.renater.fr/test">
+				SAML2 SAML1
+			</SSO>
+			<!--
+			md:AssertionConsumerService locations handle specific SSO protocol bindings,
+			such as SAML 2.0 POST or SAML 1.1 Artifact. The isDefault and index attributes
+			are used when sessions are initiated to determine how to tell the IdP where and
+			how to return the response.
+			-->
+
+			<!-- LogoutInitiators enable SP-initiated local or global/single logout of sessions. -->
+<!--
+			<LogoutInitiator type="Chaining" Location="/Logout">
+				<LogoutInitiator type="SAML2" template="bindingTemplate.html"/>
+				<LogoutInitiator type="Local"/>
+			</LogoutInitiator>
+-->
+
+            <!-- SAML and local-only logout. -->
+            <Logout>SAML2 Local</Logout>
+			<!--
+			md:ArtifactResolutionService locations resolve artifacts issued when using the
+			SAML 2.0 HTTP-Artifact binding on outgoing messages, generally uses SOAP.
+			-->
+
+			<!-- Extension service that generates "approximate" metadata based on SP configuration. -->
+			<Handler type="MetadataGenerator" Location="/Metadata" signing="false"/>
+
+			<!-- Status reporting service. -->
+			<Handler type="Status" Location="/Status" acl="127.0.0.1"/>
+
+			<!-- Session diagnostic service. -->
+			<Handler type="Session" Location="/Session" showAttributeValues="true"/>
+
+			<!-- JSON feed of discovery information. -->
+			<Handler type="DiscoveryFeed" Location="/DiscoFeed"/>
+
+		</Sessions>
+
+		<!--
+		Allows overriding of error template information/filenames. You can
+		also add attributes with values that can be plugged into the templates.
+		-->
+		<Errors supportContact="administrator@a-nouveau.domaine.fr"
+			metadata="metadataError_fr.html"
+			access="accessError_fr.html"
+			ssl="sslError_fr.html"
+			logoLocation="/shibboleth-sp/logo.jpg"
+			styleSheet="/shibboleth-sp/main.css"/>
+
+		<MetadataProvider type="Chaining">
+
+
+			<!-- Nouvelles Meta-données de la fédération de test Éducation-Recherche -->
+			<MetadataProvider type="XML" uri="https://services-federation.renater.fr/metadata/renater-test-metadata.xml"
+				backingFilePath="renater-test-metadata.xml" reloadInterval="3600">
+				<MetadataFilter type="RequireValidUntil" maxValidityInterval="604800"/>
+				<MetadataFilter type="Signature" certificate="metadata-federation-renater.crt"/>
+			</MetadataProvider>
+			<!-- Meta-donnees du SAC -->
+			<MetadataProvider type="XML" uri="https://cru.renater.fr/idp/profile/Metadata/SAML"
+				backingFilePath="/etc/shibboleth/sac-metadata.xml" reloadInterval="7200">
+			</MetadataProvider>
+		</MetadataProvider>
+
+        <AttributeExtractor type="XML" validate="true" reloadChanges="false" path="attribute-map.xml"/>
+        
+        <AttributeResolver type="Query" subjectMatch="true"/>
+
+		<!-- Default filtering policy for recognized attributes, lets other data pass. -->
+		<AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
+
+		<!-- Simple file-based resolver for using a single keypair. -->
+		<CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>
+
+		<!-- SYMPA DE a-nouveau.domaine.fr -->
+		<ApplicationOverride id="app-groupware" entityID="http://a-nouveau.domaine.fr/sympa"/>
+</ApplicationDefaults>
+    <!-- Policies that determine how to process and authenticate runtime messages. -->
+    <SecurityPolicyProvider type="XML" validate="true" path="security-policy.xml"/>
+
+    <!-- Low-level configuration about protocols and bindings available for use. -->
+    <ProtocolProvider type="XML" validate="true" reloadChanges="false" path="protocols.xml"/>
+
+</SPConfig>
+
+</code>
+
+Désactiver SeLinux (en production il faudra choisir les bonnes règles pour authoriser la communication avec le démon shibd) :
+  setenforce 0
+
+Positionner le chemin de libcurl-ssl pour shibboleth
+  export LD_LIBRARY_PATH=/opt/shibboleth/lib64:$LD_LIBRARY_PATH
+
+Vérifier la syntaxe du fichier shibboleth2.xml :
+
+  /usr/sbin/shibd -tc /etc/shibboleth/shibboleth2.xml
+
+Editer le fichier de configuration apache :
+
+  emacs /etc/httpd/conf.d/nouveau.domaine.fr.conf
+
+Ajouter les lignes suivantes pour prise en compte de la fédération d'identité : 
+
+<code>
+<Location />
+
+ShibRequestSetting applicationId app-groupware
+
+</Location>
+
+<Location /sympa/sso_login/federation_cru>
+
+AuthType shibboleth
+
+ShibRequestSetting requireSession 1
+
+require shibboleth
+
+</Location>
+</code>
+
+Ajouter la page shibenv.php (pour test) dans /var/www/secure/shibenv.php
+
+<code html>
+<html>
+<head>
+  <title>Shibboleth Attributes - <?php echo $_SERVER["SERVER_NAME"]; ?></title>
+  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+  <META HTTP-EQUIV="Expires" CONTENT="-1">
+<script language"JavaScript" type="text/JavaScript">
+<!--
+  function decodeAttributeResponse() {
+ 	var textarea = document.getElementById("attributeResponseArea");
+  	var base64str = textarea.value;
+	var decodedMessage = decode64(base64str);
+	textarea.value = tidyXml(decodedMessage);
+	textarea.rows = 15;
+	document.getElementById("decodeButtonBlock").style.display='none';
+  }
+
+  function tidyXml(xmlMessage) {
+	//put newline before closing tags of values inside xml blocks
+	xmlMessage = xmlMessage.replace(/([^>])</g,"$1\n<");
+	//put newline after every tag
+	xmlMessage = xmlMessage.replace(/>/g,">\n");
+	var xmlMessageArray = xmlMessage.split("\n");
+	xmlMessage="";
+	var nestedLevel=0;
+	for (var n=0; n < xmlMessageArray.length; n++) {
+		if ( xmlMessageArray[n].search(/<\//) > -1 ) {
+			nestedLevel--;
+		}
+		for (i=0; i<nestedLevel; i++) {
+			xmlMessage+="  ";
+		}
+		xmlMessage+=xmlMessageArray[n]+"\n";
+		if ( xmlMessageArray[n].search(/\/>/) > -1 ) {
+			//level status the same
+		}
+		else if ( ( xmlMessageArray[n].search(/<\//) < 0 ) && (xmlMessageArray[n].search(/</) > -1) ) {
+			//only increment if this was a tag, not if it is a value
+			nestedLevel++;
+		}
+	}
+  	return xmlMessage;
+  }
+
+  var base64Key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  function decode64(encodedString) {
+    var decodedMessage = "";
+    var char1, char2, char3;
+    var enc1, enc2, enc3, enc4;
+    var i = 0;
+  
+    //remove all characters that are not A-Z, a-z, 0-9, +, /, or =
+    encodedString = encodedString.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+    do {
+	enc1 = base64Key.indexOf(encodedString.charAt(i++));
+	enc2 = base64Key.indexOf(encodedString.charAt(i++));
+	enc3 = base64Key.indexOf(encodedString.charAt(i++));
+	enc4 = base64Key.indexOf(encodedString.charAt(i++));
+
+	char1 = (enc1 << 2) | (enc2 >> 4);
+	char2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+	char3 = ((enc3 & 3) << 6) | enc4;
+
+	decodedMessage = decodedMessage + String.fromCharCode(char1);
+	if (enc3 != 64) {
+		decodedMessage = decodedMessage + String.fromCharCode(char2);
+	}
+	if (enc4 != 64) {
+		decodedMessage = decodedMessage + String.fromCharCode(char3);
+	}
+    } while (i < encodedString.length);
+    return decodedMessage;
+  }
+// -->
+</script>
+</head>
+
+
+<body>
+
+<b>-all SHIB headers-</b> (<code>HTTP_SHIB_ATTRIBUTES</code> is not shown in this list)
+<?php
+echo '<table>';
+foreach ($_SERVER as $key => $value)
+{
+	$fkey='_'.$key;
+	if ( strpos($fkey,'SHIB')>1 && $key!="HTTP_SHIB_ATTRIBUTES")
+#	if ( strpos($fkey,'SHIB')>1 )
+	{
+		echo '<tr>';
+		echo '<td>'.$key.'</td><td>'.$value.'</td>';
+		echo '</tr>';
+	}
+}
+echo '<tr><td>(REMOTE_USER)</td><td>'.$_SERVER['REMOTE_USER'].'</td></tr>';
+echo '<tr><td>(HTTP_REMOTE_USER)</td><td>'.$_SERVER['HTTP_REMOTE_USER'].'</td></tr>';
+echo '</table>';
+?>
+<br/>
+
+attribute response from the IdP (<code>HTTP_SHIB_ATTRIBUTES</code>):<br/>
+<textarea id="attributeResponseArea" onclick="select()" rows="1" cols="130"><?php echo $_SERVER["HTTP_SHIB_ATTRIBUTES"]; ?></textarea><br/>
+<span id="decodeButtonBlock"><input type="button" id="decodeButton" value="decode base64 encoded attribute response using JavaScript" onClick="decodeAttributeResponse();"><br/></span>
+
+<br/>
+
+<small>
+notes:<br/>
+The AAP throws away invalid values (eg an unscopedAffiliation of value "myBoss@&lt;yourdomain&gt;" or a value with an invalid scope which scope is checked)<br/>
+The raw attribute response (<code>HTTP_SHIB_ATTRIBUTES</code>) is NOT filtered by the AAP and should therefore be disabled for most applications (<code>exportAssertion=false</code>).<br/>
+</small>
+
+<br/>
+<hr/>
+<br/>
+
+
+<b>$_REQUEST</b>
+<?php
+echo '<table>';
+foreach ($_REQUEST as $key => $value)
+{
+	echo '<tr>';
+	echo '<td>'.$key.'</td><td>'.$value.'</td>';
+	echo '</tr>';
+
+}
+echo '</table>'
+?>
+
+
+
+<br/>
+<hr/>
+<br/>
+
+<b>$_SERVER</b>
+<?php
+echo '<table>';
+foreach ($_SERVER as $key => $value)
+{
+	echo '<tr>';
+	echo '<td>'.$key.'</td><td>'.$value.'</td>';
+	echo '</tr>';
+
+}
+echo '</table>'
+?>
+
+<br/>
+<hr/>
+<br/>
+
+<b>$_SESSION</b>
+<?php
+echo '<table>';
+foreach ($_SESSION as $key => $value)
+{
+	echo '<tr>';
+	echo '<td>'.$key.'</td><td>'.$value.'</td>';
+	echo '</tr>';
+
+}
+echo '</table>'
+?>
+
+<br/>
+<hr/>
+<br/>
+
+</body>
+</html>
+</code>
+
+Redémarrer Apache et Shibboleth :
+
+  service httpd restart ; service shibd restart
+
+Enregistrer la ressource dans la fédération de test : [[https://federation.renater.fr/test/registry]]
+
+Quelques remarques sur la déclaration dans la fédération de test :
+
+  * Section : "Rattachement à un organisme" : **ne déclarez aucun organisme. Sinon votre déclaration sera modéré**.
+  * Section : "Rattachement à une fédération" : Cliquez sur le lien à côté du texte "Fédération de test".
+  * Section "Attributs demandés" : demandez le mail (obligatoire).
+  * Section "Informations techniques" : renseignez les champs comme suit :
+    * //URL de vos métadonnées// : laisser vide
+    * //entityId// : [[http://a-nouveau.domaine.fr/sympa]]
+    * //URL du service AssertionConsumerService SAML 1.0// : [[http://a-nouveau.domaine.fr/Shibboleth.sso/SAML/POST]]
+    * //URL du service AssertionConsumerService SAML 2.0// : [[http://a-nouveau.domaine.fr/Shibboleth.sso/SAML2/POST]]
+    * //Certificat X 509// : le contenu du fichier ''/etc/shibboleth/sp-cert.pem'', certificat auto-signé généré à l'étape de configuration du SP (sans les lignes contenant BEGIN CERTIFICATE et END CERTIFICATE)
+    * //ancien certificat// : laisser vide
+
+Tester :  [[http://a-nouveau.domaine.fr/secure/shibenv.php]]
+
+L'authentification via Shibboleth devrait désormais fonctionner. Vérifier cela en tentant de cliquer sur le bouton connexion de l'interface web.
+
+====== Configuration d'un hôte virtuel avec Sendmail ======
+
+L'introduction d'un nouveau domaine sur une même machine impose quelques aménagements.
+
+  emacs /etc/mail/virtual-domains 
+
+Définissez le nouveau domaine virtuel
+
+  a-nouveau.domaine.fr
+
+Ajouter le chargement du fichier dans la configuration de sendmail
+  cd /etc/mail
+  emacs sendmail.mc
+
+Ajouter la ligne
+  VIRTUSER_DOMAIN_FILE(`/etc/mail/virtual-domains')dnl
+
+Sauver et faire un
+  make
+
+Créez la réécriture des alias du domaine vrtuel en alias locaux
+
+  emacs /etc/mail/virtusertable
+
+Ajoutez la ligne suivante :
+
+  @a-nouveau.domaine.fr	a-nouveau.domaine.fr-%1%3
+
+Mettez à jour les alias locaux en alias de l'hôte virtuel.
+
+  emacs /etc/aliases
+
+Ajouter les alias nécessaires pour le fonctionnement général du domaine :
+
+  # Alias généraux Sympa
+  a-nouveau.domaine.fr-sympa: "| /usr/local/sympa/bin/queue sympa@a-nouveau.domaine.fr"
+  a-nouveau.domaine.fr-listmaster: "| /usr/local/sympa/bin/queue listmaster@a-nouveau.domaine.fr"
+  a-nouveau.domaine.fr-bounce+*: "| /usr/local/sympa/bin/bouncequeue sympa@a-nouveau.domaine.fr"
+  a-nouveau.domaine.fr-abuse-feedback-report: "| /usr/local/sympa/bin/bouncequeue sympa@a-nouveau.domaine.fr"
+  a-nouveau.domaine.fr-sympa-request: postmaster
+  a-nouveau.domaine.fr-sympa-owner: postmaster
+
+
+Appliquez les changements :
+
+  cd /etc/mail
+  make
+  newaliases
+  service sendmail restart
+
+====== Listes automatiques avec Sendmail ======
+
+==== Installation du sympa-milter ====
+
+Téléchargez la dernière version du sympa-milter :
+
+<code>
+yum install sendmail-devel
+cd /tmp
+wget http://foss.jose-marcio.org/sympa-milter/sympa-milter-0.7.tgz
+tar zxvf sympa-milter-0.7.tgz
+cd sympa-milter-0.7/
+./configure
+make
+make install
+</code>
+
+Activez le démarrage du milter
+
+  /sbin/chkconfig sympa-milter on
+
+Editez la configuration du milter pour correspondre à votre future famille de listes automatiques.
+
+  cp -p /usr/local/sympa-milter/etc/sympa-milter.conf.example /usr/local/sympa-milter/etc/sympa-milter.conf
+
+  emacs /usr/local/sympa-milter/etc/sympa-milter.conf
+
+Ajoutez la déclaration du spool automatic de Sympa :
+
+  spool_dir               /usr/local/sympa/spool/automatic
+
+Ajoutez cette ligne dans la section <family>
+
+  listessyndicales ^ls+.*@a-nouveau.domaine.fr
+
+Mettez ensuite la configuration du MTA à jour pour activer le milter :
+
+<code>
+cd /etc/mail
+emacs sendmail.mc
+</code>
+
+Ajouter les lignes suivantes :
+
+<code>
+INPUT_MAIL_FILTER(`sympa-milter', `S=inet:2030@localhost, T=C:2m;S:20s;R:20s;E:5m')dnl
+</code>
+
+Compilez le fichier.
+
+  make
+
+Ajoutez un alias pour tromper sendmail (qui sinon criera que l'usager « listessyndicales » n'existe pas).
+
+  emacs /etc/aliases
+
+Ajoutez la ligne :
+
+  a-nouveau.domaine.fr-ls : /dev/null
+
+Regénérez les alias :
+
+  newaliases
+
+  service sendmail restart ; service sympa-milter restart
+
+La configuration de Sympa se passe de la même manière qu'avec Postfix.
+
+===== - Alias =====
+
+Lire le fichier d'alias et regarder les alias créés pour la nouvelle liste. 
+
+Le fichier d'alias est créé à partir du template /usr/local/sympa/default/list_aliases.tt2 
+
+Lorsque vous devez renommer une liste, Sympa peut tout faire à votre place. Pour cela, allez dans l'interface d'Admin de la liste ; Dans la section « Opérations critiques », cliquez sur « renommer la liste ». Sur la page qui apparaît alors vous n'avez qu'à taper le nouveau nom de la liste. Tous les alias sont alors mis à jours, les archives renommées, la base de données mise à jour, etc. 
+
+Notez que vous pouvez, par cette interface, déplacer une liste d'un robot à l'autre. 
+
+Si vous souhaitez que l'ancienne adresse fonctionne malgré le renommage, vous pouvez définir un fichier de redirection. 
+
+Renommez une liste via l'interface web. Disons qu'elle s'appelait “ancien-nom” et qu'elle s'appelle désormais “nouveau-nom”. 
+  geany /etc/mail/alias_redirections 
+
+Ajoutez les lignes suivantes dans le nouveau fichier : 
+  ancien-nom: nouveau-nom
+  ancien-nom-request: nouveau-nom-request
+  ancien-nom-owner: nouveau-nom-owner
+  ancien-nom-subscribe: nouveau-nom-subscribe
+  ancien-nom-unsubscribe: nouveau-nom-unsubscribe 
+
+Dans le fichier /etc/postfix/main.cf, trouvez les lignes suivantes : 
+  alias_maps = hash:/etc/aliases,hash:/etc/mail/sympa_aliases,hash:/etc/sympa/aliases.sympa.postfix
+
+  alias_database = hash:/etc/aliases,hash:/etc/mail/sympa_aliases,hash:/etc/sympa/aliases.sympa.postfix
+
+Et transformez-les en : 
+  alias_maps = hash:/etc/aliases,hash:/etc/mail/sympa_aliases,hash:/etc/sympa/aliases.sympa.postfix,/etc/mail/alias_redirections 
+  
+  alias_database = hash:/etc/aliases,hash:/etc/mail/sympa_aliases,hash:/etc/sympa/aliases.sympa.postfix,/etc/mail/alias_redirections 
+
+Exécutez ensuite : 
+  postmap /etc/mail/alias_redirections 
+  service postfix restart
+
+Exécutez ensuite : 
+  newaliases 
+
+Envoyez un mail a l'ancienne adresse. Elle arrive à la nouvelle.

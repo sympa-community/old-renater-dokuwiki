@@ -1,0 +1,59 @@
+====== Sympa Internationalization ======
+
+======  Catalogs and templates ======
+
+Sympa is designed to allow easy internationalization of its user interface (service mail messages and web interface). All translations for one language are gathered in a single .PO file that can be manipulated by standard [[http://www.gnu.org/software/gettext/#TOCintroduction|GNU gettext tools]].
+
+Documentation and resources about software translations : [[http://translate.sourceforge.net/doc]]
+
+Sympa previously (until Sympa 4.1.x) used the XPG4 message catalogue format. Web and mail templates were language-specific. The new organization provides both a unique file to work on for translators and a standard format supported by many software. Sympa templates refer to translatable strings using the ''loc'' TT2 filter.
+
+Examples:
+
+  [%|loc%]User Email[% END %]
+
+  [%|loc(list.name,user.email)%]You have subscribed to list %1 with email address %2[% END %]
+
+Sympa had previously been translated into 15 languages more or less completely. We have automatically extracted the translatable strings from previous templates but this process is awkward and is only seen as a bootstrap for translators. Therefore Sympa distribution will not include previous translations until a skilled translator has reviewed and updated the corresponding .PO file.
+
+
+
+
+======  Translating Sympa into your language ======
+
+[[:translating_sympa|Instructions for translating Sympa]] are maintained on the Sympa website.
+
+======  Defining language-specific templates ======
+
+The default Sympa templates are language independant, refering to catalogue entries for translations. When customizing either web or mail templates, you can define different templates for different languages. The template should be located in a ''ll_CC'' subdirectory of ''web_tt2'' or ''mail_tt2'' with the language code.
+
+Example :
+<code>
+  /web_tt2/home.tt2
+  /web_tt2/de_DE/home.tt2
+  /web_tt2/fr_FR/home.tt2
+</code>
+
+This mechanism also applies to ''comment.tt2'' files used by create list templates.
+
+Web templates can also make use of the ''locale'' variable to make templates multi-lingual:
+
+Example :
+<code>
+  [% IF locale == 'fr_FR' %]
+  Personnalisation
+  [% ELSE %]
+  Customization
+  [% END %]
+</code>
+
+
+======  Translating topics titles ======
+
+Topics are defined in a ''topics.conf'' file. In this file, each entry can be given a title in different languages, see [[customizing#topics|Topics]].
+
+======  Handling of charsets ======
+
+Until version 5.3, Sympa web pages were using in each language's charset (iso-8859-1 for French, utf-8 for Japanese, ...) whereas every web page now uses utf-8. Sympa also expects every file to be UTF-8 including : configursation files, templates, authorization scenarios, PO files.
+
+Note that the shared documents (see [[shared-documents|Shared documents]]) filenames are Q-encoded to make their storage encoding neutral. This encoding is transparent for end users.

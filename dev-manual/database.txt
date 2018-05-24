@@ -1,0 +1,160 @@
+====== Sympa and its database ======
+
+Sympa requires a RDBMS to run. Currently you can use one of the following RDBMS: MySQL (version 4.1 minimum), SQLite, PostgreSQL, Oracle, Sybase. Interfacing with other RDBMS requires only a few changes in the code, since the API used, [[http://www.symbolstone.org/technology/perl/DBI/|DBI]] (DataBase Interface), has DBD (DataBase Drivers) for many RDBMS.
+
+Sympa stores three kinds of information in the database, each in one table:
+
+  * user preferences and passwords are stored in the ''user_table'' table;
+  * list subscription information is stored in the ''subscriber_table'' table, along with subscription options. This table also contains the cache for included users (if using ''include2'' mode);
+  * list administrative information is stored in the ''admin_table'' table if using ''include2'' mode, along with owner and editor options. This table also contains the cache for included owners and editors.
+  * logs events are stored in the ''logs_table'' ; list owners can browse the events for their list through the web interface.
+
+======  Prerequisites ======
+
+You need to have a DataBase System installed (not necessarily on the same host as Sympa), and the client libraries for that Database installed on the Sympa host; provided, of course, that a PERL DBD (DataBase Driver) is available for the RDBMS you chose! Check the [[http://www.symbolstone.org/technology/perl/DBI/|''DBI'' Module Availability]].
+
+
+======  Installing PERL modules ======
+
+Sympa will use ''DBI'' to communicate with the database system and therefore requires the DBD for your database system. DBI and <nowiki>DBD::YourDB</nowiki> (''Msql-Mysql-modules'' for MySQL) are distributed as CPAN modules. Refer to [[installing-sympa#installing_PERL_and_CPAN_modules|Installing PERL and CPAN modules]] for installation details of these modules.
+
+======  Creating a Sympa DataBase ======
+
+=====  Database structure =====
+
+The Sympa database structure is slightly different from the structure of a ''subscribers'' file. A ''subscribers'' file is a text file based on paragraphs (similar to the ''config'' file); each paragraph completely describes a subscriber. If somebody is subscribed to two lists, he/she will appear in both subscribers files.
+
+The DataBase distinguishes between information relating to a person (email, real name, password) and his/her subscription options (list concerned, date of subscription, delivery mode, visibility option). This results in a separation of the data into two tables : the ''user_table'' and the ''subscriber_table'', linked by a user/subscriber email.
+
+The table concerning owners and editors, the ''admin_table'', is built on the same model as the ''subscriber_table'' but is used only in ''include2'' mode. It contains owner and editor options (list concerned, administrative role, date of "subscription", delivery mode, private information, gecos and profile option for owners).
+
+=====  Database automatic creation and update =====
+
+At startup, the ''sympa.pl'' process will check if the database (configured in ''sympa;conf'') is available and if it has the expected structure. If not, ''sympa.pl'' process will create the database or update its structure for you. **Note however that this feature is available with mysql only**, integration for other RDBMS is less complete. Note that this automated process requires that the mysql ''root'' does not use a password ; if it does, disable it before you run ''sympa.pl'' for the first time.
+
+The automatic procedure will also grant privileges to the ''db_user'' you've declared in ''sympa.conf''.
+
+
+=====  Database manual creation =====
+
+The ''create_db'' script below will create the Sympa database for you. You can find it in the ''script/'' directory of the distribution (currently scripts are available for MySQL, SQLite, PostgreSQL, Oracle and Sybase).
+
+  * MySQL database creation script:
+
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.mysql}}
+
+  * SQLite database creation script:
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.SQLite}}
+
+  * PostgreSQL database creation script:
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.Pg}}
+
+  * Sybase database creation script:
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.Sybase}}
+
+  * Oracle database creation script:
+
+{{url>http://www.sympa.org/distribution/latest-stable/src/etc/script/create_db.Oracle}}
+
+You can execute the script using a simple SQL shell such as mysql, psql or sqlplus.
+
+Example: <code># mysql  < create_db.mysql</code>
+
+
+======  Setting database privileges ======
+
+We strongly recommend that you restrict access to the Sympa database. You will then set ''db_user'' and ''db_passwd'' in ''sympa.conf''.
+
+With MySQL: <code>grant all on sympa.* to sympa@localhost identified by 'your_password';
+  flush privileges;</code>
+
+
+======  Importing subscriber data ======
+
+
+=====  Importing data from a text file =====
+
+You can import subscribes data into the database from a text file having one entry per line: the first field is an email address, the second (optional) field is the free form name. Fields are space-separated.
+
+Example:
+
+<code>
+  ## Data to be imported
+  ## email        gecos
+  john.steward@some.company.com           John - accountant
+  mary.blacksmith@another.company.com     Mary - secretary
+</code>
+
+To import data into the database: <code>cat /tmp/my_import_file | sympa.pl --import=my_list</code>
+
+(see [[running-sympa#sympa.pl|sympa.pl]]).
+
+
+=====  Importing data from subscribers files =====
+
+If a mailing list was previously set up to store subscribers into a ''subscribers'' file (the default mode in versions older then 2.2b), you can load subscriber data into the Sympa database. The easiest way is to edit the list configuration using //WWSympa// (this requires listmaster privileges) and change the data source from ''file'' to ''database''; subscriber data will be loaded into the database at the same time.
+
+If the ''subscribers'' file is large, a timeout may occur during the FastCGI execution (note that you can set a longer timeout with the ''-idle-timeout'' option of the ''FastCgiServer'' Apache configuration directive). In this case, or if you have not installed //WWSympa//, you should use the ''load_subscribers.pl'' script.
+
+
+====== Management of the include cache ======
+
+You may dynamically add a list of subscribers, editors or owners to a list with Sympa's ''include2'' user data source. Sympa is able to query multiple data sources (RDBMS, LDAP directory, flat file, local list, remote list) to build a mailing list.
+
+Sympa used to manage the cache of such //included// subscribers in a DB File (''include'' mode), but now stores subscribers, editors and owners in the database (''include2'' mode). These changes brought the following advantages:
+
+  * Sympa processes are smaller when dealing with big mailing lists (in include mode).
+  * Cache update is now performed regularly by a dedicated process, the task manager.
+  * Mixed lists (included + subscribed users) can now be created.
+  * Sympa can now provide delivery options for //included// members.
+  * Bounce information can be managed for //included// members.
+  * Sympa keeps track of the data sources of a member (available on the web REVIEW page).
+  * //Included// members can also subscribe to the list. It allows them to remain in the list in case they might not be included anymore.
+
+======  Extending database table format ======
+
+You can easily add other fields to the three tables, they will not disturb Sympa because it lists explicitly the field it expects in SELECT queries.
+
+Moreover, you can access these database fields from within Sympa (in templates), as far as you list these additional fields in ''sympa.conf'' (see [[manual:conf-parameters:part3#db_additional_subscriber_fields|db_additional_subscriber_fields]] and [[manual:conf-parameters:part3#db_additional_user_fields|db_additional_user_fields]]).
+
+
+====== Sympa logs in the database ======
+
+The ''logs_table'' database table has been introduced with release 5.3 of Sympa. This DB table gathers some kind of logs/journals that Sympa want to keep track of. Only events that changes Sympa's state are logged ; this includes member subscription/removal, message distribution/moderation, bounces handling, user authentication on the web interface. The content of the database can then be searched by list owners ; privacy is enforced to prevent a list owner to access information from other lists.
+
+The ''logs_table'' table is purged to prevent DB size to diverge. The retention period of log entries is defined by the [[conf-parameters/part3#logs_expiration_period|logs_expiration_period parameter]]
+
+Below is a description of each field of the ''logs_table'' table :
+  * id_logs: primary key for the table.
+  * date_logs: epoch date representing the time when the action was performed.
+  * robot_logs: the robot the action relates to. It may be empty if no specific virtual host is concerned.
+  * list_logs: the list the action refers to. It may be undefined if the action does not refer to a specific list (like authentication related actions).
+  * action_logs: an identifier for the action performed. Each action belongs to a group of actions (authentication related, subscription related, etc). The list of actions and the group they relate to is defined in the ''Log.pm'' perl module.
+  * parameters_logs: parameters of the action. It is an optional comma-separated list of parameters.
+  * user_email_logs: this field tells who is performing the action, if authenticated.
+  * target_email_logs: this parameter represents the email address that is mainly concerned by the actionn ; it may be empty. If a list owner adds a new member to his list, ''the target_email_logs'' field will contain the new member email address.
+  * client_logs: IP address of the user performing the action, may be empty if action is performed via the mail interface.
+  * msg_id_logs: Message-ID of the message, if the action applies an a message.
+  * status_logs: the status of the action ; it will contain one of the following values : ''success'', ''error''.
+  * error_type_logs: If the action failed, this field an error identifier representing the error.
+  * daemon_logs: tells which process has performed the action. It may be one of ''bounced'', ''sympa'', ''wwsympa''
+
+
+
+======  Sympa configuration ======
+
+To store subscriber information in your newly created database, you first need to tell Sympa what kind of database to work with, then you must configure your list to access the database.
+
+You'll need to tell Sympa where is located its database through the [[conf-parameters/part3#database_related|related sympa.conf parameters]] : ''db_type'', ''db_name'', ''db_host'', ''db_user'', ''db_passwd''.
+
+If you are interfacing Sympa with an Oracle database, note that :
+  - the ''db_name'' corresponds to the Oracle SID.
+  - you'll need to set the ''ORACLE_HOME environment variable through the [[conf-parameters/part3#db_env|db_env sympa.conf parameter]]
+
+All your lists are now configured to use the database, unless you set the list parameter ''user_data_source'' to ''file'' or ''include''.
+
+Sympa will now extract and store user information for this list using the database instead of the ''subscribers'' file. Note however that subscriber information is dumped to ''subscribers.db.dump'' at every shutdown, to allow a manual rescue restart (by renaming ''subscribers.db.dump'' to ''subscribers'' and changing the ''user_data_source'' parameter), in case the database were to become inaccessible.

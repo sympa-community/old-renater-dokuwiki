@@ -1,0 +1,207 @@
+===== send =====
+
+(Default value: ''private'')
+
+The ''send'' parameter is defined by an authorization scenario (see [[authorization-scenarios#authorization_scenarios|Authorization scenarios]]).
+
+This parameter specifies who can send messages to the list. Valid values for this parameter are pointers to //scenarios//.
+
+  * ''send'' ''closed'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.closed|view]]) \\
+  * ''send'' ''editorkey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.editorkey|view]]) \\
+  * ''send'' ''editorkeyonly'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.editorkeyonly|view]]) \\
+  * ''send'' ''editorkeyonlyauth'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.editorkeyonlyauth|view]]) \\
+  * ''send'' ''intranet'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.intranet|view]]) \\
+  * ''send'' ''intranetorprivate'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.intranetorprivate|view]]) \\
+  * ''send'' ''newsletter'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.newsletter|view]]) \\
+  * ''send'' ''newsletterkeyonly'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.newsletterkeyonly|view]]) \\
+  * ''send'' ''private'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.private|view]]) \\
+  * ''send'' ''private_smime'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.private_smime|view]]) \\
+  * ''send'' ''privateandeditorkey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privateandeditorkey|view]]) \\
+  * ''send'' ''privateandnomultipartoreditorkey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privateandnomultipartoreditorkey|view]]) \\
+  * ''send'' ''privatekey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privatekey|view]]) \\
+  * ''send'' ''privatekeyandeditorkeyonly'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privatekeyandeditorkeyonly|view]]) \\
+  * ''send'' ''privateoreditorkey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privateoreditorkey|view]]) \\
+  * ''send'' ''privateorpublickey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.privateorpublickey|view]]) \\
+  * ''send'' ''public'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.public|view]]) \\
+  * ''send'' ''public_nobcc'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.public_nobcc|view]]) \\
+  * ''send'' ''publickey'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.publickey|view]]) \\
+  * ''send'' ''publicnoattachment'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.publicnoattachment|view]]) \\
+  * ''send'' ''publicnomultipart'' ([[http://www.sympa.org/distribution/current/src/etc/scenari/send.publicnomultipart|view]]) \\
+
+=====  Delivery_time =====
+
+You may need to distribute messages for a list at a plannified time. usually this is usefull for huge newsletters. Message to be distributed are store in the database (bulkmailer_table and bulkspool_table) until the plannified time. 
+
+''Delivery_time'' //hh:mm//
+
+Example : 
+  delivery_time 02:10
+
+Available since release 6.0a8
+
+===== digest =====
+
+''digest'' //daylist// //hour//://minutes//
+
+Definition of ''digest'' mode. If this parameter is present, subscribers can select the option of receiving messages in multipart/digest MIME format. Messages are then grouped together, and compilations of messages are sent to subscribers in accordance with the rythm selected with this parameter.
+
+''Daylist'' designates a list of days in the week in numeric format (from 0 for Sunday to 6 for Saturday), separated by commas.
+
+Example: <code>digest 1,2,3,4,5 15:30</code>
+
+In this example, Sympa sends digests at 3:30 PM from Monday to Friday.
+
+**WARNING**: Please note that the digest sending is done **on** the day but **after** the time it is scheduled. So if you schedule a digest at 23h50, it is possible that, if sympa.pl is busy at that time, the day will change before the digest is sent, thus postponing digest sending to the next scheduled day. That's why it is recommended to avoid scheduling digest sending after 23h00.
+
+N.B.: In family context, ''digest'' can be constrained only on days.
+
+===== digest_max_size =====
+
+(Default value: ''25'')
+
+Maximum number of messages in a digest. If the number of messages exceeds this limit, then multiple digest messages are sent to each recipient.
+
+===== available_user_options =====
+
+The ''available_user_options'' parameter starts a paragraph to define available options for the subscribers of the list.
+
+  * ''reception'' //modelist//
+(Default value: ''reception mail,notice,digest,summary,nomail,txt,html,urlize,not_me'')
+//modelist// is a list of modes (''mail'', ''notice'', ''digest'', ''summary'', ''nomail'', ''txt'',''html'', ''urlize'', ''not_me'', ''topics''), separated by commas. Only these modes will be allowed for the subscribers of the list. If a subscriber has a delivery mode other than those specified in that list, Sympa uses the mode specified in the ''default_user_options'' paragraph.
+
+Example:
+<code>
+  ## Nomail reception mode is not available
+  available_user_options
+  reception  	digest,mail
+</code>
+
+
+===== default_user_options =====
+
+The ''default_user_options'' parameter starts a paragraph to define a default profile for the subscribers of the list. 
+
+<note>This profile only applies for newly subscribed/included list members. It means that if you change the value of ''default_user_options'' in a list, if will not apply to the existing list members.</note>
+
+  * ''reception notice | digest | summary | nomail | mail'' \\ Mail reception mode.
+  * ''visibility conceal | noconceal'' \\ Visibility of the subscriber with the ''REVIEW'' command.
+
+Example:
+<code>
+  default_user_options
+  reception  	digest
+  visibility	noconceal
+</code>
+
+===== msg_topic =====
+
+The ''msg_topic'' parameter starts a paragraph to define a message topic used to tag a message. For each message topic, you have to define a new paragraph (see [[reception-mode#message_topics|Message topics]]).
+
+Example:
+<code>
+  msg_topic
+  name os
+  keywords linux,mac-os,nt,xp
+  title Operating System
+</code>
+
+Parameters ''msg_topic.name'' and ''msg_topic.title'' are mandatory. ''msg_topic.title'' is used on the web interface (''other'' is not allowed for the ''msg_topic.name'' parameter). The ''msg_topic.keywords'' parameter allows to select automatically message topic by searching keywords in the message.
+
+N.B.: in a family context, ''msg_topic.keywords'' parameter is not mandatory.
+
+===== msg_topic_keywords_apply_on =====
+
+The ''msg_topic_keywords_apply_on'' parameter defines which part of the message is used to perform automatic tagging (see [[reception-mode#message_topics|Message topics]]).
+
+Example:
+
+<code>msg_topic_key_apply_on subject</code>
+
+Its values can be: ''subject'', ''body'' and ''subject_and_body''.
+
+===== msg_topic_tagging =====
+
+The ''msg_topic_tagging'' parameter indicates if tagging is optional or required for a list. (See [[reception-mode#message_topics|Message topics]])
+
+Example:
+
+<code>msg_topic_tagging optional</code>
+
+Its values can be "optional", "required_moderator" or "required_sender". When topic is required, a tagging request is sent to the list moderator or to the message sender depending of this parameter value.
+
+===== reply_to_header =====
+
+The ''reply_to_header'' parameter starts a paragraph defining what Sympa will place in the ''Reply-To:'' SMTP header field of the messages it distributes.
+
+  * ''value sender | list | all | other_email'' (Default value: ''sender'')
+
+This parameter indicates whether the ''Reply-To:'' field should indicate the sender of the message (''sender''), the list itself (''list''), both list and sender (''all'') or an arbitrary email address (defined by the ''other_email'' parameter).
+
+Note: it is inadvisable to change this parameter, and particularly inadvisable to set it to ''list''. Experience has shown it to be almost inevitable that users, mistakenly believing that they are replying only to the sender, will send private messages to a list. This can lead, at the very least, to embarrassment, and sometimes to more serious consequences.
+
+  * ''other_email'' //an_email_address// \\ If ''value'' was set to ''other_email'', this parameter indicates the email address to be used.
+  * ''apply respect | forced'' (Default value: ''respect''). \\ The default is to respect (preserve) the existing ''Reply-To:'' SMTP header field in incoming messages. If set to ''forced'', the ''Reply-To:'' SMTP header field will be overwritten.
+
+Example:
+<code>
+  reply_to_header
+  value other_email
+  other_email listowner@my.domain
+  apply forced
+</code>
+
+===== anonymous_sender =====
+
+''anonymous_sender'' //value//
+
+If this parameter is set for a list, all messages distributed through the list are made anonymous. SMTP ''From:'' headers in distributed messages are altered to contain the value of the ''anonymous_sender'' parameter. Various other fields are removed (''Received:'', ''Reply-To:'', ''Sender:'', ''X-Sender:'', ''Message-id:'', ''Resent-From:''.
+
+===== custom_header =====
+
+''custom_header'' //header-field//'':'' //value//
+
+This parameter is optional. The headers specified will be added to the headers of messages distributed via the list. As of release 1.2.2 of Sympa, it is possible to put several custom header lines in the configuration file at the same time.
+
+Example:
+<code>custom_header X-url: http://www.renater.fr/listes/apropos/sedesabonner.faq.html</code>
+
+
+===== rfc2369_header_fields =====
+
+''rfc2369_header_fields'' //help,archive// (Default value: ''rfc2369_header_fields'' ''sympa.conf'' parameter)
+
+RFC2369 compliant header fields (List-xxx) to be added to distributed messages. These header-fields should be implemented by MUA's, adding menus.
+
+
+===== remove_headers =====
+
+(Default value: ''remove_headers'' ''sympa.conf'' parameter)
+
+You can define the list of SMTP header fields that should be removed from incoming messages. Check the [[manual:conf-parameters:part2|equivalent sympa.conf parameter documentation]] for further details.
+
+===== remove_outgoing_headers =====
+
+(Default value: ''remove_outgoing_headers'' ''sympa.conf'' parameter)
+
+You can define the list of SMTP header fields that should be removed before Sympa distributes a message to list members. Check the [[manual:conf-parameters:part2|equivalent sympa.conf parameter documentation]] for further details.
+
+===== custom_subject =====
+
+''custom_subject'' //value//
+
+This parameter is optional. It specifies a string which is added to the subject of distributed messages (intended to help users who do not use automatic tools to sort incoming messages). This string will be surrounded by '[]' characters.
+
+The custom subject can also refer to list variables (<nowiki>[%list.sequence%]</nowiki> in the example below).
+
+Example: <code>custom_subject sympa-users</code>
+
+Other example: <code>custom_subject newsletter num [%list.sequence%]</code>
+
+===== footer_type =====
+
+''footer_type mime | append'' (Default value: ''mime'')
+
+This parameter is optional. List owners may decide to add message headers or footers to messages sent through the list. This parameter defines the way a footer/header is added to a message.
+
+  * ''footer_type'' ''mime'' \\ The default value. Sympa will add the footer/header as a new MIME part. If the message is in multipart/alternative format, no action is taken (since this would require another level of MIME encapsulation).
+  * ''footer_type'' ''append'' \\ Sympa will not create new MIME parts, but will try to append the header/footer to the body of the message. ''/home/sympa/expl/mylist/message.footer.mime'' will be ignored. Headers/footers may be appended to text/plain messages only.
