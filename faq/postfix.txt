@@ -1,0 +1,383 @@
+===== Using sympa_virtual with Postfix instead of regexp aliases =====
+
+<note tip>As of 6.1.18, Sympa became able to invoke newaliases(1), postmap(1) and so on by configuration.  The virtualwrapper and aliaswrapper were deprecated.  Description in this section may be applicable to earlier releases.
+
+ikeda AT conversion.co.jp</note>
+
+Consider this problem: When using the method described in the Sympa documentation to add robots for virtual domains, you add a generic regexp on the form:
+
+  /^(.*)@my.domain.org$/ my.domain.org-$1
+
+in the virtual_regexp of Postfix. Incoming mail to "listname@my.domain.org" will match this regexp and be delivered to the local address "my.domain.org-listname". Problem with this approach is that all mail to "my.domain.org" will match the regexp and be delivered, and not until later will Postfix find out that this is a nonexistent address and send "Undelivered Mail Returned to Sender". Instead we would like Postfix to instantly give SMTP 550 error message when trying to send to bogus addresses.
+
+My solution to this problem: If you change alias_manager.pl to also generate entries in the sympa_virtual on the form:
+
+   listname@my.domain.org my.domain.org-listname
+   listname-request@my.domain.org my.domain.org-listname-request
+   listname-editor@my.domain.org my.domain.org-listname-editor
+   listname-unsubscribe@my.domain.org my.domain.org-listname-unsubscribe
+   listname-owner@my.domain.org my.domain.org-listname-owner
+
+We get a more restrictive list of addresses to accept for incoming mail. In addition I've manually added:
+
+   my.domain.org-sympa:      "| /home/sympa/bin/queue sympa@my.domain.org"
+   my.domain.org-listmaster: "| /home/sympa/bin/queue listmaster@my.domain.org"
+
+to sympa_aliases and:
+
+   sympa@my.domain.org my.domain.org-sympa
+   listmaster@my.domain.org my.domain.org-listmaster
+
+to sympa_virtual.
+
+In alias_manager.pl I've also included use of virtualwrapper to execute postmap, so that changes to sympa_virtual are updated in my system. In this way we get rid of using the regexp aliases.
+
+I have added my patch to the alias_manager.pl in the source distribution of Sympa 5.2b, but be aware: I'm no programmer. Comments and improvements are welcome!
+
+<code perl>
+
+*** alias_manager.pl.orig       Thu Mar  2 13:39:21 2006
+--- alias_manager.pl    Thu Mar  9 11:40:21 2006
+***************
+*** 41,54 ****
+--- 41,57 ----
+     exit(1);
+  }
+  my $tmp_alias_file = $Conf{'tmpdir'}.'/sympa_aliases.'.time;
++ my $tmp_virtual_file = $Conf{'tmpdir'}.'/sympa_virtual.'.time;
+
+
+  my $alias_wrapper = '--MAILERPROGDIR--/aliaswrapper';
++ my $virtual_wrapper = '--MAILERPROGDIR--/virtualwrapper';
+  my $lock_file = '--EXPL_DIR--/alias_manager.lock';
+  my $default_domain;
+  my $path_to_queue = '--MAILERPROGDIR--/queue';
+  my $path_to_bouncequeue = '--MAILERPROGDIR--/bouncequeue';
+  my $sympa_conf_file = '--CONFIG--';
++ my $virtual_file = '--VIRTUAL_ALIASES--';
+
+  my ($operation, $listname, $domain, $file) = @ARGV;
+
+***************
+*** 69,74 ****
+--- 72,82 ----
+      exit(5);
+  }
+
++ unless (-w "$virtual_file") {
++     print STDERR "Unable to access $virtual_file\n";
++     exit(5);
++ }
++
+  my %data;
+  $data{'date'} =  &POSIX::strftime("%d %b %Y", localtime(time));
+
+***************
+*** 113,122 ****
+--- 121,144 ----
+        exit(5);
+      }
+
++     if ($domain ne $default_domain ) {
++         if (open VIRTUAL, ">>  $virtual_file") {
++              print VIRTUAL "$listname\@$domain $domain-$listname\n";
++              print VIRTUAL "$listname-request\@$domain $domain-$listname-request\n";
++              print VIRTUAL "$listname-editor\@$domain $domain-$listname-editor\n";
++              print VIRTUAL "$listname-unsubscribe\@$domain $domain-$listname-unsubscribe\n";
++              print VIRTUAL "$listname-owner\@$domain $domain-$listname-owner\n";
++         } else {
++              print STDERR "Unable to append to $virtual_file\n";
++              exit(5);
++         }
++     }
++
+      foreach (@aliases) {
+        print ALIAS "$_\n";
+      }
+      close ALIAS;
++     close VIRTUAL;
+
+      ## Newaliases
+      unless ($file) {
+***************
+*** 124,129 ****
+--- 146,155 ----
+            print STDERR "Failed to execute newaliases: $!\n";
+            exit(6)
+            }
++       unless (system($virtual_wrapper) == 0) {
++           print STDERR "Failed to execute postmap: $!\n";
++           exit(6)
++           }
+      }
+
+      ## Unlock
+***************
+*** 189,200 ****
+--- 215,278 ----
+      close NEWALIAS;
+      unlink $tmp_alias_file;
+
++     if ($domain ne $default_domain ) {
++          unless (open VIRTUAL, "$virtual_file") {
++            print STDERR "Could not read $virtual_file\n";
++            exit(7);
++          }
++
++          unless (open NEWVIRTUAL, ">$tmp_virtual_file") {
++            printf STDERR "Could not create $tmp_virtual_file\n";
++            exit (8);
++          }
++
++          my $deleted_virtual = 0;
++          while (my $virtualline = <VIRTUAL>) {
++            if ( ($virtualline =~ /^$listname\@$domain $domain-$listname/) ||
++                 ($virtualline =~ /^$listname-request\@$domain $domain-$listname-request/) ||
++                 ($virtualline =~ /^$listname-editor\@$domain $domain-$listname-editor/) ||
++                 ($virtualline =~ /^$listname-unsubscribe\@$domain $domain-$listname-unsubscribe/) ||
++                 ($virtualline =~ /^$listname-owner\@$domain $domain-$listname-owner/) ) {
++                $deleted_virtual = 1;
++            } else {
++                ## append to new virtual file
++                print NEWVIRTUAL $virtualline;
++            }
++          }
++          close VIRTUAL;
++          close NEWVIRTUAL;
++
++        if ($deleted_virtual == 0) {
++            print STDERR "No matching line in $virtual_file\n" ;
++            exit(9);
++        }
++
++          ## replace old virtual file
++          unless (open  NEWVIRTUAL, "$tmp_virtual_file") {
++            print STDERR "Could not read $tmp_virtual_file\n";
++            exit(10);
++          }
++
++          unless (open OLDVIRTUAL, ">$virtual_file") {
++            print STDERR "Could not overwrite $virtual_file\n";
++            exit (11);
++          }
++          print OLDVIRTUAL <NEWVIRTUAL>;
++          close OLDVIRTUAL;
++          close NEWVIRTUAL;
++          unlink $tmp_virtual_file;
++     }
++
+      ## Newaliases
+      unless ($file) {
+        unless (system($alias_wrapper) == 0) {
+            print STDERR "Failed to execute newaliases: $!\n";
+        exit (6);
+        }
++       unless (system($virtual_wrapper) == 0) {
++           print STDERR "Failed to execute postmap: $!\n";
++       exit (6);
++       }
+      }
+      ## Unlock
+      flock LF, 8;
+</code>
+anders.lund AT uninett.no
+
+==== Recompiling Sympa ====
+I'm also running Postfix-style virtual domains using postmap.  To avoid patching alias_manager.pl, Sympa was recompiled so that it uses a small shell wrapper.  New transports as olivier.korn describes below are defined, but any regex maps are not used.  Detailed steps are here (sorry, only in Japanese, but gut may be read):
+[[http://sympa-ja.org/wiki/Virtual_domain_%28Postfix%29/Real_Virtual_Domain_%286.1.17_or_earlier%29]]
+
+ikeda AT conversion.co.jp
+
+===== Managing aliases with Postfix / LDAP / Courier =====
+
+When you use such kind of configuration, you'll have to use virtual transport in Postfix configuration. You'll need to change the way of managing aliases which is much more complicated.
+
+One solution is to use pam_ldap. Here's a template of configuration using Mandrakelinux 10.1, openldap, courier-imap and sympa 4.1.2.
+
+__Postfix configuration__
+
+Here's configuration for aliases and mailboxes :
+
+  alias_maps = hash:/etc/postfix/aliases
+  alias_database = hash:/etc/postfix/aliases
+  home_mailbox = maildir/
+  mail_spool_directory = $HOME
+  mailbox_command = procmail -a "$EXTENSION"
+  
+__Procmail configuration__
+
+You'll need to configure Procmail in /etc/procmailrc :
+
+  DEFAULT=$HOME/Maildir/ 
+  LOGFILE=/var/log/procmail.log 
+  DROPPRIVS=yes 
+
+__Courier configuration__
+
+Don't use any ldap module for Courier. All will be managed by pam in /etc/courier/authdaemonrc
+
+  authmodulelist="authpam" 
+
+__PAM configuration__
+
+Last thing is to configure PAM for LDAP in /etc/pam.d/systhem.auth :
+
+  auth        required      pam_env.so
+  auth        sufficient    pam_unix.so likeauth nullok
+  auth        sufficient    /lib/security/pam_ldap.so use_first_pass
+  auth        required      pam_deny.so
+  account     required      pam_unix.so
+  account     sufficient    /lib/security/pam_ldap.so
+  password    required      pam_cracklib.so retry=3 minlen=2  dcredit=0  ucredit=0
+  password    sufficient    pam_unix.so nullok use_authtok md5 shadow
+  password    sufficient    /lib/security/pam_ldap.so use_authtok
+  password    required      pam_deny.so
+  session     required      pam_limits.so
+  session     required      pam_unix.so
+  session     optional      /lib/security/pam_ldap.so 
+
+You'll also have to configure ldap client in /etc/openldap/ldap.conf :
+
+  host 127.0.0.1
+  base dc=domain,dc=fr
+  ldap_version 3
+  scope sub
+  pam_filter objectclass=posixaccount
+  pam_login_attribute uid
+  pam_member_attribute gid
+  pam_password md5
+  nss_base_passwd ou=utilisateurs,dc=domain,dc=fr?sub
+  nss_base_shadow dc=domain,dc=fr?sub
+  nss_base_group  ou=groupes,dc=domain,dc=fr?one
+
+That's all ! You can now manage Sympa aliases very simply and use default configuration
+
+anicolas AT mandrakesoft.com
+
+
+===== Postfix & Regexp Aliases: how to do away with alias_manager.pl =====
+
+Normally, sympa requires several aliases for each list in order to pipe different addresses to different commands. In postfix, this can only be done in a non-virtual alias file, so if you are using sympa on a virtual domain, a little trickiery is needed to map the virtual aliases to non-virtual aliases.
+We take this one step further by using regular expression based virtual aliases so that all we need is one set of entries per domain. This makes it so that you don't need to ever change the alias files once they are set up, regardless of how many lists you add and remove.
+First add this to postfix's main.cf:
+
+  virtual_maps = regexp:/etc/postfix/virtual.regexp
+  recipient_delimiter = +
+
+This sets the file virtual.regexp to be a virtual map using regular expressions. The recipient_delimiter of '+' is the default, but it is required for the trick to work so we set it explicitly.
+Next, we modify postfix's main non-virtual aliases file, typically called aliases:
+
+  mydomain:              "| /home/sympa/bin/queue $EXTENSION@my.domain.org"
+  mydomain-request:      "| /home/sympa/bin/queue $EXTENSION-request@my.domain.org"
+  mydomain-editor:       "| /home/sympa/bin/queue $EXTENSION-editor@my.domain.org"
+  mydomain-owner:        "| /home/sympa/bin/bouncequeue $EXTENSION@my.domain.org"
+  mydomain-subscribe:    "| /home/sympa/bin/queue $EXTENSION-subscribe@my.domain.org"
+  mydomain-unsubscribe:  "| /home/sympa/bin/queue $EXTENSION-unsubscribe@my.domain.org"
+
+What does this do? Lets look at the first line: It takes the address 'mydomain' and pipes it to the command "|/queue $EXTENSION@my.domain.org". But what does $EXTENSION equal? This variable will hold our list name. In order to set the $EXTENSION variable to the list name, we use a + to add an additional recipient in the virtual aliases file. Suppose we had the virtual alias:
+
+  mylist@my.domain.org    mydomain+mylist 
+
+This would forward mail sent to mylist@my.domain.org to the local address mydomain with the additional recipient of 'mylist'. When we resolve the address 'mydomain' in the aliases file, the variable $EXTENSION will then be set to 'mylist'. This would in turn get piped to "/home/sympa/bin/queue mylist@my.domain.org" which is what sympa requires.
+Again, this is required because we cannot pipe addresses to commands in a virtual aliases file, so we need some way to convert the entries in our virtual aliases file to corresponding entries in the non-virtual aliases file.
+The next step is to create the virtual.regexp file. We could create a ton of entries, several for each list, like the virtual alias above. Instead, we use regular expressions to cover all lists.
+Here is a sample entry in virtual.regexp for the domain my.domain.org:
+
+  /^my\.domain\.org$/           xxx
+  /^(postmaster|root|abuse|sympa-request)@my\.domain\.org$/   $1@otherdomain.org
+  /^(.*)-(request|editor|owner|subscribe|unsubscribe)@my\.domain\.org$/  mydomain-$2+$1
+  /^(.*)@my\.domain\.org$/      "mydomain+$1"
+
+The first line just tells postfix we are handling mail for the virtual domain my.domain.org. The xxx is just a placeholder, but it is required. The second line catches important addresses which we do not want processed as lists. You can forward these non-list addresses to another domain or use the same domain. They should eventually resolve to some mailbox somewhere. The third line is where it gets interesting. Here is an example of how this expression will resolve:
+
+   mylist-subscribe@my.domain.org   mydomain-subscribe+mylist
+   mylist-owner@my.domain.org        mydomain-owner+mylist 
+
+The forth line will resolve like this:
+
+   mylist@my.domain.org     mydomain+mylist 
+
+Which is what we need for the alias file we have set up.
+Note the difference between my.domain.org and mydomain. The first is the actual domain. The second is an arbitrary tag which we have chosen to associate with the domain.
+To make sure that postfix can handle the regular expression map type:
+
+   prompt> postconf -m
+
+this will give you a list of supported map types. Check for "regexp".
+This alias setup is adapted from the mailman+postfix setup described at [[http://listes.rezo.net/how.php|http://listes.rezo.net/how.php]].
+
+<elijah AT riseup.net>
+
+
+===== Managing aliases directly in the Postfix transport table =====
+
+With postfix 2.x it is also possible to do this directly in the transport table.
+You need to create two new entries in master.cf:
+
+   sympa     unix  -       n       n       -       -       pipe
+    flags=R user=sympa argv=/usr/lib/sympa/bin/queue ${recipient}
+   sympabounce     unix  -       n       n       -       -       pipe
+    flags=R user=sympa argv=/usr/lib/sympa/bin/bouncequeue ${recipient}
+
+<note>[Submitted by D. Jahnke-Zumbusch]
+If you experience problems with lines starting by "From" disappearing in messages, please add the "F" flag, modifying your postfix configuration as follows:
+   sympa        unix  -       n       n       -       -       pipe
+    flags=RF user=sympa argv=/usr/lib/sympa/bin/queue ${recipient}
+  sympabounce  unix  -       n       n       -       -       pipe
+    flags=RF user=sympa argv=/usr/lib/sympa/bin/bouncequeue ${user}
+
+For further informations about flags, see [[http://www.postfix.org/pipe.8.html|the postfix manual]]
+</note>
+
+Then create a /etc/postfix/transport_regexp:
+
+  /^.*\-owner@lists\.mydomain\.tld$/      sympabounce:
+  /^.*\@lists\.mydomain\.tld$/    sympa:
+
+And uses those informations in your main.cf:
+
+  relay_domains = $mydestination, lists.mydomain.tld
+  transport_maps = regexp:/etc/postfix/transport_regexp
+  sympa_destination_recipient_limit = 1
+  sympabounce_destination_recipient_limit = 1
+
+Now, you only needs 2 transport entries in transport_regexp for each lists domains. All other stuff is done automagically :))
+
+elacour AT easter-eggs.com
+Contribution of Elacour isn't quite right. (sympabounce transport doesn't work as expected because of "-owner" suffix in "${recipient}").
+
+Here is a corrected version (tested with postfix 2.1.1 and sympa 3.4.4.3):
+
+With postfix 2.x it is also possible to do this directly in the transport table. You need to create two new entries in master.cf:
+
+   sympa        unix  -       n       n       -       -       pipe
+    flags=R user=sympa argv=/usr/lib/sympa/bin/queue ${recipient}
+  sympabounce  unix  -       n       n       -       -       pipe
+    flags=R user=sympa argv=/usr/lib/sympa/bin/bouncequeue ${user}
+
+Then create a /etc/postfix/transport_regexp file:
+
+  /^.*+owner\@lists\.mydomain\.tld$/ sympabounce:
+  /^.*\@lists\.mydomain\.tld$/       sympa:
+
+Then create a /etc/postfix/virtual_regexp file:
+
+  /^(.*)-owner\@lists\.mydomain\.tld$/    $1+owner@lists.mydomain.tld
+
+And use those informations in your main.cf:
+
+  relay_domains = $mydestination, lists.mydomain.tld
+  transport_maps = regexp:/etc/postfix/transport_regexp
+  sympa_destination_recipient_limit = 1
+  sympabounce_destination_recipient_limit = 1
+  virtual_alias_maps = regexp:/etc/postfix/virtual_regexp
+  recipient_delimiter = +
+
+Now, you only needs two transport entries in transport_regexp and one virtual entry in virtual_regexp for each lists domains.
+
+Note: dependig of your mail server attributions, it could be even easier to write an "all domains compatible" virtual_regexp. Something like this:
+
+  /^(.*)-owner\@(.*)$/                    $1+owner@$2
+
+
+olivier.korn AT reglisse.net

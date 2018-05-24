@@ -1,0 +1,49 @@
+====== × Subroutine organisation for mailing features. ======
+<note warning>
+This document was obsoleted.  See either of:
+  * the manual page Sympa::Internals::Workflow(3) bundled in Sympa
+  * the manual page [[https://sympa-community.github.io/manual/man/Sympa-Internals-Workflow.3.html|new documentation site]]
+
+</note>
+
+<graphviz>
+digraph "codesympa" {
+
+"distribute" [shape=box, label="distribute", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"distribute"->"distribute_msg" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"sending" [shape=box, label="sending", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"sending"->"bulk::store" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"mail_file" [shape=box, label="mail_file", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"mail_file"->"sending" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"send_auth" [shape=box, label="send_auth", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"send_auth"->"send_file" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"mail_message" [shape=box, label="mail_message", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"mail_message"->"mail::sendto" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"send_file" [shape=box, label="send_file", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"send_file"->"mail_file" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"send_global_file" [shape=box, label="send_global_file", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"send_global_file"->"mail_file" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"distribute_msg_digest" [shape=box, label="distribute_msg_digest", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"distribute_msg_digest"->"send_file" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"sympa.pl" [shape=box, label="sympa.pl", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"sympa.pl"->"confirm" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"sympa.pl"->"distribute" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"sympa.pl"->"distribute_msg" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"task::cmd_execute" [shape=box, label="task::cmd_execute", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"task::cmd_execute"->"task::send_msg" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"send_to_editor" [shape=box, label="send_to_editor", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"send_to_editor"->"send_file" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"confirm" [shape=box, label="confirm", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"confirm"->"distribute_msg" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"mail::sendto" [shape=box, label="mail::sendto", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"mail::sendto"->"sending" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"task::send_msg" [shape=box, label="task::send_msg", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"task::send_msg"->"send_global_file" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"task::send_msg"->"send_file" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"distribute_msg" [shape=box, label="distribute_msg", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"distribute_msg"->"send_msg" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+"bulk::store" [shape=box, label="bulk::store", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"send_msg" [shape=box, label="send_msg", color="0.0,1.0,1.0", fontcolor="0.0,1.0,1.0"]
+"send_msg"->"mail_message" [style=filled,  color="0.0,0.0,0.0", fontcolor="0.0,0.0,0.0"]
+}
+</graphviz>

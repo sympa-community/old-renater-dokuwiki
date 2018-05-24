@@ -1,0 +1,38 @@
+====== Sympa 6.1.22 released ======
+
+//September 17, 2014//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:logo_sympa_couleur.png }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.1.23 is the latest stable version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.23.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+
+This release includes mainly bug fixes.
+
+A few changes were also made to Sympa. Some important points are:
+
+  * Optimization for list search which, for very large server, could timeout and lead to an error on the web interface,
+  * Password strength validation when submitted by user,
+  * New, out-of-the-box DKIM-based scenarios,
+  * improvment for scenarios custom_conditions: custom_condition can now return the type of action to take: owner, request_auth, etc. This allows complex, single-module CustomConditions.
+
+====== Sympa 6.0.9 released ======
+
+//September 16, 2014//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:logo_sympa_couleur.png }}]]
+
+
+Sympa 6.0.9 is a single patch release. It introduces the [[https://www.sympa.org/manual/dmarc|DMARC protection]] to the 6.0.9, helping listmasters fight the side effects of DMARC without having to upgrade to 6.1 (which we still strongly recommend ;-) )\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.0.9.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/sympa-6.0.9/NEWS|Check the release notes]]
+
+The update from 6.0.7 to 6.0.9 is quick and easy.

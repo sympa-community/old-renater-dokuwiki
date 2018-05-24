@@ -1,0 +1,74 @@
+====== Sympa meeting 28th March 2013 ======
+
+Meeting through Seevogh. Present: Étienne, Marc, Guillaume, David. Soji could not make it.
+
+====== Roadmap ======
+
+Here are the current orientations and deadlines for Sympa.
+
+===== Sympa 6.2 =====
+
+All in all, Sympa 6.2 is close to be ready. We still have to:
+
+  * get rid of the "full spools in database" paradigm (it really doesn't scale),
+  * get rid of some memory leaks.
+
+and it will be over.
+
+  * Works on the code are to be finished by mid-april 2013
+  * Beta release is planned for beginning of may 2013
+
+===== Sympa 6.3 =====
+
+Sympa 6.3 will be the result of a code reorganization. It should not add new functionnalities (or only side benefits from the code reorganization and refactoring).
+
+Work on the code is already started and will be over by the end of Summer 2013. Beta should start in September 2013.
+
+Aim: having a reasonably modular code structure and coding conventions. Guillaume suggested to finish daemons refactoring.
+
+===== Sympa 7.0 =====
+
+Sympa 7.0 will introduce several features:
+
+  * SaaS capabilities
+  * Configuration homogeneization
+  * RFC 6729 implementation
+
+And more.
+
+This version will be under development from Q4 2013 to Q2 2014. Beta released to be planned in Q2 2014.
+
+===== Sympa versionning =====
+
+  * We keep SVN for 6.2 stabilization
+  * Once merge of 6.2 branch is done with sympa-clenup branch, we switch to git. This is planned for beginning of May 2013
+  * Sympa authors from RENATER will deal with how to keep different branches in sync (pre-git and post-git era)
+
+===== Upcoming events =====
+
+==== Sympa week in Strasbourg ====
+
+Thanks to Marc, this will happen in Strasbourg, October 14-18. thanks again Marc!
+
+Current plans are as follow: 
+
+  * 14 afternoon : [[dev:contributors#sympa_workshop|Sympa workshop]]
+  * 15 morning : [[dev:contributors#sympa_workshop|Sympa workshop]]
+  * 15 afternoon : [[dev:contributors#sympa_days|Sympa days]] plenary
+  * 16 morning : [[dev:contributors#sympa_days|Sympa days]] workshop in groups on pre-selected topics
+  * 16 afternoon : [[dev:contributors#sympa_days|Sympa days]] plenary
+  * 17 morning : Mix [[dev:contributors#sympa_hackathon|hackathon]] / [[dev:contributors#sympa_days|Sympa days]] : discussions between users and developpers
+  * 17 afternoon : [[dev:contributors#sympa_hackathon|hackathon]]
+  * 18 morning : [[dev:contributors#sympa_hackathon|hackathon]]
+
+=== Sympa workshop ===
+
+Training on Sympa fr 20-40 people from European NREN.
+
+=== Sympa days ===
+
+Conference about Sympa for 70-150 people
+
+=== Sympa hackathon ===
+
+That would be us, coding Sympa.

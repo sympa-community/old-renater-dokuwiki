@@ -1,0 +1,32 @@
+====== Sympa 6.2 beta 4 released ======
+
+//February 13, 2015//
+
+[[http://www.sympa.org|{{:authors-old:sympa_beta_small.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.4 is the latest beta release of the new major version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.4.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version mainly fixes a few bugs. Mainly one of them leading to infinite dependency loops in CPAN. Install on a fresh server proved the problem to be solved.
+
+A change is introduced in this version:  sympa.pl was splat into three programs: sympa.pl command-line utility, sympa_msg.pl daemon and sympa_automatic.pl daemon. Make sure you Sympa init script is updated after upgrade. It does not change anything to your scripts using sympa.pl, as we still use the same script name for command line.
+
+===== Translators needed! =====
+
+As you may - or may not - know, Sympa is translated into a dozen languages. But we have far more translations projects ongoing.
+
+While the beta is going on, it is the perfect time to improve Sympa translation for your prefered language.
+
+We use the Pootle translation tool, which allows you to easily edit online Sympa translation for your language. If you feel like contributing to Sympa but you don't like code, well spending a few minutes translating a few strings on this server is an easy way to do so.
+
+New translations are added to the Sympa distribution each time we tag a new version. 
+
+So if you want to make the easiest contribution ever to Sympa, [[http://pootle.sympa.org/|please go there and translate]] ! ;)

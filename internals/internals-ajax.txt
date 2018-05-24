@@ -1,0 +1,5 @@
+====== How to introduce AJAX in wwsympa ======
+
+If an URL start with /ajax/someaction/someparameters wwsympa will remove the ajax token from the path info and will continue args evaluation. The action will be delivered in an ajax context, it's to say that teh content type will be text/html, the cookie will not be renewed and the tt2 root file will be ajax.tt2.
+
+See modindex, viewmod action as example.

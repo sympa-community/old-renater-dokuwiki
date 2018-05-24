@@ -1,0 +1,24 @@
+====== How to create a sub-list ? ======
+<box>
+//“Several of our users make use of Listserv’s feature to have sub-lists under an umbrella list, so that a mail sent to the umbrella list will reach all sub-lists. Is there any corresponding feature in Sympa?”//
+</box>
+
+Here is the way to play with sub-list in Sympa. Let’s say create a list named //aaa// with a sub-list named //bbb//. Sympa allows to include some list in a particular list. The inclusion is really different from adding bbb@my.domain.org email to subscriber list aaa@my.domain.org. Using the list administration module in section //Edit list config// / //datasource// you can define as many list inclusions as needed (by default this can be edited only by listmaster).
+
+If including list //bbb// in list //aaa//, any subscriber of list //bbb// is added to list //aaa//. Of course future changes in list //bbb// (subscribtion and unsubscription) are automatically reported in list //aaa//. Some subscriber may be already subscriber of list //aaa// (because list //aaa// is open to subscription or because it includes thoses other list), they will not receive messages twice!
+
+Now subscribers of list //bbb// can see //aaa// in there subscription list (“Your lists”). Any privilege depending on list //aaa// member ship is respected. Example, if list aaa archives are private, list //bbb// subscribers can browse them. Subscribers can change there subscription option for list //aaa//. Bounce managment is also performed in list //aaa// for subscribers of list //bbb//.
+
+The only restriction is that subscribers from list //bbb// can’t unsubscribe from list //aaa//, but of course they can choose the nomail option and if they unsubscribe from list //bbb// they will desapear from list //aaa//. When browsing //aaa// subscribers list, the list owner can see the originating data source for each subscriber. 
+
+It is also possible to include remote lists coming from some other Sympa server. Many other datasources are recognized by Sympa (SQL, LDAP, HTTP, …) and this contributes to open mailing list definition and features. 
+
+====== Do I need sub-lists to allow subscribers from list B to perform an action in list B? ======
+
+NO.
+
+Sub-lists are used with non Sympa mailing software just because their auhtorization is based solely on list subscription.
+
+When using Sympa, you may prefer to define a [[:manual:authorization-scenarios|scenario]] that define authorization for subscribers of some other list.
+
+In other words: **Do not include list //B// in list //A// if you just want to make list //A//’s archives accessible to list //B// subscribers. Modify a scenario instead.**

@@ -1,0 +1,77 @@
+<note warning>
+
+  * Content of this page was obsoleted.
+
+</note>
+
+====== × Internals: Message.pm ======
+
+This module provides objects to encapsulate file message in order to prevent it from its alteration for using signatures.
+
+==== new() ====
+
+Creates an object Message and initialize it:
+
+  * ''msg'': ref(MIME::Entity)
+  * ''altered'' //if the message is altered//
+  * ''filename'': the file containing the message
+  * ''size'': the message size
+  * ''sender'': the first email address, in the 'From' field
+  * ''decoded_subject'': the 'Subject' field decoded by MIME::Words::decode_mimewords
+  * ''subject_charset'': the charset used to encode the 'Subject' field
+  * ''rcpt'': the 'X-Sympa-To' field
+  * ''list'': ref(List) //if it is a message no addressed to Sympa or a listmaster//
+  * ''topic'': the 'X-Sympa-Topic' field.
+  * //in a 'openssl' context - decrypt message//:
+    * ''smime_crypted'': 'smime_crypted' //if it is in a 'openssl' context//
+    * ''orig_msg'': ref(MIME::Entity) - crypted message
+    * ''msg'': ref(MIME::Entity) - decrypted message (see tools::smime_decrypt())
+    * ''msg_as_string'': string - decrypted message (see tools::smime_decrypt())
+  * //in a 'openssl' context - check signature//:
+    * ''protected'': 1 //if the message should not be altered//
+    * ''smime_signed'': 1 //if the message is signed//
+    * ''smime_subject'': ref(HASH)//if the message is signed// - information on the signer see tools::smime_parse_cert().
+
+**IN**:
+
+  - ''pkg''(+): Message
+  - ''file''(+): the message file
+
+**OUT**: ref(Message) undef
+
+==== dump() ====
+
+Dump the message object in the file descriptor $output
+
+**IN**:
+
+  - ''self''(+): ref(Message)
+  - ''output''(+): file descriptor
+
+**OUT**: '1'
+
+==== add_topic() ====
+
+Adds the message topic in the Message object (''topic''' and adds the 'X-Sympa-Topic' field in the ref(MIME::Entity) ''msg'''.
+
+**IN**:
+
+  - ''self''(+): ref(Message)
+  - ''topic''(+): string splitted by ',' - list of topic
+
+**OUT**: '1'
+
+==== get_topic() ====
+
+Returns the topic(s) of the message
+
+**IN**: ''self''(+): ref(Message)
+
+**OUT**: '' //if no message topic// | string splitted by ',' //if message topic//
+
+N.B.:
+
+  * (+): required parameter, value must not be empty
+  *: ''or'' for parameters value
+  * $: reference to code parameters or variables
+  * //condition for parameter//

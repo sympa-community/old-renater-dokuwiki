@@ -1,0 +1,8 @@
+===== Howto Share authentication between 2 Sympa servers =====
+First of all, your 2 Sympa servers need to be hosted in the same domain or at least have a common subdomain, otherwise HTTP cookies can't be shared.
+
+Let's consider your 2 servers s1.maindom and s2.maindom :
+  * Set your cookie_domain wwsympa.conf parameter to .maindom.(See reference manual
+  * Sympa uses a secret token to build its authentication cookies ; you need to share the same secret token on your 2 Sympa servers. Set your cookie sympa.conf parameter to the same value on both servers (see reference manual). 
+
+===== Papi =====

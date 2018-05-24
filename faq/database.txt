@@ -1,0 +1,63 @@
+====== Database concerns ======
+
+===== Duplicate entry ... for key... =====
+
+This error may appear while upgrading from a version of Sympa < 5.2b to a more recent version. This error is related to the changes in the **admin_table** structure : a new **robot_admin** field has been added (this was required to provide a full virtual hosting support in Sympa, thus allowing to manage 2 lists with the same name within different virtual hosts) and it is part of the  primary key. The upgrade process will populate the new robot_admin field with the appropriate value. The problem appears if an update of the admin_table was triggered before the upgrade procedures were run, resulting in a ''duplicate entry'' error. 
+
+The fix consists in emptying the admin_table to prevent such conflicts. 
+  DELETE FROM admin_table;
+
+You can safely run this SQL command because the admin_table in just a cache for data primarily defined in the list configuration files.
+
+===== Bulk changes of list members domain =====
+
+You might need to perform a bulk update of your list members email addresses because your top level domain has changed. Let's consider you wish to change every //xx@old.tld// to //xx@new.tld//.
+
+Sympa does not provide and API to perform such bulk operations, therefore, we just provide the set of actions that you should carry :
+  - update the //subscriber_table// : note that this table includes both subscribed members and members included from a third-party datasource. You should take care of updating the datasource (LDAP, SQL, flat file, other mailing list) for this second category of users
+or the old.tld will be back soon in the Sympa database. The SQL query will look like this : //UPDATE subscriber_table SET user_subscriber= concat(substring(user_subscriber, 1, instr(user_subscriber, '@')),'new.tld') WHERE user_subscriber LIKE '%@new.tld';//
+  - update the //user_table// : //UPDATE user_table SET email_user= concat(substring(email_user, 1, instr(email_user, '@')),'new.tld') WHERE email_user LIKE '%@new.tld';//
+  - the //admin_table// does not need to be changed because it is just a cache of data defined in list config files
+  - update the list configuration files : <code>grep old.tld /home/sympa/list_data/*/config /home/sympa/list_data/*/*/config</code>
+
+
+
+===== Problems with include2 list members =====
+
+Il you have problems with the list members cache (subscribed members that cannot be unsubscribed, members that never get expired), you probably have an inconsistency in your ''subscriber_table'' SQL table. This is due to an incorrect upgrade process of Sympa that leeds to entries of ''subscriber_table'' they have neither the ''subscribed_subscriber'' field nor the ''included_subscriber'' field set.
+
+This problem can be fixed, by running the following SQL query on your sympa database :
+<code>UPDATE subscriber_table SET subscribed_subscriber=1 WHERE ((included_subscriber IS NULL OR included_subscriber!=1) AND (subscribed_subscriber IS NULL OR subscribed_subscriber!=1))</code>
+
+===== SQL syntax near NAMES utf8 =====
+
+You might get this error in Sympa log file if you are using Sympa 5.3 or later with an old version of the Mysql server. 
+
+Sympa 5.3 requires mysql version 4.1.
+
+===== Errors when trying to load DBD::Oracle =====
+
+If you are trying to use an Oracle database for list includes you need to ensure that the Oracle client libraries and environment are available to the Sympa user. You will notice the failures if you see the following type of error in your logs:
+<code>Sep  3 09:19:01 lists wwsympa[23856]: No Database Driver installed for Oracle ; you should download and install DBD::Oracle from CPAN
+Sep  3 09:19:02 lists wwsympa[23856]: Inclusion include_sql_query failed in list test_sql_query</code>
+
+Ensure that you have included the library path in the appropriate ld.so.conf file and have run ldconfig. In addition, you will probably want to source the Oracle environment script in your login scripts.
+
+Examples:
+<code>
+[sympa@lists ~]$ cat /etc/ld.so.conf.d/oracle.conf 
+/usr/lib/oracle/xe/app/oracle/product/10.2.0/server/lib
+[sympa@lists ~]$ tail -4 /etc/bashrc 
+# Source oracle stuff
+if [ -f /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/bin/oracle_env.sh ];then
+    .  /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/bin/oracle_env.sh
+fi
+</code>
+
+===== MySQL server has gone away =====
+
+Cette erreur peut apparaître dans les logs du processus **bulk.pl** au démarrage du processus maitre. Ne tenez pas compte de ce message qui est conséquence puisque Sympa va automatiquement se reconnecter à la base de données. 
+
+L'erreur est liée à l'utilisation d'un même database handler entre un processus père et un processus fils.
+
+<

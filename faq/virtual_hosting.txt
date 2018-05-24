@@ -1,0 +1,11 @@
+====== Virtual hosting issues ======
+
+===== Some SMTP header fields refer to the server's FQDN instead of the virtual domain =====
+
+You should check the distributed messages header fields and find out if X-Loop, Reply-To, Erros-to header fields refer to the right email address. If not, you problably have a DNS misconfiguration or your mail server (sendmail, postfix) is incorrectly configured regarding masquerading. Check the MASQUERADE_AS and MASQUERADE_DOMAIN sendmail features.
+
+===== Multiple Sympa virtual hosts within a single Apache host =====
+
+You may want to host all your Sympa virtual host web interfaces (http://main.host/vhost1/sympa, http://main.host/vhost2/sympa, ...) on a single web host. Sympa allows to do so via the //http_host// robot.conf configuration parameter ([[/manual/virtual-hosts#robot.conf|see the related documentation]]). The //http_host// parameter is used by Sympa to determine which Sympa virtual host is contacted ; this parameter can include an optional path.
+
+  Example : http_host main.host/vhost1/sympa

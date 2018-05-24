@@ -1,0 +1,225 @@
+===== handling /etc/mail/sympa.aliases with Exim4 (and Sympa >=5) =====
+
+With a recent version of Sympa (>=5 ?), ''wws'' manages aliases automatically in ''/etc/mail/sympa_aliases'' (or ''/etc/mail/sympa.aliases'' in Debian).
+However, for instance in Debian, when using it with //exim4//, you’ll need to let Exim know it should use ''/etc/mail/sympa_aliases''.
+
+It seems to me that the following snippet should do the trick. Just copy the whole block of the "''system_aliases''" driver just bellow it, naming the new one "''sympa_aliases''", for instance, and replace the "''lsearch{/etc/aliases}''" by "''lsearch{/etc/mail/sympa.aliases}''" in the new driver. You may also need to add a ''user = sympa'' definition too in that block.
+
+As I understand it, if the first "''system_aliases''" redirect driver fails, it will do the same with the next one ("''sympa_aliases''").
+
+In Debian, depending on the choices of configuration for exim4, you may need to add a new file (//split config//), or change ''/etc/exim4/exim4.conf.template'' (//single file//), and then update the setup with the ''update-exim4.conf'' command (''man 8 update-exim4.conf'' for more details). More details may be found in [[http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=169102]].
+
+You may also need to add ''sympa'' to the list of users in ''MAIN_TRUSTED_USERS'' variable, maybe (to be confirmed).
+
+Hope this helps (and works) 
+
+Olivier Berger olivier.berger AT int-edu.eu
+
+
+===== Exim & Sympa =====
+
+Context : Exim, Vmail (virtual domains with Mysql), and Sympa.
+It’s not necessary to add some config directives about Sympa in exim.conf …
+  * for local addresses like sympa-request@domain.tld :
+    * add this in your /etc/aliases 
+  mylist : "| /path/to/sympa/queue mylist@domain.tld"
+
+  * for each virtual domain (ie : @domain2.tld) managed by the same server:
+    * add this in your /etc/aliases 
+  mylist_domain2_tld : "| /path/to/sympa/queue mylist@domain.tld mylist@domain2.tld"
+    * AND in your virtual domains tool manager (ie : @domain2.tld), you just have to create a forwarder like this :
+  mylist -> mylist_domain2_tld
+
+It’s very simple and it work…. I suppose that your Exim is already well configured to serve messages to your virtual domains … an easy-to-use tool for managing vdomains: [[http://www.ex-parrot.com/~chris/vmail-sql/]]
+
+Benoit Lathiere
+
+
+===== Here is a snippet for Exim-3/Debian =====
+
+
+  * Add sympa to the trusted users in main section 
+
+  trusted_users = mail : sympa
+
+  * Add these transports to transports section 
+ 
+  sympa_pipe:
+    driver = pipe
+    command = "/usr/lib/sympa/bin/queue $local_part"
+    return_path_add
+    delivery_date_add
+    envelope_to_add
+    user = nobody
+    group = nogroup
+ 
+  sympa_special_pipe:
+    driver = pipe
+    command = "/usr/lib/sympa/bin/queue $local_part$local_part_suffix"
+    return_path_add
+    delivery_date_add
+    envelope_to_add
+    user = nobody
+    group = nogroup
+ 
+  sympa_bounce_pipe:
+    driver = pipe
+    command = "/usr/lib/sympa/bin/bouncequeue $local_part"
+    return_path_add
+    delivery_date_add
+    envelope_to_add
+    user = nobody
+    group = nogroup
+ 
+
+  * Add these directors to directors section 
+
+  sympa:
+    driver = smartuser
+
+    # if you want to restrict only to some domain, put there 
+    # 
+    domains = liste.ac.concordia-pordenone.it
+
+    transport = sympa_pipe
+    require_files = /var/lib/sympa/list_data/$local_part
+ 
+  sympa_special:
+    driver = smartuser
+                                                                                
+    # if you want to restrict only to some domain, put there 
+    # 
+    domains = liste.ac.concordia-pordenone.it
+
+    transport = sympa_special_pipe
+    suffix = -request : -editor : -subscribe : -unsubscribe
+    require_files = /var/lib/sympa/list_data/$local_part
+ 
+  sympa_bounce: 
+    driver = smartuser
+                                                                                
+    # if you want to restrict only to some domain, put there 
+    # 
+    domains = liste.ac.concordia-pordenone.it
+
+    transport = sympa_bounce_pipe
+    suffix = -owner
+    require_files = /var/lib/sympa/list_data/$local_part
+
+  * you have to add/modify the system_aliases director as:
+
+  system_aliases:
+    driver = aliasfile
+    file_transport = address_file
+    pipe_transport = address_pipe
+    file = /etc/aliases
+    search_type = lsearch
+    user = sympa
+
+Typically it suffices to add user = sympa to the end. ;)
+
+spamfilter2 AT mupp.net,  gaio AT sv.lnf.it, olivier.berger AT int-evry.fr
+===== Sympa aliases in Exim configure =====
+
+If you prefer to have the aliases defined in the Exim configuration then these Routers and Transports can be used instead of updating the ''sympa.aliases'' file.
+
+<code>
+# Aliases
+# Using aliases makes configuration easier to manage
+# These aliases are based on FreeBSD ports and can be changed for other systems
+SYMPA_EXPL   = /usr/local/sympa/list_data
+SYMPA_ROBOT  = /usr/local/etc/sympa
+SYMPA_QUEUE  = /usr/local/bin/queue
+SYMPA_BOUNCE = /usr/local/bin/bouncequeue
+
+# Allow exim to submit to sympa
+trusted_users = sympa 
+
+# Routers
+# This accepts sympa@example.com as the command submission address
+sympa_list_command:
+  driver = accept
+  condition        = ${if eqi{$local_part}{sympa}{1}{0}}
+  require_files = +SYMPA_HOME/${lc::$domain}/robot.conf
+  retry_use_local_part
+  transport = sympa_bounce
+
+list:
+  driver = accept
+  require_files = +SYMPA_EXPL/${lc::$domain}/${local_part}/config
+  retry_use_local_part
+  transport = sympa_queue
+
+listrequest:
+  driver = accept
+  local_part_suffix = -request
+  require_files = +SYMPA_EXPL/${lc::$domain}/${local_part}/config
+  retry_use_local_part
+  transport = sympa_queue
+
+listeditor:
+  driver = accept
+  local_part_suffix = -editor
+  require_files = +SYMPA_EXPL/${lc::$domain}/${local_part}/config
+  retry_use_local_part
+  transport = sympa_queue
+
+listsubscribe:
+  driver = accept
+  local_part_suffix = -subscribe
+  require_files = +SYMPA_EXPL/${lc::$domain}/${local_part}/config
+  retry_use_local_part
+  transport = sympa_queue
+
+listunsubscribe:
+  driver = accept
+  local_part_suffix = -unsubscribe
+  require_files = +SYMPA_EXPL/${lc::$domain}/${local_part}/config
+  retry_use_local_part
+  transport = sympa_queue
+
+listowner:
+  driver = accept
+  local_part_suffix = -owner
+  require_files = +SYMPA_EXPL/${lc::$domain}/${local_part}/config
+  retry_use_local_part
+  transport = sympa_bounce
+
+listbounce:
+  driver = accept
+  local_part_prefix = bounce+
+  require_files = +SYMPA_EXPL/${lc::$domain}/robot.conf
+  retry_use_local_part
+  transport = sympa_bounce
+
+
+#Transports
+sympa_command:
+  driver = pipe
+  command = "SYMPA_QUEUE sympa\@$domain"
+  return_fail_output
+  user = sympa
+
+sympa_queue:
+  driver = pipe
+  command = "SYMPA_QUEUE ${local_part}${local_part_suffix}\@$domain"
+  return_fail_output
+  user = sympa
+
+sympa_bounce:
+  driver = pipe
+  command = "SYMPA_BOUNCE ${local_part_prefix}${local_part}\@$domain"
+  return_fail_output
+  user = sympa
+</code>
+
+To switch off generating aliases set 'sendmail_aliases none' in sympa.conf
+
+Note:
+''bounce+'' prefix and ''-owner'' suffix are Sympa defaults, change them if you need to.
+
+Alan Hicks ahicks AT p-o.co.uk
+
+----
+See also : http://listes.renater.fr/sympa/arc/sympa-users/2008-01/msg00086.html for Czakó Krisztián's contribution -- OlivierBerger
+

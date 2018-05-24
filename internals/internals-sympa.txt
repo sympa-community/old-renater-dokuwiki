@@ -1,0 +1,108 @@
+====== × sympa.pl ======
+<note warning>
+  * This document was obsoleted.
+
+</note>
+
+This is the main script; it runs as a daemon and does the message/command processing. It uses these functions: ''DoFile()'', ''DoMessage()'', ''DoCommand()'', ''DoSendMessage()'', ''DoForward()'', ''SendDigest()'', ''CleanSpool()'', ''sigterm()'', ''sighup()''. 
+
+Concerning reports about message distribution, function [[internals-list#send_file|List::send_file()]] (or [[internals-list#send_global_file|List::send_global_file()]]) is called with mail template ''message_report''. Concerning reports about commands, it is the mail template ''command_report''. 
+
+==== DoFile() ====
+
+Handles a received file: function called by the ''sympa.pl'' main loop in order to process files contained in the queue spool. The file is encapsulated in a Message object not to alter it. Then the file is read, the header and the body of the message are separated. Then the adequate function is called whether a command has been received or a message has to be redistributed to a list. 
+
+So this function can call various functions: 
+  * [[internals-sympa#domessage|sympa::DoMessage()]] for message distribution;
+  * [[internals-sympa#docommand|sympa::DoCommand()]] for command processing;
+  * [[internals-sympa#doforward|sympa::DoForward()]] for message forwarding to administrators;
+  * [[internals-sympa#dosendmessage|sympa::DoSendMessage()]] for //WWSympa// message sending. 
+About command process a report can be sent by calling [[internals-list#send_global_file|List::send_global_file()]] with template ''command_report''. For message report it is the template ''message_report''. 
+
+**IN**: file(+): the file to handle 
+
+**OUT**: $status - result of the called function undef 
+
+
+
+==== DoMessage() ====
+
+Handles a message sent to a list (those that can make loop and those containing a command are rejected). This function can call various functions: 
+  * List::distribute_msg() for distribution (see [[#list-distribute-msg|list-distribute-msg]], page [[internals#list-distribute-msg|{{crossref.png|[*]}}]])
+  * List::send_auth() for authentification or topic tagging by message sender(see [[#list-send-auth|list-send-auth]], page [[internals#list-send-auth|{{crossref.png|[*]}}]])
+  * List::send_to_editor() for moderation or topic tagging by list moderator(see [[#list-send-to-editor|list-send-to-editor]], page [[internals#list-send-to-editor|{{crossref.png|[*]}}]]).
+  * List::automatic_tag() for automatic topic tagging (see [[#list-automatic-tag|list-automatic-tag]], page [[internals#list-automatic-tag|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''which''(+): 'list_name@domain_name - the concerned list
+  - ''message''(+): ref(Message) - sent message
+  - ''robot''(+): robot
+
+**OUT**: 1 //if everything went fine// in order to remove the file from the queue undef
+
+==== DoCommand() ====
+
+Handles a command sent to sympa. The command is parse by calling Commands::parse() (see [[#commands-parse|commands-parse]], page [[internals#commands-parse|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''rcpt'': recepient ''<''listname''>''-''<''subscribeunsubscribe''>''
+  - ''robot''(+): robot
+  - ''msg''(+): ref(MIME::Entity) - message containing the command
+  - ''file''(+): file containing the message
+
+**OUT**: $success - result of Command::parse() function undef.
+
+==== DoSendMessage() ====
+
+Sends a message pushed in spool by another process (ex: wwsympa.fcgi) by calling function mail::mail_forward() (see [[#mail-mail-forward|mail-mail-forward]], page [[internals#mail-mail-forward|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''msg''(+): ref(MIME::Entity)
+  - ''robot''(+): robot
+
+**OUT**: 1 undef
+
+==== DoForward() ====
+
+Handles a message sent to ''<''listname''>''-editor: the list editor, ''<''list''>''-request: the list owner or the listmaster. The message is forwarded according to $function by calling function mail::mail_forward() (see [[#mail-mail-forward|mail-mail-forward]], page [[internals#mail-mail-forward|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''name''(+): list name //if ($function != 'listmaster')//
+  - ''function''(+): 'listmaster' 'request' 'editor'
+  - ''robot''(+): robot
+  - ''msg''(+): ref(MIME::Entity)
+
+**OUT**: 1 undef
+
+==== SendDigest() ====
+
+Reads the queuedigest spool and send old digests to the subscribers with the digest option by calling List::send_msg_digest() function mail::mail_forward() (see [[#list-send-msg-digest|list-send-msg-digest]], page [[internals#list-send-msg-digest|{{crossref.png|[*]}}]]).
+
+**IN**: - **OUT**: - undef
+
+==== CleanSpool() ====
+
+Cleans old files from spool $spool_dir older than $clean_delay.
+
+**IN**:
+
+  - ''spool_dir''(+): the spool directory
+  - ''clean_delay''(+): the delay in days
+
+**OUT**: 1
+
+==== sigterm() ====
+
+This function is called when a signal -TERM is received by sympa.pl. It just changes the value of $signal loop variable in order to stop sympa.pl after endding its message distribution if in progress. (see [[running-sympa#stop-signals|stop-signals]], page [[running-sympa#stop-signals|{{crossref.png|[*]}}]])
+
+**IN**: - **OUT**: -
+
+==== sighup() ====
+
+This function is called when a signal -HUP is received by sympa.pl. It changes the value of $signal loop variable and switchs of the ''-mail'' (see [[running-sympa#stop-signals|stop-signals]], page [[running-sympa#stop-signals|{{crossref.png|[*]}}]]) logging option and continues current task.
+
+**IN**: - **OUT**: -

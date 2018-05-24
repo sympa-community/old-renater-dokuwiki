@@ -1,0 +1,8 @@
+===== How to migrate from some lyris, listserv, majordomo or mailman ?  =====
+
+Check [[contribs:index]] you will probably found some script that can help you.
+
+
+==== archive migration ====
+
+Check also the [[archives|archives faq section]]

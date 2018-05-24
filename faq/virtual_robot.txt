@@ -1,0 +1,4 @@
+===== May I define several list using the same name ? =====
+The need is to define two lists named, for example, help-line@renater.fr and help-line@sympa.org running a virtual robot definition. 
+
+The answer is **yes**. This was not true with versions prior to 5.2 because of the database structure. Now Sympa supports full virtual robots without any limitation.

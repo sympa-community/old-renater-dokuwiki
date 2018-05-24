@@ -1,0 +1,11 @@
+====== Why Sympa duplicate messages if sent to different lists where some subscribers are members of severals ones ? ======
+
+Let's imagine "foo" is subscribed to both list A and list B. When a message is sent to lists A and list B, you may imagine it would be a nice feature if Sympa sent the message to foo only once. Not a good idea because :
+  *each message is modificated depending of the list configuration. How to decide which version should be removed and which should be sent ? There are a lot of possible modifications depending on list A and list B configuration. Even the message body may be parsed and rewritten depending on list config (not only header and footer).
+  *usually message headers of distributed messages differ from one list to another one. Just an exemple : the Reply-to header is frequently set to force replies to be sent to the list ((Sympa authors recommend to configure lists in order not to modify existing repy-to)).
+  *foo may be subscribed to list A with a reception option very different from its subscription option in list B (digest / normal)
+  *bounce management may become impossible whith such feature
+  *the tracking feature (that will be released with version 6.2) is uncompatible with single delivery
+  *the result of such feature would depend on message arrival order and would be very difficult to understand for end users.
+
+For all thoses reasons and probably many others the deduplication message feature that seems to be pretty would not serve users properly. It is up to subscribers to configure there MUA or there IMAP server to provide deduplication. We are sure that this will not save a lot of storage. The native message deduplication that stores only once a message received by many users is much more usefull. Of course this is a message storage agent feature, not a mailing list feature.

@@ -1,0 +1,173 @@
+===== Qmail and Sympa - setting up aliases =====
+[Rough draft answer, improvements welcome]
+Setting up sympa with qmail isn't that complex. The main thing is mapping the aliases. If you are adding lists by hand it's easy enough to do. If you want to have lists added automatically you need to edit a few scripts. It's more complex if you are running multiple domains.
+The simple form is just to translate the aliases.
+For each mailing list, sympa gives a set of sendmail/postfix format aliases that look something like:
+
+  listname-subscribe: "| /home/sympa/bin/queue listname-subscribe@domain"
+
+the qmail equivalent is to create a file:
+
+  ~aliases/.qmail-listname-subscribe
+ with the content:
+  | /home/sympa/bin/queue listname-subscribe@domain
+
+If you are running qmail virtual domains, you can set qmail up to deliver to a particular user for each domain, and the aliases are stored in ~user/.qmail-listname-etc. That is more complex to set up, but lets you have directories that sympa can write to (having sympa write to ~aliases in order to install aliases automatically is something I didn't do due to security considerations).
+It should be fairly easy to adjust alias_manager to create qmail aliases appropriate for your installation.
+
+mjhweb-sympa AT liminalflux.net
+===== Using Qmail-LDAP and Sympa for LDAP email and mailing lists =====
+qmail-LDAP:
+
+    * Get qmail-1.03-6
+    * Get qmail-ldap-patch (latest version) and run patch in qmail source folder<
+    * Modify Makefile and uncomment (turn on):
+
+          LDAPON=-DQLDAP -DQLDAP_ESCAPE_BUG 
+          MNW=-DMAKE_NETSCAPE_WORK 
+          MDIRMAKE=-DAUTOMAILDIRMAKE 
+          HDIRMAKE=-DAUTOHOMEDIRMAKE 
+          Note: Leave QLDAPBIND Commented out 
+
+    * Run: Make Setup Check
+    * Set up qmail to use Maildir - see documentation
+    * Important! Copy /var/qmail/bin/checkpassword to /usr/bin 
+
+OpenLDAP:
+
+    * Get OpenLDAP 1.2.7: Make, Install, Setup Database, and test (read INSTALL)
+    * To support qmail-LDAP, add the following to /usr/local/etc/openldap/slapd.oc.conf
+
+      objectclass qmailUser
+          requires
+              objectclass, 
+              mail, 
+              mailMessageStore, 
+              uid, 
+              userPassword 
+          allows
+              mailAlternateAddress, 
+              qmailUser, 
+              qmailUID, 
+              qmailGID, 
+              mailQuota, 
+              mailForwardingAddress, 
+              mailHost, 
+              deliveryProgramPath, 
+              deliveryMode, 
+              mailReplyText, 
+              qmailDotMode, 
+              accountStatus, 
+              mailGroup 
+
+It is not necessary to create Linux accounts for email accounts.  qmail-LDAP handles this automatically.  If a user is set up correctly in LDAP, the first incoming mail message will automatically create their home/email/user/MailDir directory. 
+   
+Create a folder under the /home folder called email - this is where all non-Linux account email accounts will be created. To make an LDAP entry a qmail account, add the following to the record:
+
+  mail: user's email address 
+  mailMessageStore: /home/email/user/ 
+  uid: user's email name or login id 
+  userPassword: user's pop3 email password (cleartext, so don't use a secure account password here - use something else) 
+  mailGroup: Myers 
+
+Sympa is a perl application which automates maillists and will use LDAP to lookup email addresses of groups. The following files are required to run Sympa:
+
+    * Berkeley db v2.7.7 from sleepycat.com (used by OpenLDAP)
+    * Netscape's LDAP SDK
+    * Sympa v2.3.4
+    * The following perl CPAN apps :
+       * perl-db_File-1.6.1 
+       * Msgcat-1.03 
+       * MD5-1.7 
+       * perl-Mailtools-1.12.1 
+       * perl-MIMEtools-4.121.1 
+       * perl-Base64-2.06.1 
+       * perl-IOStringy-1.203.1 
+       * perl-LDAP-0.13 
+       * Convert-BER-1.25 
+       * DBI-1.13 
+
+Make and Install Sympa
+
+To create a new mailing list:
+Do not create aliases as described in Sympa.  Currently, there is a problem with qmail's 'fastforward' app so it doesn't run the Sympa queue application correctly.  Turn off qmail's ability to use the ailases database.
+
+Create a list folder under /home/sympa/list_data/
+Create a config file in this new folder with the following include section
+
+  include_ldap_query
+    host usnhwebdev.unh.edu
+    suffix ou=usnh, o=USNH, c=US
+    #filter (&(first criteria) (second criteria)) or
+    #filter (single criteria)
+    filter (mailGroup=Myers)
+
+
+Note: filter will search LDAP db for all records and grab the mail (email) object value to build the distribution list.  I added the 'mailGroup' object - this should be part of the qmailUser objectclass and put under requires or allows.  Then, when creating LDAP records, set mailGroup: Myers or mailGroup: Dunlap so each person is identified as being part of a particular mailing list group.
+
+Now, create the mailing list record in the LDAP db:
+
+  dn: cn=@Myers, ou=USNH, o=USNH, c=US
+  cn: @Myers
+  objectclass: top
+  objectclass: person
+  objectclass: qmailUser
+  uid: Myers
+  userPassword: Myers
+  mail: myers@usnhwebdev.unh.edu
+  mailMessageStore: /home/email/myers/
+  accountstatus: nopop
+  deliveryMode: ldapwithprog
+  deliveryProgramPath: /home/sympa/bin/queue myers
+  Here's what happens:
+
+  * The email message for the list gets verified by qmail-LDAP using the info above
+  * The list's /home/email/list folder is created, but isn't used (if it's the first message)
+  * The deliveryProgramPath is run with the message passed through
+  * Sympa's queue then uses the list's config file filter to do an LDAP search, matches the records, then uses the email address of all found records to distribute the message 
+
+
+Note: in all cases, you can probably find RPMs for the source files that are already compiled (if you are using RedHat Linux).  Do not use these - although convenient, they are usually outdated and many times put files in the wrong folders.  Get the source code files and compile/install.  Always get the latest version of each file as well.
+
+Note: put an '@' in front of the list's name ie cn: @Myers.  That way, you can search for all mailing lists in your email client by searching for cn=@ or cn contains @
+
+
+gkelley AT usnhdata.unh.edu
+
+===== Alias management with vpopmail+qmail+sympa =====
+If you have a lot of lists, you have to think that there will be a lot of qmail alias files in your alias directory.
+or if you use /etc/aliases with fastforward, newaliases command must be run after each created list.
+for example, 5 alias files per list X 5000 lists = 25000 qmail alias files.
+with vpopmail you don't have to create alias files or run newaliases command.
+vpopmail has a property named valias that store the aliase in mysql database.
+first of all configure vpopmail with --enable-valias
+
+  ./configure --disable-roaming-users \
+          --enable-logging=p \
+          --disable-ip-alias-domains \
+          --disable-passwd \
+          --enable-clear-passwd \
+          --disable-domain-quotas \
+          --enable-auth-module=mysql \
+          --disable-many-domains \
+          --enable-auth-logging \
+          --enable-mysql-logging \
+          --enable-valias \
+          --disable-mysql-limits
+
+create a database : vpopmail
+create a dummy alias with ~vpopmail/bin/valias (the valias table will be created after this command)
+
+With valias command i couldn't insert an alias like listname@listdomain --> |/home/sympa/bin/queue listname@listdomain.com
+so you have to insert alias with sql like this :
+  insert into valias values ('listname','listdomain','|/home/sympa/bin/queue listname@listdomain.com')
+
+yavuz.sert AT mynet.com
+
+If you are using vpopmail and valias, you can automate the creation of aliases by using the mysql_alias_manager.pl that is distributed with Sympa 5.3 and later versions. 
+It's a mysql version of **/home/sympa/bin/alias_manager.pl**. You'll have to rename it and to replace the original alias_manager.pl file. Don't forget to change the parameters for the connexion to your mysql database.
+
+===== alias_manager.pl suitable for use with qmail using Plesk virtual hosting =====
+
+If you're unlucky enough to have to integrate Sympa with qmail and Plesk virtual hosting {{faq:qmail_vhost_alias_manager.pl.txt|this take on alias_manager.pl}} might be of some help to you.  It should work without too many adjustments for your environment.  Things that you will want to pay attention to are paths and the line that changes ownership of .qmail-alias files after creation.  Improvements to this script would certainly be welcome, goodness knows it isn't exactly a work of art.  Please sent any improvements to matt-at-cypressinteractive.com or madams-at-phantomware.ca as well as posting them here.  Thanks!
+

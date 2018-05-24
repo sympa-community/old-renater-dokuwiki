@@ -1,0 +1,40 @@
+====== Formation "Usages avancés de Sympa et intégration dans votre système d'information" ======
+
+Cette formation, organisée par le CRU, aura lieu le 7 juin 2007, au CNAM, à Paris.
+<box>
+amphi Jean Fourastié (amphi T)
+Accès 11A Rez-de-Chaussée
+292 rue Saint Martin
+75141 Paris Cedex 03
+Métro : Reaumur-Sebastopol (ligne 3 et 4)
+</box>
+
+===== Supports de présentations =====
+
+Vous pouvez télécharger les supports au format PDF : [[http://www.sympa.org/documentation/cours-sympa-070607.pdf]]
+
+===== Inscription =====
+
+L'inscription est obligatoire, gratuite et ouverte à tous les utilisateurs du logiciel Sympa. La capacité d'accueil est de 300 places. Pour vous inscrire à la formation cliquez sur <html><a href="mailto:sympa@renater.fr?subject=SUB%20inscription-formation-sympa">ce lien</a></html> ou abonnez-vous à la liste **inscription-formation-sympa** depuis se site [[http://listes.renater.fr/sympa|Universalistes]].
+
+===== Retransmission =====
+
+La formation sera retransmise en visio-conférence en direct et disponible en vidéo à la demande. 
+  * Réception en direct en RTSP : [[rtsp://vilnius.cnam.fr/broadcast/PTI/IDF/PARISfourastie/SCParisFOUR]]
+  * Réception en direct en HTTP : [[http://vilnius.cnam.fr/ramgen/broadcast/PTI/IDF/PARISfourastie/SCParisFOUR]]
+
+===== Programme provisoire de la formation =====
+
+Horaires : 9h30 - 17h00
+
+  - Présentation du logiciel Sympa
+  - Architecture
+  - La gestion des hôtes virtuels
+  - Listes avec inclusions des membres
+  - Les modules d'authentification
+  - Les Scénarios d'autorisation
+  - Le format TT2
+  - Les familles de listes
+  - Retour d'expérience d'une administration
+  - Le serveur SOAP
+  - Conclusion

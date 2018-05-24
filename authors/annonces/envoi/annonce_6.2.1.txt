@@ -1,0 +1,25 @@
+====== Sympa 6.2.1 "Damien" released ======
+
+//June 17, 2015//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2.1 "Damien" is the new stable version of Sympa.\\
+
+   *[[http://www.sympa.org/distribution/sympa-6.2.1.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+This version mainly introduces bug fixes, most of them being related to tweaks in the new Sympa skin.
+
+Amongst the bugs fixed, some notables are the following:
+
+  * [Reported by D. Lalot, univ. Aix Marseille] When a list is at 100 %	error, nobody receives the message, and nobody was warned that the message had been lost. Fixed by warning the message sender, the list owners and the listmaster when the bounce rate is at 100%.
+  * [Reported by P. Grzesina, univ. Regina] The CAS button was not showed because the cas_number value in conf was never updated.
+  * [Fixed by Soji!] If the user is listmaster of the host with large number of lists, loading create_list_request page will slow down. Fixed by not getting all lists but only owned lists.
+  * [Fixed by Soji!] "make install" fails when install(1) omitting directory arguments.
+
+It was not mentioned in previous release notes, but a lot of translations have been update by our numerous contributors. Thanks to all of them!

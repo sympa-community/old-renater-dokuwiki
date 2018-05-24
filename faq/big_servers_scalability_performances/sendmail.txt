@@ -1,0 +1,80 @@
+====== An exemple of configuration for large or medium list server using sendmail ======
+
+The configuration described here is that of domain renater.fr, which is a medium size server running about 10 virtual robots and distributing 10 million messages a month (November 2006).
+
+Our approach is to distribute services over various servers (2 servers here).
+
+  * //listes.renater.fr// - The core of the MLM, dedicated to :
+    * sympa.pl - The Mailing List Manager itself
+    * wwsympa.fgi - The Sympa Web interface
+    * sendmail - The SMTP server for incoming messages (MX server for *.renater.fr)
+
+  * //smtp1.renater.fr// - Outgoing SMTP server. This computer is mainly used for message distribution to list subscribers. It is also running the message filter service (using [[j-chkmail|http://j-chkmail.ensmp.fr/]] milter )
+
+The message submission program used by sympa at listes.renater.fr is configured to deliver locally if the recipient is local (messages to Sympa itself or to other local users) and to route everything else to smtp1.renater.fr.
+
+
+===== Outgoing SMTP configuration =====
+
+==== Routing ====
+
+//smtp1.renater.fr// configuration is minimal : every message is routed to external domains (the MX of recipient domain). There is no local users and no local domains. This way, new virtual domains added to the list server doesn't change anything on that host config. This is done using latest sendmail 8.13 with :
+
+  * no submit.mc
+  * no aliases definition
+  * no ...
+
+A really simple config !
+
+==== Queue management configuration ====
+
+FIXME (T.B.D)
+
+===== listserver smtp configuration =====
+
+Tha basic idea is to keep unchanged to sendmail configuration of that domain unless for call to sendmail done by sympa.pl. This can be done easily because sympa.conf allows to change sendmail arguments. Here are the parameters related to sendmail in sympa.conf
+
+  sendmail	/usr/sbin/sendmail
+  
+  sendmail_args -L sm-sympa -oi -odi -oem -Am -C /etc/mail/sympa.cf
+
+==== changing default sendmail config location ====
+
+The uncommon options is //"-C /etc/mail/sympa.cf"// which change the sendmail configuration while calling sendmail.
+
+This configuration file "sympa.cf" is prepared only for sendmail calls from sympa. This config include 2 main changes : use a dedicated //mailertable//  and dedicated spools
+
+==== dedicated mailer table ====
+
+In order to route all messages but local ones to //smtp1.renater.fr//, the sympa.cf file uses a specific mailertable  :
+
+  renater.fr          esmtp:[127.0.0.1]
+  demo.sympa.org  esmtp:[127.0.0.1]
+  jres.org        esmtp:[127.0.0.1]
+  ... etc for each virtual domain
+  host.renater.fr     esmtp:[host.renater.fr]
+  .               esmtp:[smtp1.renater.fr]
+
+
+The first 3 lines are used for virtual domains and local domain, then some local host are listed (exemple host.renater.fr for renater.fr internal mail service.  Note that local messages are to be routed to localhost using smtp protocol. This local hop is required to prevent insuffisant permission. The last rule //dot// is used for default routage to the smtp outgoing dedicted server.
+
+
+==== dedicated spools ====
+
+Because sendmail as a submission processus can't access to system spools, the sympa.cf configuration define a specific spool. This spool directory (///var/spool/sendmailsympa//) is owned by sympa. 
+
+==== About spooling  ====
+
+FIXME : ce truc ne marche pas
+
+If some messages are stored in this spool ///var/spool/sendmailsympa//, it is probably because smtp1.renater.fr is down, overloaded or under maintenance operation. In such case, when it should be better to scan this spool trying to  route the message using MX insteed of trying to route them to an out of order MTA. This is done with a new specific sendmail confguration that use the same spool definition as sympa.cf but use a deferent mailertable without the reference to smtp1.renater.fr.
+
+ 
+
+  
+
+
+
+
+ 
+ 

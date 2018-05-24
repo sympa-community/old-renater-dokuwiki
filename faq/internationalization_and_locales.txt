@@ -1,0 +1,95 @@
+===== History of character encoding in Sympa =====
+
+Sympa always respects the original charset of distributed messages, however the charset of web pages, service messages (welcome, remind, digest) and shared documents filenames has evolved over the last versions of the software. Latest versions of Sympa now use UTF-8 when possible.
+
+==== Until Sympa 5.2.x ====
+
+Sympa had a charset associated to each language and used this charset depending on the user language preference. This behavior lead to problems when charset are mixed in many places on the web interface :
+The list of supported languages itself would not print correctly because the language name cannot get printed correctly using other charset.
+List archives would not be displayed correctly if the user's language preference does not use the same charset.
+Shared document names can contain 8bit characters and therefore would be stored according to the user's language. Other list members with a different language preference could not access this file because the filename would get encoded with a different charset. 
+
+==== Sympa 5.3a.10 ====
+
+This version moved to full UTF-8 encoding on the web interface. The upgrade process renames all shared documents to use UTF-8, to prevent the bug related to language preference. 
+
+Since existing configuration files (list config, web and mail templates) might use a charset different from UTF-8, we have introduced a new « filesystem_encoding » sympa.conf parameter. This parameter allowed recoding from the native charset to UTF-8. However this lead to many recoding issues.
+
+==== Sympa 5.3b.4 ====
+
+This version expects all configuration files to be UTF-8, including all list config files, mail and web templates. The upgrade process goes through all custom configuration files and converts them to UTF-8. The original file's charset is deduced from the language preference, either at the list level or at the site level. Original configuration files are saved, in case the convertion process would fail.
+
+===== invalid character: message ignored =====
+This error occurs while compiling NLS catalogues on Linux RH 7.0 system (with glibc 2.2-9). You need to set your current locale before running gencat.
+
+Example : 
+
+  setenv LC_ALL fr_FR 
+
+===== Accentuated characters are altered on the web interface =====
+
+On most recent UN*X systems the default charset for the system is set to UTF-8. Sympa 5.3 moved almost all encoding chars to UTF-8. It should make life much more simple now with both with Apache //AddDefaultCharset// directive, the LANG environment variable etc.
+
+With previous version check :  
+  * Unless all your Sympa config files and templates are also in UTF-8 you can encounter problems with accentuated characters printing.
+  * Check the LANG environment variable : printenv LANG . If the LANG environment variable refers to UTF-8 you might need to change it (unless that is what you wish). Example : fr_FR.UTF-8 => fr_FR
+  * On Fedora/RedHat systems the default lang is set in the /etc/sysconfig/i18n file 
+
+===== archived.pl causes mhonarc to archive without subject or sender information =====
+
+When installing on RedHat 9.0, the archived.pl process will causes messages in the web archive to appear as "No Subject" and "Unknown" as the subject/sender (for MHonArc version 2.5.X) or "No Subject" and "Anonymous" as the subject/sender (for MHonArc version 2.6.x). This is due to the fact of RedHat 9.0 setting the $LANG variable to "en_US.UTF-8" instead of "en_US". To solve, edit the file /etc/sysconfig/i18n. The file defaults as:
+LANG="en_US.UTF-8" SUPPORTED="en_US.UTF-8:en_US:en" SYSFONT="latarcyrheb-sun16"
+
+The file should be rewritten as:
+
+  LANG="en_US" SUPPORTED="en_US:en_US.UTF-8:en" SYSFONT="latarcyrheb-sun16"
+
+After changing, reboot and rebuild your archives. All messages after the reboot will be archived with a name and subject. 
+
+
+
+===== Locale and Solaris =====
+
+There is a problem displaying the available languages (or setting the locale) on some SUN Solaris systems.
+You will have to check the locale which are actually intalled on your system. The locale directory used by POSIX setlocale and check_locales.pl script is /usr/bin/locale. 
+If you want (or need) to add more locale, please read SDN tips : 
+http://developers.sun.com/dev/gadc/techtips/sol9_locale_pkgs/index.html
+Adding packages is done by 
+pkgadd -d /cdrom/cdrom0/s0/Solaris_9/Product pkg1 pkg2 pkg3 ...
+or, easier way : 
+cd /cdrom/cdrom0/s0/Solaris_9/Product
+l10npkgadd.csh pkg1 pkg2 pkg3 ...
+
+If all locale packages are actually there, but sympa installation procedure doesn't recognize them, you may check "msgfmt" script called in po/Makefile. It has been found that  /opt/csw/bin/gmsgfmt from CSWggettext package works better than the genuine solaris gmsgfmt version or than "gettext" msgfmt version.  After running configure, edit po/Makefile and replace "msgfmt" with "/opt/csw/bin/gmsgfmt".
+
+
+===== Locale and FreeBSD =====
+
+Adam Bernstein (from Electric embers) ran into an internationalization problem with Sympa 5.1 under FreeBSD 4.9. All localizations were broken. In his own words((http://listes.renater.fr/sympa/arc/sympa-users/2005-08/msg00062.html)): "The problem was that it wouldn't bind to any localization catalog or translate any strings; the language selector showed 4 blank choices, though the HTML code actually pointed to 4 languages, and selecting any of them did nothing."
+
+The problem has been fixed in Sympa 5.2.2 ; Sympa now uses the ''pure perl'' implementation of gettext.
+
+
+
+===== Locale and Debian =====
+
+You might get the following errors at Sympa startup :
+  Failed to setlocale(fr_FR) ; you either have a problem with the catalogue .mo files or you should extend available locales in  your /etc/locale.gen (or /etc/sysconfig/i18n) file 
+
+It probably means that you don't have the corresponding locale packages installed on your system.
+
+You should install the missing locales using the **dpkg-reconfigure locales** command.
+
+===== Locale and Ubuntu =====
+
+You might get the following errors at Sympa startup :
+  Failed to setlocale(ll_CC) ; you either have a problem with the catalogue .mo files or you should extend available locales in  your /etc/locale.gen (or /etc/sysconfig/i18n) file 
+
+It probably means that you don't have the corresponding locale packages installed on your system.
+
+You should install the missing locales by editing /var/lib/locales/supported.d/local
+add new line:
+  fr_FR ISO-8859-1
+
+finally run:
+  sudo dpkg-reconfigure locales

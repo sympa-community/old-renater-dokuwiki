@@ -1,0 +1,294 @@
+====== × Internals: Commands.pm ======
+
+<note warning>
+This section was obsoleted as of Sympa 6.2.13.  See manual pages `Sympa::Internals::Workflow(3)` and `Sympa::CommandDef(3)` bundled in Sympa distribution.
+</note>
+
+This module does the mail commands processing.
+
+=====  Commands processing =====
+
+parse(), add(), del(), subscribe(), signoff(), invite(), last(), index(), getfile(), confirm(), set(), distribute(), reject(), modindex(), review(), verify(), remind(), info(), stats(), help(), lists(), which(), finished().
+
+==== parse() ====
+
+Parses the command line and calls the adequate subroutine (following functions) with the arguments of the command. This function is called by sympa::DoCommand() (see [[#sympa-docommand|sympa-docommand]], page�[[internals#sympa-docommand|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''sender''(+): the command sender
+  - ''robot''(+): robot
+  - ''i''(+): command line
+  - ''sign_mod'': 'smime' undef
+
+**OUT**: 'unknown_cmd' $status - command process result
+
+==== add() ====
+
+Adds a user to a list (requested by another user), and can send acknowledgements. New subscriber can be notified by sending template 'welcome'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname, email and comments eventually
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== del() ====
+
+Removes a user to a list (requested by another user), and can send acknowledgements. Unsubscriber can be notified by sending template 'removed'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and email
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1
+
+==== subscribe() ====
+
+Subscribes a user to a list. New subscriber can be notified by sending him template 'welcome'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and comments eventually
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== signoff() ====
+
+Unsubscribes a user from a list. He can be notified by sending him template 'bye'.
+
+**IN**:
+
+  - ''which''(+): command parameters: listname and email
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'syntax_error' 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== invite() ====
+
+Invites someone to subscribe to a list by sending him the template 'invite'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname, email and comments
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== last() ====
+
+Sends back the last archive file by calling List::archive_send() function (see [[#list-archive-send|list-archive-send]], page�[[internals#list-archive-send|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''which''(+): listname
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'no_archive' 'not_allowed' 1
+
+==== index() ====
+
+Sends the list of archived files of a list.
+
+**IN**:
+
+  - ''which''(+): listname
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'no_archive' 'not_allowed' 1
+
+==== getfile() ====
+
+Sends back the requested archive file by calling List::archive_send() function (see [[#list-archive-send|list-archive-send]], page�[[internals#list-archive-send|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''which''(+): commands parameters: listname and filename(archive file)
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'no_archive' 'not_allowed' 1
+
+==== confirm() ====
+
+Confirms the authentification of a message for its distribution on a list by calling function List::distribute_msg() for distribution (see [[internals#list-distribute-msg|list-distribute-msg]]) or by calling List::send_to_editor() for moderation (see [[#list-send-editor|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''what''(+): authentification key (command parameter)
+  - ''robot''(+): robot
+
+**OUT**: 'wrong_auth' 'msg_not_found' 1 undef
+
+==== set() ====
+
+Changes subscription options (reception or visibility)
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and reception mode (digestdigestplainnomailnormal...) or visibility mode(concealnoconceal).
+  - ''robot''(+): robot
+
+**OUT**: 'syntax_error' 'unknown_list' 'not_allowed' 'failed' 1
+
+==== distribute() ====
+
+Distributes the broadcast of a validated moderated message.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and authentification key
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'msg_not_found' 1 undef
+
+==== reject() ====
+
+Refuses and deletes a moderated message. Rejected message sender can be notified by sending him template 'reject'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and authentification key
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'wrong_auth' 1 undef
+
+==== modindex() ====
+
+Sends a list of current messages to moderate of a list (look into spool queuemod) by using template 'modindex'.
+
+**IN**:
+
+  - ''name''(+): listname
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'not_allowed' 'no_file' 1
+
+==== review() ====
+
+Sends the list of subscribers of a list to the requester by using template 'review'.
+
+**IN**:
+
+  - ''listname''(+): list name
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' wrong_auth no_subscribers 'not_allowed' 1 undef
+
+==== verify() ====
+
+Verifies an S/MIME signature.
+
+**IN**:
+
+  - ''listname''(+): list name
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 1
+
+==== remind() ====
+
+Sends a personal reminder to each subscriber of a list or of every list (if $which = *) using template 'remind' or 'global_remind'.
+
+**IN**:
+
+  - ''which''(+): * listname
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'syntax_error' 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== info() ====
+
+Sends the list information file to the requester by using template 'info_report'.
+
+**IN**:
+
+  - ''listname''(+): name of concerned list
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== stats() ====
+
+Sends the statistics about a list using template 'stats_report'.
+
+**IN**:
+
+  - ''listname''(+): list name
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'not_allowed' 1 undef
+
+==== help() ====
+
+Sends the help file for the software by using template 'helpfile'.
+
+**IN**:
+
+  -: ?
+  - ''robot''(+): robot
+
+**OUT**: 1 undef
+
+==== lists() ====
+
+Sends back the list of public lists on this node by using template 'lists'.
+
+**IN**:
+
+  -: ?
+  - ''robot''(+): robot
+
+**OUT**: 1 undef
+
+==== which() ====
+
+Sends back the list of lists that sender is subscribed to. If he is owner or editor, managed lists are noticed. Message is sent by using template 'which'.
+
+**IN**:
+
+  -: ?
+  - ''robot''(+): robot
+
+**OUT**: 1
+
+==== finished() ====
+
+Called when 'quit' command is found. It sends a notification to sender: no process will be done after this line.
+
+**IN**: -
+
+**OUT**: 1
+
+=====  tools for command processing =====
+
+get_auth_method()
+
+==== get_auth_method() ====
+
+Called by processing command functions to return the authentification method and to check the key if it is 'md5' method.
+
+**IN**:
+
+  - ''cmd''(+): requesting command
+  - ''email''(+): used to compute auth if needed in command
+  - ''error''(+): ref(HASH) - keys are:
+    * ''type'': $type for ''message_report'' template parsing
+    * ''data'': ref(HASH) for ''message_report'' template parsing
+    * ''msg'': for do_log()
+  - ''sign_mod''(+): 'smime' - smime authentification undef - smtp or md5 authentification
+  - ''list'': ref(List) undef - in a list context or not
+
+**OUT**: 'smime' 'md5' 'smtp' - authentification method if checking not failed undef

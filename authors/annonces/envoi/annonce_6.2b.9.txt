@@ -1,0 +1,30 @@
+====== Sympa 6.2 beta 9 released! ======
+
+//March 13, 2015//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:sympa_beta2.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.9 is the latest beta release of the new major version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.9.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version mainly includes bug fixes. Thanks to the beta testers who reported them (P. Grzesina for CAS bug).
+
+===== More than one way to say Sympa =====
+
+"Sympa" means "Nice" in French. That's where the name come from actually. The acronym meaning (Système de MultiPostage Automatique) came later. Needless to say the original Sympa authors were quite happy with themselves when they finally came up with an acronym that matched a funny word.
+
+Even though Sympa is a French word, it is still developed in English. However, we took action to make Sympa easily translatable.
+
+We use the Pootle translation tool, which allows you to easily edit online Sympa translation for your language. If you feel like contributing to Sympa but you don't like/know Perl, well spending a few minutes translating a few strings on this server is [[http://pootle.sympa.org/|the way to go]]!
+
+New translations are added to the Sympa distribution each time we tag a new version.
+
+If you go there and translate, I'll tell you another edifying tale of Sympa history. Next time. Next release.

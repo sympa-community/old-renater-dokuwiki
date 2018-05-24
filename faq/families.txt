@@ -1,0 +1,6 @@
+====== List Families ======
+===== Converting an existing list to a family list =====
+
+You can't automatically convert a list to make it belong to a family because the family requires a set of data for the instantiation and these data are spread across your list config file. If you don't extract this set of data for one list, then you are not able to reinstantiate the family to recreate the list. 
+
+To perform the convertion, you'd need to write a script that 1) extract the data (subject, owner,...) from your existing list config files and 2) determine all the customizations that were done by list owners (use of custom_subject, changed right on web archives,...) so that you can define an appropriate param_constraint.conf file for the family.

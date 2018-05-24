@@ -1,0 +1,31 @@
+==== Guidelines for bulk mail sending, and to prevent being labeled as a spammer ====
+
+** Best practices for sending messages and not being marked as a spammer: ** \\
+[[http://help.yahoo.com/l/us/yahoo/mail/postmaster/postmaster-15.html|Yahoo]]
+
+[[http://mail.google.com/support/bin/answer.py?answer=81126&topic=12838|Google]] \\
+
+** Configure ncrpt: ** \\
+To avoid being labeled as a spammer when sending bulk mail, define nrcpt in: \\
+$sympahome/etc/nrcpt_by_domain.conf 
+
+This lets you control the number of recipients per SMTP session depending on destination domain.
+
+** Create an SPF record ** \\
+ 
+SPF records help define who can and cannot send mail from your domain. \\
+[[http://old.openspf.org/index.html|http://openspf.org]]
+
+** Use DomainKeys (DKIM) to further legitimize your messages ** \\
+
+DKIM is a signing method that use DNS to access to public keys. Because Sympa modify the message before to brodcast them, it may alter existing DKIM signature.
+[[http://en.wikipedia.org/wiki/DKIM|http://en.wikipedia.org/wiki/DKIM]]
+
+** More things you can do to prevent being added to spammer blacklists: ** (see the spam filters section) \\
+[[http://www.mailchimp.com/guides/free_guide.pdf|MailChimp: Designing, Coding & Delivering
+HTML Email]]
+
+
+
+
+

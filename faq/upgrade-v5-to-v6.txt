@@ -1,0 +1,49 @@
+====== Upgrading from V5 to V6 versions ======
+
+Fast howto upgrade from version 5 to version 6. 
+
+You may start installing a v6 from scratch in a separate location in order to test that all pre-requisite are satisfied (mainly CPAN modules). That can done from tar.gz using the followind script :
+
+<code>
+#!/bin/bash
+
+if [ $# -ne 1 ] ; then
+   echo "missing destination directory"
+   exit 1
+fi
+
+name=`basename $1`
+
+aclocal ; autoconf; automake --add-missing;
+
+./configure --prefix=$1 \
+            --with-confdir=$1/etc \
+        --with-mandir=$1/man \
+            --with-initdir=/etc/init.d \
+        --with-lockdir=$1/lock \
+        --with-sendmail_aliases=/etc/mail/aliases-$name \
+        --with-iconsdir=/var/www/icons 
+</code>
+
+Then run make, make install . All component are installed in a separate dir including sympa.conf . Edit it and configure Sympa with a database different from the database you are using with current sympa running version.
+
+Run sympa.pl --test_database_message_buffer  in order to verify that big files can be stored in your database. [[http://www.sympa.org/manual_6.1/database#required_tunning_of_database| see section about database tunning]].
+
+Ones this is OK, upgade is easy : 
+
+  * prepare the sympa V6 for the standard location :
+    *  aclocal ; autoconf; automake --add-missing; ./configure ; make ; 
+  * sympa stop; http stop
+  * save your database content
+  * make install;
+  * upgrade database stucture :
+    * sympa.pl --upgrade ; 
+    * sympa.pl  --md5_encode_password ;
+  * upgrade sympa starting script because of a new deamon to start bulk.pl
+  * sympa start; http start
+
+Done
+
+
+
+  

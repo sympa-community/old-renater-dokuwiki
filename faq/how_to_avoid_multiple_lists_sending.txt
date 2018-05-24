@@ -1,0 +1,34 @@
+====== How to avoid multiple sending ? ======
+
+When user are subscribed to several mailing lists, if a message is sent to all these lists the users will receive it as mayn times as the number of lists they are subscribed to.
+
+For example, your casual user (let's call him Bob) is subscribed to the lists named A, B and C. If the same message is sent to A, B and C, Bob will receive it three times, throwing him in an abyss of perplexity. You, as good and benevolent listmaster, don't want Bob to suffer the agony of confusion bornt from the superposition of identical messages from different lists in the same thread.
+
+Problem: sympa just doesn't do this. Lists are separated and autonomous entities and in no way Sympa will ever skip a mail sending due to several lists being receipients for the same message. However, if you control the subscribers' mailboxes in a way or another, you can still filter incoming mails.
+
+You can find below some solutions to this problem.
+
+===== Solution with Zimbra =====
+
+===== Solution with Cyrus =====
+
+Solution provided by Jean-Claude Darcos.
+
+Cyrus Imap will filter duplicate mails by default. You actually have to **explicitely** prevent this option to avoid this behaviour by setting the ''duplicatesuppression'' parameter value to "0".
+
+Here is an excerpt of the /etc/imapd.conf man page:
+
+<code>
+duplicatesuppression: 1
+            If enabled, lmtpd will suppress delivery of a message to a mailbox
+            if  a  message  with the same message-id (or resent-message-id) is
+            recorded as having already been delivered to the mailbox.  Records
+            the  mailbox  and  message-id/resent-message-id  of all successful
+            deliveries.
+</code>
+
+Here is the kind of log you'll find in the sendmail logs when a duplicate message is distributed:
+
+<code>
+Jun 20 10:58:51 n7imap cyrus/lmtpunix[3376]: dupelim: eliminated duplicate message to user.xxxx id <4FE1903A.50406@enseeiht.fr> (delivery)
+</code>

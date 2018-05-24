@@ -1,0 +1,243 @@
+<note warning>
+This document was obsoleted.
+</note>
+
+====== × Internals: report.pm ======
+
+This module provides various tools for notification and error reports in every Sympa interface (mail diffusion, mail command and web command).
+
+For a requested service, there are four kinds of reports to users:
+
+  * **success notification**\\  when the action does not involve any specific mail report or else, the user is notified of the well done of the processus.
+  * **non authorization**''(auth)''\\  a user is not allowed to perform an action, Sympa provides reason of rejecting. The template used to provides this information is ''mail\_tt2/authorization\_reject.tt2''. It contains a list of reasons, indexed by keywords that are mentioned in reject action scenario (see [[authorization-scenarios#rules|rules]], page [[authorization-scenarios#rules|{{crossref.png|[*]}}]])
+  * **user error**''(user)''\\  a error caused by the user, the user is informed about the error reason
+  * **internal server error**''(intern)''\\  an error independent from the user, the user is succintly informed about the error reason but a mail with more information is sent to listmaster using template ''mail\_tt2/listmaster\_notification.tt2''(If it is not necessary, keyword used is '''intern\_quiet'''.
+
+For other reports than non authorizations templates used depends on the interface:
+
+  * message diffusion: ''mail\_tt2/message\_report.tt2''
+  * mail commands: ''mail\_tt2/command\_report.tt2''
+  * web commands: ''web\_tt2/notice.tt2'' for positive notifications and ''web\_tt2/error.tt2'' for rejects.
+
+===== Message diffusion =====
+
+These reports use template ''mail\_tt2/message\_report.tt2'' and there are two functions: ''reject\_report\_msg()'' and ''notice\_report\_msg()''.
+
+
+==== reject_report_msg() ====
+
+Sends a notification to the user about an error rejecting his requested message diffusion.
+
+**IN**:
+
+  - ''type''(+): 'intern'|'intern\_quiet'|'user'|'auth' - the error type
+  - ''error'': SCALAR - depends on $type:
+    * 'intern': string error sent to listmaster
+    * 'user': $entry in ''message\_report.tt2''
+    * 'auth': $reason in ''authorization\_reject.tt2''
+  - ''user''(+): SCALAR - the user to notify
+  - ''param'': ref(HASH) - for variable instantiation ''message\_report.tt2'' (key ''msgid''(+) is required //if type == 'intern'//)
+  - ''robot'': SCALAR - robot
+  - ''msg\_string'': SCALAR - rejected message
+  - ''list'': ref(List) - in a list context
+
+**OUT**: 1 undef
+
+==== notice_report_msg() ====
+
+Sends a notification to the user about a success about his requested message diffusion.
+
+**IN**:
+
+  - ''entry''(+): $entry in ''message\_report.tt2''
+  - ''user''(+): SCALAR - the user to notify
+  - ''param'': ref(HASH) - for variable instantiation ''message\_report.tt2''
+  - ''robot''(+): SCALAR - robot
+  - ''list'': ref(List) - in a list context
+
+**OUT**: 1 undef
+
+===== Mail commands =====
+
+A mail can contains many commands. Errors and notices are stored in module global arrays before sending (intern\_error\_cmd, user\_error\_cmd, global\_error\_cmd, auth\_reject\_cmd, notice\_cmd). Moreover used errors here we can have global errors on mail containing commands, so there is a function for that. These reports use template ''mail\_tt2/command\_report.tt2'' and there are many functions:
+
+==== init_report_cmd() ====
+
+Inits global arrays for mail command reports.
+
+**IN**: -
+
+**OUT**: -
+
+==== is_there_any_report_cmd() ====
+
+Looks for some mail command reports in one of global arrays.
+
+**IN**: -
+
+**OUT**: 1 //if there are some reports to send//
+
+==== global_report_cmd() ====
+
+Concerns global reports of mail commands. There are many uses cases:
+
+  - **internal server error** for a differed sending at the end of the mail processing:
+    * ''global\_report\_cmd('intern',$error,$data,$sender,$robot)''
+    * ''global\_report\_cmd('intern\_quiet',$error,$data)'': the listmaster won't be noticied
+  - **internal server error** for sending every reports directly (by calling ''send\_report\_cmd()''):
+    * ''global\_report\_cmd('intern',$error,$data,$sender,$robot,1)''
+    * ''global\_report\_cmd('intern\_quiet',$error,$data,$sender,$robot,1)'': the listmaster won't be noticied
+  - **user error** for a differed sending at the end of the mail processing: \\ ''global\_report\_cmd('user',$error,$data''
+  - **user error** for sending every reports directly (by calling ''send\_report\_cmd()''): \\ ''global\_report\_cmd('user',$error,$data,$sender,$robot,1)''
+
+**IN**:
+
+  - ''type''(+): 'intern''intern\_quiet''user'
+  - ''error'': SCALAR - depends on $type:
+    * 'intern': string error sent to listmaster
+    * 'user': $glob.entry in ''command\_report.tt2''
+  - ''data'': ref(HASH) - for variable instantiation in ''command\_report.tt2''
+  - ''sender'': SCALAR - the user to notify
+  - ''robot'': SCALAR - robot
+  - ''now'': BOOLEAN - send reports now //if true//
+
+**OUT**: 1 undef
+
+
+==== reject_report_cmd() ====
+
+Concerns reject reports of mail commands. These informations are sent at the end of the mail processing. There are many uses cases:
+
+  - **internal server error**:
+    * ''reject\_report\_cmd('intern',$error,$data,$cmd,$sender,$robot)''
+    * ''reject\_report\_cmd('intern\_quiet',$error,$data,$cmd)'': the listmaster won't be noticied
+  - **user error**: \\ ''reject\_report\_cmd('user',$error,$data,$cmd)''
+  - **non authorization**: \\ ''reject\_report\_cmd('auth',$error,$data,$cmd)''
+
+**IN**:
+
+  - ''type''(+): 'intern'|'intern\_quiet'|'user'|'auth'
+  - ''error'': SCALAR - depends on $type:
+    * 'intern': string error sent to listmaster
+    * 'user': $u\_err.entry in ''command\_report.tt2''
+    * 'auth': $reason in ''authorization\_reject.tt2''
+  - ''data'': ref(HASH) - for variable instantiation in ''command\_report.tt2''
+  - ''cmd'': SCALAR - the rejected command, $xx.cmd in ''command\_report.tt2''
+  - ''sender'': SCALAR - the user to notify
+  - ''robot'': SCALAR - robot
+
+**OUT**: 1 undef
+
+==== notice_report_cmd() ====
+
+Concerns positive notices of mail commands. These informations are sent at the end of the mail processing.
+
+**IN**:
+
+  - ''entry'': $notice.entry in ''command\_report.tt2''
+  - ''data'': ref(HASH) - for variable instantiation in ''command\_report.tt2''
+  - ''cmd'': SCALAR - the rejected command, $xx.cmd in ''command\_report.tt2''
+
+**OUT**: 1 undef
+
+==== send_report_cmd() ====
+
+Sends the template ''command\_report.tt2'' to $sender with global arrays and then calls to ''init\_report\_command.tt2'' function. (It is used by sympa.pl at the end of mail process if there are some reports in gloal arrays)
+
+**IN**:
+
+  - ''sender''(+): SCALAR - the user to notify
+  - ''robot''(+): SCALAR - robot
+
+**OUT**: 1
+
+===== Web commands =====
+
+It can have many errors and notices so they are stored in module global arrays before html sending. (intern\_error\_web, user\_error\_web, auth\_reject\_web, notice\_web). These reports use ''web\_tt2/notice.tt2'' template for notices and ''web\_tt2/error.tt2'' template for rejects.
+
+==== init_report_web() ====
+
+Inits global arrays for web command reports.
+
+**IN**: -
+
+**OUT**: -
+
+==== is_there_any_reject_report_web() ====
+
+Looks for some rejected web command reports in one of global arrays for reject.
+
+**IN**: -
+
+**OUT**: 1 //if there are some reject reports to send (not notice)//
+
+==== get_intern_error_web() ====
+
+Return array of web intern error
+
+**IN**: -
+
+**OUT**: ref(ARRAY) - clone of intern\_error\_web
+
+==== get_user_error_web() ====
+
+Return array of web user error
+
+**IN**: -
+
+**OUT**: ref(ARRAY) - clone of user\_error\_web
+
+==== get_auth_reject_web() ====
+
+Return array of web authorisation reject
+
+**IN**: -
+
+**OUT**: ref(ARRAY) - clone of auth\_reject\_web
+
+==== get_notice_web() ====
+
+Return array of web notice
+
+**IN**: -
+
+**OUT**: ref(ARRAY) - clone of notice\_web
+
+
+==== reject_report_web() ====
+
+Concerning reject reports of web commands, there are many uses cases:
+
+  - **internal server error**:
+    * ''reject\_report\_web('intern',$error,$data,$action,$list,$user,$robot)''
+    * ''reject\_report\_web('intern\_quiet',$error,$data,$action,$list)'': the listmaster won't be noticied
+  - **user error**: \\ ''reject\_report\_web('user',$error,$data,$action, $list)''
+  - **non authorization**: \\ ''reject\_report\_web('auth',$error,$data,$action, $list)''
+
+**IN**:
+
+  - ''type''(+): 'intern'|'intern\_quiet'|'user'|'auth'
+  - ''error''(+): SCALAR - depends on $type:
+    * 'intern': $error in ''listmaster\_notification.tt2'' and possibly $i\_err.msg in ''error.tt2''
+    * 'intern\_quiet': possibly $i\_err.msg in ''error.tt2''
+    * 'user': $u\_err.msg in ''error.tt2''
+    * 'auth': $reason in ''authorization\_reject.tt2''
+  - ''data'': ref(HASH) - for variable instantiation in ''notice.tt2''
+  - ''action''(+): SCALAR - the rejected actin, $xx.action in ''error.tt2'', $action in ''listmaster\_notification.tt2''
+  - ''list'': ref(List)
+  - ''user'': SCALAR - the user for listmaster notification
+  - ''robot'': SCALAR - robot for listmaster notification
+
+**OUT**: 1 undef
+
+==== notice_report_web() ====
+
+Concerns positive notices of web commands.
+
+**IN**:
+
+  - ''msg'': $notice.msg in ''notice.tt2''
+  - ''data'': ref(HASH) - for variable instantiation in ''notice.tt2''
+  - ''action'': SCALAR - the noticed command, $notice.cmd in ''notice.tt2''
+
+**OUT**: 1 undef

@@ -1,0 +1,123 @@
+====== Authors only doc ======
+
+This section of the wiki is restricted to the Sympa authors and core developers.
+
+[[authors:7.0|What we do in 7.0]]
+
+===== Development discussed =====
+
+Here is the list of topics currently discussed on the sympa-developpers mailing list.
+
+==== Still undecided ====
+
+  * May we shorten list of multiple years in copyright notice included into statement of GNU GPL in each source file?
+    * cf. [[http://www.gnu.org/licenses/gpl-howto.html|How to use GNU licenses for your own software]]
+
+  * Would test suite use either perl -I option and FindBin gimmick or PERL5LIB environment variable?
+
+
+==== Decided ====
+
+  * Moving to Perl a higher version thant perl 5.8 => no
+
+===== Release process =====
+
+Here is the test matrix used when releasing a new Sympa version.
+
+==== 6.2 ====
+
+=== Integration Test ===
+
+Current revision: r11582
+
+== Test matrix ===
+
+^ ^ ^a ^b ^c ^d ^e ^f ^g ^h ^i |
+^ ^test\message  ^ simple mail ^ signed ^ crypted\\ not signed ^ crypted\\ and signed ^ sending from the web\\ //to me// ^ sending from the web\\ //to list// ^ sending newsletter\\ //to me// ^ sending newsletter\\ //to list// ^ DKIM signed email ^
+^00^Send mail without moderation | sympa.pl: \\ - normal messages: DONE \\ - Updating sequence number: DONE \\ - Discard messages with no Message-ID: header: DONE \\ - Discard messages with no sender: DONE \\ bulk.pl: \\ - not adding signatures: DONE \\ - DKIM signing: DONE \\ - S/MIME signing: :-X : Sympa does not sign messages with S/MIME | DONE | DONE | DONE | DONE | DONE | -From file in local matchine: DONE \\ -From URL: FIXMERED (all rows in this column, see below) | -From file in local matchine: DONE \\ -From URL: FIXMERED (all rows in this column, see below) | sympa.pl: \\ <del>Bodies are altered (reencoded QP or B64)</del> Fixed. DONE \\ bulk.pl: \\ - not adding signatures: DONE \\ - DKIM signing: DONE \\ - S/MIME signing: DONE |
+^01^scenario evaluation | send.privateoreditorkey: DONE \\ send.confidential: DONE \\ //others//: DONE | DONE | DONE | DONE | :-X | DONE | :-X | DONE | DONE |
+^02^web moderation | DISTRIBUTE: DONE \\ REJECT: DONE | DISTRIBUTE: DONE \\ REJECT: DONE | DISTRIBUTE: DONE \\ REJECT: DONE | DISTRIBUTE: DONE \\ REJECT: DONE | :-X | DISTRIBUTE: DONE \\ REJECT: DONE | :-X | DISTRIBUTE: DONE \\ REJECT: DONE | DISTRIBUTE: DONE \\ REJECT: DONE |
+^03^mail moderation | DISTRIBUTE: DONE \\ REJECT: DONE | DISTRIBUTE: DONE \\ REJECT: DONE | DISTRIBUTE: DONE \\ REJECT: DONE | DISTRIBUTE: DONE \\ REJECT: DONE | :-X | DISTRIBUTE: DONE \\ REJECT: DONE | :-X | DISTRIBUTE: DONE \\ REJECT: DONE |  DISTRIBUTE: DONE \\ REJECT: DONE |
+^03-1^mail moderation (forwarding to editor) | DONE (6.2.13) | | | | | | | |
+^04^email challenge authentication | -Not moderated: DONE \\ -Moderated: DONE | -Not moderated: DONE \\ -Moderated: DONE | -Not moderated: DONE \\ -Moderated: DONE | -Not moderated: DONE \\ -Moderated: DONE | :-X | -Not moderated: DONE \\ -Moderated: DONE | :-X | -Not moderated: DONE \\ -Moderated: DONE | -Not moderated: DONE \\ -Moderated: DONE |
+^05^mode urlize | DONE | DONE (message **not** urlized) | DONE  | DONE | :-X | :-X | :-X | :-X | DONE |
+^06^mode not me | DONE | DONE | DONE | DONE | :-X | DONE | :-X | DONE | DONE |
+^07^mode nomail | DONE | DONE | DONE | DONE | DONE (mail is sent) | DONE | DONE (mail is sent) | DONE | DONE |
+^08^mode html only | sympa.pl: DONE \\ wswsympa.fcgi: DONE | DONE | DONE | DONE | DONE | DONE | DONE | DONE | DONE |
+^09^mode text only | sympa.pl :DONE \\ wswsympa.fcgi: DONE | DONE | DONE | DONE | DONE | DONE | DONE | DONE | DONE |
+^10^digest storage | DONE | DONE | DONE | DONE | :-X | DONE | :-X | DONE | DONE |
+^11^digest plain | DONE | DONE | DONE TODO for doc: digest should not be allowed if messages can be crypted. | DONE | :-X | DONE | :-X | DONE | DONE |
+^12^digest mime | DONE | DONE | DONE | DONE | :-X | DONE | :-X | DONE | DONE |
+^12-1^mode summary | sympa.pl: DONE \\ wwsympa.fcgi: DONE| DONE | DONE | DONE | :-X | DONE | :-X | DONE | DONE |
+^13^automatic lists | DONE | DONE | DONE | DONE | DONE | DONE | DONE | DONE | DONE |
+^14^subscription suspension | DONE | DONE | DONE | DONE | DONE (mail is sent) | DONE | DONE (mail is sent) | DONE | DONE |
+^15^send to list-request | normal messages: DONE \\ "subscribe" or "unsubscribe" in subject: DONE | normal messages: DONE \\ "subscribe" or "unsubscribe" in subject: DONE | -no private key: DONE \\ -private key exists: DONE | -no private key: DONE \\ -private key exists: DONE | :-X | :-X | :-X | :-X | normal messages: DONE \\ "subscribe" or "unsubscribe" in subject: DONE |
+^15-1^send to list-editor | -no editors assigned: DONE \\ -editors assigned: DONE |  -no editors assigned: DONE \\ -editors assigned: DONE |  -no editors assigned: DONE \\ -editors assigned: DONE |  -no editors assigned: DONE \\ -editors assigned: DONE | :-X |  -no editors assigned: DONE \\ -editors assigned: DONE | :-X |  -no editors assigned: DONE \\ -editors assigned: DONE |  -no editors assigned: DONE \\ -editors assigned: DONE |
+^16^mails to robots | sympa.pl: \\ <*-subscribe> / <*-unsubscribe> addresses: DONE \\ <sympa> address: \\ -HELP, LISTS, WHICH: DONE \\ -INFO: DONE \\ -REVIEW: DONE \\ -LAST: see below \\ -Commands in multipart message: DONE \\ <listmaster> address: DONE | DONE | DONE | DONE | :-X | :-X | :-X | :-X | DONE |
+^17^merge | sympa.pl/bulk.pl: DONE \\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE \\ wwsympa.fcgi: \\ - Good syntax: DONE \\ - Bad syntax: DONE | DONE \\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE  | sympa.pl: DONE \\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE | DONE \\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE | sympa.pl: DONE \\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE | sympa.pl: DONE \\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE | sympa.pl: DONE \\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE | sympa.pl: DONE\\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE | sympa.pl: DONE \\ - Good syntax: DONE \\ - Bad syntax in body: DONE \\ - Bad syntax in appended footer: DONE \\ bulk.pl: DONE |
+^18^send to me from archives | sympa.pl: \\ - INDEX: DONE \\ - GET: DONE \\ wwsympa.fcgi: \\  - merge_feature off: DONE \\ -merge_feature on: DONE \\ Adding footer/header DONE | sympa.pl: \\ - INDEX: DONE \\ - GET: DONE \\ wwsympa.fcgi: :-X | sympa.pl: DONE \\ wwsympa.pl: \\ archive_crypted_msg: \\ - original: DONE \\ - crypted: DONE | archive_crypted_msg: \\ - original: DONE \\ - crypted: DONE | :-X | :-X | :-X | :-X | sympa.pl: \\ - INDEX: DONE \\ - GET: DONE \\ wwsympa.fcgi: DONE |
+^19^topics | sympa.pl: \\ - Apply on body: DONE \\ - Apply on subject: DONE \\ - Case-insensitive match: fixed. DONE \\ - Required to post: DONE \\ - Required to distribute: DONE \\ - Moderated list: DONE \\ wwsympa.fcgi: DONE | sympa.pl: \\ - Apply on body: DONE \\ - Apply on subject: DONE \\ - Case-insensitive match: DONE \\ - Required to post: DONE \\ - Required to distribute: DONE \\ - Moderated list: DONE \\ wwsympa.fcgi: DONE | sympa.pl: \\ - Apply on body: DONE \\ - Apply on subject: DONE \\ - Case-insensitive match: DONE \\ - Required to post: DONE \\ - Required to distribute: DONE \\ - Moderated list: DONE \\ wwsympa.fcgi: DONE | sympa.pl: \\ - Apply on body: DONE \\ - Apply on subject: DONE \\ - Case-insensitive match: DONE \\ - Required to post: DONE \\ - Required to distribute: DONE \\ - Moderated list: DONE \\ wwsympa.fcgi: DONE | :-X Not supported | sympa.pl: \\ - Apply on body: DONE \\ - Apply on subject: DONE \\ - Case-insensitive match: DONE \\ - Required to post: DONE \\ - Required to distribute: DONE \\ - Moderated list: DONE \\ wwsympa.fcgi: DONE | :-X Not supported | sympa.pl: \\ - Apply on body: DONE \\ - Apply on subject: fixed at r11605. DONE \\ - Case-insensitive match: DONE \\ - Required to post: DONE \\ - Required to distribute: DONE \\ - Moderated list: DONE \\ wwsympa.fcgi: DONE | sympa.pl: \\ - Apply on body: FIXMERED see below. \\ - Apply on subject: DONE \\ - Case-insensitive match: DONE \\ - Required to post: DONE \\ - Required to distribute: DONE \\ - Moderated list: DONE \\ wwsympa.fcgi: :-X |
+^20^storage in archives | Not modify addresses: DONE \\ Using javascript: DONE | DONE | archive_crypted_msg: \\ - original: DONE \\ - crypted: DONE | archive_crypted_msg: \\ - original: DONE \\ - crypted: DONE | :-X | DONE | :-X | DONE | DONE |
+^21^reply from archives\\ //to sender// | DONE | DONE | DONE | DONE | :-X | DONE | :-X | DONE | DONE |
+^22^ reply from archives\\ //to list// | DONE | DONE | DONE | DONE | :-X | DONE | :-X | DONE | DONE |
+^23^ reply from archives\\ //to both// | DONE | DONE | DONE | DONE | :-X | DONE | :-X | DONE | DONE |
+^23-1^ reply from archives\\ //to me// | :-X |:-X |:-X |:-X | DONE | :-X | DONE |:-X | :-X |
+^24^ adding header | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE |
+^25^ adding footer | See #24 | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE | append: DONE \\ mime: DONE |
+^26^ adding custom subject | -list.name : DONE \\ -list.sequence: DONE \\ -Non-ASCII tag: DONE \\ -Contraction of "Re:" and such: DONE | list.name : DONE \\ list.sequence: DONE \\ Non-ASCII tag: DONE | list.name : DONE \\ list.sequence: DONE \\ Non-ASCII tag: DONE | list.name : DONE \\ list.sequence: DONE \\ Non-ASCII tag: DONE | :-X DONE | list.name : DONE \\ list.sequence: DONE \\ Non-ASCII tag: DONE | :-X DONE | list.name : DONE \\ list.sequence: DONE \\ Non-ASCII tag: DONE | list.name : DONE \\ list.sequence: DONE \\ Non-ASCII tag: DONE |
+^27-1^ sending with VERP/notification request | sympa.pl/bulk.pl: \\ - sending with VERP: DONE \\ - sending with MDN request: DONE \\ - sending with DSN request: DONE \\ - welcome message with VERP: DONE \\ - remind message with VERP: DONE | sympa.pl/bulk.pl: \\ - sending with VERP: DONE \\ - sending with MDN request: DONE \\ - sending with DSN request: DONE  | sympa.pl/bulk.pl: \\ - sending with VERP: DONE \\ - sending with MDN request: DONE \\ - sending with DSN request: DONE | sympa.pl/bulk.pl: \\ - sending with VERP: DONE \\ - sending with MDN request: DONE \\ - sending with DSN request: DONE | :-X | sympa.pl/bulk.pl: \\ - sending with VERP: DONE \\ - sending with MDN request: DONE \\ - sending with DSN request: DONE | :-X | sympa.pl/bulk.pl: \\ - sending with VERP: DONE \\ - sending with MDN request: DONE \\ - sending with DSN request: DONE | sympa.pl/bulk.pl: \\ - sending with VERP: DONE \\ - sending with MDN request: DONE \\ - sending with DSN request: DONE |
+^27-2^ tracking/bounce processing | bounced.pl: \\ - parsing DSN: DONE \\ - parsing MDN: DONE \\ - parsing ARF: :-X under development. \\ - parsing //others//: TODO \\ - updating notification_table: DONE \\ task_manager.pl: \\ - bounce management: DONE \\ wwsympa.fcgi: DONE | bounced.pl: \\ - parsing DSN: DONE \\ - parsing MDN: DONE \\ - parsing ARF: :-X under development. \\ - parsing //others//: TODO \\ - updating notification_table: DONE \\ task_manager.pl: \\ - bounce management: DONE \\ wwsympa.fcgi: DONE | bounced.pl: \\ - parsing DSN: DONE \\ - parsing MDN: DONE \\ - parsing ARF: :-X under development. \\ - parsing //others//: TODO \\ - updating notification_table: DONE \\ task_manager.pl: \\ - bounce management: DONE \\ wwsympa.fcgi: DONE | bounced.pl: \\ - parsing DSN: DONE \\ - parsing MDN: DONE \\ - parsing ARF: :-X under development. \\ - parsing //others//: TODO \\ - updating notification_table: DONE \\ task_manager.pl: \\ - bounce management: DONE \\ wwsympa.fcgi: DONE | :-X | bounced.pl: \\ - parsing DSN: DONE \\ - parsing MDN: DONE \\ - parsing ARF: :-X under development. \\ - parsing //others//: TODO \\ - updating notification_table: DONE \\ task_manager.pl: \\ - bounce management: DONE \\ wwsympa.fcgi: DONE | :-X | bounced.pl: \\ - parsing DSN: DONE \\ - parsing MDN: DONE \\ - parsing ARF: :-X under development. \\ - parsing //others//: TODO \\ - updating notification_table: DONE \\ task_manager.pl: \\ - bounce management: DONE \\ wwsympa.fcgi: DONE | bounced.pl: \\ - parsing DSN: DONE \\ - parsing MDN: DONE \\ - parsing ARF: :-X under development. \\ - parsing //others//: TODO \\ - updating notification_table: DONE \\ task_manager.pl: \\ - bounce management: DONE \\ wwsympa.fcgi: DONE |
+^28^ virus check | - negative: DONE - positive: DONE \\ - notify to sender: DONE \\ - send DSN: TODO | - negative: TODO - positive: TODO \\ - notify to sender: TODO | - negative: TODO - positive: TODO \\ - notify to sender: TODO | - negative: TODO - positive: TODO \\ - notify to sender: TODO | TODO | - negative: TODO - positive: TODO \\ - notify to sender: TODO | TODO | - negative: TODO - positive: TODO \\ - notify to sender: TODO | - negative: TODO - positive: TODO \\ - notify to sender: TODO |
+
+== a-20 ==
+
+  * FIXME Sequence number occasionally doesn't update (numbers should be "1" (file 0000) to "4" (file 0003) but are "1", "1", "2" and "3", for example).
+  * This seems to occur randomly and I don't reproduce it just as I want to.
+
+== a-16 ==
+
+  * FIXME LAST command notices archive is empty (it means list really exists) even if list is "confidential"
+
+  * This issue was moved to bug tracker [[https://sourcesup.renater.fr/tracker/index.php?func=detail&aid=9476&group_id=23&atid=167|#9476]].
+
+== g & h (ALL rows) ==
+
+  * FIXMERED **Arbitrary** files in the server can be sent using ''file'' URL.
+    * Patch has been prepared and tested.
+  * **This issue will be disclosed when the time comes**.
+
+=== RDBMS used ===
+
+== MySQL / MariaDB ==
+
+  * MySQL 5.5.29 / DBD-mysql 4.019 --- Soji
+    * server character set: utf8
+  * MariaDB 5.5.36 / DBD-mysql 4.013 --- David
+    * server character set: utf8
+
+== Oracle ==
+
+  * Oracle 11g release 2 / DBD-Oracle 1.62 --- Soji
+    * NLS_LANG=American_America.AL32UTF8
+  * 
+
+== PostgreSQL ==
+
+  * PostgreSQL 9.1.7 / DBD-Pg 2.19.3 --- Soji
+  * 
+
+== SQLite ==
+
+  * SQLite 3.3.7 / DBD-SQLite 1.33 --- Soji
+  * 
+
+== Sybase ==
+
+  *
+
+== ODBC (only for inclusion) ==
+
+  *
+
+
+[[.:backup]]

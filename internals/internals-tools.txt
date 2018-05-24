@@ -1,0 +1,75 @@
+====== × Internals: tools.pl ======
+<note warning>
+  * This document was obsoleted.
+
+</note>
+
+This module provides various tools for Sympa.
+
+==== checkcommand() ====
+
+Checks for no command in the body of the message. If there are some command in it, it returns true and sends a message to $sender by calling List::send_global_file() (see [[#list-send-global-file|list-send-global-file]], page [[internals#list-send-global-file|{{crossref.png|[*]}}]]) with mail template ''message_report''.
+
+**IN**:
+
+  - ''msg''(+): ref(MIME::Entity) - the message to check
+  - ''sender''(+): the message sender
+  - ''robot''(+): robot
+
+**OUT**:
+
+  * 1 //if there are some command in the message//
+  * 0 //else//
+
+==== get_array_from_splitted_string() ====
+
+Return an array made from a string splitted by ','. It removes spaces.
+
+**IN**: ''string''(+): string to split
+
+**OUT**: ref(ARRAY) -
+
+==== diff_on_arrays() ====
+
+Makes set operation on arrays seen as set (with no double):
+
+**IN**:
+
+  - ''A''(+): ref(ARRAY) - set
+  - ''B''(+): ref(ARRAY) - set
+
+**OUT**: ref(HASH) with keys:
+
+  * deleted: A B
+  * added: B A
+  * intersection: A B
+  * union: A B
+
+==== clean_msg_id() ====
+
+Cleans a msg_id to use it without ' \\  n', ' \\  s', < and >.
+
+**IN**: ''msg_id''(+): the message id
+
+**OUT**: the clean msg_id
+
+==== clean_email() ====
+
+Lower-case it and remove leading and trailing spaces.
+
+**IN**: ''msg_id''(+): the email
+
+**OUT**: the clean email
+
+==== make_tt2_include_path() ====
+
+Make an array of include path for tt2 parsing
+
+**IN**:
+
+  - ''robot''(+): SCALAR - the robotset
+  - ''dir'': SCALAR - directory ending each path
+  - ''lang'': SCALAR - for lang directories
+  - ''list'': ref(List) - for list directory
+
+**OUT**: ref(ARRAY) - include tt2 path, respecting path priorities.

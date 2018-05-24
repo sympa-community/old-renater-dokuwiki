@@ -1,0 +1,172 @@
+====== How to authorize non subscriber to post a message to a non public list ? ======
+
+If there is few concerned people, you can add configure the list as private, add them to list with subscription option "nomail".
+
+In many cases this solution is not efficient. The best solution is to create a new scenario that will authorize some non subscriber. Thsi scenario can use LDAP filter, regexp on user email, etc The most esay thing you can do is to base authorization on subscription to some other list. This way you can control who can send message to list foo managing subscribers of list foo-authorization.
+
+The scenario will look like this :
+
+  is_subscriber([listname],[sender])            md5,smime -> do_it
+  is_subscriber('foo-authorization',[sender])      md5,smime -> do_it
+
+
+The first rule is true for subscriber of the current list. The second is true for subscribers of list  'foo-authorization'. The list foo-authorization can includes subscribers from multiple sources. Of course, you can add other condition to such scenario :
+
+  is_subscriber([listname],[sender])            md5,smime -> do_it
+  is_subscriber('sympa-dev',[sender])           md5,smime -> do_it
+  is_subscriber('sympa-fr',[sender])            md5,smime -> do_it
+  is_subscriber('sympa-users',[sender])         md5,smime -> do_it
+
+This way will authorize subscribers from thoses 3 listes for the related service (depending if this scenario is used for subscription, archive, shared repository etc). 
+
+====== How automate the creation of a large amount of lists? ======
+
+The //list families// does that. A list family is the model (set of templates). It is then instantiated given a set of data on the XML format. Currently list instanciation is performed via the command line.
+
+====== How to configure Sympa such that priviledged owners are able to add some other privileged owner  ? ======
+
+By default only listmasters can set the owner profile to "Privileged". The aim of the "privileged" profile is to keep track of who is responsible for the mailing list. 
+
+This is controled by the edit_list.conf  config file. This file is used to define who can edit each list parameter. The default configuration (''~sympa/bin/etc/edit_list.conf'') specify that attribute "profile" of parameter section "owner" can be read but not modified unless by listmaster. This is the config we are using because we don't want that the initial list owner disappear from the list definition. You can change that by copying and modifying this file in ''~sympa/etc/<robot domain>/etc/edit_list.conf'' (or in ''~sympa/etc/etc/edit_list.conf'') and add owner.profile definition.
+
+
+  owner                 owner                    read
+  owner.profile         owner,privileged_owner   read
+  owner                 privileged_owner         write
+  owner.profile         privileged_owner         write
+  owner.info            owner                    hidden
+
+
+
+First column select a parameter (<x>.<y> is for parameter <y> from paragraph <x> ), second column is for specifying who is concern and last column what action for. This configuration file can be used to hide some parameters to list owners in order to make the configuration file much more simple for them.
+
+====== How to create a list ======
+   - Configure sympa.conf with the appropriate listmaster email
+   - Ask WWSympa to send you your listmaster-Password.
+   - Login as Listmaster.
+   - Select List create button (just on top of the page, right to the logout button) to get the list creation request form.
+   - Fill out the missing data and confirm it.
+   - Every think should be ok including email alias if the configuration of sympa.conf and wwsympa.conf are complete 
+
+Mostly the same procedure is possible for normal users, but in the default configuration , list creation request from no-listmaster users need a validation by the list master (using WWSympa> Admin Sympa > pending lists ).
+====== How to rename a list ======
+
+Renaming a list need more then just rename the list directory, it also need at least some change in the database, archives, aliases and spools. Sympa 4.x version and laler allows list renaming using wwsympa (list main administration page). This form also allow to change the domain of the list. Note that this operation is authorized to the list owner but he must also be authorized to create list. Depending on the createlist authorization scenario, the list status may change to pending when renaming it so the listmaster is sollicited to validate the list as any new list.
+
+
+
+
+====== How to restrict creation list capability ======
+
+The list create privilege is describe in a scenario as most others sympa privilege. This scenario is named create_list and it is describe in the documentation. Of course do not change the scenario comming from the distribution (otherwise you will lose your config with next make install), but copy it to ~sympa/etc/scenari and customize it. 
+
+
+====== How to restrict some pages to local (intranet) users ? ======
+The meaning of //Intranet//  in this scenario in very simple. It relies on scenario
+rules such as :
+
+  verify_netmask('195.220.94.75/26')          md5,smime -> do_it
+  
+This rule compares the remote ip address of the client currently connected to the server (obtained using the code $ENV{'REMOTE_ADDR'})  ) with the network block given as a parameter (in this case '195.220.94.75/26'). The network block consists of an ip address ('195.220.94.75') and a CIDR value ('/26') which is the netmask. These values can, of course,  be changed, it is just a case of putting different values in the scenario file. Thereafter, those scenarios with this rule contained in them will be inaccessible to those that have an ip address outside the limits defined by the network block.
+
+For further information refer to :[[http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing|CIDR-wikipedia]] (english) or [[http://http://fr.wikipedia.org/wiki/Adresse_IP|Adresse IP-wikipedia]] (french)
+
+
+
+You can also write rules like :
+
+  match ([env->remote_addr],/^130\.104\.\S\./)      md5,smime  -> do_it
+
+Or writing a rule per internet C class, or even :
+
+  match ([env->remote_host],/ucl\.ac\.be$/)      md5,smime  -> do_it
+
+you should copy *.intranet scenarios from ~sympa/bin/etc/scenari/ to
+~sympa/etc/scenari/, then customize them. Then upgrading Sympa will
+not overwrite your site's scenarios.
+
+Regular expressions used in scenarios are Perl Regexp ; they are NOT
+case sensitive.
+
+For subscription, you should prefer to test the [sender] which can be applied both for the mail user interface and the http user interface (in the second case it is related to the email adress provided for subscription). The rule look like :
+
+  match([sender],/mydomain\.org/)          smtp,smime,md5    -> do_it
+
+After editing a scenario you must touch file config for each list that use this scenario (the config will be updated if the mdate is changed) or remove all file confg.bin and restart both httpd and sympa.pl.
+
+ 
+
+====== How to reject, detach or control attachment in a mailing list ======
+Sympa allow to reject or moderate any kind of attachment via scenario.
+
+If you want to reject any mime structured message, you may create a new send.xx scenario (create ~sympa/etc/scenari/send.xx) and apply xx for the send parameter of the related list. This scenario can test any message header. The following example show how to reject multipart/alternative but send to list moderator message with attachment.
+
+  match([header->Content-Disposition],/attachment/)   smtp,smime,md5    -> editorkey
+match([header->Content-Type],/multipart\/alternative/) smtp,smime,md5  -> reject
+
+It is also possible to detach any attached document and replace it by a URL (a link to Sympa web server) so the message distributed by email is smaller. This can be chosen by each subscriber. The related subscription option is named urlize. You may need to make it the only one available but in many case make this option as the default one is good enough. Both parameters can be changed in the list administration page : / Edit list config / Sending- Reception. 
+
+====== How to moderate/reject suspected Spam messages ? ======
+We'll assume that all your incoming mail are scanned by spamassassin.
+
+Scenarios are Sympa's own authorization mecanism ; a scenario is a set of rules that work on the current context (incoming message, list setup, global setup,...) to make a decision (do_it, reject, moderate,...). You can define a list's own scenario for a given action (send, review, subscribe,...) or define a scenario header that will be evaluated first for each list. For the send action, the scenario header file will be include.send.header, here is an example that moderates presumed spam messages :
+
+  is_subscriber(blacklist,[sender]) smtp,md5,smime -> reject
+  match([header->X-Spam-Flag],/yes/) smtp -> request_auth
+
+If the message sender is subscribed to our blacklist his message will be rejected. If the message was considered as Spam by SpamAssassin (X-Spam-Flag: yes) Sympa will request a mail confirmation (request_auth) from the sender. 
+
+====== How to customize each message for each subscriber ======
+
+Many users want to customize the message for each subscriber, for example adding a footer with unsubscription instructions, or adding custom headers depending on subscriber e-mail address, or hiding the list address in the headers replacing it by the subscriber address.
+
+This is currently (version 5.3) not possible because Sympa sends a single message to many subscribers, saving bandwidth.
+
+Any plans to change this? Yes, it is in the [[project_direction|TODO]]...
+
+However, the remind message is sent to each subscriber and it is parsed by Sympa. 
+
+====== How to include latest message to the welcome message ? ======
+Create a ~sympa/list_data/yourlist/welcome.tpl as follows :
+
+  From: listowner@your.domain
+  Subject: Welcome to my list
+  Content-type: multipart/mixed;
+    boundary="==== separateur ====--"
+  
+  --==== separateur ====--
+  Content-Type: text/plain; charset="iso-8859-1"
+  Content-Transfer-Encoding:  8bit
+  
+  Welcome to the list...
+  Here is the latest message sent to the list :
+  
+  --==== separateur ====--
+  Content-Type: message/rfc822
+  
+  [INCLUDE 'archives/last_message']
+  
+  --==== separateur ====----
+
+====== Mailing lists and newsgroups. ======
+These methods work with INN. They can work with others NNTP servers as well but I have only used INN.
+
+The mailing list manager can be SYMPA, or any other system.
+
+For all examples, we use a mailing list mylist@mylistserver.org and a NNTP server news.mydomain.org news.mydomain MUST accept email.
+
+===== How can I have a mailing list archive on a news group ? =====
+Create a newsgroup, eg local.ml.mylist. Add a new subscriber to the mailing list. Its mail address must be handled by news.mydomain.org. You can use mylist.ml@news.mydomain.org. Use the mailpost program (shipped with inn) to established the gateway.
+Create an alias in the MTA of news.mydomain :
+
+  mylist.ml: "| /path/to/mailpost local.ml.mylist" 
+
+When a mail is sent to the list, mylist.ml@news.mydomain.org will receive it. And with mailpost, it will be posted on the newsgroup.
+===== How can I have have a bilateral association with list and newsgroup =====
+It's quite simple : mark the group as moderated and set the moderation address to the mailing list address (mylist@mylistserver.org). Change the mailpost alias using the -a flag of mailpost (the -a flag marks the message as accepted by a moderator):
+
+  mylist.ml: "| /path/to/mailpost -a mylist@mylistserver.org local.ml.mylist"
+
+Then, when a message is sent to the list, it is approved by the moderator and then posted. When a message is directly posted, it's sent to the moderator (which is the whole mailing list). As other messages on the list, it's approved and posted.
+
+This last method can be usefull to create a complete message system : mail, news and web interfaces can be used to read and send messages. 

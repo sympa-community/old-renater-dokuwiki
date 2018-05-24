@@ -1,0 +1,226 @@
+~~NOTOC~~
+
+<html>
+<div style="height:121px;width:401px;margin:0;float:left;">
+<div style="background-image:url(/_media/sympa_download.png);background-repeat:no-repeat;height:121px;width:401px;font-family:sans-serif;font-weight:bolder;font-style:italic;text-align:left;color:black;font-size:26pt;z-index:0;"><div style="padding-top:30px;padding-left:215px;">6.2.32</div></div>
+<div><a href="https://www.sympa.org/distribution/sympa-6.2.32.tar.gz" style="height:121px;width:401px;position:relative;top:-121px;z-index:1;"><img src="/_media/transparent_layer.png"/></a></div>
+</div>
+</html>
+
+<WRAP box bgblue fgwhite 300px right round 50%>
+{{:logo_sympa_small.png | Sympa logo}} **Sympa is an open source mailing list manager. It provides advanced features with a rich and secure web interface.**
+\\ \\ \\ \\
+**Original features :**
+  * scalable for big mailings lists ( > 1.000.000 list members)
+  * list member provisioning using LDAP, SQL or other data sources
+  * various authentication method (SSO, LDAP, X509)
+  * S/MIME and DKIM
+  * web archive with access control, message removal etc
+  * virtual hosting for service providers.
+  * automatic bounce management
+  * easily customizable web interface
+  * SOAP interface for integration with other applications
+
+More [[overview:features|features description]].
+
+**Sympa contacts:**
+  * If you want to get/give some **help administrating Sympa**, join the mailing lists:
+    * [[https://listes.renater.fr/sympa/subscribe/sympa-users|English speaking mailing list]]
+    * [[https://listes.renater.fr/sympa/subscribe/sympa-fr|la liste francophone]]
+  * If you want to **contribute to the code**: [[https://github.com/sympa-community|join the Sympa community on Github]],
+  * If you want to **report a bug**: [[https://github.com/sympa-community/sympa/issues|post an issue on Github]],
+  * If you want to help **translating Sympa**: [[https://translate.sympa.org|Create your account on the translation tools]],
+  * You want to **speak to the developers**, pick one or more of the following:
+    * join the Sympa IRC channel: #sympa on freenode.net
+    * write to the developers mailing list: [[sympa-developpers@listes.renater.fr]]
+    * [[https://github.com/sympa-community/sympa/issues|open an issue on Github]]
+
+Whichever you chose: welcome to the community!
+
+[[http://www.perl.org/|{{ :wiki:perl-onion.png?60 |Perl language logo}}]]
+
+<html><p align=center><wiki><a href="http://www.perl.org/">Proudly developed in Perl!</a></wiki></p></html>
+</WRAP>
+
+====== Sympa 6.2.32 released ======
+
+//April 19th, 2018//
+
+[[http://www.sympa.org|{{:logo_sympa.png | }}]]
+
+The Sympa Community is proud to release the new version of Sympa.
+
+Read the [[https://github.com/sympa-community/sympa/releases/tag/6.2.32 | original announcement]] for more details.
+
+   *[[https://www.sympa.org/distribution/sympa-6.2.32.tar.gz|Download sources]]
+   *[[https://github.com/sympa-community/sympa/blob/6.2.32/NEWS.md|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions if you come from pre-6.2 version]]
+   *[[https://github.com/sympa-community/sympa/blob/6.2.32/CONTRIBUTING.md|How to contribute to Sympa]]
+
+====== sympa hackathon in may ======
+
+the 2018 sympa hackathon will be hosted by Unistra (the university of Strasbourg) and will take place in may 22 to 24.
+
+more details and free registration [[https://listes.renater.fr/sympa/info/sympa-hackathon-2018|here]].
+
+
+====== Sympa 6.2.30 released ======
+
+//March 26th, 2018//
+
+[[http://www.sympa.org|{{:logo_sympa.png | }}]]
+
+The Sympa Community is proud to release the new version of Sympa.
+
+Read the [[https://github.com/sympa-community/sympa/releases/tag/6.2.30 | original announcement]] for more details.
+
+====== Sympa 6.2.25b.2 released ======
+
+//March 5th, 2018//
+
+[[http://www.sympa.org|{{:sympa_beta.png | }}]]
+
+The Sympa Community is proud to release the second beta of the next version of
+sympa. Please install it to test and report bugs, translate user interface to
+your language, or enhance documentation on Sympa, if you want to help the sympa
+community to deliver a more reliable version of Sympa.
+
+Read the [[https://github.com/sympa-community/sympa/releases/tag/6.2.25b.2 | original announcement]] for more details.
+
+====== Sympa 6.2.24 released ======
+
+//December 21st, 2017//
+
+[[http://www.sympa.org|{{:logo_sympa.png | }}]]
+
+The Sympa Community is proud to release the new version of Sympa.
+
+Read the [[https://github.com/sympa-community/sympa/releases/tag/6.2.24 | original announcement]] for more details.
+
+   *[[http://www.sympa.org/distribution/sympa-6.2.24.tar.gz|Download sources]]
+   *[[https://github.com/sympa-community/sympa/blob/6.2.24/NEWS.md|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions if you come from pre-6.2 version]]
+   *[[https://github.com/sympa-community/sympa/blob/6.2.24/CONTRIBUTING.md|How to contribute to Sympa]]
+
+====== Sympa 6.2.23b.2 released ======
+
+//November 30th, 2017//
+
+[[http://www.sympa.org|{{:sympa_beta.png | }}]]
+
+The Sympa Community is proud to release the second beta of the next version of sympa. Please install it to test and report bugs, translate user interface to your language, or enhance documentation on Sympa, if you want to help the sympa community to deliver a more reliable version of Sympa.
+
+Read the [[https://github.com/sympa-community/sympa/releases/tag/6.2.23b.2 | original announcement]] for more details.
+
+   *[[http://www.sympa.org/distribution/sympa-6.2.23b.2.tar.gz|Download sources]]
+   *[[https://github.com/sympa-community/sympa/blob/6.2.23b.2/NEWS.md|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions if you come from pre-6.2 version]]
+
+====== Sympa awarded at the JRES conference! ======
+
+//November 24th, 2017//
+
+[[http://www.sympa.org|{{:logo_sympa.png | }}]]
+
+On Friday, 17th November 2017, the Sympa project was awarded the "JRES program committee special mention".
+
+The [[https://www.jres.org/|JRES]] is the biennial conference held for the French Education and Research information technology community. 1,800 people attended the 2017 edition.
+
+During this conference, Marc chantreux and David Verdin, from [[https://www.renater.fr|RENATER]], made a [[https://www.jres.org/fr/presentation?id=154|presentation about the 20 years history of the Sympa project]] (French only), trying to capture perls of wisdom in this history, in order to help the project to keep on growing and serving its community. The good reception of the talk was an indicator of the Sympa's current popularity in the Higher education and Research community. It was, however, only a warming up for the speakers, who remained almost speechless when the were given the award.
+
+This award aims at shedding light on a project carrying special interest for this community. It is the first time ever that such an award was given during this conference, which has been held since 1995. Our pride for the award is therefore doubled.
+
+Beyond the emotion of the moment, this award is a recognition of the continuous efforts of the thousands of contributors to the Sympa projects since its inception 20 years ago.
+
+This success was made possible because Sympa evolved to keep on addressing the daily needs during this period when the network usage drastically changed. Sympa bears both its legacy and its modernity. Now that the Internet goes back towards distribution, Sympa is strong thanks to its experience in this area, thanks to its new governance model, its 35 millions users and its contributors all around the world.
+
+After the important changes that occurred during the last year and the involvement of a new generation of young contributors, this award eventually crowns a community that never failed and emphasizes the hope that more and more people are given by free software.
+
+{{:prix-jres.jpg?300| }}
+
+Thanks to you all.
+
+Let's go back to work.
+
+====== Sympa 6.2.23b.1 released ======
+
+//November 22nd, 2017//
+
+[[http://www.sympa.org|{{:sympa_beta.png | }}]]
+
+Sympa 6.2.23b.1 is the new beta version of Sympa 6.2.\\
+
+====== Sympa 6.2.22 released ======
+
+//October 1st, 2017//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+Sympa 6.2.22 is the new stable version of Sympa.\\
+
+<note important>**Note for upgrading**
+
+Even on late versions, several big changes on templates have been made. Some of them broke backward compatibility in exchange for bug fixes.
+If you have customized templates with earlier version of Sympa, you should check if web interface will work correctly and if system messages are sent correctly after upgrading, and reapply customization to new templates as necessity.
+</note>
+
+Read the [[https://github.com/sympa-community/sympa/releases/tag/6.2.22 | original announcement]] for more details.
+
+   *[[http://www.sympa.org/distribution/sympa-6.2.22.tar.gz|Download sources]]
+   *[[https://github.com/sympa-community/sympa/blob/6.2.22/NEWS.md|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions if you come from pre-6.2 version]]
+
+====== Sympa 6.2.20 released ======
+
+//September 22th, 2017//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+Sympa 6.2.20 is the new stable version of Sympa.\\
+
+Read the [[https://github.com/sympa-community/sympa/releases/tag/6.2.20 | original announcement]] for more details.
+
+====== Sympa next version is now in beta stage ======
+
+The Sympa Community is proud to release the first beta of the next version of sympa. Please install it to test and report bugs, or translate user interface to your language, if you want to help the sympa community to deliver a more reliable version of Sympa.
+
+Read the [[https://github.com/sympa-community/sympa/releases | original announcement]] for more details.
+
+
+====== Sympa 6.2.18 released ======
+
+//June 25th, 2017//
+
+[[http://www.sympa.org|{{:authors-old:logo_sympa_small.png | }}]]
+
+Sympa 6.2.18 is the new stable version of Sympa.\\
+It is the first stable release from the new expanded community, led by S. Ikeda.
+
+====== Sympa's 20th birthday hackathon on 1st and 2nd of April 2017 ======
+
+// March 13th, 2017//
+
+Sympa version 0.0.1 was released on the 1st of April 1997. Originally conceived as a mailing list server, it evolved along its 20 years of history to a minimalist groupware server, with strong features for delegation, industrialization and customization.  It includes many options for working groups creation and customization, shared documents, web archives, original authorization mechanisms and "many more", as David Verdin, the former lead developer, stated in his [[https://www.youtube.com/watch?v=-JMg1wdYdOU|2014 YAPC::EU presentation of Sympa]].
+
+To celebrate Sympa's 20th birthday, the community organizes a hackathon hosted by the [[http://www.unistra.fr/|Strasbourg university]]. The aim of the hackathon is to work on a new and modern interface, but you can consider it as the first step towards a Sympa rebirth, from its code internals to the developers community.
+
+You can join the hackathon by simply [[https://framalistes.org/sympa/subscribe/sympa-20th-birthday-hackathon|subscribing to this list]].
+
+The hackathon partners:
+
+  * [[http://mongueurs.net/|les mongueurs de Perl]]
+  * [[http://arn-fai.net/|ARN,  FAI associatif alsacien pour un Internet neutre]]
+  * [[http://www.framasoft.org|Framasoft]]
+  * [[https://yunohost.org/|YunoHost (la brique Internet)]]
+  * [[Hackstub]](http://hackstub.netlib.re/)
+  * [[https://strasbourg.linuxfr.org|le groupe des utilisateurs de logiciels libres de Strasbourg]]
+  * [[http://riseup.net/|riseup.net,  fournisseur d'outils de communication en ligne pour un changement social libérateur]]
+  * [[http://www.usit.uio.no/english/about/organisation/it-drift/kd/gmt/|Messaging Services Operations Group, University of Oslo ]]
+  * [[http://www.linuxia.de|Linuxia]]
+  * [[http://www.crous-strasbourg.fr/|CROUS de Strasbourg]]
+  * [[http://www.unistra.fr/|Université de Strasbourg]]
+  * [[http://www.renater.fr/|RENATER]]
+
+======Previous versions release note=====
+[[previous release note]]
+

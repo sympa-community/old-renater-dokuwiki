@@ -1,0 +1,60 @@
+===== Managing sympa aliases using sendmail =====
+
+You just need to create alias for the robot. Other aliases are created by wwsympa when creating lists. wwsympa updates aliases. The way this is done is by run aliaswraper. This wraper need to be owned by root and installed with **set uid bit** :
+
+  rwsr-x---  1 root sympa 6587 May 30 13:27 /home/sympa/bin/aliaswrapper*
+
+Please see the reference manual, section about aliases
+
+<note>As of 6.1.18, aliaswrapper was deprecated and replaced with sympa_newaliases-wrapper.</note>
+
+===== "queue" not available for sendmail programs =====
+
+ smrsh is a secure shell for mailer prog, it is use for example in the red-hat 6.0 sendmail installation. In this case you must allow smrsh to run the queue program because smrsh prevent attack by checking a listing of safe binaries in a special directory (usually /etc/smrsh or /usr/adm/sm.bin )
+
+You should restart the ./configure; make;mkae install process for Sympa with the following configure :
+
+./configure --with-bindir=/etc/smrsh
+
+Refer to sendmail FAQ for more information : [[http://www.sendmail.org/faq/section3.html#3.34]]
+
+Note : smrsh is chrooted (in /etc/mail/smrsh for debian). You need to copy queue and bouncequeue in smrsh homedir, and of course aliases should point to the links.
+
+===== Getting sympa to run the aliases update as root =====
+
+In the some versions of sendmail only root can run the newaliases command so you may need to get sympa to run the aliases updater as root.  Chris Andrews (Boston College) describe his solution based on the fcgi wrapper tool : 
+
+Chris Andrews write : this is based on the folders and files name in my Sympa install, yours may be different.
+
+I was able to get it to work by moving ''/var/sympa/sbin/alias_manager.pl'' to ''/var/sympa/sbin/alias_manager_sudo_wrapper.pl'', then I created a new PERl script ''/var/sympa/sbin/allias_wrapper.pl'':
+
+<code perl>
+#!/usr/bin/perl
+
+exec '/usr/bin/sudo', '-u', 'root',
+'/home/sympa/sbin/alias_manager_sudo_wrapper.pl',
+"$ARGV[0]","$ARGV[1]","$ARGV[2]","$ARGV[3]";
+/var/sympa/sbin/
+</code>
+
+My PERL skillz are weak, so some one might have a better way of passing the arguments in better way (using @ARGV resulted in all the arguments becoming one instead of descrete arguments when they are passed to ''alias_manager_sudo_wrapper.pl'').
+
+You need to make sure your sympa aliases file has the following perms:
+
+<code>-rw-r--r--   1 sympa root   6003 Jan  8 12:05 sympa_aliases</code>
+
+Sendmail will not like it if the file is group or everyone writable, but does not seem to care who actaully owns it.
+
+I also made the following change to ''/etc/sudoers'' file:
+
+<code>sympa host=(root) NOPASSWD:/home/sympa/sbin/alias_manager_sudo_wrapper.pl</code>
+
+I also made sure that the sympa user is not a nologin user.  It needs to be able have shell access to be able to sudo. 
+
+
+
+
+===== Message sent by Sympa include a X-Authentication-Warning =====
+You need to add sympa unix user in the trusted users class of sendmail. Here are 2 solutions for that baesd on sendmail m4 configuration file :
+  * add the line define(`confCT_FILE',`/etc/mail/trusted-users')dnl in sendmail.mc edit this file and add sympa
+  * add the line define(`confTRUSTED_USERS',`sympa`)dnl in sendmail.mc

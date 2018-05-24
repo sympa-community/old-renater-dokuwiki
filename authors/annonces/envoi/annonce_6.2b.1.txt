@@ -1,0 +1,271 @@
+====== Sympa 6.2 beta released ======
+
+//January 12, 2015//
+
+[[http://www.sympa.org|{{:authors-old:sympa_beta_small.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.1 is the new major version of Sympa\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.1.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version introduces a great deal of new functionnalities. Consequently, we can only highlight the main improvements in this announce.
+
+To our numerous contributors: if your contribution does not appear in this announce, it does not mean we consider it less important. Actually, for some users, it can even be the key feature that will encourage them to switch to 6.2. But we prefer a reasonnably short announce that will be read rather than an exhaustive list of features. So we focused on:
+
+  * what is the largest change in code or Sympa behaviour,
+  * what represents a point of attention during upgrade
+  * what is the most visible
+
+Please refer to the release notes above for a full list of new functionnalities.
+
+Unless the name of the contributor is specified, all theses change were done by the [[https://www.sympa.org/users/authors|Sympa core developement team]].
+
+===== Messenging =====
+
+==== Tracking feature ====
+
+A great contrib from French army DGA Information  Superiority (Guillaume Colotte and laurent Cailleux) The tracking feature is a way to request DSN or DSN + MDN when sending a  message to each subscribers. In that case, Sympa (bounced.pl) collect both  DSN and MDN and store them in a new table "notification_table".
+
+Then, for  each message, the list owner can display which subscribers has displayed,  received or not received the message. This can be used for some important lists where list owner need to collect the proof of reception or display of  each message. This page is accessible via archive (button "tracking").
+
+This feature is controled by 2 list parameters see "tracking" paragraph in "edit list config"/bounce.
+
+See : [[http://www.sympa.org/manual/bounces#message_tracking]]  and [[http://www.sympa.org/manual_6.1/parameters-bounces#tracking]]
+
+==== Spools back to filesystem ====
+
+One of the reasons why this new version took so long to be issued is that we tried to move all spools in database. Testing of this change in actual conditions proved it to be coopletely unscalable. we then had to revert our changes. In addition, a lot of people had recurring trouble with the current bulk spool tables, dut to limits showing in fields length or n RDBMS availability.
+
+Spool for bulk sending no longer depend on database tables: It is based on filesystem.
+**Packets and messages stored in database by earlier version of Sympa should be migrated using ''upgrade_bulk_spool.pl'' utility.** (See [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]] for when and how to run this utility).
+
+==== Stats ====
+
+[Submitted by W. Roquet]
+
+Now Sympa stores data whenever one of  the following event occurs:
+  * a message is sent to a list;
+  * a user subscribed to a list;
+  * a user unsubscribed from a list;
+  * a user is added to a list by another user;
+  * a user is removed from a list by another user;
+  * a user is removed from a list by the automatic bounce management;
+  * a file is uploaded to the shared directory;
+  * a file is deleted from the shared;
+  * a message to a list is rejected in moderation;
+  * a user logs in to the web interface;
+  * a user logs out;
+  * a list is created;
+  * a list is deleted;
+  * a list is restored;
+  * a human user (not a harvester) hits a page.
+
+These data are regularly aggregated by the task_manager, in order to make them anonymous and to have easily displayable data. The aggregated data are available to users, owners and listmaster in their respective interfaces. Only relevant data are presented. They are displayed in graphs to help people see trends and activity peaks. To be able to display these graphs, you must enable the static_content URL. In addition, the stats are accessible through the web interface, so if you customized  your web templates, you must update them to include the links and template processing.
+
+===== Web interface =====
+
+  * The most visible is probably the** new web interface skin**. Contributed by the Massey university, it is nicer, simpler, responsive and retains all the customization capabilities that make Sympa adaptable to your needs. Many thanks to Patrick Rynhart and his colleagues for this great contributions! (in addition, outputs by WWSympa have HTML5 document type definitions).
+  * **Exclusion table** was just a display of the users excluded. list owners could not do anything to restore subscriptions; This page is now a form, similar to the review page, which allows to restore users subscriptions.
+  * Added "Add subscriber" button to modindex page if the sender is not subscribed.  It may be useful because users need not know about SUB command and sympa command address. The buttons appear only when Web user is the list owner.
+  * The "Customizing" link was moved from main list admin to list config sub section as list related text files are in a way list configuration parameters as well.
+  * [Submitted by Evoltech, Riseup] Better password validation. When the user requests change of password via WWSympa or SympaSOAP, new password may be checked its strength. New parameter password_validation may be used to customize policy of password validation.  See help text of the parameter for more details.
+
+===== Web services =====
+
+
+  * [Submitted by M. Overmeer, overmeer.net, funded and led by Surfnet, [[http://www.surfnet.nl]]] Full VOOT 2.0 protocol support. VOOT is an opensocial subset to manage group membership. full details on this IETF draft here: [[http://openvoot.org]]. This feature enables Sympa to be both group provider and consumer in the VOOT protocol. VOOT in Sympa uses both Oauth 1.0 and 2.0 for authorization from and to a peer in the VOOT protocol.
+  * The soap server now exposes full review with owners, editors and gecos to list masters and list owners.
+  * [Submitted by S. Shipway, Univ. of Auckland] Adding new functions to SympaSOAP: getDetails, setDetails, getCustom and setCustom.
+
+
+===== Plug, plug, plug... =====
+
+We added or improved several ways to plug new functionnalities in Sympa.
+
+==== Template plugins ====
+
+This feature allows to package code to be used in templates. It enables foreign data integration in Sympa's UI and emails, user specific UI enhancement and much more! Integrating user targeted data retreived through a call to a webservice becomes possible in a simple way, automatically adding info from a database to outgoing emails as well ! Further details here : [[https://www.sympa.org/manual/templates_plugins]]
+
+==== Enhanced custom actions functionality ====
+
+Custom actions are used to run specific code and/or display user defined templates. They can be executed in list or global context (it is up to you to decide what to do in both cases). Previously, a custom action was a simple TT2 template added to the web interface. It could only display data, not process them. They were improved to allow greater expressiveness. You can now develop a perl module to process the data passed to your custom action.
+
+** Warning:** AFTER UPGRADING TO 6.2, ANY PRE-EXISTING CUSTOM ACTION MUST BE MOVED TO THE RELEVANT CUSTOM_ACTION DIRECTORY TO KEEP WORKING. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+See [[https://www.sympa.org/manual/customizing#custom_actions]] for full details on this functionnality.
+
+==== Mail hooks ====
+
+Sympa::Message::Plugin provides hook mechanism to intervene in processing by Sympa.  Each hook may modify messages or may break ordinary processing. This functionnality is quite new and still experimental. Please read the perldoc of Sympa::Message::Plugin for more details about how to create and enable hooks in message handling.
+
+If you have no idea what a "perldoc" or a "Sympa::Message::Plugin"" are, you should not try to use this functionnality. Ask a Perl developer nearby instead.
+
+===== Data sources =====
+
+==== Custom attributes provisionning ====
+
+Custom attributes can now be provisionned using external data sources, the same way as email addresses. For now, only SQL or LDAP datasources are supported. To use this feature, you need first to define the custom attributes as previously. This attribute must have the same name as the fields used in your queries.
+
+For example, if your query returns the user name in a field called "u_name", then your custom_attribute must also be called "u_name".
+
+New parameters:
+
+  * include_sql_ca
+  * include_ldap_ca
+  * include_ldap_2level_ca
+
+==== Synchronization disabling ====
+
+In several organizations, nightly maintenances make the datasources unavailable during some period of times. a new sub-parameter in data sources definition allow to prevent Sympa from trying to synchronize list members with these sources during a defined time range.
+
+See the [[https://www.sympa.org/manual/parameters-data-sources#nosync_time_ranges_sub-parameter|no_sync_time_ranges sub-parameter]] documentation for details.
+
+==== Extract subsets from lists ====
+
+A recurrent question regarding list inclusion was to be able to extract not the whole list, but only a subset. It is now possible.
+
+include_list parameter value can now look like this:
+
+<code><listname> filter <filter_condition></code>
+
+''filter_condition'' is a TT2-compatible condition expression, it inherits current potential subscriber properties such as email, gecos, custom_attributes, etc. Tests like isSubscriberOf, isEditorOf and isOwnerOf are also available.
+
+Test examples :
+
+  * ''include_list foo filter email.match('@bar.tld$')'' => Includes members from list "foo" whose email domain is "bar.tld"
+  * ''include_list foo filter isSubscriberOf('bar')'' => Includes members from list "foo" who are also subscribed to list "bar"
+  * ''include_list foo filter reception == 'mail' and not gecos'' => Includes members from list "foo" who have their reception mode set to mail and no gecos
+
+Please see the [[https://www.sympa.org/manual/parameters-data-sources#include_list|reference manual]] for a full description on how to extract subsets from mailing lists.
+
+==== Miscellaneous improvements ====
+
+  * [Submitted by S. Shipway, univ. Auckland] **ODBC** is now supported for email data sources.
+  * [Submitted by Patrick von der Hagen, Renan Manola and Steve Shipway] sql, ldap and ldap2 user inclusions now handles **gecos**. It uses 2nd returned column for sql and 2nd given attribute for ldap (comma separated).
+  * Now "host" parameter of the LDAP datasource in list config may include URLs (ldap, ldaps and ldapi) along with hostnames. //So "port" and "use_ssl" parameters would be obsoleted//.
+
+===== Scenarios =====
+
+  * Now CustomCondition can set the action to take (do_it, reject ...) by setting $_, this allows for complex, single-module CustomConditions.
+  * "[msg_header->field][index]" returns the value of particular field.  Index may be negative. - "[msg_header->field]" still returns list of field values, additionally, ordering will be preserved. Fixes:
+    * Conditions is_listmaster, is_owner, is_editor and is_subscriber can handle multiple values.
+    * They also parse arguments as header field values to get address parts.
+
+===== New parameters =====
+
+  * New list parameter: 'member_include'. This parameters allows to defined .incl files to include list members, the same way it is done for list admins. This grants extended flexibility in datasources, allowing list owners to tweak their own data sources without accessing to the actual details of the query made to gather email addresses.
+  * New sympa.conf config parameter "sender_headers" to specify header fields by which message sender is detected. This is a enhancement to S. Shipway's improvement. RFC: What is the reasonable default for this parameter?
+  * Behavior of one time ticket lock-out is configurable. Two new robot parameters were introduced:
+    * one_time_ticket_lockout:
+      * "one_time" won't allow access again. This is previous behavior.
+      * "remote_addr" will lock the ticket on remote address accessed at first time.
+      * "open" will never lock-out tickets.
+    * one_time_ticket_lifetime: Duration before ticket expires.  Default is "2d", previous hardcoded value.
+  * New 'auth_service_friendly_name' in auth.conf CAS paragraph. This allows to set a display name for the CAS server, without the constraints that 'auth_service_name' entry has ([\w\-\.]).
+  * Changes of list config parameters on archiving. New parameter "process_archive" controls archiving. The default is "off": To enable archiving, it must be set to "on" explicitly.  OTOH even if archiving is disabled by setting it "off", past archives will be kept and accessible according to access settings.
+  * Renamed parameters. web_archive.access to archive.web_access; archive.access to archive.mail_access; web_archive.quota to archive.quota; web_archive,max_month to archive.max_month. Though config files of exisiting lists will be updated during upgrading process, **listmasters are highly recommended to check new configuration. Customized scenarios, list creation templates and edit_list.conf will never be upgraded automatically.  They should be modified manually, if neccessary.**
+
+===== Internals =====
+
+==== Send spool ====
+
+Now messages sent via WWSympa will be stored in bulk spool, directly if they are outbound messages.  On earlier releases outbound messages were injected in msg spool with special checksum. A program upgrade_send_spool.pl to migrate messages with old format is proveded. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+==== PostgreSQL ====
+
+Postgresql RDBMS are now automatically upgraded!
+
+==== Config files ====
+
+**wwsympa.conf will no longer be used: it would be migrated to sympa.conf.**
+  * Makefile.am: no longer create wwsympa.conf during installation.
+  * sympa_wizard.pl: --create argument disallows "wwsympa.conf" option.
+  * Upgrade.pm: migrate wwsympa.conf during upgrade process.
+Note: Run "sympa.pl --upgrade" to migrate wwsympa.conf into sympa.conf. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+**Default config**
+location is now /etc/sympa/ (or $sysconfig/sympa/) instead of /etc/. This solves the problem of config file lock creation being denied when trying to read the binary version of the config file at startup.
+
+**WARNING** : to upgrade the config location one MUST run sympa.pl --upgrade_config_location before any other upgrading operation. Check [[https://www.sympa.org/faq/upgrade-to-v6.2|upgrade instructions]].
+
+==== Alias management uniformization ====
+
+Now alias maintenance utilities other than newaliases may be used without special configure options nor patch to alias_manager.pl.
+Changes:
+  * aliaswrapper and virtualwrapper were deprecated and replaced with sympa_newaliases-wrapper.
+  * New alias management program sympa_newaliases.pl which will typically be called by alias_manager.pl via sympa_newaliases-wrapper.
+  * New site configuration parameters aliases_db_type and aliases_program will control behaviour of alias database maintenance.
+  * configure script:
+    * Options --with-sendmail_aliases and --with-virtual_aliases were deprecated. Use --with-aliases_file instead.
+    * New options --with-makemap and --with-postalias, along with options --with-newaliases and --with-postmap are available.
+    * Option --with-postmap_arg was removed.
+  * Alias managers can handle postmap/makemap style maps (delimited by whitespace), not only newaliases style maps (delimited by colon).
+
+==== openssl dependency dropped ====
+
+openssl(1) utility is no longer required.  Instead, a few CPAN modules are required to use S/MIME or SSL features:
+  * Crypt::SMIME
+  * Crypt::OpenSSL::X509
+The parameter "openssl" in sympa.conf was obsoleted. Note that p12topem.pl still needs openssl: To make it work, PATH environment variable should be set appropriately.
+
+
+
+===== Internationalization =====
+
+i18n titles in configuration.
+
+  * title.<lang> lines in scenario files are available again, though this feature was broken for a while.
+  * Now topics.conf recognizes "title.gettext" lines. - scenario, task and topics.conf recognize "title" line for default title.
+  * lang value in user_table
+  * title.<lang> line in scenario files
+  * title.<lang> line in task files
+  * title.<lang> line in topics.conf
+  * lang names in charset.conf
+  * lang parameters of list config, robot.conf and sympa.conf
+
+Note that canonicalization will be done internally so that existing config must not be changed.
+
+===== Lists management =====
+
+==== List families scenari ====
+
+Now you can define a "scenari" directory in the lists family directory. These scenarii will be available for lists instantiated from this family. The "scenari" directory must be put directly in the family directory, not in the overall "families" directory. For example, if you want to define scenarii specific to the "staff" family, you must define a scenari directory in the /home/sympa/etc/families/staff/ directory. Not in /home/sympa/etc/families/.
+
+==== List families addistional files ====
+
+Until now, only the config.tt2 file was parsed when the family was instantiated, thus producing the lists' config file. As a lot of other files can be used to configure a list (footer, header, etc.), we added the possibility to instantiate these files as well.
+The list of files parsed (in addition to config.tt2) when instantiating a family are defined in a new (sympa.conf and robot.conf) parameter called 'parsed_family_files'. This parameter must contain a comma-separated list of file names. If these files exist, with the '.tt2' extension added to their name, in a family, they will be parsed and added to the list directory.
+
+The default value of the parameter is: 
+'message.footer,message.header,message.footer.mime,message.header.mime,info'.
+
+These files are updated in existing lists when a family is instantiated. note that it will overwrite any other customization.
+
+==== On the web automatic lists ====
+
+This feature existed in 6.1 but it deserved a little more advertisment.
+
+[Requested and funded by the CNRS] Automatic lists can now be manipulated through the sympa web interface, in a "user friendly" form. This is merely a web layer around the general autmatic lists feature. This feature is fully documented here: [[https://www.sympa.org/manual_6.2/user_friendly_autolists]] Additionnally, it is now possible to unsubscribe to all the lists of a given family in two clicks.
+
+===== Administration =====
+
+Widely extended logs when the log_module parameter is activated with the value 'scenario': all scenario results are evaluated.
+Remember that extended logs can be limited by the IP or the email of the user, using the 'log_condition' parameter. log_module and log_condition are now declared in sympa.conf instead of wwsympa.conf.
+Remember these parameters syntax:
+  * log_module: can take the value "scenario" - only.
+  * log condition: takes a character string as value. The form is "ip=<an.ip>,email=<an_email>". You can put ip alone, email alone or both, with the comma-separated form.
+
+Listmaster notifications can now be grouped. If, for a specific robot, several notifications are issued within a short period of time with the same operation code only the first ones are sent, the next ones are stacked. The stacking ends when no notifications are issued anymore, or when the first one is too old. All the stacked notifications are then sent as attachments of a single message. Internal settings :
+Stack if more than 3 notifications with the same operation code are issued for the same robot - Send stacked notifications if no new one satisfying the condition above was received for more than 30 seconds - Send stacked notifications if the oldest one was issued more than 60 seconds ago
+
+''sympa.pl --health_check'' checks config files, database connection and structure, and data structure version.  It is invoked at first time in sympa init script and reports errors if any. Instead, daemons such as sympa.pl no longer check database structure nor data version.
+
+File extension of lock files are changed from ".lock" to ".LOCK", because lowercase name can conflict with domain part in the future.
+

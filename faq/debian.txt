@@ -1,0 +1,35 @@
+===== broken debian woody libxml-sax-perl package workaround =====
+On debian woody (stable) you should be able to install all the libs you need to get sympa up and running..
+Besides perl, it includes libxml2 and its perl module libxml-libxml-perl
+
+libxml-libxml-perl depends on libxml-sax-perl which is currently "broken" so to speak, at least it didn't install properly during my installation thru apt.
+
+the problem is that libxml-sax-perl installs two different version of the XML::SAX Lib with two different files located here :
+
+/usr/local/share/perl/5.6.1/XML/SAX.pm
+/usr/share/perl5/XML/SAX.pm
+
+once the package is extracted it does its post install thing and calls the script update-perl-sax-parsers. That perl script loads the XML::SAX and tries to call a debian specific function. The class loaded is from the first file above which does not have that debian function so the script execution fails and the apt process returns with error and stops any further package installation..
+
+the very simple way to get around that problem is to overwrite the fist SAX.pm file located in /usr/local/share/perl/5.6.1/XML/SAX.pm with the second one /usr/share/perl5/XML/SAX.pm
+
+so you will try to install the perl module XML::LibXML with
+#apt-get install libxml-libxml-perl
+
+it will fail when trying to install the dependencies libxml-sax-perl and return with error.
+The you will overwrite the first SAX.pm file as explained above and you will try to install libxml-libxml-perl again and now everything should go smoothly..
+
+once libxml-libxml-perl is installed you're good to go, sympa install script will detect that XML:LibXML is already installed and won't try to install it from CPAN.
+
+PS : instead of overwriting the SAX.pm file you cold also insert the debian specific function into the first SAX.pm code, but i've not tested it. Anyways if the libxml-sax-perl package should be upgraded you could get stuck with the same error if the upgrade package has not been fixed by the package maintainer so it would be a good idea to block updates on those libxml packages..
+
+webdev AT chaosmedia.org
+
+PS What kind of garbage is this article ?
+Sorry to say this but it's useless
+
+===== LibXML installation problem on Debian woody =====
+First problem: The installation of XML::LibXML-1.58 downloaded from a CPAN mirror (on April 26th) fails with a compilation error of perl-libxml-mm. The solution is to install XML-LibXML-1.58_1 from www.cpan.org
+Second problem: XML-LibXML installation controls that a "tested version" of libxml2 package is installed (see README). The Woody "default" version is too old, and the "backported" 2.6.11 version too recent. A solution is to install the last tested version (2.6.8) from http://ftp.gnome.org/pub/GNOME/sources/libxml2/2.6/libxml2-2.6.8.tar.gz prior to XML-LibXML-1.58_1.
+
+jacques.leyrat AT unicaen.fr

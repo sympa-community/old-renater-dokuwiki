@@ -1,0 +1,72 @@
+===== Running wwsympa with sympa UID under Apache =====
+
+Here is a recipe about running wwsympa.fcgi with an UID different of the 'normal' Apache user.
+
+The Sympa documentation says that to work wwsympa.cgi needs to run with the same uid as sympa.pl or acrhived.pl. On a server where services are separated, this can be a problem, because often Sympa runs with uid/gid sympa.sympa and web server runs with www.www or nobody.nobody.
+
+Hopefully, Apache has a way of running CGI with a different user than the default user. This mechanism is called SuEXEC (look at Apache suexec documentation for more info about this)
+
+From there, you setup a separate VirtualHost for running the Sympa related things, say lists.mydomain.net. In httpd.conf, you set it up this way :
+
+  <VirtualHost    lists.mydomain.net>
+        ServerName      lists.mydomain.net
+        DocumentRoot    /home/sympa
+        User    sympa
+        Group   sympa
+        ScriptAlias     /wws    /home/sympa/wwsympa/wwsympa.fcgi
+  </VirtualHost >
+
+It can then be accessed via http://lists.mydomain.net/wws
+
+Apache SuEXEC define a lowest UID and a lowest GID allowed to be a target user and group for suEXEC (usually 100). So Sympa UID.GID must be higher then this limit. Check suexec apache documentation ( http://httpd.apache.org/docs/suexec_1_2.html )
+In addition check fastcgi FAD about suexec http://www.fastcgi.com/docs/faq.html#WrongSuexecWrapper
+
+I have only tried this setup with regular CGI mode, not with FastCGI. You can also add some rules (deny/allow) to prevent access to sympa config files. Or Have a different DocumentRoot and make a symlink to the wwsymap directory. 
+
+===== I never receive messages coming from web interface =====
+
+Messages composed from web interface or from the 'remind password' prompt in web interface are never received.
+
+Messages from the web interface are delivered by sympa.pl daemon. You should verify this daemon is running and check its logs. If needed run "sympa.pl -d". Messages are stored in the spool msg. If sympa.pl is not running, you can check if they are in this spool and you will be sure wwsympa is ok.
+
+Check also your sendmail logs. 
+
+
+===== Subsribers received multiple copies of the same message =====
+
+Checking the following points should help you solve your problem :
+
+   - Do the messages have the same Message-ID ? If not, they are different messages and Sympa may have sent all of them. them as
+   - Do the messages have the same X-Loop header field ? (where they all sent via the same list ?)
+   - Do they all have the same X-Sequence header field ?
+   - Check the Sympa log file for a X-Loop detection, a daemon crash/restart (if Sympa died while processing a message, it processes this message from scratch at next startup).
+   - Check sendmail log file..... 
+
+The subscriber may also be subscribed twice (with different email addresses) 
+
+
+
+===== Sympa on Debian Etch (stable) with Exim4 =====
+
+Some packages provided with the latest (04-2007) stable release of Debian are compiled having security in mind, but preventing or making it difficult Sympa to work:
+
+- If sudo is used to make wwsympa.fcgi to run as sympa.sympa it must be taken into account that sudo has been compiled to clear all the environment variables before calling wwsympa. There is no way to change the behaviour. The only workaround is to explicitely tell sudo to keep all the variables needed. Adding this lines to /etc/sudoers should be enough:
+
+''Defaults        env_keep+="HTTP_HOST SCRIPT_NAME SERVER_NAME REQUEST_URI"
+Defaults        env_keep+="HTTP_COOKIE REMOTE_ADDR REMOTE_HOST HTTP_USER_AGENT"
+Defaults        env_keep+="SCRIPT_FILENAME REQUEST_METHOD PATH_INFO HTTP_REFERER"
+Defaults        env_keep+="SSL_CLIENT_S_EMAIL SSL_CLIENT_S_DN_Email SSL_CLIENT_S_DN"
+Defaults        env_keep+="SSL_CLIENT_I_DN SSL_CLIENT_V_END SSL_CIPHER_USEKEYSIZE"
+Defaults        env_keep+="SSL_CLIENT_CERT HTTP_X_FORWARDED_SERVER HTTP_X_FORWARDED_HOST"
+Defaults        env_keep+="CONTENT_LENGTH"''
+
+First 6 lines are the variables required by wwsympa. Last line is the variable required by the Perl CGI Module to be able to retrieve the form information passed thorugh stdin on POST operations. If GET method is used instead of POST, additional problems may happen because Apache2 is compiled not to provide the PATH_INFO variable. (CAUTION: The list may not be comprehensive)
+
+- If Debian's Exim4 MTA is used, then other problems arise. Alias file used by Exim4 is not the same as the one used by Sympa. This has been addressed in: http://www.sympa.org/wiki/faq/exim. In addition Exim4 is configured by default to prevent delivering to pipes. There are several ways to correct for this. If the structure of the configuration files provided by Debian must be kept (so debconf will work on the future), then adding the following lines to ''/etc/exim4/exim4.conf.template'' (single file) or ''/etc/exim4/conf.d/router/400_exim4-config_system_aliases'' (split files)can do the trick:
+
+''SYSTEM_ALIASES_USER = sympa
+SYSTEM_ALIASES_GROUP = sympa
+SYSTEM_ALIASES_PIPE_TRANSPORT = address_pipe''
+
+It is also possible to create a new transport (e.g. sympa_pipe) so a dedicate message can be written to the log files. Copying the address_pipe transport will work.
+

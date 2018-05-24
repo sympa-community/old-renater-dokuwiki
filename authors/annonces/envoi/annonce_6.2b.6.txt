@@ -1,0 +1,40 @@
+====== Sympa 6.2 beta 6 released! ======
+
+//February 27, 2015//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:sympa_beta2.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.6 is the latest beta release of the new major version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.6.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version mainly fixes several bugs related to list families management.
+
+It also introduces a change related to LDAP: Default cryptographic protocol of LDAP over SSL/TLS became TLSv1. Note that SSLv2 and SSLv3 are no longer recommended due to their weakness.
+The following default changes are introduced in Sympa to reflect this new defaults:
+  - List config: The default of "ssl_version" parameters in "include_ldap" paragraph and so on became "tlsv1".
+  - ldap_alias_manager.pl: New parameter "ldap_ssl_version" to specify protocol version which defaults to "tlsv1" was introduced.  On earlier releases it was fixed to "sslv3".
+
+
+===== ¿Hablas español? Parli italiano ? Sprechen Sie Deutsch? =====
+
+Tens of thousands users around the world can proudly say: "Yes, I use Sympa. It's easy because it's in [Put you own language here]".
+
+Do you know why? That's because some people around here did spend some time translating Sympa. Doing so, they allowed a lot of people to feel the joy of open source. Coders create tools, indeed, but translators bring these tools to the world.
+
+Did you never dream to be as cool as these guys?
+
+Well, you can.
+
+We use the Pootle translation tool, which allows you to easily edit online Sympa translation for your language. If you feel like contributing to Sympa but you don't like/know Perl, well spending a few minutes translating a few strings on this server is [[http://pootle.sympa.org/|the way to go]]!
+
+New translations are added to the Sympa distribution each time we tag a new version.
+
+Become a translator, people will love you!

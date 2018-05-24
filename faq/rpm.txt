@@ -1,0 +1,5 @@
+===== I could not find RPMs required by Sympa in RedHat =====
+
+Sympa is not included in red hat. You should look for RPM at :
+  * [[http://middleware.internet2.edu/mlist/#Sympa_RPMs|http://middleware.internet2.edu/mlist/#Sympa_RPMs]] contrib from internet 2
+  * [[http://www.rpmfind.net/linux/RPM/Development_Languages_Perl.html|http://www.rpmfind.net/linux/RPM/Development_Languages_Perl.html]]

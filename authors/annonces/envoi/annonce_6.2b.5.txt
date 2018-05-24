@@ -1,0 +1,34 @@
+====== Sympa 6.2 beta 5 released! ======
+
+//February 25, 2015//
+
+[[http://www.sympa.org|{{:authors-old:sympa_beta_small.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.5 is the latest beta release of the new major version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.5.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version mainly fixes a few bugs.
+
+It also introduces an experimental feature: running multiple sympa_msg.pl processes on a single server. This allows to rapidly absorb a large incoming messages flow. The number of sympa_msg.pl processes is controlled by the "incoming_max_count" sympa.conf parameter.
+
+Two changes are introduced:
+  * sympa_msg and sympa_automatic processes will have their name appear in logs in replacement of "sympa".
+  * digest will be store as separate files for each message instead of a single RFC934 file. Though digest will retain the capability to be sent as RFC934-compliant compilations, it will ease their manipulation.
+
+===== Translators needed! =====
+
+We are still in beta phase, so it is the best time of year to translate Sympa. This way, your server will be correctly translated to your own language.
+
+We use the Pootle translation tool, which allows you to easily edit online Sympa translation for your language. If you feel like contributing to Sympa but you don't like code, well spending a few minutes translating a few strings on this server is an easy way to do so.
+
+New translations are added to the Sympa distribution each time we tag a new version. 
+
+So if you want to make the easiest contribution ever to Sympa, [[http://pootle.sympa.org/|please go there and translate]] ! ;)

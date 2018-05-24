@@ -1,0 +1,46 @@
+====== User documentations ======
+
+They are many sources of documentation about Sympa. For users, the main is included into Sympa web interface (version 5.2.4 and later). 
+
+We've listed Sympa user documentation of interest :
+
+  * [[http://groundwire.org/support/articles/sympa-help]]
+
+  * [[http://listes.samizdat.net/FaqSympa/]]
+
+  * [[http://www.medicalistes.org/spip/rubrique5.html]]
+
+  * [[http://www.weblettres.net/profs-l/index.php?page=faq]]
+ 
+  * [[https://www.uhb.fr/cri//index.php?tpl=doc/doc_listesdiff_1theorie]]
+
+  * [[http://www.it.utah.edu/services/helpDesk/emailWebhelp/sympamailinglists_faq.html]]
+
+  * [[http://www.cassiopea.org/Sympa-une-introduction]]
+
+  * [[http://www.ai-geostats.org/help_ai-geostats.htm]]
+
+  * [[http://www.vcn.bc.ca/grsvk/sympasub.html]]
+
+  * [[http://www.ifla.org/I/docs/makelist.htm]]
+
+  * [[http://www2.vcn.bc.ca/gettingstarted]]
+
+  * [[http://training.tccs.tufts.edu/pdftips/EList.pdf]]
+
+  * [[http://training.tccs.tufts.edu/pdftips/EListTips.pdf]]
+
+  * [[https://lists.duke.edu/sympa/help]]
+
+  * [[http://veille.alliance21.org/wiki?SympaManualinEnglish/SympaSubscriberManagement]]
+
+  * [[http://help.riseup.net/lists/]]
+
+  * [[http://www.infocom21.net/spip.php?rubrique8]]
+
+  * [[http://www.bristol.ac.uk/is/computing/applications/email/sympa/]]
+
+  * (French) Une documentation utilisateur par Marc Meurrens :
+      * [[http://lists.libertes.org/wws/d_read/synergon/public/TEMPLATE-info.html| un modèle de documentation utilisateur à personnaliser pour une liste de type "private working group" ]]
+      * [[http://lists.libertes.org/wws/d_read/synergon/public/TEMPLATE-footnote.txt| une modèle de pied de message à attacher à chaque message de la liste ]]
+      * {{:doc:formation_listes-univ-rennes1-2009.odp|Support de formation pour les utilisateurs, université de Rennes 1 (2009)}}

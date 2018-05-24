@@ -1,0 +1,74 @@
+====== Is it possible to merge 2 Sympa servers? How? ======
+
+Yes it is.
+Actually, it is more "moving a Sympa server //into// another Sympa server" but the result is the same: one server stands where two stood before.
+
+
+
+===== Merging in a nutshell =====
+
+Let's call "immigrant server" the one that will be moved; and "host server" the one that will receive the immigrant.
+
+When merging two servers, you have two options:
+
+  * either you keep two separate list services (two virtual robots) running on one Sympa server (the lists have addresses with different domains);
+  * or you want to have only one list service (one virtual robot) which will deal with all the lists, in which case the addresses will only differ by their local part.
+
+The merging will need few or even no changes in the immigrant server //if// it is installed as a virtual robot in the host server.
+
+The question is then: do you want to keep two separate list services on one Sympa server (easy) or do you prefer one robot processing all your lists (less easy)?
+
+----
+
+Once your choice is made, you're all set to start merging your servers.
+
+These are the main guidelines to follow:
+
+  - merge ''user_table'' tables from both servers. DON'T DO IT RIGHT NOW. READ THE SECTION ABOUT USERS BELOW FIRST.
+  - transfer list directories from the immigrant server to the host.
+  - compare and update ''sympa.conf'' and ''wwsympa.conf''.
+  - update scenarios and templates.
+  - restart Sympa.
+
+Let's see now the detail of some operations.
+
+===== Users migration =====
+
+In order to merge your servers, you must merge the ''user_table'' tables from both servers. A close look at this table will reveal you the absence of any "robot" column. Which means all the user informations (as for example their language preferences) are not robot-dependent. This isn't a problem as all these informations are optional.
+
+//However//, there can be an issue with the passwords.
+
+Passwords are ciphered. It is a reversable encryption using the ''[[../manual/conf-parameters/part1#cookie|cookie]]'' parameter in ''sympa.conf''. This parameter is **not** robot-specific. Therefore, if you want to preserve the users' passwords from the immigrant server, you will have to:
+  - decipher them using the immigrant server's ''cookie'' parameter and
+  - recipher them with the host server's ''cookie'' parameter.
+
+To achieve this goal, you will probably have to implement the following script:
+  * Stop all the Sympa processes
+  * Backup your database
+  * Extract all the data from the immigrant server's ''table_user'' table.
+  * FOR each line:
+    * IF it doesn't exist in the host server's ''table_user'' table
+      * decipher the ''password_user'' field using the immigrant server's ''cookie'' parameter
+      * cipher it using the host server's ''cookie'' parameter
+      * insert this line into the host server's ''table_user'' table
+    * ELSE : do nothing
+
+To cipher / decipher the password, you can seek inspiration in the ''crypt_password'' and ''decrypt_password'' procedures in ''tools.pl''
+
+FIXMEune autre option est de faire l'impasse sur les mots de passe et les préférences utilisateur et de ne pas faire de merge des tables table_user.
+
+===== Mailing list migration =====
+
+**First**, copy these lists directories (those in ''list_data/'') from the immigrant server to the host server. This creates empty mailing lists in the host server.
+
+**Then** replenish them by applying the ''load_subscribers.pl'' script. This -- undocumented ;-) -- script copy into the database the informations found in ''<list_data>/<listname>/subscribers'', where ''<listname>'' is the script's argument.
+
+**Finally**, examine the ''table_subscriber'' to check that everything went well.
+
+**Don't forget** to copy the ''spool/<listname>'' an ''arc/<listname>'' directories. If the lists' addresses changed, you must modify, in spools, the files name and their ''X-Sympa-To:'' header.
+
+===== Additional tunings =====
+
+Compare ''sympa.conf'' and ''wwsympa.conf'' in both immigrant and host servers. Some obvious choices must be made there.
+
+If you cusomized some scenarios or templates, don't forget to install them into the host server.

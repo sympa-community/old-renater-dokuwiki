@@ -1,0 +1,77 @@
+<note warning>
+Several of following documentation are obsoleted.  See [[https://sympa-community.github.io/|Sympa documentation site]] to find recent documentation.
+</note>
+
+====== Documentation ======
+
+<del>Sympa documentation, including the administrator's manual, is now managed using a wiki ([[http://www.splitbrain.org/wiki:dokuwiki|dokuwiki]]). This site provides many other documentations including "[[:internals:index|internals]]" for developpers.</del>
+
+The administrator's manual and most of the documentation are available in English only (no French version). Many French-speaking people are surprised at this because the authors are French but it is really difficult to maintain a documentation even in a single language.
+
+<del>Versions prior to 5.3 included latex documentation. We now moved to a wiki because we want to encourage contributions to the documentation, which will be far easier with a wiki.</del>
+
+
+===== Administration manual =====
+
+[[https://sympa-community.github.io/manual/|Sympa Administration manual]]: this is the main documentation for installation, setup and customization of a Sympa mailing list server.
+
+===== User documentation =====
+
+There are many sources of documentation about Sympa.
+
+For users, the main are included into Sympa web interface (since version 5.2.4 and later).
+
+We've listed [[/doc/user_documentation|Sympa user's documentations]] of interest. 
+
+===== Tutorials =====
+  * November 2013: [[.:formation:sympa_workshop|TERENA workshop]]
+  * June 2013: {{:doc:presentation-jperl2013.odp|Presentation at the Perl French Workshop 2013}} (French) [[http://www.youtube.com/watch?v=q70XBXZ8yE8|Watch the video (in French - little sound problems at the beginning)]]
+  * June 2013: [[.:formation:sympa_bases|Sympa basis]] (French)
+  * June 2013: [[.:formation:sympa_avance|Advanced Sympa]] (French)
+  * December 2010 : [[http://www.sympa.org/doc/upgrade_party/index|upgrade party]] (French)
+  * June 2007 : [[/doc/tuto-juin2007/index|advanced Sympa usage]] (6h), french, slides and video
+  * November 2004 :[[http://www.sympa.org/documentation/tutoriel-nov-2004/slides.pdf|General tutorial about Sympa]] (6 h), French, slides. (This teaching material is available as source version on request)
+  * October 2004 : [[http://www.sympa.org/documentation/internet2-workshop.pdf|An Open Source middleware-enabled mailing list server]], (Internet2 Fall meeting)
+  * March 2002 : [[http://www.sympa.org/documentation/tutorial/tutorial-us.pdf|english version]] (translation by mathieu Jan), [[http://www.sympa.org/documentation/tutorial/tutorial-fr.pdf|French version]] and [[http://www.sympa.org/documentation/tutorial/slide-tutorial-fr.pdf|slides]] (pdf in French)
+
+
+
+
+===== Installing Sympa =====
+
+  * {{:doc:install_migration_sympa_el6.pdf|Sympa migration on Sympa EL 6}} (French), [[pouilloux@abes.fr|F. Pouilloux]], [[http://www.abes.fr/|ABES]], november 2012
+  * [[http://www.folly.org.uk/sympa/|Sympa Mailing List Manager Virtual Host Configuration]], Folly Consulting, April 2008
+  * {{doc:installpartysympa-2007.odt|TP d'installation pas à pas}} : juin 2007 ; le support de cours de la formation "Installation et configuration d'un serveur Sympa" organisé par RENATER au CINES, Montpellier.
+  * [[http://www.vgsi.fr/files/Tutoriel-Sympa-Ubuntu.pdf|Tutoriel d'installation Ubuntu]] : juin 2007 ; rédigé par Vincent Gatignol (VGSI).
+  * [[https://we.riseup.net/groups/tags/debian/list+server|Installation Riseup labs]]
+  * [[http://www.open-organizations.org/view/Socialtools/StandardSympa|Sympa mailing list manager SocialTools]] (2003)
+  * [[http://www.sympa.org/distribution/contrib/sympa.html|French documentation]] ; Juin 2000 : de la doc en bon français !, Frédéric Lallouet.  A short documentation translated in French from initial documentation and adapted for Mandrake 7.0/qmail/Postgresql. 
+  * {{doc:sympa_pour_les_nuls.pdf|installation de Sympa pour les nuls}} : Mars 2007, un guide d'installation en français de Jean-Philippe Barrière (ENIT)
+
+
+===== Articles about Sympa =====
+
+  * {{:doc:analyse_sondage-sympa.pdf|Analyse du sondage sur Sympa auprès de la communauté des administrateurs}}, David Verdin, 2015
+  * {{:doc:presentation-yapc.2014.odp|Sympa presentation at YAPC::Europe 2014}}, David Verdin & Etienne Méléard, 2014
+  * [[http://marksallee.wordpress.com/2010/05/|Sympa List Server to the Rescue]], Mark Sallee, May 2010
+  * {{:doc:sympa-vo.odp|Using Sympa as a VO group manager}} presentation at the Fall 2009 Internet 2 member meeting, San anatonio, TX, USA, October 2009
+  * {{:doc:couplage_sympa_dokuwiki_sso.pdf|Le couplage Sympa - ferme de (doku)wikis pour les organisations virtuelles}} (french) presentation at JOSY's days, October 2009 - [[http://webcast.in2p3.fr/JoSy/Outils-Collaboratifs/index.php?video=lumineau.ram|voir la video]]
+  * {{:doc:parcel_feedback_sympa-1.pdf|report from the PARCEL project}} on Sympa usability, 2007
+  *{{doc:eunis2008.pdf|Wiki and mailing list integration, an example of middleware application}} , EUNIS 2008 Conference, June 2008 ({{doc:eunis2008.odt|ODT source}})
+  *{{:doc:poster-tnc2008_a4.pdf|Wikis + mailing lists + shibboleth integration for virtual organizations}} TNC 2008 Conference, May 2008
+  *{{doc:article-sympa-jt2006.pdf|Sympa, a mailing list server for universities}} , JT2006 conference, November 2006
+  *[[http://blogs.bellanet.org/index.php?/archives/168-FLOSS-Dgroups-What-is-happening.html|FLOSS Dgroups tying together Drupal and Sympa]]
+  *[[http://www.internet2.edu/presentations/spring05/20050503-MyVOCS-Robinson.ppt|My Virtual Organization Collaboration System]], John-Paul Robinson, Internet 2 2005 Spring meeting
+  *[[http://www.sympa.org/documentation/AA-in-Sympa/|Authentication and access control in Sympa mailing list server]] (video streaming), Terena conference June 2004
+  *[[http://blogs.onenw.org/onelist/001361.html/|Ten cool things you can do with Sympa list software]], Terena conference, March 2003
+  *[[http://lt.tamu.edu/tamu%20sympa.pdf|Email delivery to University Class Roster Students and Bulk Mail Recipients Utilizing Open Source Mailing List Software and a Relational Database]], Texa A&M University, 2003
+  *[[http://www.sympa.org/documentation/mailmanvssympa.html|Mailman vs Sympa]], FTPress, February 2003
+  *[[http://www.adae.pm.gouv.fr/spip/article.php3?id_article=168|Le groupware et l'open source]] (French), Julien Français, MTIC, March 2001
+  *[[http://www.sympa.org/documentation/article_smime/sympasmime.html|S/MIME and Sympa mailing lists manager]], Linux Expo Paris - February 2001, EUNIS 2001 Berlin - March 2001, FIRST 2001 Toulouse - June 2001.
+  *[[http://www.sympa.org/documentation/7s923nwk.htm|Un serveur de listes au coeur d'un groupware]] (French), Journées Groupware, November 2000. [[http://soleil.univ-valenciennes.fr/mbase/asset%2fGroupWare%2fsympa?autostart=true|Video streaming]](1.5Mb/s).
+  *[[http://www.sympa.org/documentation/groupware.html|Groupware around Mailing Lists]], October 2000.
+  *[[http://www.sympa.org/documentation/montreal/|Sympa presentation]] for Linux Expo Montreal, April 2000.
+  *[[http://www.sympa.org/fom?_highlightWords=qmail&file=62|Using Qmail-LDAP and Sympafor LDAP email and mailing lists]], G. Kelley
+  *[[http://www.sympa.org/sympa-versus-majordomo-gb.html|Sympa versus Majordomo]], May 1999
+  *[[http://dudle.linuxroot.org/docs/sympa/sympa.html|fast start howto]] Haim Dimermanas june 2001
+  *[[http://www.hu-berlin.de/rz/rzmit/rzm22/7.pdf|Sympa - Mailing-Listen fast in SelbstbedienungGünter lau Hu-Berlin]], November 2001 (pdf)

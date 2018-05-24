@@ -1,0 +1,3 @@
+====== How to add a personalized unsubscribe link in each message footer  ======
+
+This is a feature introduced in version 6.1. See [[https://www.sympa.org/manual_6.1/message-handling#unsubscription_url|unsubscription URL]]

@@ -1,0 +1,17 @@
+====== Webinaire Universalistes du 16 juin 2009 ======
+
+Le webinaire Universalistes présentant les nouveautés de la version Sympa 6 s'est déroulé le 16 juin 2009.
+
+La diffusion a été réalisé avec l'outil EVO ([[http://www.renater.fr/faq/webinar/index|plus d'informations sur EVO]])
+
+Vous allez pouvoir visionner le webinaire de 2 méthodes différentes au choix :
+
+  * 1ère méthode : rejouer l'enregistrement fait avec l'enregistreur d'EVO :
+    * [[http://evo.caltech.edu/evoGate/player/EVOPlayer.jnlp|téléchargez le lecteur d'EVO]]
+    * après avoir ouvert le lecteur, faites **"Fichier" -> "Ouvrir une URL"**, et saisissez l'adresse suivante \\ **%%http://www.renater.fr/videos/webinar_universalistes-160609/evo/webinar_universalistes-160609.evx%%**
+    * le webinar se lance alors... :-P
+
+  * 2ème méthode : l'animation flash juste en dessous. //(si vous voulez mettre en plein écran, cliquez en bas à droite de l'animation)//
+
+{{url>http://www.renater.fr/videos/webinar_universalistes-160609/index.html 500px noscroll noborder}}
+

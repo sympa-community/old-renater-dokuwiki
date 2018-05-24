@@ -1,0 +1,236 @@
+  * List::distribute_msg() for distribution (see [[#list-distribute-msg|list-distribute-msg]], page [[internals#list-distribute-msg|{{crossref.png|[*]}}]])
+  * List::send_auth() for authentification or topic tagging by message sender(see [[#list-send-auth|list-send-auth]], page [[internals#list-send-auth|{{crossref.png|[*]}}]])
+  * List::send_to_editor() for moderation or topic tagging by list moderator(see [[#list-send-to-editor|list-send-to-editor]], page [[internals#list-send-to-editor|{{crossref.png|[*]}}]]).
+  * List::automatic_tag() for automatic topic tagging (see [[#list-automatic-tag|list-automatic-tag]], page [[internals#list-automatic-tag|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''which''(+): 'list_name@domain_name - the concerned list
+  - ''message''(+): ref(Message) - sent message
+  - ''robot''(+): robot
+
+**OUT**: 1 //if everything went fine// in order to remove the file from the queue undef
+
+==== DoCommand() ====
+
+Handles a command sent to sympa. The command is parse by calling Commands::parse() (see [[#commands-parse|commands-parse]], page [[internals#commands-parse|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''rcpt'': recepient ''<''listname''>''-''<''subscribeunsubscribe''>''
+  - ''robot''(+): robot
+  - ''msg''(+): ref(MIME::Entity) - message containing the command
+  - ''file''(+): file containing the message
+
+**OUT**: $success - result of Command::parse() function undef.
+
+==== DoSendMessage() ====
+
+Sends a message pushed in spool by another process (ex: wwsympa.fcgi) by calling function mail::mail_forward() (see [[#mail-mail-forward|mail-mail-forward]], page [[internals#mail-mail-forward|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''msg''(+): ref(MIME::Entity)
+  - ''robot''(+): robot
+
+**OUT**: 1 undef
+
+==== DoForward() ====
+
+Handles a message sent to ''<''listname''>''-editor: the list editor, ''<''list''>''-request: the list owner or the listmaster. The message is forwarded according to $function by calling function mail::mail_forward() (see [[#mail-mail-forward|mail-mail-forward]], page [[internals#mail-mail-forward|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''name''(+): list name //if ($function != 'listmaster')//
+  - ''function''(+): 'listmaster' 'request' 'editor'
+  - ''robot''(+): robot
+  - ''msg''(+): ref(MIME::Entity)
+
+**OUT**: 1 undef
+
+==== SendDigest() ====
+
+Reads the queuedigest spool and send old digests to the subscribers with the digest option by calling List::send_msg_digest() function mail::mail_forward() (see [[#list-send-msg-digest|list-send-msg-digest]], page [[internals#list-send-msg-digest|{{crossref.png|[*]}}]]).
+
+**IN**: - **OUT**: - undef
+
+==== CleanSpool() ====
+
+Cleans old files from spool $spool_dir older than $clean_delay.
+
+**IN**:
+
+  - ''spool_dir''(+): the spool directory
+  - ''clean_delay''(+): the delay in days
+
+**OUT**: 1
+
+==== sigterm() ====
+
+This function is called when a signal -TERM is received by sympa.pl. It just changes the value of $signal loop variable in order to stop sympa.pl after endding its message distribution if in progress. (see [[running-sympa#stop-signals|stop-signals]], page [[running-sympa#stop-signals|{{crossref.png|[*]}}]])
+
+**IN**: - **OUT**: -
+
+==== sighup() ====
+
+This function is called when a signal -HUP is received by sympa.pl. It changes the value of $signal loop variable and switchs of the ''-mail'' (see [[running-sympa#stop-signals|stop-signals]], page [[running-sympa#stop-signals|{{crossref.png|[*]}}]]) logging option and continues current task.
+
+**IN**: - **OUT**: -
+
+====== Commands.pm ======
+
+This module does the mail commands processing.
+
+=====  Commands processing =====
+
+parse(), add(), del(), subscribe(), signoff(), invite(), last(), index(), getfile(), confirm(), set(), distribute(), reject(), modindex(), review(), verify(), remind(), info(), stats(), help(), lists(), which(), finished().
+
+==== parse() ====
+
+Parses the command line and calls the adequate subroutine (following functions) with the arguments of the command. This function is called by sympa::DoCommand() (see [[#sympa-docommand|sympa-docommand]], page [[internals#sympa-docommand|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''sender''(+): the command sender
+  - ''robot''(+): robot
+  - ''i''(+): command line
+  - ''sign_mod'': 'smime' undef
+
+**OUT**: 'unknown_cmd' $status - command process result
+
+==== add() ====
+
+Adds a user to a list (requested by another user), and can send acknowledgements. New subscriber can be notified by sending template 'welcome'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname, email and comments eventually
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== del() ====
+
+Removes a user to a list (requested by another user), and can send acknowledgements. Unsubscriber can be notified by sending template 'removed'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and email
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1
+
+==== subscribe() ====
+
+Subscribes a user to a list. New subscriber can be notified by sending him template 'welcome'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and comments eventually
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== signoff() ====
+
+Unsubscribes a user from a list. He can be notified by sending him template 'bye'.
+
+**IN**:
+
+  - ''which''(+): command parameters: listname and email
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'syntax_error' 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== invite() ====
+
+Invites someone to subscribe to a list by sending him the template 'invite'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname, email and comments
+  - ''robot''(+): robot
+  - ''sign_mod'': 'smime' undef - authentification
+
+**OUT**: 'unknown_list' 'wrong_auth' 'not_allowed' 1 undef
+
+==== last() ====
+
+Sends back the last archive file by calling List::archive_send() function (see [[#list-archive-send|list-archive-send]], page [[internals#list-archive-send|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''which''(+): listname
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'no_archive' 'not_allowed' 1
+
+==== index() ====
+
+Sends the list of archived files of a list.
+
+**IN**:
+
+  - ''which''(+): listname
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'no_archive' 'not_allowed' 1
+
+==== getfile() ====
+
+Sends back the requested archive file by calling List::archive_send() function (see [[#list-archive-send|list-archive-send]], page [[internals#list-archive-send|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''which''(+): commands parameters: listname and filename(archive file)
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'no_archive' 'not_allowed' 1
+
+==== confirm() ====
+
+Confirms the authentification of a message for its distribution on a list by calling function List::distribute_msg() for distribution (see [[internals#list-distribute-msg|list-distribute-msg]]) or by calling List::send_to_editor() for moderation (see [[#list-send-editor|{{crossref.png|[*]}}]]).
+
+**IN**:
+
+  - ''what''(+): authentification key (command parameter)
+  - ''robot''(+): robot
+
+**OUT**: 'wrong_auth' 'msg_not_found' 1 undef
+
+==== set() ====
+
+Changes subscription options (reception or visibility)
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and reception mode (digestdigestplainnomailnormal...) or visibility mode(concealnoconceal).
+  - ''robot''(+): robot
+
+**OUT**: 'syntax_error' 'unknown_list' 'not_allowed' 'failed' 1
+
+==== distribute() ====
+
+Distributes the broadcast of a validated moderated message.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and authentification key
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'msg_not_found' 1 undef
+
+==== reject() ====
+
+Refuses and deletes a moderated message. Rejected message sender can be notified by sending him template 'reject'.
+
+**IN**:
+
+  - ''what''(+): command parameters: listname and authentification key
+  - ''robot''(+): robot
+
+**OUT**: 'unknown_list' 'wrong_auth' 1 undef

@@ -1,0 +1,26 @@
+===== Sympa and IE7 =====
+
+Sympa 5.2.x CSS had to fixed to be IE7 compatible. The bug prevented users from using the web login form.
+You should upgrade to Sympa 5.2.4.
+
+===== S/MIME verification by Sympa seems impossible =====
+
+There are many reasons why a signed message verification can failed, most of them are not related to Sympa it self because Sympa does not modify the received message in any way before applying S/MIME verification process using openssl command. If you get in troubles with that the first step is to send a signed message both to a list and to yourself. You should be able to verify S/MIME signature in your own MUA. If not Sympa will probably play with the same difficulties. 
+
+If this is ok and nothing in the logs can help you then try to verify the S/MIME signature using openssl in the same way as Sympa does but from user shell command :
+
+
+  - save a signed message in file (/tmp/smime.msg)
+  - check in sympa.conf capath and cafile. 
+  - we suppose in this example capath is <nowiki>__/etc/pki/ssl/__</nowiki> and cafile <nowiki>__/etc/pki/ssl/cabundle.crt__</nowiki>
+
+<code>
+% cat /tmp/mime.msg openssl smime -verify  -CAfile /etc/pki/ssl/cabundle.crt -CApath /etc/pki/ssl/ -signer /tmp/foo
+</code>
+
+If something is wrong with this command, you must solve it before to try anything else with Sympa (something wrong with the message, with the certificate or with the version of opensssl ?)
+
+ ===== Byte order is not compatible at ../../lib/Storable.pm =====
+
+This error might happen if you have migrated your Sympa service to a 64bit architecture server. You should remove all your ''config.bin'' files (these are just cache for ''config'' files) and restart your sympa processes.
+  % find /home/sympa/list_data -name config.bin|xargs rm -f

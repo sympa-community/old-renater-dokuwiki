@@ -1,0 +1,25 @@
+===== All messages are lost =====
+When I install sympa, it looks well, and goes correctly on. 
+But it does absolutely nothing : with -d option, I just see
+Reaper unwaited pids : 
+Open = 0
+ad infinitum
+and no messages adressed to sympa seems to come in. The messages are
+not even in the spool/msg directory. 
+
+Solution : verify the **setuid bit** on program queue : 
+  rwsr-xr-x   1 sympa    sympa      40012 juin 30 15:44 queue
+   
+
+Explanation : you probably (and prudently) compile and install sympa
+as a normal user (sympa perhaps ? ), but user root is the only one 
+authorized to modify setuid bit. You may compile with a normal account, 
+but don't forget to modify  manually the setuid bit on $sympa/bin/queue
+
+===== Note about the Sendmail "smrsh" feature =====
+
+Remember that if your implementation uses the smrsh facility, the setuid
+executables such as ''queue'' and ''bouncequeue'' will be in the special smrsh
+directory (often ''/etc/smrsh''). You will need to apply the setuid bit to
+the files in this directory and not the files with the same name in 
+''/home/sympa/bin''. See **man smrsh** for more info.

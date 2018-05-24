@@ -1,0 +1,22 @@
+====== Sympa, a Mailing List Management Software - Reference manual ======
+
+**Software version:** development trunk
+
+**Authors:** Serge Aumont, Olivier Salaün, David Verdin
+
+[[:dev-manual:test]]
+
+===== Other versions of the documentation =====
+
+You can browse older versions of the Sympa manual. Until release 5.2 the documentation source used latex format, both HTML and PDF versions were included with the Sympa tar.gz files. Starting with release 5.3, the manual is centrally maintained in the Sympa wiki ; we generate a PDF export of the manual for each major version. You can browse the manual for older versions below :
+
+^  Sympa version  ^  reference manual  ^
+|  5.3 |   [[http://www.sympa.org/documentation/manual/sympa-5.3.pdf|pdf]]  |
+|  5.2.3  |  [[http://www.sympa.org/documentation/manual/doc-5.2.3/sympa.pdf|pdf]]  |
+|  older versions |  get the documentation from the [[http://www.sympa.org/distribution/old/|release tar.gz]]  |
+
+===== Table of Content =====
+
+----
+{{page>toc}}
+

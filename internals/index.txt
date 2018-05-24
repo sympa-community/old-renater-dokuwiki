@@ -1,0 +1,146 @@
+<note >
+Recent documentation is found at:
+
+  * [[https://sympa-community.github.io/manual/man/Sympa-Internals.3.html|Sympa::Internals(3)]]
+  * [[https://sympa-community.github.io/manual/man/sympa_database.5.html|sympa_database(5)]]
+
+</note>
+
+
+//Please take note that this work is still ongoing. The documentation should grow in a near future. ;-)//
+
+----
+
+====== × Internals ======
+
+In this chapter, we will provide extensive information on what Sympa looks like "under the hood".
+We hope this documentation will be particularly helpful to developers.
+
+
+===== Batabase structure ====
+
+<note warning>
+This section was obsoleted.  See the manual page `sympa_database(5)` bundled in Sympa distribution.
+</note>
+
+ See the dedicated page that describe each table of [[database|Sympa database]].
+
+===== Focus on the main Sympa modules =====
+
+<note warning>
+This section was obsoleted.  See the manual page `Sympa::Internals(3)` bundled in Sympa distribution.
+</note>
+
+This chapter describes these modules (or a part of them):
+
+  * [[internals-mail|src/mail.pm]]: low level of email sending;
+  * [[internals-list|src/List.pm]]: list processing and informations about structure and access to list configuration parameters;
+  * [[internals-sympa|src/sympa.pl]]: the main script, for messages and mail commands processing;
+  * [[internals-commands|src/Commands.pm]]: mail commands processing;
+  * [[internals-wwsympa|wwsympa/wwsympa.fcgi]]: web interface;
+  * [[internals-report|src/report.pm]]: notification and error reports about requested services (email and web);
+  * [[internals-tools|src/tools.pm]]: various tools;
+  * [[internals-message|src/Message.pm]]: message object used to encapsule a message received.
+  * [[internals-session|wwsympa/SympaSession.pm]]: session object use to manage user context with a single cookie and a session table
+  * [[internals-auth|wwsympa/Auth.pm]] FIXME to be completed
+  * [[internals-ajax|wwsympa/ajax]]: ajax ;
+
+A [[mail_structure|graph of subrouroutines for messages process]]
+
+===== Sympa modules sorted by directory =====
+
+<note warning>
+This section was obsoleted.  See the manual page `sympa_toc(1)` bundled in Sympa distribution.
+</note>
+
+This section presents all the files used in the Sympa engine.
+The files described are those contained in the sources, consequently:
+
+  - you will not find the files generated at compilation time,
+  - the files are not located in the same directory as you will find them in the compiled application.
+
+Failing a better alternative, we present them as they appear in the ''src'' directory from the source distribution.
+
+==== ''./'' : Sympas sources root directory ====
+These scripts are run at installation time. They perform the operations necessary to the correct install and runtime of Sympa.
+
+    * [[internals-check_perl_modules|check_perl_modules.pl]] : This script checks installed and required Perl modules. It also does the required installations.
+    * [[internals-important_changes|important_changes.pl]] : This script prints important changes in Sympa since last install. It is based on the %%NEWS *****%% entries.
+    * [[internals-set_symlinks|set_symlinks.pl]] : This script sets symbolic links at installation time.
+    * [[internals-subst|subst.pl]] : This script replaces %%--VAR--%% occurences at installation time.
+
+==== ''./doc/'' ====
+    * FIXME [[internals-parse_tex|parse_tex.pl]]
+==== ''./po/'' ====
+    * FIXME [[internals-check_locales|check_locales.pl]]
+    * FIXME [[internals-xgettext|xgettext.pl]]
+==== ''./soap/'' ====
+    * FIXME [[internals-sympa_soap_client|sympa_soap_client.pl]]
+    * FIXME [[internals-sympasoap|sympasoap.pm]]
+    * FIXME [[internals-sympa_soap_server|sympa_soap_server.fcgi]]
+    * FIXME [[internals-SympaTransport|SympaTransport.pm]]
+==== ''./src/'' ====
+    * FIXME [[internals-admin|admin.pm]]
+    * FIXME [[internals-alias_manager|alias_manager.pl]]
+    * FIXME [[internals-aliaswrapper|aliaswrapper.c]]
+    * FIXME [[internals-Archive|Archive.pm]]
+    * FIXME [[internals-bouncequeue|bouncequeue.c]]
+    * FIXME [[internals-CAS|CAS.pm]]
+    * [[internals-Commands|Commands.pm]]
+    * FIXME [[internals-Config_XML|Config_XML.pm]]
+    * FIXME [[internals-Conf|Conf.pm]]
+    * FIXME [[internals-Datasource|Datasource.pm]]
+    * FIXME [[internals-Family|Family.pm]]
+    * FIXME [[internals-familyqueue|familyqueue.c]]
+    * FIXME [[internals-Fetch|Fetch.pm]]
+    * FIXME [[internals-Language|Language.pm]]
+    * FIXME [[internals-Ldap|Ldap.pm]]
+    * [[internals-List|List.pm]]
+    * FIXME [[internals-Lock|Lock.pm]]
+    * FIXME [[internals-Log|Log.pm]]
+    * [[internals-mail|mail.pm]]
+    * [[internals-Message|Message.pm]]
+    * FIXME [[internals-parser|parser.pl]]
+    * FIXME [[internals-PlainDigest|PlainDigest.pm]]
+    * FIXME [[internals-queue|queue.c]]
+    * [[internals-report|report.pm]]
+    * FIXME [[internals-SQLSource|SQLSource.pm]]
+    * [[internals-sympa|sympa.pl]]
+    * FIXME [[internals-sympa_wizard|sympa_wizard.pl]]
+    * FIXME [[internals-task_manager|task_manager.pl]]
+    * FIXME [[internals-Task|Task.pm]]
+    * FIXME [[internals-time_utils|time_utils.pl]]
+    * [[internals-tools|tools.pl]]
+    * FIXME [[internals-tt2|tt2.pl]]
+    * FIXME [[internals-Upgrade|Upgrade.pm]]
+    * FIXME [[internals-Version|Version.pm]]
+    * FIXME [[internals-virtualwrapper|virtualwrapper.c]]
+
+==== ''./src/etc/script/'' ====
+    * FIXME [[internals-arc2webarc|arc2webarc.pl]]
+    * FIXME [[internals-arcrepair|arcrepair.pl]]
+    * FIXME [[internals-crypt_passwd|crypt_passwd.pl]]
+    * FIXME [[internals-find_missing_messages|find_missing_messages.pl]]
+    * FIXME [[internals-init_comment|init_comment.pl]]
+    * FIXME [[internals-ldap_alias_manager|ldap_alias_manager.pl]]
+    * FIXME [[internals-mod2html|mod2html.pl]]
+    * FIXME [[internals-mysql_alias_manager|mysql_alias_manager.pl]]
+    * FIXME [[internals-p12topem|p12topem.pl]]
+    * FIXME [[internals-testldap|testldap.pl]]
+    * FIXME [[internals-testlogs|testlogs.pl]]
+    * FIXME [[internals-tpl2tt2|tpl2tt2.pl]]
+
+==== ''./wwsympa/'' ====
+    * FIXME [[internals-archived|archived.pl]]
+    * FIXME [[internals-Auth|Auth.pm]]
+    * FIXME [[internals-bounced|bounced.pl]]
+    * FIXME [[internals-bounce-lib|bounce-lib.pl]]
+    * FIXME [[internals-cookielib|cookielib.pm]]
+    * FIXME [[internals-Marc|Marc.pm]]
+    * FIXME [[internals-SharedDocument|SharedDocument.pm]]
+    * FIXME [[internals-wwslib|wwslib.pm]]
+    * [[internals-wwsympa|wwsympa.fcgi]]
+    * FIXME [[internals-wwsympa_sudo_wrapper|wwsympa_sudo_wrapper.pl]]
+==== ''./wwsympa/Marc/'' ====
+    * FIXME [[internals-Search|Search.pm]]
+

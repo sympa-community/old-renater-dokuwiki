@@ -1,0 +1,49 @@
+===== May I use a mail server different from sendmail ? =====
+
+You may replace sendmail with another Message Transfer Agent such as qmail, exim  or postfix. Set this up in sympa.conf 
+
+If you're using postfix as MTA, you have to set 'sympa.conf' like that :
+
+
+  ## The full path to the Message Transfer Agent program (default is Sendmail 8.7
+  ## or above)
+  sendmail        /usr/sbin/sendmail
+  # correct
+  # this binary is locating in the same directory as postfix
+  # sendmail       /usr/sbin/postfix
+  # (incorrect : must use Postfix to Sendmail compatibility interface)
+
+===== mail aliases managment =====
+
+The web interface allows user to create lists on the fly but each new lists needs a few mail aliases in order to used (unless your MTA is configured to recognize new list automatically). Sympa can be used with sendmail, postfix, exim and qmail. 
+
+  * [[postfix]]
+  * [[exim]]
+  * [[sendmail]]
+  * [[qmail]]
+
+===== Getting sympa to run the sendmail aliases update as root =====
+
+Only root can run the newaliases command in the latest versions of sendmail -- so you needed to get Sympa to run the aliases updater as root.  The smae trick that is used for to run wwwsypma.fcgi as the sympa user works on this as well:
+
+  - Moving /home/sympa/sbin/alias_manager.pl to /home/sympa/sbin/alias_manager_sudo_wrapper.pl
+  - Create new file /home/sympa/sbin/allias_wrapper.pl file needs to be:
+
+<code perl>
+#!/usr/bin/perl
+
+exec '/usr/bin/sudo', '-u', 'root', '/home/sympa/sbin/alias_manager_sudo_wrapper.pl', "$ARGV[0]","$ARGV[1]","$ARGV[2]","$ARGV[3]";
+/var/sympa/sbin/</code>((My PERL skillz are weak, so some one might have a better way of passing the arguments in better way (using @ARGV resulted in all the arguments becoming one when they are passed).))
+
+  - You need to make sure your sympa aliases file is owned by the sympa user.  Sendmail will not like it if the file is group or everyone writable, but does not seem to care who actaully owns it.
+
+<code>
+-rw-r--r--   1 sympa root   6003 Jan  8 12:05 sympa_aliases</code>
+
+  - Add this to your /etc/sudoers file:
+
+<code>
+sympa localservername=(root) NOPASSWD:/home/sympa/sbin/alias_manager_sudo_wrapper.pl</code>
+
+  - Make sure that the sympa user is not a nologin user.  It needs to be able have shell access to be able to sudo.
+

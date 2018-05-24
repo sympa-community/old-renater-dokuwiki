@@ -1,0 +1,47 @@
+====== Sympa 6.1.22 released ======
+
+//June 6, 2014//
+
+[[http://www.sympa.org|{{:authors-old:annonces:envoi:logo_sympa_couleur.png }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.1.22 is the latest stable version of Sympa.\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.1.22.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-stable/NEWS|Check the release notes]]
+
+This release includes mainly bug fixes.
+
+<note important>This is the release that fixes the DMARC issues related to the recent DMARC policy change from yahoo, aol and others and solved by Steve Shipway. All details about can be found on the [[https://www.sympa.org/manual/dmarc|Sympa DMARC page]].</note>
+
+===== Features =====
+
+[Submitted by S. Shipway, Univ. of Auckland] Workaround for aggressive DMARC policy such as yahoo.com.  The patch adds option #3 of this DMARC FAQ: [[http://dmarc.org/faq.html#s_3]]
+- New list config paragraph "dmarc_protection" to munge "From:" header and put original header content erc. into comment.
+
+
+
+===== Changes =====
+
+
+New parameters for merged messages. "part.description", "part.disposition", "part.encoding" and "part.type" may be used for each part of input messages.  These are all-lowercase (except "part.description").
+
+===== Bug fixes =====
+
+  * [Fixed by V. Bonamy, univ. Rouen] When usingUTF-8 encoded data, data were twice encoded before being sent by the SOAP server. Fixed by decoding from UTF-8 any text data.
+  * Scenarios were not evaluated for DKIM authlevel, because DKIM signature was found invalifd. This was due - again - by the usage of MIME::Entity::as_string to store the message as	string. Fixed by simply storing the raw data from message file instead vof using this sub.
+  * When using DKIM, both DKIM and S/MIME signatures were broken. This was due to the usage of MIME::Entity->as_string that rewrapped the message body to 60 columns - thus changing the character string of the message body and probably also the \015\12 end of line required to get valid DKIM signatures. Fixed by storing the message body fed to Mail::DKIM and concatenating it to the new headers containing the DKIM signature.
+  * DKIM parameters were not correctly loaded and dkim_signer_domain parameter was not correctly defaulted to the list service domain.
+  * When using binary cache for list configs, if the main config (sympa.conf or wwsympa.conf) was changed, binary cache were still used. Problem: These bainary cache contain default values taken from main config. If these values were changed in main config, they were not updated in binary cache. Fixed by testing the last modification time for sympa.conf and wwsympa.conf against the binary_cache last update time.
+  * WWSympa may crash due to unknown subroutine when:
+    - Anonymous user accesses to $wwsympa_url/signoff/LIST/EMAIL, i.e. specifying email but not logging-in.
+    - User does not exist in user_table.
+  This causes because wwslib::init_passwd() called in wwsympa.fcgi doesn't have qualified name.  Use qualified name and do fix another logical bug on unknown variable.
+  * If cache_list_db is "on" and list_table is empty, all users in user_table except listmaster will be purged. To prevent information loss, made purge_user_table task not to use list_table cache.
+  * [Reported by D Launay, RENATER] Signed mail body are altered. Fixed by making following functions not to alter such parts:
+	- Bulk::merge_msg()
+	- List::_append_parts()
+  * [Originally submitted by M. Howe, Univ. of Oxford] Session for multiple robots sharing same cookie domain is broken. Fixed injected bug by fix for bug #6180: the sessions were limited to each virtual robot at the first access.  The patch was modified a bit.

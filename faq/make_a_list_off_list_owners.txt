@@ -1,0 +1,16 @@
+====== How can I create an automatic list of all list owners ? ======
+
+You may do it easily using include feature. The basic idea is to automaticaly include in a list email of list owners from Sympa database. Create a list and edit list config :
+  * Admin
+    * Edit List Config 
+      * Data sources
+
+Then create a new SQL source according to the following screnshot :
+
+{{faq:inc.jpg|}}
+
+The included source is an SQL query of emails from Sympa internal database.
+The SELECT close can be limited to a particular robot or to one of the roles list owners or:and list editors.
+
+example : 
+  SELECT user_admin FROM admin_table WHERE robot_admin = 'renater.fr' and role_admin = 'owner'

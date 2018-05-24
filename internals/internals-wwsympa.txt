@@ -1,0 +1,121 @@
+====== × wwsympa.fcgi ======
+<note warning>
+  * This document was obsoleted.
+
+</note>
+
+This script provides the web interface to Sympa.
+
+do_subscribe(), do_signoff(), do_add(), do_del(), do_change_email(), do_reject(), do_send_mail(), do_sendpasswd(), do_remind(), do_set(), do_send_me(), do_request_topic(), do_tag_topic_by_sender().
+
+==== do_subscribe() ====
+
+Subscribes a user to a list. New subscriber can be notified by sending him template 'welcome'.
+
+  * **IN**: -
+  * **OUT**: 'subrequest' 'login' 'info' $in.previous_action undef
+
+==== do_signoff() ====
+
+Unsubscribes a user from a list. The unsubscriber can be notified by sending him template 'bye'.
+
+  * **IN**: -
+  * **OUT**: 'sigrequest' 'login' 'info' undef
+
+==== do_add() ====
+
+Adds a user to a list (requested by another user) and can send acknowledgements. New subscriber can be notified by sending him template 'welcome'.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' ($in.previous_action 'review') undef
+
+==== do_del() ====
+
+Removes a user from a list (requested by another user) and can send acknowledgements. Unsubscriber can be notified by sending template 'removed'.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' ($in.previous_action 'review') undef
+
+==== do_change_email() ====
+
+Changes a user's email address in Sympa environment. Password can be send to user by sending template 'sendpasswd'.
+
+  * **IN**: -
+  * **OUT**: '1' 'pref' undef
+
+==== do_reject() ====
+
+Refuses and deletes moderated messages. Rejected message senders are notified by sending them template 'reject'.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 'modindex' undef
+
+==== do_distribute() ====
+
+Distributes moderated messages by sending a command DISTRIBUTE to sympa.pl. For it, it calls mail::mail_file() (see [[#mail-mail-file|mail-mail-file]], page [[internals#mail-mail-file|{{crossref.png|[*]}}]]). As it is in a Web context, the message will be set in spool. In a context of message topic, tags the message by calling to function List::tag_topic() (see [[#list-tag-topic|list-tag-topic]], page [[internals#list-tag-topic|{{crossref.png|[*]}}]]).
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 'modindex' undef
+
+==== do_modindex() ====
+
+Allows a moderator to moderate a list of messages and documents and/or tag message in message topic context.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 'admin' 1 undef
+
+==== do_viewmod() ====
+
+Allows a moderator to moderate a message and/or tag message in message topic context.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 1 undef
+
+==== do_send_mail() ====
+
+Sends a message to a list by the Web interface. It uses mail::mail_file() (see [[#mail-mail-file|mail-mail-file]], page [[internals#mail-mail-file|{{crossref.png|[*]}}]]) to do it. As it is in a Web context, the message will be set in spool.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 'info' undef
+
+==== do_sendpasswd() ====
+
+Sends a message to a user, containing his password, by sending him template 'sendpasswd' list by the Web interface.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 'info' undef
+
+==== do_request_topic() ====
+
+Allows a sender to tag his mail in message topic context.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 1 undef
+
+==== do_tag_topic_by_sender() ====
+
+Tags a message by its sender by calling List::tag_topic() and allows its diffusion by sending a command CONFIRM to sympa.pl.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 'info' undef
+
+==== do_remind() ====
+
+Sends a command remind to sympa.pl by calling mail::mail_file() (see [[#mail-mail-file|mail-mail-file]], page [[internals#mail-mail-file|{{crossref.png|[*]}}]]). As it is in a Web context, the message will be set in spool.
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 'admin' undef
+
+==== do_set() ====
+
+Changes subscription options (reception or visibility)
+
+  * **IN**: -
+  * **OUT**: 'loginrequest' 'info' undef
+
+==== do_send_me() ====
+
+Sends a web archive message to a requesting user It calls mail::mail_forward() to do it (see [[#mail-mail-forward|mail-mail-forward]], page [[internals#mail-mail-forward|{{crossref.png|[*]}}]]). As it is in a Web context, the message will be set in spool.
+
+  * **IN**: -
+  * **OUT**: 'arc' 1 undef

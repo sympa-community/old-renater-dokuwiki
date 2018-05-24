@@ -1,0 +1,48 @@
+====== logs ======
+
+===== I don't have logs for Sympa =====
+
+On Linux systems, logs can be sent to syslogd either via UDP or via a Unix socket. On most Unix system syslogd by default syslogd only accept Unix socket. Sympa can be configured to use UDPO or Unix socket. This is controled by the log_socket_type parameter in sympa.conf. Unfortunitly, on some old Sympa versions the default for log_socket_type is inet. In this case you must either edit sympa.conf and set log_socket_type to unix.
+
+## Communication mode with syslogd is either 'unix' (via Unix sockets) or
+## 'inet' (use of UDP)
+log_socket_type unix
+
+You may prefer to start syslogd with the "-r" option :
+
+%man syslogd
+.....
+-r  This option will enable the facility to receive message from
+the network using an internet domain socket with the syslog service 
+(see services(5)).  The default is to not receive any messages from 
+the network.
+
+This option is introduced in version 1.3 of the sysklogd package. 
+Please note that the default behavior is the opposite of how older  
+versions behave, so you might have to turn this on.
+.....
+
+If Sympa log file is still empty, check some rules about syslog
+
+    * Syslog do not create log files, you must do it yourself.
+    * Log files must be created before you start syslog (restart your syslog after ratating logs !)
+    * syslog.conf : no <space> char both side of log filename. <tab> and <space> are different.
+    * Don't forget to send SIGHUP to syslogd after any change in syslog.conf
+    * run syslogd with debug option (-d under linux) and check errors and warnings when starting
+
+In addition you may have to change line 277 in /usr/lib/perl5/5.6.0/i386-linux/Sys/Syslog.pm to
+my $syslog = &_PATH_LOG() || croak "_PATH_LOG not found in syslog.ph".
+
+**On Solaris (7 & 8) and True64**, the '.*' level is not recognized in syslog.conf
+You need to enumerate levels. Example :
+
+  local1.info,local1.notice,local1.debug /var/log/sympa/sympa 
+
+**On Solaris 10**, [[http://www.qmailrocks.org/qmrbb/showthread.php?t=3167|it is not possible to write syslog in a socket]]. To have logs under that system, you need to set the log_socket_type sympa.conf parameter value to "stream".
+
+  log_socket_type          stream
+
+
+===== How to run process with debug information logged ? =====
+
+Each demon support the option "-d". When lunched with debug option the demon run in forground  and output many debug information (thoses information are also logued. Run "sympa.pl -d" as an example. There is a exception : wwsympa.fcgi which is lunched by apache and must be a demon. Use log_level parameter in wwsympa.conf if you need that process to output a lot of logs. log_level parameter can be set in sympa.conf, wwsympa.conf or robot.conf to increase logs. When using option -d log_level is 2. log_level 3 is a very high debug level.

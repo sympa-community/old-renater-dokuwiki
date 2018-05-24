@@ -1,0 +1,171 @@
+===== Postfix Configuration How-To for Sympa =====
+
+This document assumes that you already have postfix up and running, pointing to an MX record, and\\
+ that you are ready to add the Sympa configuration into your existing configuration.
+
+If you want to test an outgoing message in postfix, from the command line, enter:\\
+  mail -s “testing” youraddress@domain.net
+  .
+(The '.' on a blank line by itself ends the message and completes sending it)\\
+\\
+**Summary of steps for configuration:** \\
+
+  * **main.cf**,
+  * **master.cf**,
+  * **sympa_aliases**,
+  * **transport_regexp**,
+  * **sympa.conf MTA**,
+  * **finalization commands**
+----
+
+==== Edit /etc/postfix/main.cf ====
+
+
+Define your aliases and regexp files. You may choose to put the aliases \\
+file in sympa's etc folder as in this example. It is helpful to have a separate sympa aliases file\\
+because the sympa user does not usually have permissions to modify your main postfix aliases file.
+
+<code>
+alias_maps = hash:/etc/aliases,hash:/home/sympa/etc/sympa_aliases
+relay_domains = $mydestination, lists.mydomain.tld
+sympa_destination_recipient_limit = 1
+sympabounce_destination_recipient_limit = 1
+# virtual_alias_maps = regexp:/home/sympa/etc/virtual.regexp 
+recipient_delimiter = +
+transport_maps = regexp:/home/sympa/etc/transport_regexp
+</code>
+
+Note: virtual_alias_maps is needed only if you need to translate one list/servername to another \\
+servername, such as using a relay server, which also requires the option relayhost=[servername]. \\
+See footnote ([1.]) at bottom.
+
+==== /etc/postfix/master.cf ====
+
+All of these are on separate lines.
+
+<code>
+sympa unix - n n - - pipe
+flags=R user=sympa argv=/home/sympa/bin/queue ${recipient}
+sympabounce unix - n n - - pipe
+flags=R user=sympa argv=/home/sympa/bin/bouncequeue ${recipient}
+</code>
+
+==== /home/sympa/etc/sympa_aliases ====
+
+Do a postalias on this file.
+<code>
+sympa: "| /home/sympa/bin/queue sympa@servername.edu"
+listmaster: "| /home/sympa/bin/queue listmaster@servername.edu"
+bounce+*: "| /home/sympa/bin/bouncequeue sympa@servername.edu"
+abuse-feedback-report: "| /home/sympa/bin/bouncequeue sympa@servername.edu"
+sympa-request: postmaster@servername.edu
+sympa-owner: postmaster@servername.edu
+</code>
+
+And for each list, lines will be added like these:
+
+<code>
+#------------------------------ sympa_list1: list alias created 19 Jan 2008
+sympa_list1: "| /home/sympa/bin/queue sympa_list1@servername.edu"
+sympa_list1-request: "| /home/sympa/bin/queue sympa_list1-request@servername.edu"
+sympa_list1-editor: "| /home/sympa/bin/queue sympa_list1-editor@servername.edu"
+#sympa_list1-subscribe: "| /home/sympa/bin/queue sympa_list1-subscribe@servername.edu"
+sympa_list1-unsubscribe: "| /home/sympa/bin/queue sympa_list1-unsubscribe@servername.edu"
+sympa_list1-owner: "| /home/sympa/bin/bouncequeue sympa_list1@servername.edu"
+</code>
+
+==== /home/sympa/etc/transport_regexp ====
+
+<code>
+/^.*-owner\@lists\.mydomain\.tld$/ sympabounce:
+/^.*\@lists\.mydomain\.tld$/       sympa:
+</code>
+
+==== sympa.conf ====
+
+<code>
+# Path to the MTA (sendmail, postfix, exim, or qmail)
+# (On some systems this is called '/usr/sbin/sendmail.postfix')
+sendmail	/usr/sbin/sendmail
+</code>
+
+==== Finalization commands ====
+
+After these are set up, run:
+
+<code>
+sudo postalias /home/sympa/etc/sympa_aliases
+sudo postmap /home/sympa/etc/transport_regexp
+</code>
+
+If you used a virtual.regexp:
+
+<code>
+sudo postmap /home/sympa/etc/virtual.regexp
+</code>
+
+**And finally:**
+
+<code>
+sudo postfix restart   #  or service postfix restart
+</code>
+
+**Restart the sympa processes:**
+
+<code>
+sudo /etc/init.d/sympa restart
+</code>
+\\
+\\
+--------------------------------------------------
+[1.] **Example of using the optional virtual.regexp** to translate one address to another server. \\
+The '.*' means it will match anything and forward it using the $1 variable.”\\
+  # Translate anything with these suffixes to sympa-<suffix>
+  /^(.*)-(request|editor|owner|subscribe|unsubscribe)@servername.edu/  sympa-$2+$1 
+  # Forward anything starting with sympa on this mail server to go to <whatever>@sympa on the separate sympa server
+  /^(sympa.*)@mailservername.edu/          $1@sympaserver.edu 
+  /^(testlist.*)@mailservername.edu/       $1@sympaserver.edu 
+  /^(testadmin.*)@mailservername.edu/      $1@sympaserver.edu
+
+
+\\
+
+===== Message relaying using Posfix, performance issue =====
+
+Context: Postfix on a Sympa server + Postfix MTA that receives messages from Sympa for local subscribers on a different host. 
+
+Issue : delivery of messages is delayed if postfix is not tuned.
+
+The problem :
+  * Sympa's bulk mailer sends a single message to a set of recipient, through a single SMTP session. This is achieved as an optimization to lower the outgoing SMTP sessions.
+  * if the message recipients include one unknown user and if postfix is configured to reject incoming session for unkown user, then the postfix MTA may close the SMTP session after the first unkown user.
+  * the Sympa host postfix MTA later retries the message deliver. The message is then accepted unless some other email are invalid. The same issue occurs, unless all invalid email adresses are submitted ones. This may take a while before the message is distributed to all recipients.
+
+This problem seems to be caused by the following parameter in postfix **master.cf** (postfix is configured in //stress// mode by default :
+<code>
+  smtp      inet  n       -       n       -       -       smtpd      -o stress=yes
+</code>
+
+In that configuration the //smtpd_hard_error_limit// parameter (from master.cf) which is the max count of invalid address in an incoming SMTP session is often set to 1 
+<code>
+  "smtpd_hard_error_limit = ${stress?1}${stress:20}"
+</code>
+
+A possible solution is to set this value to an higher value :
+<code>
+  "smtpd_hard_error_limit = ${stress?5}${stress:20}"
+</code>
+
+===== More about postfix =====
+
+
+For more postfix related information, also see:\\
+[[http://www.sympa.org/faq/postfix|Using sympa_virtual with Postfix instead of regexp_aliases]] \\
+
+
+
+
+
+
+
+

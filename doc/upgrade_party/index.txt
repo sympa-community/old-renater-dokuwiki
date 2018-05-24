@@ -1,0 +1,21 @@
+====Upgrade party====
+
+Le CRU a organisé une formation Sympa axée sur l'upgrade vers la versin 6.1 en décembre 2010. Vous pouvez trouver ici les supports utilisés pour les différentes présentations (en français).
+
+Formateurs : Serge Aumont, Olivier Salaün et David Verdin
+
+  * Présentation de la {{:doc:upgrade_party:presentation_6_1.odp|version 6.1}}, les {{:doc:upgrade_party:historique.odp|différentes versions}}, l'{{:doc:upgrade_party:architecture.odp|architecture}}
+  * L'{{:doc:upgrade_party:sympa_securite.odp|audit de sécurité de Sympa}} et l'avis de sécurité de CERT A
+  * Les fonctionnalités avancées de Sympa
+  * {{:doc:upgrade_party:upgrade081210-upgrade.ppt|Méthodologie générale pour un upgrade de Sympa}}.
+    * Travail accompagné avec chacun sur l'upgade spécifique (si souhaité par les personnes)
+    * Aide personnalisée à la mise oeuvre de fonctionnalités avancées 
+        * {{:doc:upgrade_party:upgrade081207-tt2.ppt|templates}}
+        * {{:doc:upgrade_party:upgrade081210-familles.ppt|famille de listes}}
+        * {{:doc:upgrade_party:upgrade081210-listesauto.ppt|listes automatiques}}
+        * {{:doc:upgrade_party:custometdkim.odp|scenario avec script externe, DKIM}}
+        * ...
+  * {{:doc:upgrade_party:upgrade081210-perf.ppt|Optimisation des perfs}}
+  * {{:doc:upgrade_party:upgrade081210-cluster.ppt|Sympa en cluster}}
+  * L'avenir de Sympa, démo de la 6.2
+

@@ -1,0 +1,31 @@
+====== Sympa 7.0 ======
+
+===== Maintaining code base =====
+
+  * Merge trunk and sympa-6.2-branch.
+    * Former contains many reordering and clarifications, latter adds many bug fixes and some refactoring.
+  * Switch to git.
+
+===== Make it more modular =====
+
+  * Refactoring on Site/Robot/Family/List.
+  * Refactoring on Pipeline/Spool/Message etc.
+    * This may be done on 6.2b.X
+  * Splitting functions of sympa.pl and wwsympa.fcgi into the sets of pluggable scriptlets.
+  * Reintroducing Markov's Sympa::Plugin interface.
+
+===== Web interface improvments =====
+
+  * Moving to Plack (Marc will work on it on a separate branch to see if it is a good move or not)
+  * Improve interface look and feel :
+    * remold all interface : 
+      * change overall display and CSS to make Sympa look modern
+      * think about what we need to dispaly. Shall we get rid of current menus to pinpoint only the most important features?
+    * implement drag and drop in the shared documents
+    * improve post through the web: add formatting and make the archives look more like a forum.
+
+===== Postponed functions =====
+
+  * ARF support
+    * Though it had been done on sympa-6.2-branch-old, not have been added on (new) sympa-6.2-branch.
+  * ...

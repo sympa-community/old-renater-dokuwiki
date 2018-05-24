@@ -1,0 +1,33 @@
+====== Sympa's web interface ======
+
+===== Web pages include strange Ã© characters =====
+
+Sympa web pages are full UTF-8. These strange characters show that the web browser interpret them using ISO charset.
+
+Ensure that your Apache server does not force ISO encoding with a directive like this :
+  AddDefaultCharset ISO-8859-1 
+If so, remove the AddDefaultCharset directive.
+
+===== My base URL is not correct =====
+
+If you set up your server so that the web interfacebase URL is:
+
+<code> http://server/sympa </code>
+
+And you find URL cropped to:
+
+<code> http://server/lists
+http://server/list/sendpasswd/ 
+etc.
+ </code>
+
+instead of:
+
+<code> http://server/sympa/lists
+http://server/list/sympa/sendpasswd/ 
+etc.
+ </code>
+
+It is likely that the ''env_reset'' option of sudo was set. This option removes all environment variables, including those sent to Sympa by the web server, which indicate the base URL for all the links in the web interface.
+
+See [[manual:web-interface#sudo]] to set up the correct sudo configuration.

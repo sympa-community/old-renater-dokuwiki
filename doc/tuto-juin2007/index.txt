@@ -1,0 +1,34 @@
+===== Usages avancé de Sympa =====
+
+Juin 2007, Le cru a organisé un tutoriel "usage avancés de Sympa" avec l'aide du CNAM qui nous a mis à notre disposition un amphithéatre et a assuré la production et la diffusion video de cette formation.
+
+==== Les intervenants ====
+  * Sylvain Amrani gendarmerie nationnale
+  * Serge Aumont CRU
+  * Olivier Salaün CRU
+  * David Verdin CRU
+
+===== Le cours =====
+
+  * Présentation du logiciel Sympa  - {{doc:tuto-juin2007:01-intro.pdf|support}} - vidéo 
+  * Architecture   - {{doc:tuto-juin2007:02_architecture.pdf|support}} - vidéo 
+  * La gestion des hôtes virtuels   - {{doc:tuto-juin2007:03_vhosts.pdf|support}} - vidéo 
+  * Listes avec inclusion des abonnés   - {{doc:tuto-juin2007:04_include.pdf|support}} - vidéo 
+  * Les modules d‘authentification  - {{doc:tuto-juin2007:05_authentification.pdf|support}} - vidéo 
+  * Les Scénarios d‘autorisation   - {{doc:tuto-juin2007:06_scenarios.pdf|support}} - vidéo 
+  * Le format TT2   - {{doc:tuto-juin2007:07_tt2.pdf|support}} - vidéo 
+  * Les familles de listes   - {{doc:tuto-juin2007:08_familles.pdf|support}} - vidéo 
+  * Retour d‘expérience  de la gendarmerie, listes automatiques - {{doc:tuto-juin2007:09-retour-experience-gendarmerie.pdf|support}} - vidéo 
+  * Le serveur SOAP   - {{doc:tuto-juin2007:10-soap.pdf|support}} - vidéo 
+  * Migration  - {{doc:tuto-juin2007:11_migration.pdf|support}} - vidéo 
+  * Conclusions  - {{doc:tuto-juin2007:12-conclusion.pdf|support}} - vidéo 
+
+La video du cours (treamming real) sur le serveur du CNAM:((Nous découperons bientôt ces vidéos selon les sections du cours.))
+  * [[http://vilnius.cnam.fr/ramgen/Archive/PTI/IDF/PARISfourastie/SYMPA_070607_matin.rm|le matin]] (taille: 141 Mo)
+  * [[http://vilnius.cnam.fr/ramgen/Archive/PTI/IDF/PARISfourastie/SYMPA_070607_apres-midi.rm|l'après midi]] (taille: 246 Mo)
+
+
+
+
+
+

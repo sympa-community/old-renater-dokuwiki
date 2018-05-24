@@ -1,0 +1,42 @@
+====== Installation ======
+See also pages related to :
+    * [[logs]]
+    * [[fastcgi]]
+    * [[solaris]] 
+    * [[debian]]
+    * [[rpm]]
+    * [[upgrade-v5-to-v6]]
+
+==== Supported OS ? ====
+
+Sympa can run on any unix operating system including linux, solaris, mac-os, free-bsd, ... Prerequisite are described in detail in Sympa reference manual.
+
+==== Why is the latest version not available as binary package ? ====
+
+Sympa authors do not themselves produce binary packages for any system (.rpm, .deb). The packages you can find from [[http://www.sympa.org/linux.html]] are contributions, as there is always some delay before a version is available as binary package. 
+
+
+==== Should I install a package or use the tar.gz source distrib ? ====
+ 
+Sympa installation is known as long job. In fact this not really true : the installation itself is simple (./configure; make; make install) but there is a lot of configuration work in order to plug Sympa in with other services : Perl, RDBMS, syslog, sendmail, Apache, ...
+Later upgrade processes are really fast and simple because all those items running don't need to be modified. As a conclusion: what ever you are using, a binary package or a source distrib, installation requires good experience with your operating system, but the advantage of using the source distribution is that you get to use the latest Sympa version.
+
+==== what's the first step for installation ? ====
+
+Check [[http://www.sympa.org/distribution/current/INSTALL]] which is included in the distribution.
+
+==== Error: possibly undefined macro: AM_PO_SUBDIRS ====
+
+This error message happens during the **autoconf** run if you don't have the required **gettext-devel** package (sometimes named gettext-dvl) installed on your system.
+
+You should install the required package to complete the Sympa installation process :
+  * on a RedHat system: <code>yum install gettext-devel</code>
+  * on a Debian system: <code>apt-get install gettext</code>
+
+==== Error: cannot find install-sh or install.sh ====
+
+This error message shows while running **configure**. 
+
+To fix the problem, you should re-run the **automake** command with the **--add-missing** option
+<code>automake --add-missing</code>
+

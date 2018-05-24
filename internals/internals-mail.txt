@@ -1,0 +1,139 @@
+<note warning>
+
+  * Content of this page was obsoleted.
+
+</note>
+
+====== × Internals: mail.pm ======
+
+This module deals with mail sending and does the SMTP job. It provides a function for message distribution to a list, the message can be encrypted. There is also a function to send service messages by parsing tt2 files, These messages can be signed. For sending, a call to sendmail is done or the message is pushed in a spool according to calling context.
+
+=====  public functions =====
+
+mail_file(), mail_message(), mail_forward(), set_send_spool(), reaper().
+
+
+==== mail_file() ====
+
+Message is written by parsing a tt2 file (or with a string ). It writes mail headers if they are missing and they are encoded. Then the message is sent by calling mail::sending() function (see [[internals#mail-sending|mail-sending]]).
+
+**IN**:
+
+  - ''filename'': string - tt2 filename - no tt2 filename sent
+  - ''rcpt'' (+): SCALAR ref(ARRAY) - SMTP ''RCPT To:'' field
+  - ''data'' (+): ref(HASH) - used to parse tt2 file, contains header values, keys are:
+    * ''return_path'' (+): SMTP ''MAIL From:'' field //if send by SMTP//, q ''X-Sympa-From:'' field //if send by spool//
+    * ''to'': ''To:'' header field //else it is $rcpt//
+    * ''from'': ''From:'' field //if $filename is not a full msg//
+    * ''subject'': ''Subject:'' field //if $filename is not a full msg//
+    * ''replyto'': ''Reply-to:'' field //if $filename is not a full msg//
+    * ''headers'': ref(HASH), keys are other mail headers
+    * ''body'': body message //if not $filename//
+    * ''lang'': tt2 language //if $filename//
+    * ''list'': ref(HASH) //if sign_mode='smime'// - keys are:
+      * ''name'': list name
+      * ''dir'': list directory
+  - ''robot'' (+): robot
+  - ''sign_mode'': 'smime'- the mail is signed with smime undef - no signature
+
+**OUT**: 1
+
+==== mail_message() ====
+
+Distributes a message to a list. The message is encrypted if needed, in this case, only one SMTP session is used for each recepient otherwise, recepient are grouped by domain for sending (it controls the number recepient arguments to call sendmail). Message is sent by calling mail::sendto() function (see [[internals#mail-sendto|mail-sendto]]).
+
+**IN**:
+
+  - ''message'' (+): ref(Message) - message to distribute
+  - ''from'' (+): message from
+  - ''robot'' (+): robot
+  - ''rcpt'' (+): ARRAY - recepients
+
+**OUT**: ''$numsmtp'' = number of sendmail process undef
+
+==== mail_forward() ====
+
+Forward a message by calling mail::sending() function (see [[internals#mail-sending|mail-sending]]).
+
+**IN**:
+
+  - ''msg'' (+): ref(Message) ref(MIME::Entity) string - message to forward
+  - ''from'' (+): message from
+  - ''rcpt'' (+): ref(SCALAR) ref(ARRAY) - recepients
+  - ''robot'' (+): robot
+
+**OUT**: 1 undef
+
+==== set_send_spool() ====
+
+Used by other processes than sympa.pl to indicate to send message by writing message in spool instead of calling mail::smtpto() function (see [[internals#mail-smtpto|mail-smtpto]]). The concerned spool is set in ''$send_spool'' global variable, used by mail::sending() function (see [[internals#mail-sending|mail-sending]]).
+
+**IN**:
+
+  - ''spool'' (+): the concerned spool for sending.
+
+**OUT**: -
+
+==== reaper() ====
+
+Non blocking function used to clean the defuncts child processes by waiting for them and then decreasing the counter. For exemple, this function is called by mail::smtpto() (see [[internals#mail-smtpto|mail-smtpto]]), main loop of ''sympa.pl'', ''task_manager.pl'', ''bounced.pl''.
+
+**IN**:
+
+  - ''block''
+
+**OUT**: the pid of the defunct process -1 //if there is no such child process//.
+
+=====  private functions =====
+
+sendto(), sending(), smtpto().
+
+==== sendto() ====
+
+Encodes subject header. Encrypts the message if needed. In this case, it checks if there is only one recepient. Then the message is sent by calling mail::sending() function (see [[internals#mail-sending|mail-sending]]).
+
+**IN**:
+
+  - ''msg_header'' (+): ref(MIME::Head) - message header
+  - ''msg_body'' (+): message body
+  - ''from'' (+): message from
+  - ''rcpt'' (+): ref(SCALAR) ref(ARRAY) - message recepients (ref(SCALAR) for encryption)
+  - ''robot'' (+): robot
+  - ''encrypt'': 'smime_crypted' the mail is encrypted with smime undef - no encryption
+
+**OUT**: 1 - sending by calling smtpto (sendmail) 0 - sending by push in spool undef
+
+
+==== sending() ====
+
+Signs the message according to ''$sign_mode''. Chooses sending mode according to context. If ''$send_spool'' global variable is empty, the message is sent by calling mail::smtpto() function (see [[internals#mail-smtpto|mail-smtpto]]) else the message is written in spool ''$send_spool'' in order to be handled by sympa.pl process (because only this is allowed to make a fork). When the message is pushed in spool, these mail headers are added:
+
+  * ''X-Sympa-To:'': recepients
+  * ''X-Sympa-From:'': from
+  * ''X-Sympa-Checksum:'': to check allowed program to push in spool
+
+A message pushed in spool like this will be handled later by sympa::DoSendMessage() function (see [[internals#sympa-dosendmessage|sympa-dosendmessage]])
+
+**IN**:
+
+  - ''msg'' (+): ref(MIME::Entity) string - message to send
+  - ''rcpt'' (+): ref(SCALAR) ref(ARRAY) - recepients (for SMTP: ''RCPT To:'' field)
+  - ''from'' (+): for SMTP: ''MAIL From:'' field for spool sending: ''X-Sympa-From'' field
+  - ''robot'' (+): robot
+  - ''listname'': listname <nowiki>''</nowiki>
+  - ''sign_mode'' (+): 'smime' 'none'for signing
+  - ''sympa_email'': for the file name for spool sending
+
+**OUT**: 1 - sending by calling smtpto() (sendmail) 0 - sending by pushing in spool undef
+
+==== smtpto() ====
+
+Calls to sendmail for the recipients given as argument by making a fork and an exec. Before, waits for number of children process number allowed by sympa.conf by calling mail::reaper() function (see [[#mail-reaper|mail-reaper]]).
+
+**IN**:
+
+  - ''from'' (+): SMTP ''MAIL From:'' field
+  - ''rcpt'' (+): ref(SCALAR)) ref(ARRAY) - SMTP ''RCPT To:'' field
+  - ''robot'' (+): robot
+
+**OUT**: ''mail::$fh'' - file handle on opened file for ouput, for SMTP ''DATA'' field undef \\

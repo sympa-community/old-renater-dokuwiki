@@ -1,0 +1,39 @@
+
+===== one_time_ticket =====
+
+(start with version 6.0)
+
+A new authentication mechanism has been introduced. It is a well known method in many web sites where new users or users who have lost there password can choose a new password (or a first one). A challenge email is sent to the user with an URL that contains a unique random number. This URL looks like `http://host/sympa/ticket/12345789`. When using this URL a new Sympa session is initialized. This session is trusted by Sympa as an authenticated web session. The email used is of course the same as the email used for the challenge. 
+
+This is done via a new table : one\_time\_ticket\_table . This table is used for both storing the email that will applied to the session and for storing the web action that will be applied.
+
+
+====create_one_time_ticket ()====
+
+This function creates a ticket and stores it in one\_time\_ticket\_table . The result is the ticket number : a random number used as key in the database. 
+
+**IN**
+  * $email: the email to be appled if the ticket is used for creating a session
+  * $robot: the domain 
+  * $data_string: a char string that will be used to create the context of the session if used. This string look like PATH_INFO in URL.
+  * $remote_addr: the client remote host, used to specify the host who request the ticket creation
+
+**OUT**
+  * a random integer
+
+====get_one_time_ticket====
+
+Read one_time_ticket from table and remove it. It is performed by wwsympa web action //ticket//. This action have only one parameter : a ticket id. The ticket is checked if success a session is created and the wwsympa web action specified in feld data is performed.
+
+**IN**
+  * $ticket_number a ticket id
+
+**OUT**
+return a hash with 
+  * result = closed|expired|success|error
+  * email = the email to be used with the new session
+  * date = the date the ticket was updated (for information purpose)
+  * remote_addr = the host from which the ticket was requested or updated
+  * robot = the domain
+  * data = the path_info to perform a web action. example: 'subrequest/foo' in order to go to action subrequest related to list foo
+  * status = the status of the ticket

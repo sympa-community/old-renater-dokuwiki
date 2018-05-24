@@ -1,0 +1,63 @@
+===== The following addresses had permanent fatal errors. =====
+
+Is your alias correct ?
+sympa: "|/home/sympa/bin/queue sympa"
+
+
+Did you try by-passing sendmail ? Run the following unix command :
+
+  (echo "From: my@email" ; echo "Subject: help") | ~sympa/queue 0 sympa
+
+If Sympa demon is running, you may receive the helpfile. Else, check if a file as been created in the sympa msg spool that contain :
+
+  X-Sympa-To: sympa
+  From: my@email
+  Subject: help
+
+
+The ~sympa directory need rx access to others
+
+      drwxr-xr-x   1 sympa    sympa     sympa
+
+The queue program need setuid bit
+
+      -rwsr-xr-x   1 sympa    sympa     queue
+
+Spools need to be writable by sympa, especially the msg spool.
+
+      drwxrwxr-x   2 sympa    sympa        2048 Sep 21 16:59 auth/
+      drwxrwxr-x   2 sympa    sympa        1024 Sep 22 09:12 digest/
+      drwxrwxr-x   2 sympa    sympa        1024 Feb 18  1999 expire/
+      drwxrwxr-x   2 sympa    sympa        4096 Sep 22 09:43 mod/
+      drwxrwxr-x   8 sympa    sympa       41984 Sep 22 10:41 msg/
+      drwxr-xr-x   2 sympa    sympa      235520 Sep 22 10:41 outgoing/
+
+===== Are you using the smrsh mailer prog in your sendmail ? =====
+
+smrsh is a secure shell for mailer prog, it is use for example in the red-hat 6.0 sendmail installation. In this case you must allow smrsh to run the queue program because smrsh prevent attack by checking a listing of safe binaries in a special directory (usually /etc/smrsh or /usr/adm/sm.bin )
+
+You should restart the ./configure; make;mkae install process for Sympa with the following configure :
+
+  ./configure --with-bindir=/etc/smrsh
+
+Refer to sendmail FAQ for more information : http://www.sendmail.org/faq/section3.html#3.34 
+
+Note : smrsh is chrooted (in /etc/mail/smrsh for debian). You need to copy queue and bouncequeue in smrsh homedir, and of course aliases should point to the links. 
+
+===== Some users complain they don't receive messages from the lists =====
+
+Are thoses subscribers using nomail reception mode ? Sympa will log all call to sendmail program if you run it as :
+
+  sympa.pl --mail , Sympa will log when calling sendmail
+
+Check the general state of your system.
+
+  * If you have a HW or kernel problem it may happen that some error messages didn't made it to the syslog. So don't forget to check the dmesg command!
+  * Check for high load - most sendmails will shutdown on load of >8-9 or so. Check this with the uptime command. I have seen surpricing results on some http servers. For details check the "Bat Book" (Sendmail, B. Costales) - look for the Ox/OX options (O QueueLA and O RefuseLA is the same).
+  * "Out of swap" is a explaination for almost everything. Even if you find no error msgs - high use of swap should be suspious. How to check it, depends on your OS... swapinfo -t, swapon -s, swap -l ... something like that. Of cause you should check, while trying again. 
+
+
+===== Using Sympa with Exim =====
+
+ Ther are some internet ressources about Sympa with EXIM as a MTA. 
+  * [[http://www.invisibleinstitute.com/eads/blog/sympa-and-exim|Exim 4 routers and transport for Sympa]]

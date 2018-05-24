@@ -1,0 +1,23 @@
+====== Sympa developpers only ======
+
+This is the space for Sympa developpers, i.e.: people subscribed to the sympa-developpers@listes.renater.fr mailing list.
+
+====== Meetings ======
+
+This section contains links to the meeting reports.
+
+{{page>.:meetings:index}}
+
+
+====== Wished developments ======
+
+===== Run Sympa in taint mode =====
+
+It'll make Sympa more secure.
+
+===== Reconstruct Message class =====
+
+  * Currently this is thick wrapper of MIME::Entity object.  Messages are occasinally decoded to this object and encoded so that format may be changed.
+    * Postpone MIME parsing to resolve difficulties on S/MIME or DKIM.
+  * Introduce the field corresponding to list context.  For example, bulk mailer table had been supposed to have to store S/MIME private key because conext was unknown.  It is not true.  If Message object has context field, those keys may not be stored.
+

@@ -1,0 +1,43 @@
+====== How can I change my robot name? ======
+
+Once in a while, you can feel the need to change your robot name.
+First, stop Sympa.
+
+===== Robot renaming in a nutshell =====
+
+In any case, you first need to [[../manual/virtual-hosts#how_to_create_a_virtual_host|create a virtual host]] corresponding to your new robot name.
+
+Then, you will have to migrate existing list on this new robot.
+
+You will then have to modify or move the following:
+
+  * lists' archives,
+  * lists' spools,
+  * the database.
+
+These operations can be done following two different steps.
+
+===== Solution 1: through the web GUI =====
+
+//Once your new robot is created//, you can rename (one by one) any list you own.
+This can be done by using the renaming page in the web interface, following this path in the menu:
+
+''Admin -> Rename list''
+
+In this very simple interface, retype the current list's name in the "New list name:" field then select the new robot name in the drop-down menu.
+
+Confirm changes by clicking the "Rename the list" button.
+
+That's it. All the list's archives, spools and database entries are moved/renamed as necessary in the process.
+
+Go on to the next list, and so on until you renamed all your lists.
+Keep on trucking. ;-)
+
+===== Solution 2: using console =====
+
+You can choose to make these modifications using //sympa.pl// which can be a good option if you have a very large number of lists to move.
+
+Note that <nowiki>sympa.pl --rename_list</nowiki> was introduced in Sympa 6.1.
+</code>
+sympa.pl --rename_list=listname\@robot --new_listname=newlistname --new_listrobot=newrobot
+</code>

@@ -1,0 +1,20 @@
+====== Sympa 6.2 beta released ======
+
+//January 16, 2015//
+
+[[http://www.sympa.org|{{:authors-old:sympa_beta_small.png | }}]]
+
+
+[[http://www.renater.fr|RENATER]] is proud to release the newest version of Sympa to the open-source community.\\
+
+Sympa 6.2b.2 is the new beta version of Sympa 6.2\\
+
+
+   *[[http://www.sympa.org/distribution/sympa-6.2b.2.tar.gz|Download sources]]
+   *[[http://www.sympa.org/distribution/latest-unstable/NEWS|Check the release notes]]
+   *[[https://www.sympa.org/faq/upgrade-to-v6.2|Check the upgrade instructions]]
+
+
+This version, along with fixing a few bugs, improves the upgrade process to the new Sympa skin:
+  * the web interface colors are rest to the new defaults. if you defined custom colors, you will find them backed up in robot.conf or sympa.conf copies.
+  * the web_tt2 customization (locate in etc or etc/<robot>) are removed at upgrade. The web_tt2 directries are also backed up.

@@ -1,0 +1,40 @@
+~~NOTOC~~
+====== Sympa and Dokuwiki farm integration for Virtual Organizations ======
+
+===== ...In a nutshell =====
+A virtual organization is a geographically distributed group of people.\\
+They need to:
+  *Broadcast information to all the members of the organization
+  *Share and collaboratively conceive reference documents
+
+The system allows to provide these two functionnalities based on:
+  *a single sign on (Shibboleth)
+  *a single group manager (Sympa)
+
+{{faq:img_parag1.png|}}
+
+
+===== Authentication and access control =====
+Both Dokuwiki and Sympa use Shibboleth authenticate system. Users authenticate at their home institution.\\
+Access rights in Dokuwiki are based on membership of groups defined in Sympa: the lists subscribers and owners.
+
+{{:faq:img_parag2.png|}}
+
+===== Automatic wiki creation in Sympa list interface =====
+
+Dokuwiki is used in farm mode: **one installation allows to create multiple wiki instances.** \\
+Each list owner can create a wiki associated to his/her list by a single click.
+
+{{faq:img_parag3.png|}}
+
+
+
+===== References and documents =====
+  - Sympa mailing lists manager: [[http://www.sympa.org]]
+  - DokuWiki: http://wiki.splitbrain.org/wiki:dokuwiki
+  - Shibbolethauth plugin for Dokuwiki : [[http://sourcesup.renater.fr/projects/dwshibb/]] and [[http://www.renater.fr/documentation/federation/dokuwiki_shibbolethauth]]
+  - Wiki Farm: [[http://wiki.splitbrain.org/wiki:farm]]
+  - {{faq:poster-tnc2008_a4.pdf|poster exposed at Terena 2008 conference}}
+  - {{faq:eunis2008.pdf|article presented at EUNIS 2008 conference}}
+  - {{:doc:couplage_sympa_dokuwiki_sso.pdf|Le couplage Sympa - ferme de (doku)wikis pour les organisations virtuelles}} (french) presentation at JOSY's days, October 2009 
+  - [[http://www.renater.fr/documentation/federation/dokuwiki_shibbolethauth|Shibboleth authentication, authorization plugin for interfacing Dokuwiki with Sympa]]

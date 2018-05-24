@@ -1,0 +1,11 @@
+====== FreeBSD ======
+
+===== Out of memory problem =====
+
+FreeBSD users have encountered problems with Sympa processes crashing, due to memory exhaustion. This is due to the kern.maxdsiz parameter which sets the hard data size default limit. Its default value is 512 Mo, which means that, if a process exceeds 512 Mo of memory occupation, it is killed. Sympa uses, at the times this text is written (Sympa 5.4 beta) around 500 Mo on a server with around 800-1000 lists. It is likely that, should the activity meet a peek, the memory limit will be exceeded.
+
+If you meet this problem, edit ''/boot/loader.conf'' and add this line:
+
+''kern.maxdsiz ="1024M"''\\
+
+See [[http://lists.freebsd.org/pipermail/freebsd-questions/2005-March/079101.html|this page about memory problems with perl under FreeBSD]]

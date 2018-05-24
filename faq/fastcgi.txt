@@ -1,0 +1,100 @@
+FastCGI is required to have good performances with WWSympa, because it will make the CGI process persistant in memory.
+
+===== installing fastcgi =====
+
+
+The mod_fastcgi module for Apache is required to run WWSympa as a FastCGI ; another being the FCGI perl module that Sympa will install for you at make time.
+
+You can get mod_fastcgi sources from the fastcgi.com site : [[http://www.fastcgi.com/dist/|http://www.fastcgi.com/dist/]]
+
+The module is currently not distributed as an RPM. If you are running an Apache 2.x server on a RedHat server, you should install the fastcgi module the following way :
+
+    * Install the httpd-devel package
+    * Untar the mod_fastcgi-x.y.z.tar.gz archive
+    * cd mod_fastcgi-x.y.z
+    * cp Makefile.AP2 Makefile
+    * make top_dir=/usr/lib/httpd
+    * make top_dir=/usr/lib/httpd install
+    * restart Apache server : /etc/rc.d/init.d/httpd restart
+    * You will probably have to set the following directive in your httpd.conf : FastCgiIpcDir /tmp/fastcgi
+    * Set the FastCgiServer directive as defined in the Sympa reference manual : [[http://www.sympa.org/doc/html/]] (add the normal lines for wwsympa in your httpd.conf file):
+
+      ScriptAlias /wws /usr/local/sympa/bin/wwsympa.fcgi
+      FastCgiServer /usr/local/sympa/bin/wwsympa.fcgi -processes 2
+      SetHandler fastcgi-script
+
+===== FastCGI returns with «terminated by calling exit with status 'x'» =====
+
+To trace the problem :
+
+  - Ordered List Item
+  - Take a look at the log file of wwsympa
+  - Try running wwsympa without FastCGI (Errors will be redirected to httpd error log)
+  - Start the CGI from command line (wwsympa.fcgi). FastCGI will ask for parameters, provide no param and end with Ctrl+D.
+
+In order to test one particular action of wwsympa, start the CGI from command line, give the parameter to the cgi. This needs you to known about parameter name, you may check in the code but it's easy to hit at least action=<name of the operation>. Example action=lists. 
+
+===== trying to run wwsympa, a 500 server Error occure =====
+
+Look for the following message in apache error_log file :
+
+  [Wed May 21 15:48:53 2003] [crit] (13)Permission denied: FastCGI: can't create server "/usr/local/sympa/bin/wwsympa.fcgi": bind() failed [/etc/httpd/logs/fastcgi/9b3086a58f78643673cec1e1d1f47bab]
+
+To avoid this error, just add the following line to your httpd.conf file. Set User and Group directive of Apache *before* FastCgiIpcDir and FastCgiServer directives in httpd.conf (beware of includes)
+
+      FastCgiIpcDir runtimedir/fastcgi
+
+Be aware that Apache/fastcgi must have sufficient access in this directory. 
+
+
+Note: on fc3 I had to open the search permissions for the /var/log/httpd directory to "other" in order to get around the permission denied error. fastcgi was able to create /var/log/httpd/fastcgi dir (not sure how) but then when apache was running it couldn't get into this dir because /var/log/httpd was owned by root and had no group/other perms allowed. This caused the permission denied error. I tried redefining the IPC dir but got a complaint from fastcgi saying it was already defined. chmod o+x /var/log/httpd worked around the problem. Things could probably be improved by changing the group owner of this dir to apache and only allowing the group to search through. 
+
+
+===== Installing mod_fcgid for Apache2 on Debian =====
+
+mod_fcgid is an alternative module compat with mod_fastcgi.
+You can read complete mod_fcgid documentation from the site :
+[[http://fastcgi.coremail.cn]]
+
+On Debian Sarge/Etch, a package is available for Apache2.x only (Apache1 use FastCGI) :
+     aptitude install libapache2-mod-fcgid
+
+Enables the Fcgid module :
+     a2enmod fcgid
+     /etc/init.d/apache2 reload
+
+Fcgid directives for Sympa in your Apache2 configuration file (in a <VirtualHost> block) :
+
+      ScriptAlias /wws /usr/lib/cgi-bin/sympa/wwsympa.fcgi
+      <Location /wws>
+      SetHandler fcgid-script
+      Options ExecCGI
+      </Location>
+
+"FastCgiServer" FastCGI directive has no similar.
+
+By the way, remember to set //use_fast_cgi// to //1// in ''wwsympa.conf'' !
+
+
+===== Mod_Proxy_Fcgi for Apache 2.3 =====
+
+
+Another alternative is mod_proxy_fcgi.
+[[http://mproxyfcgi.sourceforge.net/]]
+
+This module will be directly integrated to the Apache v2.3 project. 
+
+
+===== couldn't bind unix domain socket =====
+
+This error may happen while using ''mod_fcgid''. You should change the directory used by ''mod_fcgid'' to store sockets to a directory writeable for the ''apache'' user. Set the following directive in your Apache configuration file :
+  SocketPath /tmp/fcgid/sock
+
+===== sudo: sorry, you must have a tty to run sudo =====
+
+Your sudo configuration file probably forbid execution of commands/scripts that are not attached to a TTY. You should edit your ''sudo'' configuration file to disable the ''requiretty'' option :
+  %visudo
+  #Defaults    requiretty
+
+
+

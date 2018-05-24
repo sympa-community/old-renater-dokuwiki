@@ -1,0 +1,42 @@
+====== Binary distributions ======
+
+
+
+
+=====  RedHat / CentOs =====
+
+Soji Ikeda built Sympa RPM packages for [[http://sympa-JA.org/download/rhel/|Red Hat EL / CentOS]]
+
+You are strongly invited to configure the relevant reposotory for your OS version in order to have an easy update of your Sympa version:
+
+  * [[http://sympa-ja.org/download/rhel/5/sympa-ja.org.rhel5.repo|RHEL 5]]
+  * [[http://sympa-ja.org/download/rhel/sympa-ja.org.rhel.repo|RHEL 6]]
+  * [[http://sympa-ja.org/download/rhel/7/|RHEL 7]]
+
+===== Mageia =====
+
+
+Sympa is included in the Mageia distribution:
+
+  * [[https://madb.mageia.org/package/show/application/0/name/sympa]]
+
+===== Debian =====
+
+
+Sympa is incluced in Debian distributions. Debian package is maintained by Emmanuel Bouthenot, Stefan Hornburg and Jean-Charles Delepine :
+
+  * [[http://packages.debian.org/sympa]] 
+
+
+===== FreeBSD =====
+
+
+FreeBSD port, Geoffroy Desvernay :
+
+  * [[http://www.freshports.org/mail/sympa/]]
+
+
+
+===== Packagers mailing list =====
+
+We created a list dedicated to discussions regarding Sympa packaging. You can find it and subscribe here: [[https://listes.renater.fr/sympa/info/sympa-packagers|sympa-packagers]]

@@ -1,0 +1,57 @@
+====== Performance issues with Sympa ======
+
+If you get bad performance with Sympa's web interface, below is a list of possible reasons :
+
+  - FastCGI : not using the fastcgi Apache module leads wwsympa.fcgi process to start from scratch for every HTTP request. It is not reasonable to run Sympa web interface without fastcgi enabled in a production environment.
+  - [[http://httpd.apache.org/docs/2.0/mod/core.html#servername|ServerName Directive]].  If the name of the machine running Sympa is not the exact hostname of the server, you should use this directive. Otherwise, performances decrease.
+  - Sympa versions : we have introduced significant performance optimizations in Sympa 5.1, especially to allow better perfs on the web interface, with lots of lists
+  - Using config.bin files : config.bin are binary versions of list config files. When used this web interface speeds up in a significant way. See [[:manual:conf-parameters:part3#cache_list_config|cache_list_config parameter usage]].
+  - RAM on server : the CRU is running s ML service, hosting 800 lists on a FC4 server with 4Gb of RAM
+  - Database : Sympa requires a RDBMS either mysql, Pg, oracle or Sybase. Mysql is the one used on the development platform and probably the only that provides the best performance.
+  - Log level : setting a high log_level (sympa.conf parameter) will decrease performance. You should keep the log_level to ''0'' in a production environment (log_level 0 does not disable logs but just keep normal operation logs).
+  - Log files : check your Sympa log files, looking for anomalies.
+
+
+
+===== Tracing Sympa processes =====
+
+You can use the [[http://search.cpan.org/~ilyaz/DProf-19990108/|Devel::DProf]] perl module to find out where does Sympa processes spend too much time. 
+
+  - Install Devel::DProf : ''% cpan -i Devel::DProf"''
+  - Edit the first line of ''wwsympa.fcgi'' as follows : ''#!/usr/bin/perl -d:DProf''
+  - Check in your Apache configuration that you have a single fastcgi process running, otherwise output profile files will get corrupted : 
+    * with mod_fastcgi: ''FastCgiServer /usr/local/sympa-os/bin/wwsympa_sudo_wrapper.pl -processes 1''
+    * with mod_fcgid: ''MaxProcessCount 1''
+  - DProf will create a profile information file on disk in the wwsympa.fcgi directory. Therefore you should add write privileges on this directory for the sympa user : ''% chmod a+w /home/sympa/bin''
+  - Restart the HTTP server to restart the wwsympa.fcgi process : ''% /etc/init.d/httpd restart''
+
+You should now perform whatever actions that you wish to profile on the Sympa web interface. You should perform the actions let's say 10 or 100 times to make the process init process negligible. Once you've simulated things on the web interface, you should put aside the generated ''tmon.out'' file : ''% cp /home/sympa/bin/tmon.out /tmp/''
+
+You then use the ''dprofpp'' tool to analyze the content of the ''tmon.out'' file : 
+  % cd /tmp ; dprofpp -F -O 30
+
+The output of ''dprofpp'' will look like this :
+<code>
+Total Elapsed Time = -1.44047 Seconds
+  User+System Time =        0 Seconds
+Exclusive Times
+%Time ExclSec CumulS #Calls sec/call Csec/c  Name
+ 0.00   1.172  1.548     86   0.0136 0.0180  Template::Parser::_parse
+ 0.00   0.778  0.816    170   0.0046 0.0048  CGI::Cookie::new
+ 0.00   0.419  1.440     26   0.0161 0.0554  main::BEGIN
+ 0.00   0.362  0.390  16664   0.0000 0.0000  Log::do_log
+ 0.00   0.232  1.204   1106   0.0002 0.0011  List::load
+ 0.00   0.221  0.577     36   0.0061 0.0160  List::_load_admin_file
+ 0.00   0.220  0.220     85   0.0026 0.0026  Template::Document::new
+ 0.00   0.169  0.319     86   0.0020 0.0037  Template::Parser::split_text
+ 0.00   0.155  0.172    958   0.0002 0.0002  List::_load_scenario
+ 0.00   0.150  0.149   2942   0.0001 0.0001  Template::Parser::tokenise_directi
+                                             ve
+ 0.00   0.149  0.747     27   0.0055 0.0277  List::BEGIN
+ 0.00   0.133  0.288    958   0.0001 0.0003  List::_load_scenario_file
+ 0.00   0.124  0.320  21034   0.0000 0.0000  Template::Grammar::__ANON__
+ 0.00   0.110  0.110     14   0.0079 0.0079  Locale::gettext_pp::__load_catalog
+ 0.00   0.100  0.134   1491   0.0001 0.0001  Lock::new
+</code>
+
+Be aware that dprofpp output truncates the #Calls information to 6 digits !

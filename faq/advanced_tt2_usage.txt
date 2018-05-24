@@ -1,0 +1,97 @@
+====== Introducing perl features in Sympa tt2 templates ======
+
+(A contrib from Sylvain Amrani)
+
+TT2 is a powerful template system which allows you to add some features in Sympa. If you read the documentation on [[http://www.tt2.org]] you will be able to do some pretty unbelievable customizations in Sympa. The following example explains how to use data coming from a LDAP directory into a family template (config.tt2).
+
+The easy way to do it is to define your own TT2 FILTER. It's quite easy (really, it is !). Usually filters do basic things like UPPERCASE. [% "hello" FILTER upper %] will write "HELLO". We create a new FILTER that will take the listname as argument, and returns a complete list config !
+
+Say we want to create a new "Alf" TT2 filter (Alf, for "automatic list feature", e.g.). The method is to create a new perl module that will be used as a FILTER in a tt2 file.
+
+===== Create a new perl module =====
+
+Create a new Alf.pm module in your perl @INC, and in the Template::Plugin scope (for example, on a debian server, I put it in /etc/perl/Template/Plugin/Alf.pm)
+
+You must define an Alf::filter sub that will be called by the TT2 Process.
+
+Alf.pm :
+<code perl>
+###############################################
+package Template::Plugin::Alf;
+
+use strict;
+use Template::Plugin::Filter;
+use base qw( Template::Plugin::Filter );
+
+# you can use ldap here
+use Net::LDAP;
+
+sub filter {
+  # you get the listname in the parameter
+  my ($self, $parameter) = @_;
+
+  # do everything perl can do here :
+  # ldap queries, computation...
+
+  # looking for 'send' value in our ldap directory :
+  my $ldap = Net::LDAP->new('ldap.server.com') or die "$@";
+  my $mesg = $ldap->bind(...
+  $mesg = $ldap->search('filter'=>"(&(cn=$parameter)(...))", 'attrs'=>['send'], 'base'=>...
+
+  my $entity = $mesg->entries[0];
+  my $send_parameter = $entity->get_value('send');
+
+  # compute the ldap filter and put it in $filter
+  my $filter = "(&(something very complicated))";
+
+  # then, return the result :
+
+  my $r = "
+send $send_parameter
+
+include_ldap_query
+host ldap.server.com
+suffix dc=com
+user cn=admin
+filter $filter
+attrs mail
+scope sub
+select all
+
+";
+  return $r
+
+  # if you want to break the TT2 process for some reason,
+  # simply die, and the automatic list won't be created
+  die if ($some_reason);
+}
+1;
+</code>
+
+
+
+=====  Here is the example config.tt2 =====
+
+  [% USE Alf %] 
+  subject [% something %]
+   
+  # some parameters come from our filter :
+  [% listname FILTER $Alf %]
+
+
+The list config result look like 
+
+  subject computed_the_traditional_way
+  
+  send public
+  
+  include_ldap_query
+  host ldap.server.com
+  suffix dc=com
+  user cn=admin
+  filter (&(something very complicated))
+  attrs mail
+  scope sub
+  select all
+
+That's it ! You can do everything that Perl can do in during your automatic list creation (or in any other Sympa pages) !

@@ -1,0 +1,10 @@
+====== FAQ ======
+<note warning>
+
+  * Most of contents of this FAQ are obsoleted.
+
+</note>
+
+This is the official FAQ. Please check this FAQ before asking for help in mailing lists. 
+
+You are welcome to contribute to this FAQ.
