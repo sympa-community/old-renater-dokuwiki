@@ -1,0 +1,88 @@
+proposition de side bar. voir si c'est complet, bien organisé etc
+
+[[http://www.sympa.org/|Sympa home]]
+----
+[[index|Table of content]]
+
+[[Presentation]]
+
+++++ Quick start |
+  * [[installing-sympa|Installing Sympa]]
+  * [[Upgrading]]
+  * [[Minimum parameters]]
+  * [[Create lists]]
+++++
+
+++++ Sympa overview |
+  * [[Organization]]
+  * [[running-sympa|Running Sympa]]
+  * [[conf-parameters|Server parameters]]
+  * [[Database]]
+  * [[web-interface|Web interface]]
+  * [[sympa-commands|Sympa commands]]
+++++
+
+++++ MTA interactions |
+  * [[MTA|Interaction overview]]
+  * [[Spools]]
+  * [[mail-aliases|Mail aliases]]
+  * [[Bounces]]
+  * [[Antivirus]]
+ * [[Antispam]]
+++++
+
+++++ AuthN / AuthZ |
+  * [[Authentication]]
+  * [[x509|S/mime & https]]
+  * [[authorization-scenarios|Authorization scenarios]]
+++++
+
+++++ Lists |
+  * [[list-definition|List definition]]
+  * [[list-creation|List creation]]
+  * [[list-families|List families]]
+  * [[List-parameters]]
+  * [[reception-mode|Reception mode]]
+  * [[shared-documents|Shared documents]]
+++++
+
+++++ Sympa integration |
+  * [[Customizing]]
+  * [[Ldap]]
+  * [[virtual-hosts|Virtual hosts]]
+  * [[other-applications-integration|Applications integration]]
+  * [[Internationalization]]
+  * [[RSS]]
+  * [[SOAP]]
+++++
+----
+
+  * [[index]]  
+  * [[presentation]]
+  * [[organization]]
+  * [[installing-sympa|installing Sympa]]
+  * [[running-sympa|running Sympa]]
+  * [[upgrading]]
+  * [[mail-aliases|mail aliases]]
+  * [[conf-parameters|conf parameters]]
+  * [[database]]
+  * [[web-interface|web interface]]
+  * [[internationalization]]
+  * [[rss]]
+  * [[soap]]
+  * [[authentication]]
+  * [[authorization-scenarios|authorization scenarios]]
+  * [[virtual-hosts|virtual hosts]]
+  * [[other-applications-integration|other applications integration]]
+  * [[customizing]]
+  * [[list-definition|list definition]]
+  * [[list-creation|list creation]]
+  * [[list-families|list families]]
+  * [[list-parameters]]
+  * [[reception-mode|reception mode]]
+  * [[shared-documents|shared documents]]
+  * [[bounces]]
+  * [[antivirus]]
+  * [[ldap]]
+  * [[x509|S/mime & https]]
+  * [[sympa-commands|sympa commands]]

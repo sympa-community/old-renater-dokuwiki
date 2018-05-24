@@ -1,0 +1,51 @@
+====== Service architecture for big mailing list services ======
+
+More and more Sympa users ask us about Sympa scalability for big services (many lists, many subscribers, many messages).
+
+Sympa architecture can support very big services because it is based on a database and several daemons specialized in a specific service. 
+
+===== Process for message distribution =====
+
+The following figure shows the different entities involved from the reception to the distribution of a message in Sympa version 5.4.(({{:dev:bulksympa-v5.odg|source file}})).
+{{:dev:bulksympa-v5.png|}} 
+
+Many of those entities can be affected to a dedicated server or cluster.
+  - MX MTA and filtering service can be performed on a separate MTA. (Sympa management of aliases can be customized in order to create aliases for this MTA using local script or LDAP.)
+  - An incoming MTA must run on the same host as the list server. This MTA is quite simple because it only delivers messages to the appropriate Sympa spool.
+  - Spools are “local files” (but local files can use NFS or a SAN).
+  - The database, of course. The database server can run on a remote server. Using a cluster for this service may be a strong improvement for high disponibility.
+  - Logs use syslog server. When using multiple server for different services, you may use a centralized log server in order to collect all logs related to Sympa.
+  - Configuration files are local files, most of the config files can be modified by Sympa web interface or the SOAP interface.    
+  - ''sympa.pl'' needs local access to configuration files and spools. If you try to run multiple ''sympa.pl'' daemons on different servers, remember that each process must access to global Sympa spools. (For example, when list editor validates a message for distribution, the ''sympa.pl'' process that performs the distribution job needs access to the spool where the message is stored.)
+  - The MSA is the sendmail binary compatible system command that is called by Sympa.pl in order to submit messages to the SMTP infrastructure. This MSA service can be a full MTA thet also perform DNS queries for internet routing, larhe spool mangement etc. For big list servers, it is usefull to move this part of the processus to a //smart host//. It will make the MSA a really a simple and fast SMTP agent. The smart host can be a cluster of servers using round robin DNS.
+  - If needed, others Sympa processes can run on separate servers. For example, ''task_manager.pl'', ''archived.pl'', ''bounced.pl''. All of them need to share spools and configuration files with ''sympa.pl''.
+
+===== NFS =====
+
+“Local files” (spools and any configuration file) can be shared using NFS or a SAN. Using NFS is possible if [[http://www.sympa.org/manual/conf-parameters/conf-parameters?#lock_method|nfs lock]] method is configured. This may be a solution in order to run multiple ''sympa.pl'' daemons on different servers, but this solution is partial. It solves the problem of having multiple servers for a single service for high performance but high disponibility needs are not doable with this architecture.
+
+===== new bulk mailer in Sympa V6 =====
+
+Version 6.0 introduce spools stored in a database so it is now easy to run the bulk mailer on a cluster of servers. The new bulk mailer ''bulk.pl'' daemon is a small script and does not need to access list configuration but only sympa.conf and robot.conf files and of course the database. The related files are not modified by Sympa itself so a simple copy of those files on each server is enough.
+
+This is already partially implemented. ''sympa.pl'' copies messages ready for distribution in a new table. It also prepares the list of recipients and stores it in the database. Each daemon ''bulk.pl'' can run on a separate server. They fetch recipient list and message from the database and submit message to the MTA.
+
+There are multiple benefits of this new architecture.
+  * It is now possible to stop bulkmailer during the distribution process of one message. When restarting the ''bulk.pl'' daemon, the distribution will restart where it was stopped without duplicated messages. 
+  * New messages for lists with high priority can be distributed before the distribution of lower priority messages is finished.
+  * If needed, the server running ''sympa.pl'' may not run heavy job of SMTP distribution. Message distribution can be clustered right now, because ''bulk.pl'' can run on any machine as long as it can access the database.
+  * Several processes can use the spool at once. When launching the bulk.pl program, a master process is created, that can fork into several slave processes to increase the sending rate. These slave processes will spontaneously stop once no messages remain to be sent leaving the master alone to be running.
+
+====Sympa version 6 ====
+
+Will use the same method in ''sympa.pl'' for any other spool. So the incomming MTA will be configured to store incomming messages in the database. No more SMTP MTA will be needed on the server running sympa.pl. It will be possible to run the incomming MTA on a cluster.
+
+New possible architecture with version 6.0
+
+{{:dev:bulksympa-v6.png|}} {{:dev:bulksympa-v6.odg|source}}
+
+In a near futur the architecture will continue to change in order to move all spools in the database. This way, the incomming MTA may become a task that is not running anymore on the Sympa host, it can be part of the MX MTA or any other one, even a cluster of MTA :
+
+{{:dev:bulksympa-v6plus.png|}}{{:dev:bulksympa-v6plus.odg|source}}
+
+Multiple ''sympa.pl'' daemon will also be more easy to set up because the need for sharing files will be for configuration files that do not change often. Maybe we will also store all thoses files in the database.

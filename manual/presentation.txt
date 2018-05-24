@@ -1,0 +1,96 @@
+======  Presentation ======
+
+Sympa is an electronic mailing list manager. It is used to automate list management functions such as subscription, moderation, archive and shared document management. It also includes management functions which would normally require a substantial amount of work (time-consuming and costly for the list owner). These functions include automatic management of subscription renewals, list maintenance, and many others.
+
+Sympa manages many different kinds of lists. It includes a web interface for all list functions including management. It allows a precise definition of each list feature, such as sender authorization, moderating process, etc. Sympa defines, for each feature of each list, exactly who is authorized to perform the relevant operations, along with the authentication method to be used. Currently, authentication can be based on either an SMTP ''From'' header, a password, or an S/MIME signature.
+\\ Sympa is also able to extract electronic addresses from an LDAP directory or SQL server and to include them dynamically in a list.
+
+Sympa manages the dispatching of messages, and makes it possible to reduce the load on the computer system where it is installed. In configurations with sufficient memory, Sympa is especially well adapted to handle large lists: for a list of 20,000 subscribers, it requires less than 6 minutes to send a message to 95 % of the subscribers, assuming that the network is available (tested on a 300 MHz, 256 MB i386 server with Linux).
+
+This guide covers the installation, configuration and management of version FIXME %manual_version of [[http://www.sympa.org|Sympa]].
+
+======  License ======
+
+Sympa is free software; you may distribute it under the terms of the [[http://www.gnu.org/copyleft/gpl.html|GNU General Public License Version 2]].
+
+You may make and give away verbatim copies of the Source form of this package without restriction, provided that you duplicate all of the original copyright notices and associated disclaimers.
+
+
+
+
+======  Features ======
+
+Sympa provides all the basic features that any mailing list management software should include. While most Sympa features have their equivalents in other mailing list applications, Sympa is unique in including features in a single software package. These features are:
+
+  * **High speed distribution processing** and **load control**. Sympa can be tuned to allow the system administrator to control the amount of computer resources used. Its optimized algorithm allows:
+    * the use of your preferred SMTP engine, e.g. Sendmail, qmail or Postfix,
+    * tuning of the maximum number of SMTP child processes,
+    * grouping of messages according to recipients' domains, and tuning of the grouping factor,
+    * detailed logging;
+  * **Multilingual** user interface. The full user/admin interface (mail and web) and the online help are internationalized. Translations are gathered in standard PO files;
+  * **Template-based** user interface. Every web page and service message can be customized through the **TT2** template format;
+  * **MIME support**. Sympa naturally respects MIME in the distribution process, and in addition it allows list owners to configure their lists with welcome, goodbye and other predefined messages using complex MIME structures. For example, a welcome message can be in ''multipart/alternative'' format, using ''text/html'', ''audio/x-wav'' :-), or whatever (Note that Sympa commands in multipart messages are successfully processed, provided that one part is ''text/plain'');
+  * **Fine control of authorizations**. The rights to perform controlled actions (such as sending a message, subscribe to a list, etc.) are set using an [[:manual:authorization-scenarios|authorization scenarios]]. Any listmaster can define new authorization scenarios in order to complement the 20 predefined configurations included in the distribution (Example: forward multipart messages to the list editor, while distributing others without requiring any further authorization);
+  * **Privileged operations** can be performed by list editors or list owners (or any other user category), as defined in the list ''config'' file or by the robot administrator, the listmaster, defined in the ''/etc/sympa.conf'' global configuration file (a listmaster can also be defined for a particular virtual host). Privileged operations include the usual ''ADD'', ''DELETE'' and ''REVIEW'' commands, which can be authenticated through a unique password or an S/MIME signature;
+  * **Web interface**: //WWSympa// is a global Web interface to all Sympa functions (including administration). It provides:
+    * a classification of lists, along with a search index,
+    * an access control to all functions, including the list of lists (which makes WWSympa particularly well suited to be the main groupware tool within an intranet),
+    * the management of shared documents (download, upload, specific access control for each document),
+    * an HTML presentation personalized for each user with the list of his/her current subscriptions, including access to message archives, subscription options, etc
+    * management tools for list managers (bounce processing, changing of list parameters, moderating incoming messages),
+    * tools for the robot administrator (list creation, global robot configuration);\\ To know more, refer to [[web-interface|WWSympa, Sympa's web interface]].
+  * **RDBMS**: the internal subscriber and administrative data structure can be stored in a database or, for compatibility with versions 1.x, in text files for subscriber data. The introduction of databases came out of the //WWSympa// project. The database ensures a secure access to shared data. The PERL database API ''DBI''/''DBD'' enables interoperability with various RDBMS (MySQL, SQLite, PostgreSQL, Oracle, Sybase). To know more, refer to [[database|Sympa and its database]];
+  * **Virtual hosting**: a single Sympa installation can provide multiple virtual robots with both email and web interface customization (see [[virtual-hosts|Virtual host]]);
+  * **LDAP-based mailing lists**: e-mail addresses can be retrieved dynamically from a database accepting SQL queries, or from an LDAP directory. In order to maintain reasonable response times, Sympa retains the data source in an internal cache controlled by a TTL (Time To Live) parameter (see [[parameters-data-sources#include_ldap_query|include-ldap-query]]);
+  * **LDAP authentication**: via uid and emails stored in LDAP Directories. Alternative email addresses, extracted from a LDAP directory, may be used to "unify" subscriptions (see [[authentication#authentication_with_email_address_uid_or_alternate_email_address|Authentication with email address, uid or alternate email address]]);
+  * **Antivirus scanner**: Sympa extracts attachments from incoming messages and runs a virus scanner on them. Currently working with McAfee/uvscan, Fsecure/fsav, Sophos, AVP, Trend Micro/VirusWall and Clam Antivirus (see [[antivirus|Antivirus]]);
+  * **Inclusion of the subscribers** of one list among the subscribers of another. This is real inclusion, not the dirty, multi-level cascading one might otherwise obtain by simply "subscribing list B to list A"
+  * **RSS channel**.
+  * **Custom user attributes**: you can customize the subscription form by requesting additional informations to future users when they request their subscription. See the doc regarding these [[:manual:customizing#custom_attributes|custom attributes]].
+
+======  Project directions ======
+
+Sympa is a very active project: check the [[:release_note|release notes]]. Thus it is not possible to maintain multiple documents about the Sympa project directions anymore. Please refer to the [[:dev:future|Future Sympa developments]] page for information about the project directions.
+
+
+======  History ======
+
+Sympa development started from scratch in 1995. The goal was to ensure continuity with the TULP list manager, produced partly by the initial author of Sympa: Christophe Wolfhugel.
+
+New features were required, which the TULP code was just not able to handle. The initial version of Sympa brought authentication, the flexible management of commands, high performances in internal data access, and object oriented code for easy code maintenance.
+
+It took nearly two years to produce the first market releases.
+
+Other dates:
+  * FIXME !!!!!!!!!
+  * 2008 Web sessions, Custom user attributes
+  * 2007 automatic list creation
+  * 2006 full UTF-8 support
+  * 2005 Changed HTML to XHTML + CSS, RSS, list families, ...
+  * 2004 Changed for TT2 template format and PO catalogue format.
+  * 2003 Sympa SOAP server, CAS-based and Shibboleth-based authentication.Automatic bounce management.
+  * 2002 Virtual hosting, LDAP authentication.
+  * 2001 Auto-install of aliases at list creation time, antivirus scanner plugin, Support for S/MIME (signing and encryption), list setup through the web interface, shared document repository for each list. Full rewrite of HTML look and feel.
+  * 2000 List creation feature from the web, Archive search engine and message removal
+  * 1999 Stable version of WWSympa, introduction of authorization scenarios, Internal use of a database (MySQL), definition of list subscriber with external data source (RDBMS or LDAP).
+  
+
+====== Mailing lists and support ======
+
+If you wish to contact the authors of Sympa, please use the address ''sympa-authors(@)renater.fr''.
+
+There are also a few [[http://listes.renater.fr/sympa/lists/informatique/sympa|mailing-lists about Sympa]]:
+
+  * ''sympa-users(@)renater.fr'' general information list
+  * ''sympa-fr(@)renater.fr'', for French-speaking users
+  * ''sympa-announce(@)renater.fr'', Sympa announcements
+  * ''sympa-dev(@)renater.fr'', Sympa developers
+  * ''sympa-pootle(@)renater.fr'', Sympa translators
+
+To join, send the following message to ''sympa(@)renater.fr'':
+
+> ''subscribe'' //Listname// //Firstname// //Name//
+
+(replace //Listname//, //Firstname// and //Name// by the list name, your first name and your last name).
+
+You may also refer to the Sympa [[http://www.sympa.org|homepage]]; there you will find the [[http://www.sympa.org/distribution/latest version|latest version]], the [[:faq:index|FAQ]] and so on.
