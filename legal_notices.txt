@@ -1,0 +1,66 @@
+====== Mentions légales ======
+
+===== Visas =====
+
+    * Loi n° 78-17 du 6 janvier 1978 modifiée relative à l'informatique, aux fichiers et aux libertés
+    * Loi n°2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique
+
+===== Éditeur/hébergeur =====
+
+Le directeur de la publication est le Directeur du GIP RENATER.\\
+GIP RENATER\\
+23,25 rue Daviel,\\ 
+75013 Paris \\
+tel: 01 53 94 20 30 \\
+
+
+L'hébergement est assuré par l'Université de Rennes 1, pour le compte du GIP RENATER :
+
+Université de Rennes 1\\
+2, rue du Thabor\\
+CS 46510\\
+35065 RENNES Cedex\\
+France
+tel: 02 23 23 71 21 (secrétariat équipe RENATER Rennes)
+ 
+
+Directrice de la rédaction \\
+Virginie Blanquart (RENATER)
+
+
+
+===== Conditions générales d'utilisation =====
+
+L'utilisateur de ce site reconnaît avoir pris connaissance de la présente notice légale et s'engage à la respecter. Il reconnaît avoir vérifié que la configuration informatique qu'il utilise ne contient aucun virus ou tout autre « logiciel malintentionné » et qu'elle est en parfait état de fonctionnement. L'utilisateur est seul responsable du choix, de l'utilisation et de l'interprétation des données qu'il consulte, interroge et transfère sur l'Internet. Le propriétaire de ce site web met tout en oeuvre pour offrir aux utilisateurs des informations et/ou des outils disponibles et vérifié(e)s mais ne saurait être tenu pour responsable des erreurs, d'une absence de disponibilité des informations et/ou de la présence de virus ou de « logiciels malintentionnés »  sur son site.
+
+L'utilisateur qui constaterait des inexactitudes, des informations erronées ou des informations de caractère manifestement illicite, est tenu d'en informer l'hébergeur de ce site et le responsable de la rédaction afin que celui-ci y mette fin. 
+
+L'utilisateur de ce site web est tenu de respecter les dispositions de la loi relative à l'informatique, aux fichiers, et aux libertés, dont la violation est passible de sanctions pénales. Il doit notamment s'abstenir, s'agissant d'informations à caractère personnel auxquelles il accède de toute collecte de toute utilisation détournée et d'une manière générale, de tout acte susceptible de porter atteinte à la vie privée ou à la réputation des personnes.
+
+===== Informatique et Libertés =====
+
+En conformité avec les dispositions de la loi n° 78-17 du 6 janvier 1978 modifiée relative à l'informatique, aux fichiers et aux libertés, les traitements automatisés de données à caractère personnel réalisés à partir du présent site web ont fait l'objet d'une déclaration auprès du "correspondant Informatique et Libertés" du GIP RENATER. 
+
+L'utilisateur est notamment informé que, conformément aux termes de la loi n° 78-17, il dispose d'un droit d'accès, de rectification et de suppression portant sur les données personnelles le concernant en écrivant à l'adresse suivante : RENATER -  23,25 rue DAVIEL, 75013 Paris - France
+
+===== Propriété intellectuelle, droit de reproduction, liens =====
+
+La structure générale ainsi que les logiciels, textes, images animées ou non, sons, savoir-faire,... et tous les autres éléments composant le site sont la propriété du GIP RENATER ou bien sont exploités dans le respect des droits de leurs auteurs. L'ensemble de ce site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques ou photographiques.
+
+La reproduction des pages publiques de ce site, quel qu'en soit le support est autorisée sauf mention explicite du contraire et sous réserve du respect des conditions suivantes :
+
+    * respect de l'intégrité des documents reproduits
+    * citation explicite du site d'origine et mention que les droits de reproduction sont réservés et limités
+    * gratuité de la diffusion
+
+Les bases de données figurant sur le présent site sont protégées par les dispositions de la loi du 1 er juillet 1998 portant transposition dans le CPI de la directive du 11 mars 1996 relative à la protection juridique des bases de données.
+
+
+
+===== Modification de la notice légale =====
+
+Le GIP RENATER, propriétaire et exploitant du site, se réserve le droit de modifier la présente notice à tout moment. L'utilisateur s'engage donc à la consulter régulièrement.
+
+===== Droit applicable =====
+
+En cas de litige, le droit français est applicable. Il est fait attribution exclusive de juridiction aux tribunaux compétents de Paris (France).

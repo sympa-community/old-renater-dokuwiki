@@ -1,0 +1,7 @@
+======= × sympa.conf parameters =======
+<note>
+For description on sympa.conf / rebot.conf parameters, see:
+
+* [[https://sympa-community.github.io/manual/man/sympa.conf.5.html|New documentation site]]
+
+</note>
